@@ -5,8 +5,20 @@ import { StudentDashboard } from './pages/StudentDashboard';
 import { TeacherDashboard } from './pages/TeacherDashboard';
 import { ParentDashboard } from './pages/ParentDashboard';
 import { PlaceholderPage } from './pages/PlaceholderPage';
+import { StatusPage } from './pages/StatusPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 export const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/register',
+    element: <RegisterPage />,
+  },
   {
     path: '/',
     element: <App />,
@@ -16,8 +28,16 @@ export const router = createBrowserRouter([
         element: <Navigate to="/admin/dashboard" replace />,
       },
       {
+        path: '/status',
+        element: <StatusPage />,
+      },
+      {
         path: '/admin/dashboard',
-        element: <AdminDashboard />,
+        element: (
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/admissions',
@@ -154,11 +174,19 @@ export const router = createBrowserRouter([
       // Student routes
       {
         path: '/student/dashboard',
-        element: <StudentDashboard />,
+        element: (
+          <ProtectedRoute>
+            <StudentDashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/student/courses',
-        element: <PlaceholderPage title="My Courses" description="View your courses" />,
+        element: (
+          <ProtectedRoute>
+            <PlaceholderPage title="My Courses" description="View your courses" />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/student/attendance',
@@ -187,11 +215,19 @@ export const router = createBrowserRouter([
       // Teacher routes
       {
         path: '/teacher/dashboard',
-        element: <TeacherDashboard />,
+        element: (
+          <ProtectedRoute>
+            <TeacherDashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/teacher/classes',
-        element: <PlaceholderPage title="My Classes" description="View your classes" />,
+        element: (
+          <ProtectedRoute>
+            <PlaceholderPage title="My Classes" description="View your classes" />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/teacher/attendance',
@@ -220,11 +256,19 @@ export const router = createBrowserRouter([
       // Parent routes
       {
         path: '/parent/dashboard',
-        element: <ParentDashboard />,
+        element: (
+          <ProtectedRoute>
+            <ParentDashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/parent/children',
-        element: <PlaceholderPage title="My Children" description="View your children's info" />,
+        element: (
+          <ProtectedRoute>
+            <PlaceholderPage title="My Children" description="View your children's info" />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/parent/attendance',
