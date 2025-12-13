@@ -9,6 +9,26 @@ import { StatusPage } from './pages/StatusPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import UserManagementPage from './pages/admin/UserManagementPage';
+import RoleManagementPage from './pages/admin/RoleManagementPage';
+import AdmissionsPage from './pages/AdmissionsPage';
+import AssignmentManagementPage from './pages/AssignmentManagementPage';
+import AttendanceManagementPage from './pages/AttendanceManagementPage';
+import BatchManagementPage from './pages/BatchManagementPage';
+import CourseManagementPage from './pages/CourseManagementPage';
+import BranchManagementPage from './pages/BranchManagementPage';
+import { LeaveApplicationsPage } from './pages/admin/LeaveApplicationsPage';
+import { LectureTimingTemplatesPage } from './pages/admin/LectureTimingTemplatesPage';
+import { NotificationsPage } from './pages/admin/NotificationsPage';
+import { PaymentManagementPage } from './pages/admin/PaymentManagementPage';
+import { PayslipManagementPage } from './pages/admin/PayslipManagementPage';
+import { PTMRequestsPage } from './pages/admin/PTMRequestsPage';
+import BoardExamsPage from './pages/admin/BoardExamsPage';
+import SupportTicketsPage from './pages/admin/SupportTicketsPage';
+import WorkingHoursPage from './pages/admin/WorkingHoursPage';
+import SalaryStructuresPage from './pages/admin/SalaryStructuresPage';
+import TopicsContentPage from './pages/admin/TopicsContentPage';
+import TimetablesPage from './pages/admin/TimetablesPage';
 
 export const router = createBrowserRouter([
   {
@@ -40,20 +60,44 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: '/admin/admissions',
-        element: <PlaceholderPage title="Admissions" description="Manage student admissions" />,
+        path: '/admin/users',
+        element: (
+          <ProtectedRoute>
+            <UserManagementPage />
+          </ProtectedRoute>
+        ),
       },
       {
-        path: '/admin/enrollments',
-        element: <PlaceholderPage title="Enrollments" description="Manage student enrollments" />,
+        path: '/admin/roles',
+        element: (
+          <ProtectedRoute>
+            <RoleManagementPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/admin/admissions',
+        element: (
+          <ProtectedRoute>
+            <AdmissionsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/payments',
-        element: <PlaceholderPage title="Payments" description="Manage student payments" />,
+        element: (
+          <ProtectedRoute>
+            <PaymentManagementPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/academics/courses',
-        element: <PlaceholderPage title="Courses" description="Manage courses" />,
+        element: (
+          <ProtectedRoute>
+            <CourseManagementPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/academics/subjects',
@@ -61,31 +105,59 @@ export const router = createBrowserRouter([
       },
       {
         path: '/admin/academics/topics',
-        element: <PlaceholderPage title="Topics & Content" description="Manage topics and content" />,
+        element: (
+          <ProtectedRoute>
+            <TopicsContentPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/academics/batches',
-        element: <PlaceholderPage title="Batches" description="Manage batches" />,
+        element: (
+          <ProtectedRoute>
+            <BatchManagementPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/academics/timetables',
-        element: <PlaceholderPage title="Timetables" description="Manage timetables" />,
+        element: (
+          <ProtectedRoute>
+            <TimetablesPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/academics/attendance',
-        element: <PlaceholderPage title="Attendance" description="Mark attendance" />,
+        element: (
+          <ProtectedRoute>
+            <AttendanceManagementPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/academics/assignments',
-        element: <PlaceholderPage title="Assignments" description="Manage assignments" />,
+        element: (
+          <ProtectedRoute>
+            <AssignmentManagementPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/academics/results',
-        element: <PlaceholderPage title="Results" description="Manage results" />,
+        element: (
+          <ProtectedRoute>
+            <BoardExamsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/academics/lecture-templates',
-        element: <PlaceholderPage title="Lecture Templates" description="Manage lecture templates" />,
+        element: (
+          <ProtectedRoute>
+            <LectureTimingTemplatesPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/administration/users',
@@ -97,11 +169,19 @@ export const router = createBrowserRouter([
       },
       {
         path: '/admin/administration/branches',
-        element: <PlaceholderPage title="Branches" description="Manage branches" />,
+        element: (
+          <ProtectedRoute>
+            <BranchManagementPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/administration/inventory',
-        element: <PlaceholderPage title="Inventory" description="Manage inventory" />,
+        element: (
+          <ProtectedRoute>
+            <PlaceholderPage title="Inventory" description="Manage inventory" />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/administration/tie-up-schools',
@@ -109,23 +189,43 @@ export const router = createBrowserRouter([
       },
       {
         path: '/admin/hr/employees',
-        element: <PlaceholderPage title="Employees" description="Manage employees" />,
+        element: (
+          <ProtectedRoute>
+            <PlaceholderPage title="Employees" description="Manage employees" />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/hr/salary',
-        element: <PlaceholderPage title="Salary Structures" description="Manage salary structures" />,
+        element: (
+          <ProtectedRoute>
+            <SalaryStructuresPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/hr/payslips',
-        element: <PlaceholderPage title="Payslips" description="Manage payslips" />,
+        element: (
+          <ProtectedRoute>
+            <PayslipManagementPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/hr/leave',
-        element: <PlaceholderPage title="Leave Management" description="Manage leaves" />,
+        element: (
+          <ProtectedRoute>
+            <LeaveApplicationsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/hr/working-hours',
-        element: <PlaceholderPage title="Working Hours" description="Manage working hours" />,
+        element: (
+          <ProtectedRoute>
+            <WorkingHoursPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/hr/availability',
@@ -133,7 +233,11 @@ export const router = createBrowserRouter([
       },
       {
         path: '/admin/communications/announcements',
-        element: <PlaceholderPage title="Announcements" description="Create announcements" />,
+        element: (
+          <ProtectedRoute>
+            <NotificationsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/communications/doubts',
@@ -141,19 +245,35 @@ export const router = createBrowserRouter([
       },
       {
         path: '/admin/communications/feedback',
-        element: <PlaceholderPage title="Feedback" description="View feedback" />,
+        element: (
+          <ProtectedRoute>
+            <PlaceholderPage title="Feedback" description="View feedback" />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/communications/grievances',
-        element: <PlaceholderPage title="Grievances" description="Manage grievances" />,
+        element: (
+          <ProtectedRoute>
+            <PlaceholderPage title="Grievances" description="Manage grievances" />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/communications/ptm',
-        element: <PlaceholderPage title="Parent-Teacher Meetings" description="Manage PTMs" />,
+        element: (
+          <ProtectedRoute>
+            <PTMRequestsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/communications/support',
-        element: <PlaceholderPage title="Support Tickets" description="Manage support tickets" />,
+        element: (
+          <ProtectedRoute>
+            <SupportTicketsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/analytics/reports',

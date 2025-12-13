@@ -69,8 +69,8 @@ export const navigationConfig = {
           label: 'Administration',
           icon: Users,
           children: [
-            { id: 'users', label: 'Users', path: '/admin/administration/users' },
-            { id: 'roles', label: 'Roles & Permissions', path: '/admin/administration/roles' },
+            { id: 'users', label: 'Users', path: '/admin/users' },
+            { id: 'roles', label: 'Roles & Permissions', path: '/admin/roles' },
             { id: 'branches', label: 'Branches', path: '/admin/administration/branches' },
             { id: 'inventory', label: 'Inventory', path: '/admin/administration/inventory' },
             { id: 'tie-up-schools', label: 'Tie-Up Schools', path: '/admin/administration/tie-up-schools' },
