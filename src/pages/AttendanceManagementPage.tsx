@@ -56,25 +56,25 @@ export default function AttendanceManagementPage() {
   return (
     <div className="p-8">
       {/* Header */}
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-8">Weekly Attendance & Lecture Management</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Weekly Attendance & Lecture Management</h1>
 
       {/* Tabs */}
       <div className="flex gap-8 mb-6 border-b border-gray-200 dark:border-dark-border-primary">
         <button
           onClick={() => setActiveTab('schedule')}
-          className={`pb-3 font-semibold border-b-2 transition-colors ${activeTab === 'schedule' ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400' : 'text-gray-600 dark:text-dark-text-secondary border-transparent'}`}
+          className={`pb-3 font-semibold border-b-2 transition-colors ${activeTab === 'schedule' ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400' : 'text-gray-600 dark:text-slate-400 border-transparent'}`}
         >
           Schedule
         </button>
         <button
           onClick={() => setActiveTab('reports')}
-          className={`pb-3 font-semibold border-b-2 transition-colors ${activeTab === 'reports' ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400' : 'text-gray-600 dark:text-dark-text-secondary border-transparent'}`}
+          className={`pb-3 font-semibold border-b-2 transition-colors ${activeTab === 'reports' ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400' : 'text-gray-600 dark:text-slate-400 border-transparent'}`}
         >
           Reports
         </button>
         <button
           onClick={() => setActiveTab('student')}
-          className={`pb-3 font-semibold border-b-2 transition-colors ${activeTab === 'student' ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400' : 'text-gray-600 dark:text-dark-text-secondary border-transparent'}`}
+          className={`pb-3 font-semibold border-b-2 transition-colors ${activeTab === 'student' ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400' : 'text-gray-600 dark:text-slate-400 border-transparent'}`}
         >
           Student Report
         </button>
@@ -85,39 +85,39 @@ export default function AttendanceManagementPage() {
           {/* Selectors */}
           <div className="grid grid-cols-3 gap-6 mb-8">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Select Branch</label>
-              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary" defaultValue="Kalyan Branch">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Select Branch</label>
+              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white" defaultValue="Kalyan Branch">
                 <option>Kalyan Branch</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Filter by Batch (Optional)</label>
-              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary" defaultValue="All Batches in Branch">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Filter by Batch (Optional)</label>
+              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white" defaultValue="All Batches in Branch">
                 <option>All Batches in Branch</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Select a day in week</label>
-              <input type="date" value={selectedDate.split('-').reverse().join('-')} onChange={(e) => setSelectedDate(e.target.value)} className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Select a day in week</label>
+              <input type="date" value={selectedDate.split('-').reverse().join('-')} onChange={(e) => setSelectedDate(e.target.value)} className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white" />
             </div>
           </div>
 
           {/* Classes */}
           <div className="grid grid-cols-1 gap-4">
             {scheduleClasses.map((cls) => (
-              <div key={cls.id} className="bg-white dark:bg-dark-surface-primary rounded-lg p-6 border border-gray-200 dark:border-dark-border-primary hover:shadow-lg">
+              <div key={cls.id} className="bg-white dark:bg-dark-surface-primary rounded-lg p-6 border border-gray-200 dark:border-dark-border-primary hover:shadow-lg dark:shadow-none">
                 <div className="flex justify-between items-start">
                   <div>
-                    <div className="font-semibold text-gray-900 dark:text-dark-text-primary">{cls.code} - {cls.name}</div>
-                    <div className="text-sm text-gray-600 dark:text-dark-text-secondary">By {cls.teacher}</div>
-                    <div className="text-sm text-gray-600 dark:text-dark-text-secondary">{cls.time}</div>
-                    <div className="text-sm text-gray-500 dark:text-dark-text-secondary">{cls.classroom}</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">{cls.code} - {cls.name}</div>
+                    <div className="text-sm text-gray-600 dark:text-slate-400">By {cls.teacher}</div>
+                    <div className="text-sm text-gray-600 dark:text-slate-400">{cls.time}</div>
+                    <div className="text-sm text-gray-500 dark:text-slate-400">{cls.classroom}</div>
                   </div>
                   <div className="flex gap-3">
                     <button className="px-4 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white font-semibold">
                       ✓ Attendance
                     </button>
-                    <button className="px-4 py-2 rounded-lg border border-gray-300 dark:border-dark-border-primary bg-white dark:bg-dark-surface-secondary text-gray-700 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-primary font-semibold">
+                    <button className="px-4 py-2 rounded-lg border border-gray-300 dark:border-dark-border-primary bg-white dark:bg-dark-surface-secondary text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-dark-surface-tertiary font-semibold">
                       📝 Remarks
                     </button>
                   </div>
@@ -133,14 +133,14 @@ export default function AttendanceManagementPage() {
           {/* Reports Controls */}
           <div className="grid grid-cols-4 gap-4 mb-8">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Syllabus Status</label>
-              <div className="p-4 border border-gray-300 dark:border-dark-border-primary rounded-lg text-sm text-gray-600 dark:text-dark-text-secondary bg-white dark:bg-dark-surface-secondary">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Syllabus Status</label>
+              <div className="p-4 border border-gray-300 dark:border-dark-border-primary rounded-lg text-sm text-gray-600 dark:text-slate-400 bg-white dark:bg-dark-surface-secondary">
                 <div className="font-semibold mb-2">Choose a batch to view syllabus progress.</div>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Teacher Activity Log</label>
-              <select className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Teacher Activity Log</label>
+              <select className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white">
                 <option>RCM</option>
               </select>
             </div>
@@ -148,15 +148,15 @@ export default function AttendanceManagementPage() {
               <div className="space-y-2">
                 <div className="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
                   <div>
-                    <div className="font-semibold text-gray-900 dark:text-dark-text-primary">Calculus</div>
-                    <div className="text-xs text-gray-600 dark:text-dark-text-secondary">Math • 26TJMA1</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">Calculus</div>
+                    <div className="text-xs text-gray-600 dark:text-slate-400">Math • 26TJMA1</div>
                   </div>
                   <div className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">IN_PROGRESS</div>
                 </div>
                 <div className="flex justify-between items-center p-3 border border-gray-200 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary">
                   <div>
-                    <div className="font-semibold text-gray-900 dark:text-dark-text-primary">Continuity</div>
-                    <div className="text-xs text-gray-600 dark:text-dark-text-secondary">Math • 27KJ1</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">Continuity</div>
+                    <div className="text-xs text-gray-600 dark:text-slate-400">Math • 27KJ1</div>
                   </div>
                   <div className="text-sm font-semibold text-green-600 dark:text-green-400">COMPLETED</div>
                 </div>
@@ -169,22 +169,22 @@ export default function AttendanceManagementPage() {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-dark-surface-secondary border-b border-gray-200 dark:border-dark-border-primary">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Date</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Subject</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Batch</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Teacher</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Time</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Status</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Date</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Subject</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Batch</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Teacher</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Time</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-dark-border-primary">
                 {attendanceRecords.map((record, idx) => (
                   <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-dark-surface-secondary">
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.date}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.subject}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.batch}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.teacher}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.time}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.date}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.subject}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.batch}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.teacher}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.time}</td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         record.status === 'PRESENT' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
@@ -207,21 +207,21 @@ export default function AttendanceManagementPage() {
           {/* Student Report Filters */}
           <div className="grid grid-cols-4 gap-4 mb-8">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Select Student Admission</label>
-              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary" value={_selectedStudent}>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Select Student Admission</label>
+              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white" value={_selectedStudent}>
                 <option>Student 2 (JEE Foundation)</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Month</label>
-              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary" value={_reportMonth}>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Month</label>
+              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white" value={_reportMonth}>
                 <option>Dec</option>
                 <option>Jan</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Year</label>
-              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary" value={_reportYear}>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Year</label>
+              <select className="w-full px-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white" value={_reportYear}>
                 <option>2025</option>
                 <option>2026</option>
               </select>
@@ -238,22 +238,22 @@ export default function AttendanceManagementPage() {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-dark-surface-secondary border-b border-gray-200 dark:border-dark-border-primary">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Date</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Subject</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Batch</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Teacher</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Time</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Status</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Date</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Subject</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Batch</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Teacher</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Time</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-dark-border-primary">
                 {attendanceRecords.map((record, idx) => (
                   <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-dark-surface-secondary">
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.date}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.subject}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.batch}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.teacher}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{record.time}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.date}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.subject}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.batch}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.teacher}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{record.time}</td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         record.status === 'PRESENT' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :

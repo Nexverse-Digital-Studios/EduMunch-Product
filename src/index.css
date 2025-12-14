@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  @apply bg-gray-50 dark:bg-dark-bg-primary text-gray-900 dark:text-dark-text-primary transition-colors;
+  @apply bg-gray-50 dark:bg-[#0F172A] text-gray-900 dark:text-dark-text-primary transition-colors;
 }
 
 /* Custom scrollbar */

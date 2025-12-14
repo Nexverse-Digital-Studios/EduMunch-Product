@@ -79,15 +79,15 @@ export function PaymentManagementPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">Payment Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Payment Management</h1>
 
         {/* Student Selection */}
         <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6 mb-6 border border-gray-200 dark:border-dark-border-primary">
-          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-3">Select Student/Admission</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-3">Select Student/Admission</label>
           <select
             value={selectedStudent}
             onChange={(e) => setSelectedStudent(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
           >
             <option value="">Choose a student...</option>
             {students.map(student => (
@@ -103,15 +103,15 @@ export function PaymentManagementPage() {
             {/* Balance Summary */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6 border border-indigo-200 dark:border-indigo-500">
-                <div className="text-sm font-medium text-gray-600 dark:text-dark-text-secondary mb-1">Total Due</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">Total Due</div>
                 <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">₹{balanceInfo.totalDue.toFixed(2)}</div>
               </div>
               <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6 border border-green-200 dark:border-green-500">
-                <div className="text-sm font-medium text-gray-600 dark:text-dark-text-secondary mb-1">Total Paid</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">Total Paid</div>
                 <div className="text-3xl font-bold text-green-600 dark:text-green-400">₹{balanceInfo.totalPaid.toFixed(2)}</div>
               </div>
               <div className={`bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6 border-2 ${balanceInfo.balance > 0 ? 'border-red-200 dark:border-red-500' : 'border-green-200 dark:border-green-500'}`}>
-                <div className="text-sm font-medium text-gray-600 dark:text-dark-text-secondary mb-1">Balance</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">Balance</div>
                 <div className={`text-3xl font-bold ${balanceInfo.balance > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                   ₹{balanceInfo.balance.toFixed(2)}
                 </div>
@@ -128,7 +128,7 @@ export function PaymentManagementPage() {
                     className={`flex-1 px-6 py-3 font-medium text-center border-b-2 transition ${
                       activeTab === tab
                         ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400'
-                        : 'text-gray-600 dark:text-dark-text-secondary border-transparent hover:text-gray-900 dark:hover:text-dark-text-primary'
+                        : 'text-gray-600 dark:text-slate-400 border-transparent hover:text-gray-900 dark:hover:text-white'
                     }`}
                   >
                     {tab === 'search' && <Search className="inline mr-2" size={18} />}
@@ -142,17 +142,17 @@ export function PaymentManagementPage() {
 
             {/* Content */}
             {loading ? (
-              <div className="text-center py-12 text-gray-900 dark:text-dark-text-primary">Loading...</div>
+              <div className="text-center py-12 text-gray-900 dark:text-white">Loading...</div>
             ) : activeTab === 'search' ? (
               <div className="space-y-4">
-                <h3 className="font-bold text-gray-900 dark:text-dark-text-primary mb-4">Transaction History</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4">Transaction History</h3>
                 {payments.length > 0 ? (
                   payments.map(payment => (
                     <div key={payment.id} className="bg-white dark:bg-dark-surface-primary rounded-lg p-4 border border-gray-200 dark:border-dark-border-primary">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h4 className="font-medium text-gray-900 dark:text-dark-text-primary">{payment.student_name}</h4>
-                          <p className="text-sm text-gray-600 dark:text-dark-text-secondary">Amount: ₹{payment.amount}</p>
+                          <h4 className="font-medium text-gray-900 dark:text-white">{payment.student_name}</h4>
+                          <p className="text-sm text-gray-600 dark:text-slate-400">Amount: ₹{payment.amount}</p>
                         </div>
                         <div className="text-right">
                           {getStatusBadge(payment.payment_method || 'CASH')}
@@ -170,20 +170,20 @@ export function PaymentManagementPage() {
               </div>
             ) : activeTab === 'filter' ? (
               <div className="space-y-4">
-                <h3 className="font-bold text-gray-900 dark:text-dark-text-primary mb-4">Installment Plan</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4">Installment Plan</h3>
                 {installments.length > 0 ? (
                   installments.map(installment => (
                     <div key={installment.id} className="bg-white dark:bg-dark-surface-primary rounded-lg p-4 border border-gray-200 dark:border-dark-border-primary">
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h4 className="font-medium text-gray-900 dark:text-dark-text-primary">Installment {installment.installment_number}</h4>
-                          <p className="text-sm text-gray-600 dark:text-dark-text-secondary">Due: {new Date(installment.due_date).toLocaleDateString()}</p>
+                          <h4 className="font-medium text-gray-900 dark:text-white">Installment {installment.installment_number}</h4>
+                          <p className="text-sm text-gray-600 dark:text-slate-400">Due: {new Date(installment.due_date).toLocaleDateString()}</p>
                         </div>
                         {getStatusBadge(installment.status)}
                       </div>
                       <div className="grid grid-cols-3 gap-4 mb-3 text-sm">
                         <div>
-                          <span className="text-gray-600 dark:text-dark-text-secondary">Amount: </span>
+                          <span className="text-gray-600 dark:text-slate-400">Amount: </span>
                           <span className="font-medium">₹{installment.amount}</span>
                         </div>
                         <div>
@@ -217,7 +217,7 @@ export function PaymentManagementPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                <h3 className="font-bold text-gray-900 dark:text-dark-text-primary mb-4">Outstanding Report</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4">Outstanding Report</h3>
                 {installments.filter(i => i.status !== 'FULLY_PAID').length > 0 ? (
                   installments.filter(i => i.status !== 'FULLY_PAID').map(installment => (
                     <div key={installment.id} className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border border-red-200 dark:border-red-500">

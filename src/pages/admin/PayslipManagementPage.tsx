@@ -114,7 +114,7 @@ export function PayslipManagementPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">Payslip Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Payslip Management</h1>
 
         {/* Tabs */}
         <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow mb-6 border-b border-gray-200 dark:border-dark-border-primary">
@@ -149,11 +149,11 @@ export function PayslipManagementPage() {
               {/* Month/Year Selection */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Month</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Month</label>
                   <select
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                   >
                     <option value="">Select Month</option>
                     {months.map(month => (
@@ -162,12 +162,12 @@ export function PayslipManagementPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Year</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Year</label>
                   <input
                     type="number"
                     value={selectedYear}
                     onChange={(e) => setSelectedYear(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                     min={2020}
                     max={2050}
                   />
@@ -176,9 +176,9 @@ export function PayslipManagementPage() {
 
               {/* Employee Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-3">Select Employees</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-3">Select Employees</label>
                 <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 dark:border-dark-border-primary rounded-lg p-4 bg-gray-50 dark:bg-dark-surface-secondary">
-                  {employees.map(emp => (
+                  {mockEmployees.map((emp) => (
                     <label key={emp.id} className="flex items-center gap-3 p-3 bg-white dark:bg-dark-surface-primary rounded-lg hover:bg-gray-50 dark:hover:bg-dark-surface-secondary cursor-pointer border border-gray-200 dark:border-dark-border-primary">
                       <input
                         type="checkbox"
@@ -187,8 +187,8 @@ export function PayslipManagementPage() {
                         className="w-4 h-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-dark-border-primary rounded bg-white dark:bg-dark-surface-primary"
                       />
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900 dark:text-dark-text-primary">{emp.name}</div>
-                        <div className="text-sm text-gray-600 dark:text-dark-text-secondary">{emp.code} • ₹{emp.salary.toLocaleString()}</div>
+                        <div className="font-medium text-gray-900 dark:text-white">{emp.name}</div>
+                        <div className="text-sm text-gray-600 dark:text-slate-400">{emp.code} • ₹{emp.salary.toLocaleString()}</div>
                       </div>
                     </label>
                   ))}
@@ -215,11 +215,11 @@ export function PayslipManagementPage() {
             {/* Month/Year Filter */}
             <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-4 grid grid-cols-2 gap-4 border border-gray-200 dark:border-dark-border-primary">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Month</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Month</label>
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                 >
                   <option value="">Select Month</option>
                   {months.map(month => (
@@ -228,12 +228,12 @@ export function PayslipManagementPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Year</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Year</label>
                 <input
                   type="number"
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                   min={2020}
                   max={2050}
                 />
@@ -242,15 +242,15 @@ export function PayslipManagementPage() {
 
             {/* Payslips List */}
             {loading ? (
-              <div className="text-center py-12 text-gray-900 dark:text-dark-text-primary">Loading payslips...</div>
+              <div className="text-center py-12 text-gray-900 dark:text-white">Loading payslips...</div>
             ) : payslips.length > 0 ? (
               <div className="space-y-3">
                 {payslips.map(payslip => (
                   <div key={payslip.id} className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-4 border border-gray-200 dark:border-dark-border-primary">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <h3 className="font-bold text-gray-900 dark:text-dark-text-primary">{payslip.employee_name || 'Employee'}</h3>
-                        <div className="grid grid-cols-3 gap-4 mt-2 text-sm text-gray-600 dark:text-dark-text-secondary">
+                        <h3 className="font-bold text-gray-900 dark:text-white">{payslip.employee_name || 'Employee'}</h3>
+                        <div className="grid grid-cols-3 gap-4 mt-2 text-sm text-gray-600 dark:text-slate-400">
                           <div>
                             <span className="font-medium">Net Salary:</span> ₹{payslip.net_salary?.toLocaleString()}
                           </div>

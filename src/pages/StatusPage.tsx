@@ -27,8 +27,8 @@ export const StatusPage: React.FC = () => {
           <div className="bg-white dark:bg-dark-surface-primary rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-dark-border-primary">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary">Total Phases</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mt-1">{overallProgress.totalPhases}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-slate-400">Total Phases</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{overallProgress.totalPhases}</p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -39,7 +39,7 @@ export const StatusPage: React.FC = () => {
           <div className="bg-white dark:bg-dark-surface-primary rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-dark-border-primary">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary">Completed</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-slate-400">Completed</p>
                 <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{overallProgress.completedPhases}</p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
@@ -51,7 +51,7 @@ export const StatusPage: React.FC = () => {
           <div className="bg-white dark:bg-dark-surface-primary rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-dark-border-primary">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary">In Progress</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-slate-400">In Progress</p>
                 <p className="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1">{overallProgress.inProgressPhases}</p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
@@ -63,8 +63,8 @@ export const StatusPage: React.FC = () => {
           <div className="bg-white dark:bg-dark-surface-primary rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-dark-border-primary">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary">Tasks Done</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mt-1">
+                <p className="text-sm font-medium text-gray-500 dark:text-slate-400">Tasks Done</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
                   {overallProgress.completedTasks}/{overallProgress.totalTasks}
                 </p>
               </div>
@@ -83,15 +83,15 @@ export const StatusPage: React.FC = () => {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary">Current Focus</h2>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Current Focus</h2>
                 <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-semibold rounded-full">
                   {currentFocus.priority}
                 </span>
               </div>
-              <p className="text-gray-600 dark:text-dark-text-secondary mb-2">
+              <p className="text-gray-600 dark:text-slate-400 mb-2">
                 Phase {currentFocus.phase}: {currentFocus.title}
               </p>
-              <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-dark-text-secondary">
+              <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-slate-400">
                 <span>Est. {currentFocus.estimatedDays} days</span>
                 {currentFocus.blockers.length > 0 && (
                   <span className="text-red-600 dark:text-red-400">• {currentFocus.blockers.length} blockers</span>

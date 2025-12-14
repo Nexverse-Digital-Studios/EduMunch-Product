@@ -85,7 +85,7 @@ export default function BranchManagementPage() {
   return (
     <div className="p-6 bg-white dark:bg-dark-surface-primary rounded-lg">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Branch Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Branch Management</h1>
         <button
           onClick={() => {
             resetForm();
@@ -112,27 +112,27 @@ export default function BranchManagementPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 dark:border-dark-border-primary bg-gray-50 dark:bg-dark-surface-secondary">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Branch Name</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Code</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Address</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">City</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Actions</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Branch Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Code</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Address</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">City</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Actions</th>
               </tr>
             </thead>
             <tbody>
               {branches.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500 dark:text-dark-text-secondary">
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500 dark:text-slate-400">
                     No branches found
                   </td>
                 </tr>
               ) : (
                 branches.map((branch) => (
                   <tr key={branch.id} className="border-b border-gray-200 dark:border-dark-border-primary hover:bg-gray-50 dark:hover:bg-dark-surface-secondary">
-                    <td className="px-6 py-4 font-semibold text-gray-900 dark:text-dark-text-primary">{branch.name}</td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-dark-text-secondary">{branch.code}</td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-dark-text-secondary">{branch.address || '-'}</td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-dark-text-secondary">{branch.city || '-'}</td>
+                    <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{branch.name}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{branch.code}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{branch.address || '-'}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{branch.city || '-'}</td>
                     <td className="px-6 py-4 flex gap-2">
                       <button
                         onClick={() => {
@@ -140,7 +140,7 @@ export default function BranchManagementPage() {
                           setEditingId(branch.id);
                           setShowModal(true);
                         }}
-                        className="p-2 text-gray-600 dark:text-dark-text-secondary hover:bg-gray-200 dark:hover:bg-dark-surface-primary rounded"
+                        className="p-2 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-dark-surface-primary rounded"
                       >
                         <Edit2 size={18} />
                       </button>
@@ -163,8 +163,8 @@ export default function BranchManagementPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-dark-surface-primary rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-dark-border-primary">
             <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-dark-border-primary sticky top-0 bg-white dark:bg-dark-surface-primary">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary">{editingId ? 'Edit Branch' : 'Add Branch'}</h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-500 dark:text-dark-text-secondary hover:text-gray-700 dark:hover:text-dark-text-primary">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editingId ? 'Edit Branch' : 'Add Branch'}</h2>
+              <button onClick={() => setShowModal(false)} className="text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white">
                 <X size={24} />
               </button>
             </div>

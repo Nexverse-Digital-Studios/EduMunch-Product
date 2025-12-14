@@ -81,7 +81,7 @@ export default function CourseManagementPage() {
   return (
     <div className="p-6 bg-white dark:bg-dark-surface-primary rounded-lg">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Course Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Course Management</h1>
         <button
           onClick={() => {
             resetForm();
@@ -108,29 +108,29 @@ export default function CourseManagementPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 dark:border-dark-border-primary bg-gray-50 dark:bg-dark-surface-secondary">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Course Name</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Code</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Level</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Category</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Duration</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Actions</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Course Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Code</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Level</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Category</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Duration</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Actions</th>
               </tr>
             </thead>
             <tbody>
               {courses.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-dark-text-secondary">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-slate-400">
                     No courses found
                   </td>
                 </tr>
               ) : (
                 courses.map((course) => (
                   <tr key={course.id} className="border-b border-gray-200 dark:border-dark-border-primary hover:bg-gray-50 dark:hover:bg-dark-surface-secondary">
-                    <td className="px-6 py-4 font-semibold text-gray-900 dark:text-dark-text-primary">{course.name}</td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-dark-text-secondary">{course.code}</td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-dark-text-secondary">{course.level || '-'}</td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-dark-text-secondary">{course.category || '-'}</td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-dark-text-secondary">{course.duration_months} months</td>
+                    <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{course.name}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{course.code}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{course.level || '-'}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{course.category || '-'}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{course.duration_months} months</td>
                     <td className="px-6 py-4 flex gap-2">
                       <button
                         onClick={() => {
@@ -138,7 +138,7 @@ export default function CourseManagementPage() {
                           setEditingId(course.id);
                           setShowModal(true);
                         }}
-                        className="p-2 text-gray-600 dark:text-dark-text-secondary hover:bg-gray-200 dark:hover:bg-dark-surface-primary rounded"
+                        className="p-2 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-dark-surface-primary rounded"
                       >
                         <Edit2 size={18} />
                       </button>
@@ -161,8 +161,8 @@ export default function CourseManagementPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-dark-surface-primary rounded-lg w-full max-w-md border border-gray-200 dark:border-dark-border-primary">
             <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-dark-border-primary">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary">{editingId ? 'Edit Course' : 'Create Course'}</h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-500 dark:text-dark-text-secondary hover:text-gray-700 dark:hover:text-dark-text-primary">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editingId ? 'Edit Course' : 'Create Course'}</h2>
+              <button onClick={() => setShowModal(false)} className="text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white">
                 <X size={24} />
               </button>
             </div>

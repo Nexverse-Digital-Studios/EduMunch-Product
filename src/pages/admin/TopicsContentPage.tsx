@@ -131,7 +131,7 @@ export default function TopicsContentPage() {
         >
           <FileText className="text-indigo-600 dark:text-indigo-400" size={18} />
           <div className="flex-1">
-            <p className="font-medium text-gray-900 dark:text-dark-text-primary">{topic.topic_name}</p>
+            <p className="font-medium text-gray-900 dark:text-white">{topic.topic_name}</p>
             {topic.topic_number && (
               <p className="text-xs text-gray-500 dark:text-gray-400">#{topic.topic_number}</p>
             )}
@@ -179,7 +179,7 @@ export default function TopicsContentPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Topics & Content</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Topics & Content</h1>
         <button
           onClick={() => {
             setSelectedTopic(null);
@@ -194,8 +194,8 @@ export default function TopicsContentPage() {
       </div>
 
       {/* Subject Selector */}
-      <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6">
-        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-3">
+      <div className="bg-white dark:bg-[#1E293B] rounded-lg shadow p-6">
+        <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-3">
           Select Subject
         </label>
         <select
@@ -217,7 +217,7 @@ export default function TopicsContentPage() {
       {/* Topics Hierarchy */}
       {selectedSubject && (
         <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-4">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
             Topic Hierarchy
           </h2>
 
@@ -239,7 +239,7 @@ export default function TopicsContentPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-lg p-6 w-96 border border-gray-200 dark:border-dark-border-primary">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
               {modalType === "topic"
                 ? selectedTopic
                   ? "Add Subtopic"
@@ -251,7 +251,7 @@ export default function TopicsContentPage() {
               {modalType === "topic" ? (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                       Topic Name *
                     </label>
                     <input
@@ -263,13 +263,13 @@ export default function TopicsContentPage() {
                           topic_name: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                       placeholder="e.g., Algebra"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                       Topic Number
                     </label>
                     <input
@@ -281,13 +281,13 @@ export default function TopicsContentPage() {
                           topic_number: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                       placeholder="e.g., 1.1"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                       Description
                     </label>
                     <textarea
@@ -299,7 +299,7 @@ export default function TopicsContentPage() {
                         })
                       }
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                       placeholder="Optional description"
                     />
                   </div>
@@ -313,7 +313,7 @@ export default function TopicsContentPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                       Content Title *
                     </label>
                     <input
@@ -325,13 +325,13 @@ export default function TopicsContentPage() {
                           content_title: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                       placeholder="e.g., Chapter 1 Lecture"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                       Content Type
                     </label>
                     <select
@@ -342,7 +342,7 @@ export default function TopicsContentPage() {
                           content_type: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                     >
                       <option value="PDF">PDF</option>
                       <option value="VIDEO">Video</option>
@@ -357,7 +357,7 @@ export default function TopicsContentPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-primary"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#1E293B]"
               >
                 Cancel
               </button>

@@ -51,7 +51,7 @@ export const TeacherDashboard: React.FC = () => {
         ))}
       </div>
 
-      <div className="bg-white dark:bg-dark-surface-primary rounded-2xl border border-gray-200 dark:border-dark-border-primary p-6 shadow-sm">
+      <div className="bg-white dark:bg-dark-surface-primary rounded-2xl border border-gray-200 dark:border-dark-border-primary p-6 shadow-sm dark:shadow-none">
         <h2 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-4">Today's Schedule</h2>
         <p className="text-gray-500 dark:text-dark-text-secondary">No classes scheduled for today</p>
       </div>

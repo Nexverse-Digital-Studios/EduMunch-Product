@@ -159,7 +159,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 h-screen bg-white dark:bg-dark-bg-secondary border-r border-gray-200 dark:border-dark-border-primary z-40 md:z-10 transition-all duration-300 flex flex-col',
+          'fixed left-0 top-0 h-screen bg-white dark:bg-dark-surface-primary border-r border-gray-200 dark:border-dark-border-primary z-40 md:z-10 transition-all duration-300 flex flex-col',
           isExpanded ? 'w-64' : 'w-20',
           !isMobileOpen && '-translate-x-full md:translate-x-0'
         )}
@@ -214,7 +214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {navItems.map((section: any) => (
               <div key={section.section}>
                 {isExpanded && (
-                  <h3 className="px-3 mb-2 text-xs font-semibold text-gray-400 dark:text-dark-text-tertiary uppercase tracking-wider">
+                  <h3 className="px-3 mb-2 text-xs font-semibold text-gray-400 dark:text-dark-text-secondary uppercase tracking-wider">
                     {section.section}
                   </h3>
                 )}

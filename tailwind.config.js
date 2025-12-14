@@ -8,27 +8,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Dark theme colors (VS Code / GitHub Dark)
+        // Dark theme colors (VRaZ inspired)
         dark: {
           bg: {
-            primary: '#1e1e1e',
-            secondary: '#252526',
-            tertiary: '#2d2d30',
-            elevated: '#3e3e42',
+            primary: '#0F172A',     // Deep navy blue
+            secondary: '#1E293B',   // Slightly lighter navy
+            tertiary: '#334155',    // Medium slate
+            elevated: '#475569',    // Lighter slate
           },
           surface: {
-            primary: '#2d2d30',
-            secondary: '#3e3e42',
-            tertiary: '#404040',
+            primary: '#1E293B',     // Card backgrounds
+            secondary: '#334155',   // Secondary surfaces
+            tertiary: '#475569',    // Tertiary surfaces
           },
           border: {
-            primary: '#454545',
-            secondary: '#3e3e42',
+            primary: '#334155',     // Primary borders
+            secondary: '#475569',   // Secondary borders
           },
           text: {
-            primary: '#cccccc',
-            secondary: '#969696',
-            tertiary: '#6a6a6a',
+            primary: '#F1F5F9',     // Almost white
+            secondary: '#94A3B8',   // Light slate
+            tertiary: '#64748B',    // Medium slate
           },
         },
         // Primary brand color (blue/indigo from reference)

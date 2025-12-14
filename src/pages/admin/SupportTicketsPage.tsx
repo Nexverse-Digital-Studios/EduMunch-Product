@@ -86,7 +86,7 @@ export default function SupportTicketsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Support Tickets</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Support Tickets</h1>
         <button
           onClick={() => setShowModal(true)}
           className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 flex items-center gap-2"
@@ -147,7 +147,7 @@ export default function SupportTicketsPage() {
               className={`px-4 py-2 font-medium border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === tab
                   ? "border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400"
-                  : "border-transparent text-gray-600 hover:text-gray-900 dark:text-dark-text-primary"
+                  : "border-transparent text-gray-600 hover:text-gray-900 dark:text-white"
               }`}
             >
               {config.label}
@@ -164,7 +164,7 @@ export default function SupportTicketsPage() {
           placeholder="Search tickets..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         />
       </div>
 
@@ -187,7 +187,7 @@ export default function SupportTicketsPage() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-bold text-gray-900 dark:text-dark-text-primary">{ticket.title}</h3>
+                    <h3 className="font-bold text-gray-900 dark:text-white">{ticket.title}</h3>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       ticket.status === "OPEN"
                         ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300"
@@ -198,7 +198,7 @@ export default function SupportTicketsPage() {
                       {ticket.status}
                     </span>
                   </div>
-                  <p className="text-gray-600 dark:text-dark-text-secondary text-sm mb-2">
+                  <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">
                     {ticket.description}
                   </p>
                   <div className="flex gap-4 text-xs text-gray-500 dark:text-gray-400">
@@ -222,11 +222,11 @@ export default function SupportTicketsPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-lg p-6 w-96 border border-gray-200 dark:border-dark-border-primary">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">Create New Ticket</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Create New Ticket</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                   Title *
                 </label>
                 <input
@@ -235,13 +235,13 @@ export default function SupportTicketsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                   placeholder="Brief title of the issue"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                   Description *
                 </label>
                 <textarea
@@ -250,13 +250,13 @@ export default function SupportTicketsPage() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                   placeholder="Detailed description"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                   Issue Type
                 </label>
                 <select
@@ -264,7 +264,7 @@ export default function SupportTicketsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, ticket_type: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="OTHER">Other</option>
                   <option value="ATTENDANCE">Attendance Issue</option>
@@ -276,7 +276,7 @@ export default function SupportTicketsPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-primary"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#1E293B]"
               >
                 Cancel
               </button>

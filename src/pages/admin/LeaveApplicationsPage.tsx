@@ -138,7 +138,7 @@ export function LeaveApplicationsPage() {
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Leave Applications</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Leave Applications</h1>
           <button
             onClick={() => setShowForm(!showForm)}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
@@ -150,25 +150,25 @@ export function LeaveApplicationsPage() {
         {/* Form Modal */}
         {showForm && (
           <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-lg p-6 mb-6 border border-indigo-200 dark:border-indigo-500">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">Create Leave Application</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Create Leave Application</h2>
             <form onSubmit={handleCreateLeave} className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Employee</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Employee</label>
                 <input
                   type="text"
                   placeholder="Employee ID"
                   value={formData.employee_id}
                   onChange={(e) => setFormData({ ...formData, employee_id: e.target.value })}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Leave Type</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Leave Type</label>
                 <select
                   value={formData.leave_type}
                   onChange={(e) => setFormData({ ...formData, leave_type: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                 >
                   {leaveTypes.map(type => (
                     <option key={type} value={type}>{type}</option>
@@ -176,32 +176,32 @@ export function LeaveApplicationsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">From Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">From Date</label>
                 <input
                   type="date"
                   value={formData.start_date}
                   onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">To Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">To Date</label>
                 <input
                   type="date"
                   value={formData.end_date}
                   onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                 />
               </div>
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Reason</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Reason</label>
                 <textarea
                   value={formData.reason}
                   onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                   rows={2}
                 />
               </div>
@@ -212,7 +212,7 @@ export function LeaveApplicationsPage() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 bg-gray-300 dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary rounded-lg hover:bg-gray-400 dark:hover:bg-dark-surface-primary"
+                  className="px-4 py-2 bg-gray-300 dark:bg-dark-surface-secondary text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-dark-surface-primary"
                 >
                   Cancel
                 </button>
@@ -225,13 +225,13 @@ export function LeaveApplicationsPage() {
         <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-4 mb-6 flex gap-4 flex-wrap border border-gray-200 dark:border-dark-border-primary">
           <div className="flex-1 min-w-250px">
             <div className="relative">
-              <Search className="absolute left-3 top-3 text-gray-400 dark:text-dark-text-secondary" size={20} />
+              <Search className="absolute left-3 top-3 text-gray-400 dark:text-slate-400" size={20} />
               <input
                 type="text"
                 placeholder="Search by name, ID or reason..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
               />
             </div>
           </div>
@@ -239,7 +239,7 @@ export function LeaveApplicationsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+            className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
           >
             <option value="">All Status</option>
             <option value="PENDING">Pending</option>
@@ -250,7 +250,7 @@ export function LeaveApplicationsPage() {
           <select
             value={leaveTypeFilter}
             onChange={(e) => setLeaveTypeFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+            className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
           >
             <option value="">All Types</option>
             {leaveTypes.map(type => (
@@ -263,7 +263,7 @@ export function LeaveApplicationsPage() {
             value={dateRange.from}
             onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
             placeholder="From Date"
-            className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+            className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
           />
 
           <input
@@ -271,7 +271,7 @@ export function LeaveApplicationsPage() {
             value={dateRange.to}
             onChange={(e) => setDateRange({ ...dateRange, to: e.target.value })}
             placeholder="To Date"
-            className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+            className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
           />
         </div>
 
@@ -291,12 +291,12 @@ export function LeaveApplicationsPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-gray-900 dark:text-dark-text-primary">
+                        <h3 className="font-semibold text-gray-900 dark:text-white">
                           {leave.employee_name || 'Employee'} - {leave.leave_type}
                         </h3>
                         {getStatusBadge(leave.status)}
                       </div>
-                      <div className="grid grid-cols-4 gap-4 text-sm text-gray-700 dark:text-dark-text-secondary">
+                      <div className="grid grid-cols-4 gap-4 text-sm text-gray-700 dark:text-slate-400">
                         <div>
                           <span className="font-medium">From:</span> {new Date(leave.start_date).toLocaleDateString()}
                         </div>
@@ -310,7 +310,7 @@ export function LeaveApplicationsPage() {
                           <span className="font-medium">Deducted As:</span> {leave.deducted_as || '-'}
                         </div>
                       </div>
-                      <div className="mt-2 text-sm text-gray-700 dark:text-dark-text-secondary">
+                      <div className="mt-2 text-sm text-gray-700 dark:text-slate-400">
                         <span className="font-medium">Reason:</span> {leave.reason}
                       </div>
                     </div>

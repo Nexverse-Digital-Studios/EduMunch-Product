@@ -33,17 +33,17 @@ export default function LoginPage() {
   const displayError = localError || error;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 dark:from-dark-bg-primary dark:via-dark-bg-secondary dark:to-dark-bg-primary p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 dark:from-dark-bg-primary dark:via-gray-900 dark:to-dark-bg-primary p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white dark:text-dark-text-primary mb-2">EduMunch</h1>
-          <p className="text-gray-400 dark:text-dark-text-secondary">School Management System</p>
+          <h1 className="text-3xl font-bold text-white dark:text-white mb-2">EduMunch</h1>
+          <p className="text-gray-400 dark:text-slate-400">School Management System</p>
         </div>
 
         {/* Login Card */}
         <div className="rounded-lg border border-indigo-500 p-8 bg-gray-800 dark:bg-dark-surface-primary">
-          <h2 className="text-2xl font-bold text-white dark:text-dark-text-primary mb-6">Welcome Back</h2>
+          <h2 className="text-2xl font-bold text-white dark:text-white mb-6">Welcome Back</h2>
 
           {displayError && (
             <div className="mb-4 p-4 rounded-lg bg-red-500/10 border border-red-500/50">
@@ -54,7 +54,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 dark:text-dark-text-primary mb-2">
+              <label className="block text-sm font-medium text-gray-300 dark:text-white mb-2">
                 Email Address
               </label>
               <input
@@ -69,7 +69,7 @@ export default function LoginPage() {
 
             {/* Password Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 dark:text-dark-text-primary mb-2">
+              <label className="block text-sm font-medium text-gray-300 dark:text-white mb-2">
                 Password
               </label>
               <input
@@ -84,7 +84,7 @@ export default function LoginPage() {
 
             {/* Remember & Forgot */}
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center text-gray-400 dark:text-dark-text-secondary cursor-pointer">
+              <label className="flex items-center text-gray-400 dark:text-slate-400 cursor-pointer">
                 <input
                   type="checkbox"
                   className="mr-2 rounded bg-gray-700 dark:bg-dark-surface-secondary border-gray-600 dark:border-dark-border-primary text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-800 dark:focus:ring-offset-dark-surface-primary disabled:opacity-50"
@@ -112,13 +112,13 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div className="my-6 flex items-center">
-            <div className="flex-1 h-px bg-gray-600 dark:bg-dark-border-primary"></div>
-            <span className="px-3 text-sm text-gray-400 dark:text-dark-text-secondary">OR</span>
-            <div className="flex-1 h-px bg-gray-600 dark:bg-dark-border-primary"></div>
+            <div className="flex-1 h-px bg-gray-600 dark:bg-dark-surface-secondary"></div>
+            <span className="px-3 text-sm text-gray-400 dark:text-slate-400">OR</span>
+            <div className="flex-1 h-px bg-gray-600 dark:bg-dark-surface-secondary"></div>
           </div>
 
           {/* Sign Up Link */}
-          <p className="text-center text-gray-400 dark:text-dark-text-secondary">
+          <p className="text-center text-gray-400 dark:text-slate-400">
             Don't have an account?{' '}
             <Link
               to="/register"

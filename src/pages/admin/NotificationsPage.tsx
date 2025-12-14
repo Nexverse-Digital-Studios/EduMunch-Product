@@ -124,7 +124,7 @@ export function NotificationsPage() {
 
   const MultiSelectCheckbox = ({ category, label, items }: any) => (
     <div className="bg-gray-50 dark:bg-dark-surface-secondary p-4 rounded-lg border border-gray-200 dark:border-dark-border-primary">
-      <h4 className="font-medium text-gray-900 dark:text-dark-text-primary mb-3">{label}</h4>
+      <h4 className="font-medium text-gray-900 dark:text-white mb-3">{label}</h4>
       <div className="grid grid-cols-2 gap-3">
         {items.map((item: string) => {
           const key = `target${category}` as keyof typeof formData;
@@ -137,7 +137,7 @@ export function NotificationsPage() {
                 onChange={() => toggleTarget(category, item)}
                 className="w-4 h-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-dark-border-primary rounded bg-white dark:bg-dark-surface-primary"
               />
-              <span className="text-sm text-gray-700 dark:text-dark-text-secondary">{item}</span>
+              <span className="text-sm text-gray-700 dark:text-slate-400">{item}</span>
             </label>
           );
         })}
@@ -149,7 +149,7 @@ export function NotificationsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">Send Notifications</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Send Notifications</h1>
 
         {/* Tabs */}
         <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow mb-6 border-b border-gray-200 dark:border-dark-border-primary">
@@ -190,44 +190,44 @@ export function NotificationsPage() {
               {/* Title & Message */}
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Title</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Title</label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="Notification title"
                     required
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Message</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Message</label>
                   <textarea
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder="Notification message"
                     required
                     rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Link (Optional)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-2">Link (Optional)</label>
                   <input
                     type="url"
                     value={formData.link}
                     onChange={(e) => setFormData({ ...formData, link: e.target.value })}
                     placeholder="https://example.com"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
                 </div>
               </div>
 
               {/* Target Audience */}
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-4">Target Audience</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Target Audience</h3>
                 <div className="space-y-4">
                   <MultiSelectCheckbox category="Roles" label="Roles" items={availableRoles} />
                   <MultiSelectCheckbox category="Branches" label="Branches" items={availableBranches} />
@@ -251,17 +251,17 @@ export function NotificationsPage() {
         {activeTab === 'history' && (
           <div className="space-y-4">
             {loading ? (
-              <div className="text-center py-12 text-gray-900 dark:text-dark-text-primary">Loading notifications...</div>
+              <div className="text-center py-12 text-gray-900 dark:text-white">Loading notifications...</div>
             ) : notifications.length > 0 ? (
               notifications.map(notification => (
                 <div key={notification.id} className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6 border border-gray-200 dark:border-dark-border-primary">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary">{notification.title}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{notification.title}</h3>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
                       {new Date(notification.created_at).toLocaleString()}
                     </span>
                   </div>
-                  <p className="text-gray-700 dark:text-dark-text-secondary mb-2">{notification.message}</p>
+                  <p className="text-gray-700 dark:text-slate-400 mb-2">{notification.message}</p>
                   {notification.link && (
                     <a href={notification.link} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm">
                       {notification.link}

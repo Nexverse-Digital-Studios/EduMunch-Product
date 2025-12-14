@@ -174,8 +174,8 @@ export default function AdmissionsPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Admissions Management</h1>
-          <p className="text-gray-600 dark:text-dark-text-secondary mt-1">Manage student admissions and applications</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admissions Management</h1>
+          <p className="text-gray-600 dark:text-slate-400 mt-1">Manage student admissions and applications</p>
         </div>
         <button
           onClick={() => {
@@ -199,13 +199,13 @@ export default function AdmissionsPage() {
       {/* Search */}
       <div className="mb-6">
         <div className="relative">
-          <Search className="absolute left-4 top-3.5 text-gray-400 dark:text-dark-text-secondary" size={20} />
+          <Search className="absolute left-4 top-3.5 text-gray-400 dark:text-slate-400" size={20} />
           <input
             type="text"
             placeholder="Search by name, email, admission ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary placeholder-gray-500 dark:placeholder-dark-text-tertiary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
+            className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-dark-text-tertiary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
           />
         </div>
       </div>
@@ -213,7 +213,7 @@ export default function AdmissionsPage() {
       {/* Loading State */}
       {loading && (
         <div className="flex justify-center items-center py-12">
-          <Loader size={32} className="animate-spin text-gray-400 dark:text-dark-text-secondary" />
+          <Loader size={32} className="animate-spin text-gray-400 dark:text-slate-400" />
         </div>
       )}
 
@@ -223,30 +223,30 @@ export default function AdmissionsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 dark:border-dark-border-primary bg-gray-50 dark:bg-dark-surface-secondary">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Student Name</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Email</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Admission ID</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Date</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-dark-text-primary">Actions</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Student Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Email</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Admission ID</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Date</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Status</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-white">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredAdmissions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-dark-text-secondary">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-slate-400">
                     No admissions found
                   </td>
                 </tr>
               ) : (
                 filteredAdmissions.map((admission) => (
                   <tr key={admission.id} className="border-b border-gray-200 dark:border-dark-border-primary hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition-colors">
-                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-dark-text-primary">
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
                       {admission.first_name} {admission.last_name}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">{admission.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-dark-text-primary">{admission.admission_id}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">{admission.email}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{admission.admission_id}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-slate-400">
                       {new Date(admission.admission_date!).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
@@ -257,7 +257,7 @@ export default function AdmissionsPage() {
                     <td className="px-6 py-4 flex gap-2">
                       <button
                         onClick={() => handleEditAdmission(admission)}
-                        className="p-2 text-gray-600 dark:text-dark-text-secondary hover:bg-gray-200 dark:hover:bg-dark-surface-tertiary rounded transition-colors"
+                        className="p-2 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-dark-surface-secondary rounded transition-colors"
                         disabled={deleting === admission.id}
                       >
                         <Edit2 size={18} />
@@ -284,7 +284,7 @@ export default function AdmissionsPage() {
           <div className="bg-white dark:bg-dark-surface-primary rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-dark-border-primary">
             {/* Modal Header */}
             <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-dark-border-primary sticky top-0 bg-white dark:bg-dark-surface-primary">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {editingId ? 'Edit Admission' : 'New Admission'}
               </h2>
               <button onClick={() => setShowNewAdmission(false)} className="text-gray-500 dark:text-dark-text-secondary hover:text-gray-700 dark:hover:text-dark-text-primary">
@@ -324,7 +324,7 @@ export default function AdmissionsPage() {
 
               {/* Student Info */}
               <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary dark:text-dark-text-primary mb-4">Student Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Student Information</h3>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <input
                     type="text"
@@ -394,7 +394,7 @@ export default function AdmissionsPage() {
 
               {/* Academic Info */}
               <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary dark:text-dark-text-primary mb-4">Academic Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Academic Information</h3>
                 <div className="grid grid-cols-3 gap-4 mb-4">
                   <input
                     type="text"
@@ -422,7 +422,7 @@ export default function AdmissionsPage() {
 
               {/* Address Info */}
               <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary dark:text-dark-text-primary mb-4">Address Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Address Information</h3>
                 <textarea
                   placeholder="Address"
                   value={formData.address}
@@ -457,7 +457,7 @@ export default function AdmissionsPage() {
 
               {/* Parent Info */}
               <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary dark:text-dark-text-primary mb-4">Parent & Emergency Contact</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Parent & Emergency Contact</h3>
                 <div className="grid grid-cols-3 gap-4 mb-4">
                   <input
                     type="text"
@@ -501,7 +501,7 @@ export default function AdmissionsPage() {
 
               {/* Status & Notes */}
               <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary dark:text-dark-text-primary mb-4">Status & Notes</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Status & Notes</h3>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <select
                     value={formData.status}

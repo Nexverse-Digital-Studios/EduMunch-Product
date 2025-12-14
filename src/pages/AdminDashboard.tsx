@@ -30,40 +30,40 @@ interface DashboardCardProps {
 
 const colorStyles: Record<CardColor, { bg: string; text: string; icon: string; border?: string }> = {
   blue: {
-    bg: 'bg-blue-50 dark:bg-blue-900/20',
-    text: 'text-blue-700 dark:text-blue-400',
-    icon: 'bg-blue-100 dark:bg-blue-800/40 text-blue-600 dark:text-blue-400',
+    bg: 'bg-blue-50 dark:bg-blue-950/50',
+    text: 'text-blue-700 dark:text-blue-300',
+    icon: 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400',
   },
   green: {
-    bg: 'bg-emerald-50 dark:bg-emerald-900/20',
-    text: 'text-emerald-700 dark:text-emerald-400',
-    icon: 'bg-emerald-100 dark:bg-emerald-800/40 text-emerald-600 dark:text-emerald-400',
+    bg: 'bg-emerald-50 dark:bg-emerald-950/50',
+    text: 'text-emerald-700 dark:text-emerald-300',
+    icon: 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400',
   },
   purple: {
-    bg: 'bg-violet-50 dark:bg-violet-900/20',
-    text: 'text-violet-700 dark:text-violet-400',
-    icon: 'bg-violet-100 dark:bg-violet-800/40 text-violet-600 dark:text-violet-400',
+    bg: 'bg-violet-50 dark:bg-violet-950/50',
+    text: 'text-violet-700 dark:text-violet-300',
+    icon: 'bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400',
   },
   orange: {
-    bg: 'bg-orange-50 dark:bg-orange-900/20',
-    text: 'text-orange-700 dark:text-orange-400',
-    icon: 'bg-orange-100 dark:bg-orange-800/40 text-orange-600 dark:text-orange-400',
-    border: 'border-2 border-orange-300 dark:border-orange-700',
+    bg: 'bg-orange-50 dark:bg-orange-950/50',
+    text: 'text-orange-700 dark:text-orange-300',
+    icon: 'bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400',
+    border: 'border-2 border-orange-300 dark:border-orange-700/50',
   },
   red: {
-    bg: 'bg-red-50 dark:bg-red-900/20',
-    text: 'text-red-700 dark:text-red-400',
-    icon: 'bg-red-100 dark:bg-red-800/40 text-red-600 dark:text-red-400',
+    bg: 'bg-red-50 dark:bg-red-950/50',
+    text: 'text-red-700 dark:text-red-300',
+    icon: 'bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400',
   },
   yellow: {
-    bg: 'bg-amber-50 dark:bg-amber-900/20',
-    text: 'text-amber-700 dark:text-amber-400',
-    icon: 'bg-amber-100 dark:bg-amber-800/40 text-amber-600 dark:text-amber-400',
+    bg: 'bg-amber-50 dark:bg-amber-950/50',
+    text: 'text-amber-700 dark:text-amber-300',
+    icon: 'bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400',
   },
   teal: {
-    bg: 'bg-teal-50 dark:bg-teal-900/20',
-    text: 'text-teal-700 dark:text-teal-400',
-    icon: 'bg-teal-100 dark:bg-teal-800/40 text-teal-600 dark:text-teal-400',
+    bg: 'bg-teal-50 dark:bg-teal-950/50',
+    text: 'text-teal-700 dark:text-teal-300',
+    icon: 'bg-teal-100 dark:bg-teal-900/50 text-teal-600 dark:text-teal-400',
   },
 };
 
@@ -73,15 +73,16 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ label, value, icon: Icon,
   return (
     <div
       className={cn(
-        'rounded-2xl p-5 transition-all duration-200 hover:shadow-md',
+        'rounded-2xl p-6 transition-all duration-200 hover:shadow-lg border dark:shadow-none',
         styles.bg,
-        highlighted && styles.border
+        highlighted && styles.border,
+        !highlighted && 'border-gray-100 dark:border-gray-800/50'
       )}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className={cn('text-sm font-medium mb-2', styles.text)}>{label}</p>
-          <p className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">{value}</p>
+          <p className={cn('text-sm font-medium mb-3', styles.text)}>{label}</p>
+          <p className="text-4xl font-bold text-gray-900 dark:text-dark-text-primary">{value}</p>
         </div>
         <div className={cn('w-11 h-11 rounded-xl flex items-center justify-center', styles.icon)}>
           <Icon className="w-5 h-5" />
@@ -278,7 +279,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Recent Activities Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
         {/* Recent Announcements */}
-        <div className="lg:col-span-2 bg-white dark:bg-dark-surface-primary rounded-2xl border border-gray-200 dark:border-dark-border-primary p-6 shadow-sm">
+        <div className="lg:col-span-2 bg-white dark:bg-dark-surface-primary rounded-2xl border border-gray-200 dark:border-dark-border-primary p-6 shadow-sm dark:shadow-none">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary">Recent Announcements</h2>
             <button className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium text-sm">
@@ -316,7 +317,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white dark:bg-dark-surface-primary rounded-2xl border border-gray-200 dark:border-dark-border-primary p-6 shadow-sm">
+        <div className="bg-white dark:bg-dark-surface-primary rounded-2xl border border-gray-200 dark:border-dark-border-primary p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-6">Quick Actions</h2>
           <div className="space-y-3">
             <button className="w-full px-4 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors font-medium text-sm shadow-sm">
@@ -325,10 +326,10 @@ export const AdminDashboard: React.FC = () => {
             <button className="w-full px-4 py-3 border-2 border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors font-medium text-sm">
               Create Batch
             </button>
-            <button className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border-primary text-gray-700 dark:text-dark-text-primary rounded-xl hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition-colors font-medium text-sm bg-white dark:bg-dark-surface-secondary">
+            <button className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border-primary text-gray-700 dark:text-dark-text-primary rounded-xl hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition-colors font-medium text-sm bg-white dark:bg-dark-surface-primary">
               Manage Users
             </button>
-            <button className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border-primary text-gray-700 dark:text-dark-text-primary rounded-xl hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition-colors font-medium text-sm bg-white dark:bg-dark-surface-secondary">
+            <button className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border-primary text-gray-700 dark:text-dark-text-primary rounded-xl hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition-colors font-medium text-sm bg-white dark:bg-dark-surface-primary">
               View Reports
             </button>
           </div>

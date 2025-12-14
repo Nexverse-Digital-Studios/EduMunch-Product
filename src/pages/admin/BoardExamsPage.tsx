@@ -193,7 +193,7 @@ export default function BoardExamsPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-overlay-light dark:bg-overlay-dark flex items-center justify-center z-50">
           <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-lg p-6 w-96 border border-gray-200 dark:border-dark-border-primary">
             <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">Create New Exam</h2>
 

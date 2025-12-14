@@ -124,21 +124,21 @@ export default function TimetablesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Weekly Timetables</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Weekly Timetables</h1>
         <button className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 flex items-center gap-2">
           <Plus size={20} /> Bulk Schedule
         </button>
       </div>
 
       {/* Batch Selector */}
-      <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6">
-        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-3">
+      <div className="bg-white dark:bg-[#1E293B] rounded-lg shadow p-6">
+        <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-3">
           Select Batch
         </label>
         <select
           value={selectedBatch}
           onChange={(e) => handleBatchSelect(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+          className="w-full px-4 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
         >
           <option value="">-- Select a batch --</option>
           {batches.map((batch) => (
@@ -151,7 +151,7 @@ export default function TimetablesPage() {
 
       {/* Timetable Grid */}
       {selectedBatch && (
-        <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-[#1E293B] rounded-lg shadow overflow-hidden">
           {loading ? (
             <div className="flex justify-center py-8">
               <div className="text-gray-500 dark:text-gray-400">Loading...</div>
@@ -160,14 +160,14 @@ export default function TimetablesPage() {
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-dark-surface-secondary border-b border-gray-200 dark:border-dark-border-primary">
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-dark-text-primary border-r border-gray-200 dark:border-dark-border-primary">
+                  <tr className="bg-gray-50 dark:bg-[#334155] border-b border-gray-200 dark:border-[#334155]">
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white border-r border-gray-200 dark:border-[#334155]">
                       Time
                     </th>
                     {DAYS.map((day) => (
                       <th
                         key={day}
-                        className="px-6 py-3 text-center text-sm font-semibold text-gray-900 dark:text-dark-text-primary border-r border-gray-200 dark:border-dark-border-primary min-w-[150px]"
+                        className="px-6 py-3 text-center text-sm font-semibold text-gray-900 dark:text-white border-r border-gray-200 dark:border-[#334155] min-w-[150px]"
                       >
                         {day.substring(0, 3)}
                       </th>
@@ -176,8 +176,8 @@ export default function TimetablesPage() {
                 </thead>
                 <tbody>
                   {TIME_SLOTS.map((time) => (
-                    <tr key={time} className="border-b border-gray-200 dark:border-dark-border-primary">
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-dark-text-primary bg-gray-50 dark:bg-dark-surface-secondary border-r border-gray-200 dark:border-dark-border-primary">
+                    <tr key={time} className="border-b border-gray-200 dark:border-[#334155]">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white bg-gray-50 dark:bg-[#334155] border-r border-gray-200 dark:border-[#334155]">
                         {time}
                       </td>
                       {DAYS.map((day) => {
@@ -185,7 +185,7 @@ export default function TimetablesPage() {
                         return (
                           <td
                             key={`${day}-${time}`}
-                            className="px-6 py-4 border-r border-gray-200 dark:border-dark-border-primary text-center"
+                            className="px-6 py-4 border-r border-gray-200 dark:border-[#334155] text-center"
                           >
                             {slot ? (
                               <div className="bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-300 dark:border-indigo-700 rounded p-2 relative group">
@@ -205,7 +205,7 @@ export default function TimetablesPage() {
                             ) : (
                               <button
                                 onClick={() => handleAddSlot(day, time)}
-                                className="w-full h-12 border-2 border-dashed border-gray-300 dark:border-dark-border-primary rounded text-gray-500 dark:text-gray-400 hover:border-indigo-500 dark:hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center justify-center"
+                                className="w-full h-12 border-2 border-dashed border-gray-300 dark:border-[#334155] rounded text-gray-500 dark:text-gray-400 hover:border-indigo-500 dark:hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center justify-center"
                               >
                                 <Plus size={18} />
                               </button>
@@ -225,17 +225,17 @@ export default function TimetablesPage() {
       {/* Slot Assignment Modal */}
       {showModal && selectedSlot && (
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-lg p-6 w-96 border border-gray-200 dark:border-dark-border-primary">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">
+          <div className="bg-white dark:bg-[#1E293B] rounded-lg shadow-lg p-6 w-96 border border-gray-200 dark:border-[#334155]">
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
               Assign Subject for {selectedSlot.day} at {selectedSlot.startTime}
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                   Subject
                 </label>
-                <select className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500">
+                <select className="w-full px-3 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500">
                   <option value="">-- Select subject --</option>
                   {subjects.map((subj) => (
                     <option key={subj.id} value={subj.id}>
@@ -246,12 +246,12 @@ export default function TimetablesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-400 mb-1">
                   Faculty
                 </label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                   placeholder="Select faculty member"
                 />
               </div>
@@ -263,7 +263,7 @@ export default function TimetablesPage() {
                   setShowModal(false);
                   setSelectedSlot(null);
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-primary"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-[#334155] rounded-lg bg-white dark:bg-[#334155] text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#1E293B]"
               >
                 Cancel
               </button>

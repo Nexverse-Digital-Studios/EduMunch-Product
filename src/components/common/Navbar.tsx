@@ -22,7 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav
       className={cn(
-        'fixed top-0 right-0 h-16 bg-white dark:bg-dark-bg-secondary border-b border-gray-200 dark:border-dark-border-primary z-20 transition-all duration-300 flex items-center justify-between px-6',
+        'fixed top-0 right-0 h-16 bg-white dark:bg-dark-surface-primary border-b border-gray-200 dark:border-dark-border-primary z-20 transition-all duration-300 flex items-center justify-between px-6',
         sidebarExpanded ? 'left-64' : 'left-20 md:left-20'
       )}
     >
@@ -33,7 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <input
             type="text"
             placeholder="Search..."
-            className="w-64 lg:w-80 pl-10 pr-4 py-2 text-sm bg-gray-50 dark:bg-dark-surface-primary border border-gray-200 dark:border-dark-border-secondary rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:text-dark-text-primary transition-all"
+            className="w-64 lg:w-80 pl-10 pr-4 py-2 text-sm bg-gray-50 dark:bg-dark-bg-primary border border-gray-200 dark:border-dark-border-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:text-dark-text-primary transition-all"
           />
         </div>
       </div>

@@ -173,7 +173,7 @@ export default function BatchManagementPage() {
     <div className="p-6 bg-white dark:bg-dark-surface-primary rounded-lg">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Batch Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Batch Management</h1>
         <button
           onClick={() => {
             resetForm();
@@ -200,7 +200,7 @@ export default function BatchManagementPage() {
           {/* Batch List Sidebar */}
           <div className="border border-gray-200 dark:border-dark-border-primary rounded-lg">
             <div className="p-4 border-b border-gray-200 dark:border-dark-border-primary">
-              <h3 className="font-semibold text-gray-900 dark:text-dark-text-primary">Batches</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Batches</h3>
             </div>
             <div className="max-h-[600px] overflow-y-auto">
               {batches.map((batch) => (
@@ -211,8 +211,8 @@ export default function BatchManagementPage() {
                     selectedBatch === batch.id ? 'bg-indigo-50 dark:bg-indigo-900/20 border-l-4 border-l-indigo-600 dark:border-l-indigo-500' : ''
                   }`}
                 >
-                  <div className="font-semibold text-gray-900 dark:text-dark-text-primary">{batch.name}</div>
-                  <div className="text-sm text-gray-600 dark:text-dark-text-secondary">{batch.code}</div>
+                  <div className="font-semibold text-gray-900 dark:text-white">{batch.name}</div>
+                  <div className="text-sm text-gray-600 dark:text-slate-400">{batch.code}</div>
                 </button>
               ))}
             </div>
@@ -231,7 +231,7 @@ export default function BatchManagementPage() {
                       className={`pb-3 px-2 font-semibold capitalize border-b-2 transition-colors ${
                         activeTab === tab
                           ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
-                          : 'border-transparent text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+                          : 'border-transparent text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
                       }`}
                     >
                       {tab === 'subjects' ? 'Manage Subjects' : tab === 'faculty' ? 'Manage Faculty' : 'Batch Details'}
@@ -244,21 +244,21 @@ export default function BatchManagementPage() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2">Batch Name</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">Batch Name</label>
                         <input
                           type="text"
                           value={currentBatch.name}
                           readOnly
-                          className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-gray-50 dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                          className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-gray-50 dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2">Batch Code</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">Batch Code</label>
                         <input
                           type="text"
                           value={currentBatch.code}
                           readOnly
-                          className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-gray-50 dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
+                          className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-gray-50 dark:bg-dark-surface-secondary text-gray-900 dark:text-white"
                         />
                       </div>
                     </div>
@@ -417,7 +417,7 @@ export default function BatchManagementPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-dark-surface-primary rounded-lg w-full max-w-md border border-gray-200 dark:border-dark-border-primary">
             <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-dark-border-primary">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 {editingId ? 'Edit Batch' : 'Create Batch'}
               </h2>
               <button onClick={() => setShowModal(false)} className="text-gray-500 dark:text-dark-text-secondary">
