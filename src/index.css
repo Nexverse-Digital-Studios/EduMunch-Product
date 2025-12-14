@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-gray-50 dark:bg-dark-bg-primary text-gray-900 dark:text-dark-text-primary transition-colors;
 }
 
 /* Custom scrollbar */
@@ -16,11 +16,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+  @apply bg-gray-100 dark:bg-dark-bg-secondary;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded hover:bg-gray-400;
+  @apply bg-gray-300 dark:bg-dark-surface-tertiary rounded hover:bg-gray-400 dark:hover:bg-dark-border-primary;
 }
 
 /* Badge styles */

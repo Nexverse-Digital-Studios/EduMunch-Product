@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,6 +8,29 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Dark theme colors (VS Code / GitHub Dark)
+        dark: {
+          bg: {
+            primary: '#1e1e1e',
+            secondary: '#252526',
+            tertiary: '#2d2d30',
+            elevated: '#3e3e42',
+          },
+          surface: {
+            primary: '#2d2d30',
+            secondary: '#3e3e42',
+            tertiary: '#404040',
+          },
+          border: {
+            primary: '#454545',
+            secondary: '#3e3e42',
+          },
+          text: {
+            primary: '#cccccc',
+            secondary: '#969696',
+            tertiary: '#6a6a6a',
+          },
+        },
         // Primary brand color (blue/indigo from reference)
         primary: {
           50: '#EEF2FF',

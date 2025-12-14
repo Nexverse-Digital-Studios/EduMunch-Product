@@ -30,40 +30,40 @@ interface DashboardCardProps {
 
 const colorStyles: Record<CardColor, { bg: string; text: string; icon: string; border?: string }> = {
   blue: {
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    icon: 'bg-blue-100 text-blue-600',
+    bg: 'bg-blue-50 dark:bg-blue-900/20',
+    text: 'text-blue-700 dark:text-blue-400',
+    icon: 'bg-blue-100 dark:bg-blue-800/40 text-blue-600 dark:text-blue-400',
   },
   green: {
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-700',
-    icon: 'bg-emerald-100 text-emerald-600',
+    bg: 'bg-emerald-50 dark:bg-emerald-900/20',
+    text: 'text-emerald-700 dark:text-emerald-400',
+    icon: 'bg-emerald-100 dark:bg-emerald-800/40 text-emerald-600 dark:text-emerald-400',
   },
   purple: {
-    bg: 'bg-violet-50',
-    text: 'text-violet-700',
-    icon: 'bg-violet-100 text-violet-600',
+    bg: 'bg-violet-50 dark:bg-violet-900/20',
+    text: 'text-violet-700 dark:text-violet-400',
+    icon: 'bg-violet-100 dark:bg-violet-800/40 text-violet-600 dark:text-violet-400',
   },
   orange: {
-    bg: 'bg-orange-50',
-    text: 'text-orange-700',
-    icon: 'bg-orange-100 text-orange-600',
-    border: 'border-2 border-orange-300',
+    bg: 'bg-orange-50 dark:bg-orange-900/20',
+    text: 'text-orange-700 dark:text-orange-400',
+    icon: 'bg-orange-100 dark:bg-orange-800/40 text-orange-600 dark:text-orange-400',
+    border: 'border-2 border-orange-300 dark:border-orange-700',
   },
   red: {
-    bg: 'bg-red-50',
-    text: 'text-red-700',
-    icon: 'bg-red-100 text-red-600',
+    bg: 'bg-red-50 dark:bg-red-900/20',
+    text: 'text-red-700 dark:text-red-400',
+    icon: 'bg-red-100 dark:bg-red-800/40 text-red-600 dark:text-red-400',
   },
   yellow: {
-    bg: 'bg-amber-50',
-    text: 'text-amber-700',
-    icon: 'bg-amber-100 text-amber-600',
+    bg: 'bg-amber-50 dark:bg-amber-900/20',
+    text: 'text-amber-700 dark:text-amber-400',
+    icon: 'bg-amber-100 dark:bg-amber-800/40 text-amber-600 dark:text-amber-400',
   },
   teal: {
-    bg: 'bg-teal-50',
-    text: 'text-teal-700',
-    icon: 'bg-teal-100 text-teal-600',
+    bg: 'bg-teal-50 dark:bg-teal-900/20',
+    text: 'text-teal-700 dark:text-teal-400',
+    icon: 'bg-teal-100 dark:bg-teal-800/40 text-teal-600 dark:text-teal-400',
   },
 };
 
@@ -81,7 +81,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ label, value, icon: Icon,
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className={cn('text-sm font-medium mb-2', styles.text)}>{label}</p>
-          <p className="text-3xl font-bold text-gray-900">{value}</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">{value}</p>
         </div>
         <div className={cn('w-11 h-11 rounded-xl flex items-center justify-center', styles.icon)}>
           <Icon className="w-5 h-5" />
@@ -109,27 +109,27 @@ export const AdminDashboard: React.FC = () => {
       {/* Welcome Section */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome back, Super Admin!</h1>
-          <p className="text-sm text-gray-500 mt-1">Here's a quick overview of your portal.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary">Welcome back, Super Admin!</h1>
+          <p className="text-sm text-gray-500 dark:text-dark-text-secondary mt-1">Here's a quick overview of your portal.</p>
         </div>
         
         {/* Viewing Stats For Dropdown */}
         <div className="relative">
           <div className="text-right mb-2">
-            <span className="text-sm text-gray-500">Viewing Stats For</span>
+            <span className="text-sm text-gray-500 dark:text-dark-text-secondary">Viewing Stats For</span>
           </div>
           <button 
             onClick={() => setShowBranchMenu(!showBranchMenu)}
-            className="flex items-center gap-2 px-4 py-2 text-sm bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors min-w-[220px]"
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-white dark:bg-dark-surface-primary border border-gray-200 dark:border-dark-border-primary rounded-xl hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition-colors min-w-[220px]"
           >
-            <span className="font-medium text-gray-700">{currentBranch.name}</span>
-            <svg className="w-4 h-4 ml-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="font-medium text-gray-700 dark:text-dark-text-primary">{currentBranch.name}</span>
+            <svg className="w-4 h-4 ml-auto text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           
           {showBranchMenu && (
-            <div className="absolute right-0 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-50">
+            <div className="absolute right-0 top-full mt-1 w-full bg-white dark:bg-dark-surface-primary border border-gray-200 dark:border-dark-border-primary rounded-xl shadow-lg py-1 z-50">
               {branches.map(branch => (
                 <button
                   key={branch.id}
@@ -140,8 +140,8 @@ export const AdminDashboard: React.FC = () => {
                   className={cn(
                     'w-full text-left px-4 py-2 text-sm transition-colors',
                     branch.id === selectedBranch
-                      ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
+                      : 'text-gray-700 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-secondary'
                   )}
                 >
                   {branch.name}
@@ -278,10 +278,10 @@ export const AdminDashboard: React.FC = () => {
       {/* Recent Activities Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
         {/* Recent Announcements */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <div className="lg:col-span-2 bg-white dark:bg-dark-surface-primary rounded-2xl border border-gray-200 dark:border-dark-border-primary p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-gray-900">Recent Announcements</h2>
-            <button className="text-indigo-600 hover:text-indigo-700 font-medium text-sm">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary">Recent Announcements</h2>
+            <button className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium text-sm">
               View All
             </button>
           </div>
@@ -292,22 +292,20 @@ export const AdminDashboard: React.FC = () => {
                 title: 'Batch Transfer',
                 date: 'December 10, 2025',
                 tag: 'System Trigger',
-                tagColor: 'bg-blue-100 text-blue-700',
               },
               {
                 title: 'Test',
                 date: 'December 10, 2025',
                 tag: 'Manual',
-                tagColor: 'bg-gray-100 text-gray-700',
               },
             ].map((announcement, index) => (
               <div
                 key={index}
-                className="flex items-start justify-between p-4 hover:bg-gray-50 rounded-xl transition-colors border border-gray-100"
+                className="flex items-start justify-between p-4 hover:bg-gray-50 dark:hover:bg-dark-surface-secondary rounded-xl transition-colors border border-gray-100 dark:border-dark-border-primary"
               >
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900">{announcement.title}</p>
-                  <p className="text-sm text-gray-500 mt-1">{announcement.date}</p>
+                  <p className="font-medium text-gray-900 dark:text-dark-text-primary">{announcement.title}</p>
+                  <p className="text-sm text-gray-500 dark:text-dark-text-secondary mt-1">{announcement.date}</p>
                 </div>
                 <span className={cn('px-3 py-1 text-xs font-semibold rounded-full', announcement.tagColor)}>
                   {announcement.tag}
@@ -318,19 +316,19 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-gray-900 mb-6">Quick Actions</h2>
+        <div className="bg-white dark:bg-dark-surface-primary rounded-2xl border border-gray-200 dark:border-dark-border-primary p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-6">Quick Actions</h2>
           <div className="space-y-3">
-            <button className="w-full px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium text-sm shadow-sm">
+            <button className="w-full px-4 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors font-medium text-sm shadow-sm">
               Add New Student
             </button>
-            <button className="w-full px-4 py-3 border-2 border-indigo-600 text-indigo-600 rounded-xl hover:bg-indigo-50 transition-colors font-medium text-sm">
+            <button className="w-full px-4 py-3 border-2 border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors font-medium text-sm">
               Create Batch
             </button>
-            <button className="w-full px-4 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium text-sm">
+            <button className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border-primary text-gray-700 dark:text-dark-text-primary rounded-xl hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition-colors font-medium text-sm bg-white dark:bg-dark-surface-secondary">
               Manage Users
             </button>
-            <button className="w-full px-4 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium text-sm">
+            <button className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border-primary text-gray-700 dark:text-dark-text-primary rounded-xl hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition-colors font-medium text-sm bg-white dark:bg-dark-surface-secondary">
               View Reports
             </button>
           </div>

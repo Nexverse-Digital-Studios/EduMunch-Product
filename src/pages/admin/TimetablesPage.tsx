@@ -124,21 +124,21 @@ export default function TimetablesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Weekly Timetables</h1>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Weekly Timetables</h1>
+        <button className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 flex items-center gap-2">
           <Plus size={20} /> Bulk Schedule
         </button>
       </div>
 
       {/* Batch Selector */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+      <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6">
+        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-3">
           Select Batch
         </label>
         <select
           value={selectedBatch}
           onChange={(e) => handleBatchSelect(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
         >
           <option value="">-- Select a batch --</option>
           {batches.map((batch) => (
@@ -151,23 +151,23 @@ export default function TimetablesPage() {
 
       {/* Timetable Grid */}
       {selectedBatch && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow overflow-hidden">
           {loading ? (
             <div className="flex justify-center py-8">
-              <div className="text-gray-500">Loading...</div>
+              <div className="text-gray-500 dark:text-gray-400">Loading...</div>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-r border-gray-200">
+                  <tr className="bg-gray-50 dark:bg-dark-surface-secondary border-b border-gray-200 dark:border-dark-border-primary">
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-dark-text-primary border-r border-gray-200 dark:border-dark-border-primary">
                       Time
                     </th>
                     {DAYS.map((day) => (
                       <th
                         key={day}
-                        className="px-6 py-3 text-center text-sm font-semibold text-gray-900 border-r border-gray-200 min-w-[150px]"
+                        className="px-6 py-3 text-center text-sm font-semibold text-gray-900 dark:text-dark-text-primary border-r border-gray-200 dark:border-dark-border-primary min-w-[150px]"
                       >
                         {day.substring(0, 3)}
                       </th>
@@ -176,8 +176,8 @@ export default function TimetablesPage() {
                 </thead>
                 <tbody>
                   {TIME_SLOTS.map((time) => (
-                    <tr key={time} className="border-b border-gray-200">
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50 border-r border-gray-200">
+                    <tr key={time} className="border-b border-gray-200 dark:border-dark-border-primary">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-dark-text-primary bg-gray-50 dark:bg-dark-surface-secondary border-r border-gray-200 dark:border-dark-border-primary">
                         {time}
                       </td>
                       {DAYS.map((day) => {
@@ -185,11 +185,11 @@ export default function TimetablesPage() {
                         return (
                           <td
                             key={`${day}-${time}`}
-                            className="px-6 py-4 border-r border-gray-200 text-center"
+                            className="px-6 py-4 border-r border-gray-200 dark:border-dark-border-primary text-center"
                           >
                             {slot ? (
-                              <div className="bg-blue-100 border border-blue-300 rounded p-2 relative group">
-                                <p className="text-xs font-semibold text-blue-900">
+                              <div className="bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-300 dark:border-indigo-700 rounded p-2 relative group">
+                                <p className="text-xs font-semibold text-indigo-900 dark:text-indigo-300">
                                   {subjects.find((s) => s.id === slot.subject_id)
                                     ?.name || "Unassigned"}
                                 </p>
@@ -197,7 +197,7 @@ export default function TimetablesPage() {
                                   onClick={() => {
                                     // Handle delete
                                   }}
-                                  className="absolute top-1 right-1 hidden group-hover:block text-red-600 hover:text-red-900"
+                                  className="absolute top-1 right-1 hidden group-hover:block text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                                 >
                                   <Trash2 size={14} />
                                 </button>
@@ -205,7 +205,7 @@ export default function TimetablesPage() {
                             ) : (
                               <button
                                 onClick={() => handleAddSlot(day, time)}
-                                className="w-full h-12 border-2 border-dashed border-gray-300 rounded text-gray-500 hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center"
+                                className="w-full h-12 border-2 border-dashed border-gray-300 dark:border-dark-border-primary rounded text-gray-500 dark:text-gray-400 hover:border-indigo-500 dark:hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center justify-center"
                               >
                                 <Plus size={18} />
                               </button>
@@ -224,18 +224,18 @@ export default function TimetablesPage() {
 
       {/* Slot Assignment Modal */}
       {showModal && selectedSlot && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-lg p-6 w-96 border border-gray-200 dark:border-dark-border-primary">
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">
               Assign Subject for {selectedSlot.day} at {selectedSlot.startTime}
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                   Subject
                 </label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <select className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500">
                   <option value="">-- Select subject --</option>
                   {subjects.map((subj) => (
                     <option key={subj.id} value={subj.id}>
@@ -246,12 +246,12 @@ export default function TimetablesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                   Faculty
                 </label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                   placeholder="Select faculty member"
                 />
               </div>
@@ -263,7 +263,7 @@ export default function TimetablesPage() {
                   setShowModal(false);
                   setSelectedSlot(null);
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-primary"
               >
                 Cancel
               </button>
@@ -273,7 +273,7 @@ export default function TimetablesPage() {
                     "sub1"
                   )
                 }
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
               >
                 Assign
               </button>
@@ -284,3 +284,4 @@ export default function TimetablesPage() {
     </div>
   );
 }
+

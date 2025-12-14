@@ -86,7 +86,7 @@ export default function SalaryStructuresPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Salary Structures</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Salary Structures</h1>
         <button
           onClick={() => {
             setSelectedStructure(null);
@@ -95,7 +95,7 @@ export default function SalaryStructuresPage() {
             setDeductions([]);
             setShowModal(true);
           }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 flex items-center gap-2"
         >
           <Plus size={20} /> New Structure
         </button>
@@ -103,10 +103,10 @@ export default function SalaryStructuresPage() {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <div className="text-gray-500">Loading...</div>
+          <div className="text-gray-500 dark:text-gray-400">Loading...</div>
         </div>
       ) : structures.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           No salary structures found. Create your first structure.
         </div>
       ) : (
@@ -114,52 +114,52 @@ export default function SalaryStructuresPage() {
           {structures.map((structure) => (
             <div
               key={structure.id}
-              className="bg-white rounded-lg shadow p-6 border border-gray-200"
+              className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6 border border-gray-200 dark:border-dark-border-primary"
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary">
                     {structure.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-600 dark:text-dark-text-secondary mt-1">
                     {structure.description}
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <button className="text-blue-600 hover:text-blue-900">
+                  <button className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">
                     <Edit2 size={18} />
                   </button>
                   <button
                     onClick={() => handleDeleteStructure(structure.id)}
-                    className="text-red-600 hover:text-red-900"
+                    className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                   >
                     <Trash2 size={18} />
                   </button>
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded p-4 mb-4">
-                <p className="text-sm text-gray-600">Base Salary</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="bg-gray-50 dark:bg-dark-surface-secondary rounded p-4 mb-4">
+                <p className="text-sm text-gray-600 dark:text-dark-text-secondary">Base Salary</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-dark-text-primary">
                   ₹ {structure.base_salary?.toLocaleString() || 0}
                 </p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
                     Earnings
                   </h4>
-                  <button className="text-sm text-blue-600 hover:text-blue-900">
+                  <button className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">
                     + View Details
                   </button>
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
                     Deductions
                   </h4>
-                  <button className="text-sm text-blue-600 hover:text-blue-900">
+                  <button className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">
                     + View Details
                   </button>
                 </div>
@@ -171,15 +171,15 @@ export default function SalaryStructuresPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl my-8">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-lg p-6 w-full max-w-2xl my-8 border border-gray-200 dark:border-dark-border-primary">
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">
               {selectedStructure ? "Edit Salary Structure" : "Create Salary Structure"}
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                   Structure Name *
                 </label>
                 <input
@@ -188,13 +188,13 @@ export default function SalaryStructuresPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                   placeholder="e.g., Senior Teacher"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                   Base Salary
                 </label>
                 <input
@@ -203,13 +203,13 @@ export default function SalaryStructuresPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, base_salary: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                   placeholder="50000"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                   Description
                 </label>
                 <textarea
@@ -218,14 +218,14 @@ export default function SalaryStructuresPage() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                   placeholder="Optional description"
                 />
               </div>
 
               {/* Earnings Section */}
               <div className="border-t pt-4">
-                <h3 className="font-semibold text-gray-900 mb-3">Earnings</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-dark-text-primary mb-3">Earnings</h3>
                 <div className="space-y-3 mb-4">
                   {earnings.map((earning, idx) => (
                     <div key={idx} className="flex gap-2">
@@ -238,7 +238,7 @@ export default function SalaryStructuresPage() {
                           updated[idx].earning_name = e.target.value;
                           setEarnings(updated);
                         }}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                       />
                       <input
                         type="number"
@@ -249,13 +249,13 @@ export default function SalaryStructuresPage() {
                           updated[idx].amount = e.target.value;
                           setEarnings(updated);
                         }}
-                        className="w-24 px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-24 px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                       />
                       <button
                         onClick={() => {
                           setEarnings(earnings.filter((_, i) => i !== idx));
                         }}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -266,7 +266,7 @@ export default function SalaryStructuresPage() {
                   onClick={() =>
                     setEarnings([...earnings, { earning_name: "", amount: "" }])
                   }
-                  className="text-sm text-blue-600 hover:text-blue-900"
+                  className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
                 >
                   + Add Earning Component
                 </button>
@@ -274,7 +274,7 @@ export default function SalaryStructuresPage() {
 
               {/* Deductions Section */}
               <div className="border-t pt-4">
-                <h3 className="font-semibold text-gray-900 mb-3">Deductions</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-dark-text-primary mb-3">Deductions</h3>
                 <div className="space-y-3 mb-4">
                   {deductions.map((deduction, idx) => (
                     <div key={idx} className="flex gap-2">
@@ -287,7 +287,7 @@ export default function SalaryStructuresPage() {
                           updated[idx].deduction_name = e.target.value;
                           setDeductions(updated);
                         }}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                       />
                       <input
                         type="number"
@@ -298,7 +298,7 @@ export default function SalaryStructuresPage() {
                           updated[idx].amount = e.target.value;
                           setDeductions(updated);
                         }}
-                        className="w-24 px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-24 px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                       />
                       <button
                         onClick={() => {
@@ -306,7 +306,7 @@ export default function SalaryStructuresPage() {
                             deductions.filter((_, i) => i !== idx)
                           );
                         }}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -320,7 +320,7 @@ export default function SalaryStructuresPage() {
                       { deduction_name: "", amount: "" },
                     ])
                   }
-                  className="text-sm text-blue-600 hover:text-blue-900"
+                  className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
                 >
                   + Add Deduction Component
                 </button>
@@ -330,13 +330,13 @@ export default function SalaryStructuresPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-primary"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateStructure}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
               >
                 {selectedStructure ? "Update" : "Create"}
               </button>
@@ -347,3 +347,6 @@ export default function SalaryStructuresPage() {
     </div>
   );
 }
+
+
+

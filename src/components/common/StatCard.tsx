@@ -12,24 +12,24 @@ interface StatCardProps {
 
 const colorClasses = {
   primary: {
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    icon: 'text-blue-600 bg-blue-100',
+    bg: 'bg-blue-50 dark:bg-blue-900/20',
+    text: 'text-blue-700 dark:text-blue-400',
+    icon: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-800/40',
   },
   success: {
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-700',
-    icon: 'text-emerald-600 bg-emerald-100',
+    bg: 'bg-emerald-50 dark:bg-emerald-900/20',
+    text: 'text-emerald-700 dark:text-emerald-400',
+    icon: 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-800/40',
   },
   warning: {
-    bg: 'bg-amber-50',
-    text: 'text-amber-700',
-    icon: 'text-amber-600 bg-amber-100',
+    bg: 'bg-amber-50 dark:bg-amber-900/20',
+    text: 'text-amber-700 dark:text-amber-400',
+    icon: 'text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-800/40',
   },
   danger: {
-    bg: 'bg-red-50',
-    text: 'text-red-700',
-    icon: 'text-red-600 bg-red-100',
+    bg: 'bg-red-50 dark:bg-red-900/20',
+    text: 'text-red-700 dark:text-red-400',
+    icon: 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-800/40',
   },
 };
 
@@ -53,7 +53,7 @@ export const StatCard: React.FC<StatCardProps> = ({
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className={cn('text-sm font-medium mb-2', colors.text)}>{label}</p>
-          <p className="text-3xl font-bold text-gray-900 mb-2">{value}</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">{value}</p>
 
           {trendValue && (
             <div className="flex items-center gap-1">

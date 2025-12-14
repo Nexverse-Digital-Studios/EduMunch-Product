@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
-import { uiConfig } from '@/config/ui.config';
-import { themeColors } from '@/config/theme-colors';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -35,23 +33,17 @@ export default function LoginPage() {
   const displayError = localError || error;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 dark:from-dark-bg-primary dark:via-dark-bg-secondary dark:to-dark-bg-primary p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">EduMunch</h1>
-          <p className="text-gray-400">School Management System</p>
+          <h1 className="text-3xl font-bold text-white dark:text-dark-text-primary mb-2">EduMunch</h1>
+          <p className="text-gray-400 dark:text-dark-text-secondary">School Management System</p>
         </div>
 
         {/* Login Card */}
-        <div
-          className="rounded-lg border p-8"
-          style={{
-            backgroundColor: themeColors.dark.card,
-            borderColor: uiConfig.colors.primary['500'],
-          }}
-        >
-          <h2 className="text-2xl font-bold text-white mb-6">Welcome Back</h2>
+        <div className="rounded-lg border border-indigo-500 p-8 bg-gray-800 dark:bg-dark-surface-primary">
+          <h2 className="text-2xl font-bold text-white dark:text-dark-text-primary mb-6">Welcome Back</h2>
 
           {displayError && (
             <div className="mb-4 p-4 rounded-lg bg-red-500/10 border border-red-500/50">
@@ -62,7 +54,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 dark:text-dark-text-primary mb-2">
                 Email Address
               </label>
               <input
@@ -71,13 +63,13 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
                 placeholder="superadmin@demoinstitute.com"
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full px-4 py-2 bg-gray-700 dark:bg-dark-surface-secondary border border-gray-600 dark:border-dark-border-primary rounded-lg text-white dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-tertiary focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
               />
             </div>
 
             {/* Password Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 dark:text-dark-text-primary mb-2">
                 Password
               </label>
               <input
@@ -86,16 +78,16 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 placeholder="••••••••"
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full px-4 py-2 bg-gray-700 dark:bg-dark-surface-secondary border border-gray-600 dark:border-dark-border-primary rounded-lg text-white dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-tertiary focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
               />
             </div>
 
             {/* Remember & Forgot */}
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center text-gray-400">
+              <label className="flex items-center text-gray-400 dark:text-dark-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
-                  className="mr-2 rounded"
+                  className="mr-2 rounded bg-gray-700 dark:bg-dark-surface-secondary border-gray-600 dark:border-dark-border-primary text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-800 dark:focus:ring-offset-dark-surface-primary disabled:opacity-50"
                   disabled={isLoading}
                 />
                 Remember me
@@ -112,19 +104,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-6 py-2 rounded-lg font-semibold transition-colors disabled:opacity-50"
-              style={{
-                backgroundColor: uiConfig.colors.primary['500'],
-                color: 'white',
-              }}
-              onMouseEnter={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.opacity = '0.9';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '1';
-              }}
+              className="w-full mt-6 py-2 rounded-lg font-semibold transition-colors disabled:opacity-50 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white"
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
@@ -132,13 +112,13 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div className="my-6 flex items-center">
-            <div className="flex-1 h-px bg-gray-600"></div>
-            <span className="px-3 text-sm text-gray-400">OR</span>
-            <div className="flex-1 h-px bg-gray-600"></div>
+            <div className="flex-1 h-px bg-gray-600 dark:bg-dark-border-primary"></div>
+            <span className="px-3 text-sm text-gray-400 dark:text-dark-text-secondary">OR</span>
+            <div className="flex-1 h-px bg-gray-600 dark:bg-dark-border-primary"></div>
           </div>
 
           {/* Sign Up Link */}
-          <p className="text-center text-gray-400">
+          <p className="text-center text-gray-400 dark:text-dark-text-secondary">
             Don't have an account?{' '}
             <Link
               to="/register"
@@ -150,13 +130,13 @@ export default function LoginPage() {
         </div>
 
         {/* Demo Credentials */}
-        <div className="mt-8 p-4 rounded-lg bg-blue-500/10 border border-blue-500/50">
-          <p className="text-sm text-blue-300 mb-2">Demo Credentials:</p>
-          <p className="text-xs text-blue-400">
-            Email: <code className="bg-blue-500/20 px-2 py-1 rounded">superadmin@demoinstitute.com</code>
+        <div className="mt-8 p-4 rounded-lg bg-indigo-500/10 border border-indigo-500/50">
+          <p className="text-sm text-indigo-300 mb-2">Demo Credentials:</p>
+          <p className="text-xs text-indigo-400">
+            Email: <code className="bg-indigo-500/20 px-2 py-1 rounded">superadmin@demoinstitute.com</code>
           </p>
-          <p className="text-xs text-blue-400 mt-1">
-            Password: <code className="bg-blue-500/20 px-2 py-1 rounded">your-password</code>
+          <p className="text-xs text-indigo-400 mt-1">
+            Password: <code className="bg-indigo-500/20 px-2 py-1 rounded">your-password</code>
           </p>
         </div>
       </div>

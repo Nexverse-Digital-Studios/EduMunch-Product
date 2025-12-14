@@ -86,10 +86,10 @@ export default function SupportTicketsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Support Tickets</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Support Tickets</h1>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 flex items-center gap-2"
         >
           <Plus size={20} /> New Ticket
         </button>
@@ -98,34 +98,34 @@ export default function SupportTicketsPage() {
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <Clock className="text-red-600" size={24} />
+              <Clock className="text-red-600 dark:text-red-400" size={24} />
               <div>
-                <p className="text-sm text-red-600">Open</p>
-                <p className="text-2xl font-bold text-red-900">{stats.open}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">Open</p>
+                <p className="text-2xl font-bold text-red-900 dark:text-red-300">{stats.open}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <MessageCircle className="text-yellow-600" size={24} />
+              <MessageCircle className="text-yellow-600 dark:text-yellow-400" size={24} />
               <div>
-                <p className="text-sm text-yellow-600">In Progress</p>
-                <p className="text-2xl font-bold text-yellow-900">
+                <p className="text-sm text-yellow-600 dark:text-yellow-400">In Progress</p>
+                <p className="text-2xl font-bold text-yellow-900 dark:text-yellow-300">
                   {stats.in_progress}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <CheckCircle className="text-green-600" size={24} />
+              <CheckCircle className="text-green-600 dark:text-green-400" size={24} />
               <div>
-                <p className="text-sm text-green-600">Resolved</p>
-                <p className="text-2xl font-bold text-green-900">
+                <p className="text-sm text-green-600 dark:text-green-400">Resolved</p>
+                <p className="text-2xl font-bold text-green-900 dark:text-green-300">
                   {stats.resolved}
                 </p>
               </div>
@@ -135,7 +135,7 @@ export default function SupportTicketsPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-gray-200">
+      <div className="flex gap-4 border-b border-gray-200 dark:border-dark-border-primary">
         {["OPEN", "IN_PROGRESS", "RESOLVED"].map((tab) => {
           const config = statConfig[tab as keyof typeof statConfig];
           return (
@@ -146,8 +146,8 @@ export default function SupportTicketsPage() {
               }}
               className={`px-4 py-2 font-medium border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === tab
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                  ? "border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400"
+                  : "border-transparent text-gray-600 hover:text-gray-900 dark:text-dark-text-primary"
               }`}
             >
               {config.label}
@@ -158,23 +158,23 @@ export default function SupportTicketsPage() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+        <Search className="absolute left-3 top-3 text-gray-400 dark:text-gray-500" size={20} />
         <input
           type="text"
           placeholder="Search tickets..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         />
       </div>
 
       {/* Tickets List */}
       {loading ? (
         <div className="flex justify-center py-8">
-          <div className="text-gray-500">Loading...</div>
+          <div className="text-gray-500 dark:text-gray-400">Loading...</div>
         </div>
       ) : filteredTickets.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           No tickets found in {activeTab.toLowerCase()} status.
         </div>
       ) : (
@@ -182,26 +182,26 @@ export default function SupportTicketsPage() {
           {filteredTickets.map((ticket) => (
             <div
               key={ticket.id}
-              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-dark-surface-primary border border-gray-200 dark:border-dark-border-primary rounded-lg p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-bold text-gray-900">{ticket.title}</h3>
+                    <h3 className="font-bold text-gray-900 dark:text-dark-text-primary">{ticket.title}</h3>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       ticket.status === "OPEN"
-                        ? "bg-red-100 text-red-800"
+                        ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300"
                         : ticket.status === "IN_PROGRESS"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-green-100 text-green-800"
+                        ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300"
+                        : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
                     }`}>
                       {ticket.status}
                     </span>
                   </div>
-                  <p className="text-gray-600 text-sm mb-2">
+                  <p className="text-gray-600 dark:text-dark-text-secondary text-sm mb-2">
                     {ticket.description}
                   </p>
-                  <div className="flex gap-4 text-xs text-gray-500">
+                  <div className="flex gap-4 text-xs text-gray-500 dark:text-gray-400">
                     <span>Type: {ticket.ticket_type}</span>
                     <span>
                       Created:{" "}
@@ -209,7 +209,7 @@ export default function SupportTicketsPage() {
                     </span>
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
+                <button className="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white text-sm rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600">
                   Manage
                 </button>
               </div>
@@ -220,13 +220,13 @@ export default function SupportTicketsPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-            <h2 className="text-xl font-bold mb-4">Create New Ticket</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-lg p-6 w-96 border border-gray-200 dark:border-dark-border-primary">
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">Create New Ticket</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                   Title *
                 </label>
                 <input
@@ -235,13 +235,13 @@ export default function SupportTicketsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                   placeholder="Brief title of the issue"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                   Description *
                 </label>
                 <textarea
@@ -250,13 +250,13 @@ export default function SupportTicketsPage() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                   placeholder="Detailed description"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                   Issue Type
                 </label>
                 <select
@@ -264,7 +264,7 @@ export default function SupportTicketsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, ticket_type: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="OTHER">Other</option>
                   <option value="ATTENDANCE">Attendance Issue</option>
@@ -276,13 +276,13 @@ export default function SupportTicketsPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-primary"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateTicket}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
               >
                 Create Ticket
               </button>
@@ -293,3 +293,6 @@ export default function SupportTicketsPage() {
     </div>
   );
 }
+
+
+

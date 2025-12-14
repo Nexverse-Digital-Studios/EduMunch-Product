@@ -69,25 +69,25 @@ export default function BoardExamsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Board Exams</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Board Exams</h1>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 flex items-center gap-2 transition-colors"
         >
           <Plus size={20} /> New Exam
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-gray-200">
+      <div className="flex gap-4 border-b border-gray-200 dark:border-dark-border-primary">
         {["templates", "tests", "marks"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 font-medium border-b-2 transition-colors ${
               activeTab === tab
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-600 hover:text-gray-900"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                : "border-transparent text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary"
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -97,13 +97,13 @@ export default function BoardExamsPage() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+        <Search className="absolute left-3 top-3 text-gray-400 dark:text-dark-text-secondary" size={20} />
         <input
           type="text"
           placeholder="Search exams..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-primary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         />
       </div>
 
@@ -112,59 +112,59 @@ export default function BoardExamsPage() {
         <div>
           {loading ? (
             <div className="flex justify-center py-8">
-              <div className="text-gray-500">Loading...</div>
+              <div className="text-gray-500 dark:text-dark-text-secondary">Loading...</div>
             </div>
           ) : filteredExams.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-dark-text-secondary">
               No exams found. Create your first exam.
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow overflow-hidden border border-gray-200 dark:border-dark-border-primary">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50 dark:bg-dark-surface-secondary border-b border-gray-200 dark:border-dark-border-primary">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-dark-text-primary">
                       Exam Name
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-dark-text-primary">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-dark-text-primary">
                       Max Marks
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-dark-text-primary">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-right text-sm font-medium text-gray-600">
+                    <th className="px-6 py-3 text-right text-sm font-medium text-gray-600 dark:text-dark-text-primary">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-dark-border-primary">
                   {filteredExams.map((exam) => (
-                    <tr key={exam.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    <tr key={exam.id} className="hover:bg-gray-50 dark:hover:bg-dark-surface-secondary">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-dark-text-primary">
                         {exam.exam_name}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">
+                        <span className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-400 rounded-full text-xs font-medium">
                           {exam.exam_type || "N/A"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">
                         {exam.max_marks || "N/A"}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">
                         {exam.exam_date ? new Date(exam.exam_date).toLocaleDateString() : "N/A"}
                       </td>
                       <td className="px-6 py-4 text-right text-sm">
                         <div className="flex justify-end gap-2">
-                          <button className="text-blue-600 hover:text-blue-900">
+                          <button className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">
                             <Edit2 size={18} />
                           </button>
                           <button
                             onClick={() => handleDeleteExam(exam.id)}
-                            className="text-red-600 hover:text-red-900"
+                            className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                           >
                             <Trash2 size={18} />
                           </button>
@@ -180,26 +180,26 @@ export default function BoardExamsPage() {
       )}
 
       {activeTab === "tests" && (
-        <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+        <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-8 text-center text-gray-500 dark:text-dark-text-secondary border border-gray-200 dark:border-dark-border-primary">
           Test management coming soon...
         </div>
       )}
 
       {activeTab === "marks" && (
-        <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+        <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-8 text-center text-gray-500 dark:text-dark-text-secondary border border-gray-200 dark:border-dark-border-primary">
           Marks entry coming soon...
         </div>
       )}
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-            <h2 className="text-xl font-bold mb-4">Create New Exam</h2>
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-lg p-6 w-96 border border-gray-200 dark:border-dark-border-primary">
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">Create New Exam</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                   Exam Name *
                 </label>
                 <input
@@ -208,13 +208,13 @@ export default function BoardExamsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, exam_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                   placeholder="e.g., Mid Term Exam"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                   Exam Type
                 </label>
                 <select
@@ -222,7 +222,7 @@ export default function BoardExamsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, exam_type: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="BOARD">Board</option>
                   <option value="INTERNAL">Internal</option>
@@ -230,7 +230,7 @@ export default function BoardExamsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                   Max Marks
                 </label>
                 <input
@@ -239,13 +239,13 @@ export default function BoardExamsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, max_marks: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                   placeholder="100"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-1">
                   Exam Date
                 </label>
                 <input
@@ -254,7 +254,7 @@ export default function BoardExamsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, exam_date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
@@ -262,13 +262,13 @@ export default function BoardExamsPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg hover:bg-gray-50 dark:hover:bg-dark-surface-secondary text-gray-700 dark:text-dark-text-primary transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateExam}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
               >
                 Create
               </button>

@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { MainLayout } from './components/common/MainLayout';
 import { navigationConfig } from './constants/navigation';
 import { useAuthStore } from './store/authStore';
+import { ThemeProvider } from './context/themeContext';
 
 type UserRole = 'admin' | 'student' | 'teacher' | 'parent';
 
@@ -65,27 +66,31 @@ function App() {
   // Show loading state without early return to maintain hook order
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="text-center">
-          <div className="inline-block">
-            <div className="w-12 h-12 rounded-full border-4 border-gray-700 border-t-indigo-500 animate-spin"></div>
+      <ThemeProvider>
+        <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-dark-bg-primary">
+          <div className="text-center">
+            <div className="inline-block">
+              <div className="w-12 h-12 rounded-full border-4 border-gray-300 dark:border-dark-border-primary border-t-indigo-500 animate-spin"></div>
+            </div>
+            <p className="text-gray-600 dark:text-dark-text-secondary mt-4">Loading...</p>
           </div>
-          <p className="text-gray-400 mt-4">Loading...</p>
         </div>
-      </div>
+      </ThemeProvider>
     );
   }
 
   return (
-    <MainLayout
-      navItems={getNavItems()}
-      onNavigate={handleNavigate}
-      onLogout={handleLogout}
-      userRole={userRole}
-      userName={userName}
-    >
-      <Outlet />
-    </MainLayout>
+    <ThemeProvider>
+      <MainLayout
+        navItems={getNavItems()}
+        onNavigate={handleNavigate}
+        onLogout={handleLogout}
+        userRole={userRole}
+        userName={userName}
+      >
+        <Outlet />
+      </MainLayout>
+    </ThemeProvider>
   );
 }
 

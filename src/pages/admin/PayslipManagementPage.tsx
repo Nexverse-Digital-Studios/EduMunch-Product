@@ -111,20 +111,20 @@ export function PayslipManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Payslip Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">Payslip Management</h1>
 
         {/* Tabs */}
-        <div className="bg-white rounded-lg shadow mb-6 border-b border-gray-200">
+        <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow mb-6 border-b border-gray-200 dark:border-dark-border-primary">
           <div className="flex">
             <button
               onClick={() => setActiveTab('generate')}
               className={`flex-1 px-6 py-3 font-medium text-center border-b-2 transition ${
                 activeTab === 'generate'
-                  ? 'text-blue-600 border-blue-600'
-                  : 'text-gray-600 border-transparent hover:text-gray-900'
+                  ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400'
+                  : 'text-gray-600 dark:text-dark-text-secondary border-transparent hover:text-gray-900 dark:hover:text-dark-text-primary'
               }`}
             >
               <Plus className="inline mr-2" size={18} /> Generate Payslips
@@ -133,8 +133,8 @@ export function PayslipManagementPage() {
               onClick={() => setActiveTab('view')}
               className={`flex-1 px-6 py-3 font-medium text-center border-b-2 transition ${
                 activeTab === 'view'
-                  ? 'text-blue-600 border-blue-600'
-                  : 'text-gray-600 border-transparent hover:text-gray-900'
+                  ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400'
+                  : 'text-gray-600 dark:text-dark-text-secondary border-transparent hover:text-gray-900 dark:hover:text-dark-text-primary'
               }`}
             >
               <Eye className="inline mr-2" size={18} /> View Generated
@@ -144,16 +144,16 @@ export function PayslipManagementPage() {
 
         {/* Generate Tab */}
         {activeTab === 'generate' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6">
             <div className="space-y-6">
               {/* Month/Year Selection */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Month</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Month</label>
                   <select
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                   >
                     <option value="">Select Month</option>
                     {months.map(month => (
@@ -162,12 +162,12 @@ export function PayslipManagementPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Year</label>
                   <input
                     type="number"
                     value={selectedYear}
                     onChange={(e) => setSelectedYear(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                     min={2020}
                     max={2050}
                   />
@@ -176,19 +176,19 @@ export function PayslipManagementPage() {
 
               {/* Employee Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Select Employees</label>
-                <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-3">Select Employees</label>
+                <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 dark:border-dark-border-primary rounded-lg p-4 bg-gray-50 dark:bg-dark-surface-secondary">
                   {employees.map(emp => (
-                    <label key={emp.id} className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 cursor-pointer border border-gray-200">
+                    <label key={emp.id} className="flex items-center gap-3 p-3 bg-white dark:bg-dark-surface-primary rounded-lg hover:bg-gray-50 dark:hover:bg-dark-surface-secondary cursor-pointer border border-gray-200 dark:border-dark-border-primary">
                       <input
                         type="checkbox"
                         checked={selectedEmployees.includes(emp.id)}
                         onChange={() => toggleEmployee(emp.id)}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                        className="w-4 h-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-dark-border-primary rounded bg-white dark:bg-dark-surface-primary"
                       />
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900">{emp.name}</div>
-                        <div className="text-sm text-gray-600">{emp.code} • ₹{emp.salary.toLocaleString()}</div>
+                        <div className="font-medium text-gray-900 dark:text-dark-text-primary">{emp.name}</div>
+                        <div className="text-sm text-gray-600 dark:text-dark-text-secondary">{emp.code} • ₹{emp.salary.toLocaleString()}</div>
                       </div>
                     </label>
                   ))}
@@ -200,7 +200,7 @@ export function PayslipManagementPage() {
                 <button
                   onClick={handleGeneratePayslips}
                   disabled={!selectedMonth || !selectedYear || selectedEmployees.length === 0 || loading}
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white font-medium rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <Plus size={20} /> Generate Payslips ({selectedEmployees.length})
                 </button>
@@ -213,13 +213,13 @@ export function PayslipManagementPage() {
         {activeTab === 'view' && (
           <div className="space-y-4">
             {/* Month/Year Filter */}
-            <div className="bg-white rounded-lg shadow p-4 grid grid-cols-2 gap-4">
+            <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-4 grid grid-cols-2 gap-4 border border-gray-200 dark:border-dark-border-primary">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Month</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Month</label>
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                 >
                   <option value="">Select Month</option>
                   {months.map(month => (
@@ -228,12 +228,12 @@ export function PayslipManagementPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Year</label>
                 <input
                   type="number"
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                   min={2020}
                   max={2050}
                 />
@@ -242,15 +242,15 @@ export function PayslipManagementPage() {
 
             {/* Payslips List */}
             {loading ? (
-              <div className="text-center py-12">Loading payslips...</div>
+              <div className="text-center py-12 text-gray-900 dark:text-dark-text-primary">Loading payslips...</div>
             ) : payslips.length > 0 ? (
               <div className="space-y-3">
                 {payslips.map(payslip => (
-                  <div key={payslip.id} className="bg-white rounded-lg shadow p-4 border border-gray-200">
+                  <div key={payslip.id} className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-4 border border-gray-200 dark:border-dark-border-primary">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <h3 className="font-bold text-gray-900">{payslip.employee_name || 'Employee'}</h3>
-                        <div className="grid grid-cols-3 gap-4 mt-2 text-sm text-gray-600">
+                        <h3 className="font-bold text-gray-900 dark:text-dark-text-primary">{payslip.employee_name || 'Employee'}</h3>
+                        <div className="grid grid-cols-3 gap-4 mt-2 text-sm text-gray-600 dark:text-dark-text-secondary">
                           <div>
                             <span className="font-medium">Net Salary:</span> ₹{payslip.net_salary?.toLocaleString()}
                           </div>
@@ -270,21 +270,21 @@ export function PayslipManagementPage() {
                       <div className="flex gap-2 ml-4">
                         <button
                           onClick={() => handleViewPayslip(payslip)}
-                          className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200"
+                          className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/50"
                           title="View Payslip"
                         >
                           <Eye size={18} />
                         </button>
                         <button
                           onClick={() => handleDownloadPayslip(payslip)}
-                          className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
+                          className="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50"
                           title="Download Payslip"
                         >
                           <Download size={18} />
                         </button>
                         <button
                           onClick={() => handleDeletePayslip(payslip.id)}
-                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
+                          className="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50"
                           title="Delete Payslip"
                         >
                           <Trash2 size={18} />
@@ -295,7 +295,7 @@ export function PayslipManagementPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                 No payslips found for selected month
               </div>
             )}

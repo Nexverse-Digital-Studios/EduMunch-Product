@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
-import { uiConfig } from '@/config/ui.config';
-import { themeColors } from '@/config/theme-colors';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -59,23 +57,17 @@ export default function RegisterPage() {
   const displayErrorMessage = localError || (error && !error.includes('successful') ? error : '');
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 dark:from-dark-bg-primary dark:via-dark-bg-secondary dark:to-dark-bg-primary p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">EduMunch</h1>
-          <p className="text-gray-400">School Management System</p>
+          <h1 className="text-3xl font-bold text-white dark:text-dark-text-primary mb-2">EduMunch</h1>
+          <p className="text-gray-400 dark:text-dark-text-secondary">School Management System</p>
         </div>
 
         {/* Register Card */}
-        <div
-          className="rounded-lg border p-8"
-          style={{
-            backgroundColor: themeColors.dark.card,
-            borderColor: uiConfig.colors.primary['500'],
-          }}
-        >
-          <h2 className="text-2xl font-bold text-white mb-6">Create Account</h2>
+        <div className="rounded-lg border border-indigo-500 dark:border-indigo-600 p-8 bg-gray-800 dark:bg-dark-surface-primary">
+          <h2 className="text-2xl font-bold text-white dark:text-dark-text-primary mb-6">Create Account</h2>
 
           {displayErrorMessage && (
             <div className="mb-4 p-4 rounded-lg bg-red-500/10 border border-red-500/50">
@@ -92,7 +84,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Display Name Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 dark:text-dark-text-primary mb-2">
                 Full Name
               </label>
               <input
@@ -101,13 +93,13 @@ export default function RegisterPage() {
                 onChange={(e) => setDisplayName(e.target.value)}
                 disabled={isLoading}
                 placeholder="John Doe"
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full px-4 py-2 bg-gray-700 dark:bg-dark-surface-secondary border border-gray-600 dark:border-dark-border-primary rounded-lg text-white dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-tertiary focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
               />
             </div>
 
             {/* Email Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 dark:text-dark-text-primary mb-2">
                 Email Address
               </label>
               <input
@@ -116,13 +108,13 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
                 placeholder="john@example.com"
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full px-4 py-2 bg-gray-700 dark:bg-dark-surface-secondary border border-gray-600 dark:border-dark-border-primary rounded-lg text-white dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-tertiary focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
               />
             </div>
 
             {/* Password Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 dark:text-dark-text-primary mb-2">
                 Password
               </label>
               <input
@@ -131,16 +123,16 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 placeholder="••••••••"
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full px-4 py-2 bg-gray-700 dark:bg-dark-surface-secondary border border-gray-600 dark:border-dark-border-primary rounded-lg text-white dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-tertiary focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-400 dark:text-dark-text-secondary mt-1">
                 At least 6 characters
               </p>
             </div>
 
             {/* Confirm Password Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 dark:text-dark-text-primary mb-2">
                 Confirm Password
               </label>
               <input
@@ -149,7 +141,7 @@ export default function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
                 placeholder="••••••••"
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full px-4 py-2 bg-gray-700 dark:bg-dark-surface-secondary border border-gray-600 dark:border-dark-border-primary rounded-lg text-white dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-tertiary focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
               />
             </div>
 
@@ -161,9 +153,9 @@ export default function RegisterPage() {
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
                 disabled={isLoading}
-                className="mr-2 rounded"
+                className="mr-2 rounded bg-gray-700 dark:bg-dark-surface-secondary border-gray-600 dark:border-dark-border-primary text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-800 dark:focus:ring-offset-dark-surface-primary disabled:opacity-50"
               />
-              <label htmlFor="terms" className="text-sm text-gray-400">
+              <label htmlFor="terms" className="text-sm text-gray-400 dark:text-dark-text-secondary cursor-pointer">
                 I agree to the{' '}
                 <a href="#" className="text-indigo-400 hover:text-indigo-300">
                   terms and conditions
@@ -175,19 +167,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-6 py-2 rounded-lg font-semibold transition-colors disabled:opacity-50"
-              style={{
-                backgroundColor: uiConfig.colors.primary['500'],
-                color: 'white',
-              }}
-              onMouseEnter={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.opacity = '0.9';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '1';
-              }}
+              className="w-full mt-6 py-2 rounded-lg font-semibold transition-colors disabled:opacity-50 bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white"
             >
               {isLoading ? 'Creating account...' : 'Create Account'}
             </button>
@@ -195,13 +175,13 @@ export default function RegisterPage() {
 
           {/* Divider */}
           <div className="my-6 flex items-center">
-            <div className="flex-1 h-px bg-gray-600"></div>
-            <span className="px-3 text-sm text-gray-400">OR</span>
-            <div className="flex-1 h-px bg-gray-600"></div>
+            <div className="flex-1 h-px bg-gray-600 dark:bg-dark-border-primary"></div>
+            <span className="px-3 text-sm text-gray-400 dark:text-dark-text-secondary">OR</span>
+            <div className="flex-1 h-px bg-gray-600 dark:bg-dark-border-primary"></div>
           </div>
 
           {/* Sign In Link */}
-          <p className="text-center text-gray-400">
+          <p className="text-center text-gray-400 dark:text-dark-text-secondary">
             Already have an account?{' '}
             <Link
               to="/login"

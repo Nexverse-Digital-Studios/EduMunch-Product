@@ -62,25 +62,25 @@ const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
             ? 'px-3 py-2.5 text-sm font-medium rounded-xl'
             : 'p-3 justify-center rounded-lg',
           (isActive || hasActiveChild) && !hasChildren
-            ? 'bg-indigo-50 text-indigo-600'
+            ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
             : hasActiveChild && hasChildren
-            ? 'bg-indigo-50 text-indigo-600'
+            ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
             : isExpanded
-            ? 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-            : 'text-gray-600 hover:bg-gray-100'
+            ? 'text-gray-600 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-secondary hover:text-gray-900 dark:hover:text-dark-text-primary'
+            : 'text-gray-600 dark:text-dark-text-primary hover:bg-gray-100 dark:hover:bg-dark-surface-secondary'
         )}
         title={!isExpanded ? item.label : undefined}
       >
         <div className={cn('flex items-center', isExpanded && 'gap-3')}>
           <Icon className={cn(
             'flex-shrink-0',
-            (isActive || hasActiveChild) ? 'text-indigo-600' : 'text-gray-500'
+            (isActive || hasActiveChild) ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-dark-text-secondary'
           )} />
           {isExpanded && <span className="truncate">{item.label}</span>}
         </div>
         {isExpanded && hasChildren && (
           <ChevronDown
-            className={cn('w-4 h-4 transition-transform text-gray-400 flex-shrink-0', isOpen && 'rotate-180')}
+            className={cn('w-4 h-4 transition-transform text-gray-400 dark:text-dark-text-secondary flex-shrink-0', isOpen && 'rotate-180')}
           />
         )}
       </button>
@@ -97,8 +97,8 @@ const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
                 className={cn(
                   'w-full text-left px-3 py-2 text-sm rounded-lg transition-colors',
                   isChildActive
-                    ? 'text-indigo-600 bg-indigo-50 font-medium'
-                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                    ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 font-medium'
+                    : 'text-gray-500 dark:text-dark-text-secondary hover:bg-gray-50 dark:hover:bg-dark-surface-secondary hover:text-gray-700 dark:hover:text-dark-text-primary'
                 )}
               >
                 {child.label}
@@ -159,7 +159,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 h-screen bg-white border-r border-gray-200 z-40 md:z-10 transition-all duration-300 flex flex-col',
+          'fixed left-0 top-0 h-screen bg-white dark:bg-dark-bg-secondary border-r border-gray-200 dark:border-dark-border-primary z-40 md:z-10 transition-all duration-300 flex flex-col',
           isExpanded ? 'w-64' : 'w-20',
           !isMobileOpen && '-translate-x-full md:translate-x-0'
         )}
@@ -167,7 +167,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Logo / Header */}
         <div
           className={cn(
-            'flex items-center px-4 py-5 border-b border-gray-100',
+            'flex items-center px-4 py-5 border-b border-gray-100 dark:border-dark-border-secondary',
             isExpanded ? 'justify-between' : 'justify-center'
           )}
         >
@@ -176,7 +176,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-xl flex items-center justify-center shadow-md">
                 <span className="text-white font-bold text-base">EM</span>
               </div>
-              <span className="font-bold text-xl text-gray-800">EduMunch</span>
+              <span className="font-bold text-xl text-gray-800 dark:text-dark-text-primary">EduMunch</span>
             </div>
           ) : (
             <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-xl flex items-center justify-center shadow-md">
@@ -188,23 +188,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onToggleExpand}
             className={cn(
-              'hidden md:flex w-7 h-7 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm hover:bg-gray-50 transition-colors',
+              'hidden md:flex w-7 h-7 items-center justify-center rounded-full border border-gray-200 dark:border-dark-border-primary bg-white dark:bg-dark-surface-primary shadow-sm hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition-colors',
               !isExpanded && 'absolute -right-3.5 top-7'
             )}
             title="Toggle sidebar"
           >
             {isExpanded ? (
-              <ChevronLeft className="w-4 h-4 text-gray-500" />
+              <ChevronLeft className="w-4 h-4 text-gray-500 dark:text-dark-text-secondary" />
             ) : (
-              <ChevronRight className="w-4 h-4 text-gray-500" />
+              <ChevronRight className="w-4 h-4 text-gray-500 dark:text-dark-text-secondary" />
             )}
           </button>
           
           <button
             onClick={onMobileClose}
-            className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+            className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-dark-surface-secondary rounded-lg"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-gray-500 dark:text-dark-text-secondary" />
           </button>
         </div>
 
@@ -214,7 +214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {navItems.map((section: any) => (
               <div key={section.section}>
                 {isExpanded && (
-                  <h3 className="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <h3 className="px-3 mb-2 text-xs font-semibold text-gray-400 dark:text-dark-text-tertiary uppercase tracking-wider">
                     {section.section}
                   </h3>
                 )}
@@ -238,7 +238,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* User profile section at bottom */}
         <div className={cn(
-          'border-t border-gray-100 p-4',
+          'border-t border-gray-100 dark:border-dark-border-secondary p-4',
           !isExpanded && 'flex justify-center'
         )}>
           {isExpanded ? (
@@ -251,8 +251,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">{userInfo.name}</p>
-                <p className="text-xs text-gray-500 truncate">{userInfo.email}</p>
+                <p className="text-sm font-medium text-gray-800 dark:text-dark-text-primary truncate">{userInfo.name}</p>
+                <p className="text-xs text-gray-500 dark:text-dark-text-secondary truncate">{userInfo.email}</p>
               </div>
             </div>
           ) : (

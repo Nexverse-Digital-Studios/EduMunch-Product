@@ -81,21 +81,21 @@ export default function WorkingHoursPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Working Hours</h1>
-        <p className="text-gray-600 mt-1">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">Working Hours</h1>
+        <p className="text-gray-600 dark:text-dark-text-secondary mt-1">
           Configure employee working hours for each day of the week
         </p>
       </div>
 
       {/* Employee Selector */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+      <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6 border border-gray-200 dark:border-dark-border-primary">
+        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-3">
           Select Employee
         </label>
         <select
           value={selectedEmployee}
           onChange={(e) => setSelectedEmployee(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-6"
+          className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-indigo-500 mb-6"
         >
           <option value="">-- Select an employee --</option>
           {employees.map((emp) => (
@@ -108,8 +108,8 @@ export default function WorkingHoursPage() {
         {selectedEmployee && (
           <div className="space-y-4">
             {DAYS.map((day) => (
-              <div key={day} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="w-24 font-medium text-gray-700">{day}</div>
+              <div key={day} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-dark-surface-secondary rounded-lg border border-gray-200 dark:border-dark-border-primary">
+                <div className="w-24 font-medium text-gray-700 dark:text-dark-text-primary">{day}</div>
 
                 <div className="flex-1 flex items-center gap-4">
                   <label className="flex items-center gap-2">
@@ -125,15 +125,15 @@ export default function WorkingHoursPage() {
                           },
                         });
                       }}
-                      className="rounded border-gray-300"
+                      className="rounded border-gray-300 dark:border-dark-border-primary text-indigo-600 focus:ring-indigo-500"
                     />
-                    <span className="text-sm text-gray-600">Week Off</span>
+                    <span className="text-sm text-gray-600 dark:text-dark-text-secondary">Week Off</span>
                   </label>
 
                   {!formData[day]?.is_week_off && (
                     <>
                       <div className="flex items-center gap-2">
-                        <label className="text-sm text-gray-600">From:</label>
+                        <label className="text-sm text-gray-600 dark:text-dark-text-secondary">From:</label>
                         <input
                           type="time"
                           value={formData[day]?.start_time || "09:00"}
@@ -146,12 +146,12 @@ export default function WorkingHoursPage() {
                               },
                             });
                           }}
-                          className="px-3 py-1 border border-gray-300 rounded"
+                          className="px-3 py-1 border border-gray-300 dark:border-dark-border-primary rounded bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                         />
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <label className="text-sm text-gray-600">To:</label>
+                        <label className="text-sm text-gray-600 dark:text-dark-text-secondary">To:</label>
                         <input
                           type="time"
                           value={formData[day]?.end_time || "17:00"}
@@ -164,7 +164,7 @@ export default function WorkingHoursPage() {
                               },
                             });
                           }}
-                          className="px-3 py-1 border border-gray-300 rounded"
+                          className="px-3 py-1 border border-gray-300 dark:border-dark-border-primary rounded bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                         />
                       </div>
                     </>
@@ -176,13 +176,13 @@ export default function WorkingHoursPage() {
             <div className="flex gap-3 pt-4">
               <button
                 onClick={handleSave}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                className="px-6 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 font-medium"
               >
                 Save Changes
               </button>
               <button
                 onClick={() => setSelectedEmployee("")}
-                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-6 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-surface-primary"
               >
                 Cancel
               </button>
@@ -193,8 +193,8 @@ export default function WorkingHoursPage() {
 
       {/* Summary */}
       {selectedEmployee && formData && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-900">
+        <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4">
+          <p className="text-sm text-indigo-900 dark:text-indigo-300">
             <strong>Note:</strong> Working hours have been configured. Make sure
             to review and save changes before closing.
           </p>

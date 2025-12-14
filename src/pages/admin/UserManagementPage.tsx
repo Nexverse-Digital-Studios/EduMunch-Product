@@ -88,18 +88,17 @@ export default function UserManagementPage() {
   };
 
   return (
-    <div className="p-8 bg-white">
+    <div className="p-8 bg-white dark:bg-dark-bg-primary">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">User Management</h1>
           </div>
-          <p className="text-gray-600">Manage users, roles, and permissions</p>
+          <p className="text-gray-600 dark:text-dark-text-secondary">Manage users, roles, and permissions</p>
         </div>
         <button
-          className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-white"
-          style={{ backgroundColor: uiConfig.colors.primary['500'] }}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-white bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600"
         >
           <Plus size={20} />
           Add User
@@ -109,19 +108,19 @@ export default function UserManagementPage() {
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-3 text-gray-400 dark:text-gray-500" size={20} />
           <input
             type="text"
             placeholder="Search by name or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-dark-surface-secondary border border-gray-200 dark:border-dark-border-primary rounded-lg text-gray-900 dark:text-dark-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
           />
         </div>
         <select
           value={filterRole}
           onChange={(e) => setFilterRole(e.target.value)}
-          className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+          className="px-4 py-2 bg-white dark:bg-dark-surface-secondary border border-gray-200 dark:border-dark-border-primary rounded-lg text-gray-900 dark:text-dark-text-primary focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
         >
           <option value="">All Roles</option>
           <option value="admin">Admin</option>
@@ -133,40 +132,33 @@ export default function UserManagementPage() {
 
       {/* Users Table */}
       <div
-        className="rounded-lg border overflow-hidden bg-white"
-        style={{
-          borderColor: uiConfig.colors.primary['200'],
-        }}
+        className="rounded-lg border border-indigo-200 dark:border-indigo-800 overflow-hidden bg-white dark:bg-dark-surface-primary"
       >
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading users...</div>
+          <div className="p-8 text-center text-gray-500 dark:text-gray-400">Loading users...</div>
         ) : filteredUsers.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">No users found</div>
+          <div className="p-8 text-center text-gray-500 dark:text-gray-400">No users found</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Role</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Joined</th>
-                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-900">Actions</th>
+                <tr className="border-b border-gray-200 dark:border-dark-border-primary bg-gray-50 dark:bg-dark-surface-secondary">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-dark-text-primary">Name</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-dark-text-primary">Email</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-dark-text-primary">Role</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-dark-text-primary">Status</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-dark-text-primary">Joined</th>
+                  <th className="px-6 py-3 text-center text-sm font-semibold text-gray-900 dark:text-dark-text-primary">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user.id} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 text-sm text-gray-900">{user.display_name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{user.email}</td>
+                  <tr key={user.id} className="border-b border-gray-200 dark:border-dark-border-primary hover:bg-gray-50 dark:hover:bg-dark-surface-secondary transition">
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-dark-text-primary">{user.display_name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-dark-text-secondary">{user.email}</td>
                     <td className="px-6 py-4 text-sm">
                       <span
-                        className="px-3 py-1 rounded-full text-xs font-semibold"
-                        style={{
-                          backgroundColor: uiConfig.colors.primary['50'],
-                          color: uiConfig.colors.primary['500'],
-                        }}
+                        className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
                       >
                         {(user.roles as any)?.name || 'No Role'}
                       </span>
@@ -174,40 +166,40 @@ export default function UserManagementPage() {
                     <td className="px-6 py-4 text-sm">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          user.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                          user.is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                         }`}
                       >
                         {user.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-dark-text-secondary">
                       {new Date(user.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => toggleUserStatus(user.id, user.is_active)}
-                          className="p-2 hover:bg-gray-100 rounded transition"
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-dark-surface-secondary rounded transition"
                           title={user.is_active ? 'Deactivate' : 'Activate'}
                         >
                           {user.is_active ? (
-                            <Eye size={18} className="text-gray-600" />
+                            <Eye size={18} className="text-gray-600 dark:text-gray-400" />
                           ) : (
-                            <EyeOff size={18} className="text-gray-600" />
+                            <EyeOff size={18} className="text-gray-600 dark:text-gray-400" />
                           )}
                         </button>
                         <button
-                          className="p-2 hover:bg-gray-100 rounded transition"
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-dark-surface-secondary rounded transition"
                           title="Edit"
                         >
-                          <Edit2 size={18} className="text-gray-600" />
+                          <Edit2 size={18} className="text-gray-600 dark:text-gray-400" />
                         </button>
                         <button
                           onClick={() => deleteUser(user.id)}
-                          className="p-2 hover:bg-red-100 rounded transition"
+                          className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition"
                           title="Delete"
                         >
-                          <Trash2 size={18} className="text-red-600" />
+                          <Trash2 size={18} className="text-red-600 dark:text-red-400" />
                         </button>
                       </div>
                     </td>
@@ -221,21 +213,21 @@ export default function UserManagementPage() {
 
       {/* User Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
-        <div className="rounded-lg border p-6 bg-white" style={{ borderColor: uiConfig.colors.primary['200'] }}>
-          <p className="text-gray-600 text-sm mb-2">Total Users</p>
-          <p className="text-3xl font-bold text-gray-900">{users.length}</p>
+        <div className="rounded-lg border border-indigo-200 dark:border-indigo-800 p-6 bg-white dark:bg-dark-surface-primary">
+          <p className="text-gray-600 dark:text-dark-text-secondary text-sm mb-2">Total Users</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">{users.length}</p>
         </div>
-        <div className="rounded-lg border p-6 bg-white" style={{ borderColor: uiConfig.colors.primary['200'] }}>
-          <p className="text-gray-600 text-sm mb-2">Active Users</p>
-          <p className="text-3xl font-bold text-green-600">{users.filter(u => u.is_active).length}</p>
+        <div className="rounded-lg border border-green-200 dark:border-green-800 p-6 bg-white dark:bg-dark-surface-primary">
+          <p className="text-gray-600 dark:text-dark-text-secondary text-sm mb-2">Active Users</p>
+          <p className="text-3xl font-bold text-green-600 dark:text-green-400">{users.filter(u => u.is_active).length}</p>
         </div>
-        <div className="rounded-lg border p-6 bg-white" style={{ borderColor: uiConfig.colors.primary['200'] }}>
-          <p className="text-gray-600 text-sm mb-2">Inactive Users</p>
-          <p className="text-3xl font-bold text-red-600">{users.filter(u => !u.is_active).length}</p>
+        <div className="rounded-lg border border-red-200 dark:border-red-800 p-6 bg-white dark:bg-dark-surface-primary">
+          <p className="text-gray-600 dark:text-dark-text-secondary text-sm mb-2">Inactive Users</p>
+          <p className="text-3xl font-bold text-red-600 dark:text-red-400">{users.filter(u => !u.is_active).length}</p>
         </div>
-        <div className="rounded-lg border p-6 bg-white" style={{ borderColor: uiConfig.colors.primary['200'] }}>
-          <p className="text-gray-600 text-sm mb-2">Last Updated</p>
-          <p className="text-lg font-bold text-gray-700">
+        <div className="rounded-lg border border-indigo-200 dark:border-indigo-800 p-6 bg-white dark:bg-dark-surface-primary">
+          <p className="text-gray-600 dark:text-dark-text-secondary text-sm mb-2">Last Updated</p>
+          <p className="text-lg font-bold text-gray-700 dark:text-dark-text-primary">
             {users.length > 0 ? new Date(users[0].created_at).toLocaleDateString() : 'N/A'}
           </p>
         </div>
@@ -243,3 +235,4 @@ export default function UserManagementPage() {
     </div>
   );
 }
+

@@ -159,14 +159,14 @@ export function PTMRequestsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">PTM Requests</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary">PTM Requests</h1>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
           >
             <Plus size={20} /> Create PTM
           </button>
@@ -174,23 +174,23 @@ export function PTMRequestsPage() {
 
         {/* Create Modal */}
         {showCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+          <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-200 dark:border-dark-border-primary">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Create PTM Request</h2>
-                <button onClick={() => setShowCreateModal(false)}>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-dark-text-primary">Create PTM Request</h2>
+                <button onClick={() => setShowCreateModal(false)} className="text-gray-600 dark:text-dark-text-secondary hover:text-gray-900 dark:hover:text-dark-text-primary">
                   <X size={24} />
                 </button>
               </div>
 
               <form onSubmit={handleCreatePTM} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Student</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Student</label>
                   <select
                     value={formData.student_id}
                     onChange={(e) => setFormData({ ...formData, student_id: e.target.value })}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                   >
                     <option value="">Select Student</option>
                     {students.map(student => (
@@ -200,12 +200,12 @@ export function PTMRequestsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Parent</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Parent</label>
                   <select
                     value={formData.parent_id}
                     onChange={(e) => setFormData({ ...formData, parent_id: e.target.value })}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                   >
                     <option value="">Select Parent</option>
                     {parents.map(parent => (
@@ -215,12 +215,12 @@ export function PTMRequestsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Teacher</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Teacher</label>
                   <select
                     value={formData.teacher_id}
                     onChange={(e) => setFormData({ ...formData, teacher_id: e.target.value })}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                   >
                     <option value="">Select Teacher</option>
                     {teachers.map(teacher => (
@@ -230,38 +230,38 @@ export function PTMRequestsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Time</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Preferred Time</label>
                   <input
                     type="datetime-local"
                     value={formData.preferred_time}
                     onChange={(e) => setFormData({ ...formData, preferred_time: e.target.value })}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Reason</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Reason</label>
                   <textarea
                     value={formData.reason}
                     onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                     required
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
                   />
                 </div>
 
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                    className="flex-1 px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 font-medium"
                   >
                     Create Request
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="flex-1 px-4 py-2 bg-gray-300 text-gray-900 rounded-lg hover:bg-gray-400"
+                    className="flex-1 px-4 py-2 bg-gray-300 dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary rounded-lg hover:bg-gray-400 dark:hover:bg-dark-surface-primary"
                   >
                     Cancel
                   </button>
@@ -272,7 +272,7 @@ export function PTMRequestsPage() {
         )}
 
         {/* Status Tabs */}
-        <div className="bg-white rounded-lg shadow mb-6 border-b border-gray-200 flex overflow-x-auto">
+        <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow mb-6 border-b border-gray-200 dark:border-dark-border-primary flex overflow-x-auto">
           {statusTabs.map(tab => {
             const count = activeTab === tab.status ? filteredRequests.length : 0;
             return (
@@ -281,8 +281,8 @@ export function PTMRequestsPage() {
                 onClick={() => setActiveTab(tab.status as any)}
                 className={`px-6 py-3 font-medium whitespace-nowrap border-b-2 transition ${
                   activeTab === tab.status
-                    ? `text-${tab.color}-600 border-${tab.color}-600`
-                    : 'text-gray-600 border-transparent hover:text-gray-900'
+                    ? `text-${tab.color}-600 dark:text-${tab.color}-400 border-${tab.color}-600 dark:border-${tab.color}-400`
+                    : 'text-gray-600 dark:text-dark-text-secondary border-transparent hover:text-gray-900 dark:hover:text-dark-text-primary'
                 }`}
               >
                 {tab.label} ({count})
@@ -292,19 +292,19 @@ export function PTMRequestsPage() {
         </div>
 
         {/* Search */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
+        <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-4 mb-6 border border-gray-200 dark:border-dark-border-primary">
           <input
             type="text"
             placeholder="Search by parent, teacher, or reason..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
           />
         </div>
 
         {/* Requests List */}
         {loading ? (
-          <div className="text-center py-12">Loading requests...</div>
+          <div className="text-center py-12 text-gray-900 dark:text-dark-text-primary">Loading requests...</div>
         ) : (
           <div className="space-y-4">
             {filteredRequests.length > 0 ? (
@@ -315,10 +315,10 @@ export function PTMRequestsPage() {
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 mb-2">
+                      <h3 className="font-bold text-gray-900 dark:text-dark-text-primary mb-2">
                         Parent: {request.parent_name}
                       </h3>
-                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
+                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-700 dark:text-dark-text-secondary">
                         <div>
                           <span className="font-medium">Teacher:</span> {request.teacher_name}
                         </div>
@@ -327,7 +327,7 @@ export function PTMRequestsPage() {
                           {request.preferred_time ? new Date(request.preferred_time).toLocaleString() : 'Not set'}
                         </div>
                       </div>
-                      <div className="mt-2 text-sm text-gray-700">
+                      <div className="mt-2 text-sm text-gray-700 dark:text-dark-text-secondary">
                         <span className="font-medium">Reason:</span> {request.reason}
                       </div>
                     </div>
@@ -359,7 +359,7 @@ export function PTMRequestsPage() {
                 </div>
               ))
             ) : (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                 No requests in this status
               </div>
             )}
@@ -368,9 +368,9 @@ export function PTMRequestsPage() {
 
         {/* Action Modal */}
         {actionMode && selectedRequest && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/70 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-200 dark:border-dark-border-primary">
+              <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-dark-text-primary">
                 {actionMode === 'approve' ? 'Approve Request' : 'Decline Request'}
               </h2>
 
@@ -379,7 +379,7 @@ export function PTMRequestsPage() {
                 onChange={(e) => setActionNotes(e.target.value)}
                 placeholder={actionMode === 'approve' ? 'Additional notes (optional)' : 'Reason for rejection'}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg mb-4 bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
               />
 
               <div className="flex gap-2">
@@ -403,7 +403,7 @@ export function PTMRequestsPage() {
                     setActionNotes('');
                     setSelectedRequest(null);
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-900 rounded-lg hover:bg-gray-400 font-medium"
+                  className="flex-1 px-4 py-2 bg-gray-300 dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary rounded-lg hover:bg-gray-400 dark:hover:bg-dark-surface-primary font-medium"
                 >
                   Cancel
                 </button>

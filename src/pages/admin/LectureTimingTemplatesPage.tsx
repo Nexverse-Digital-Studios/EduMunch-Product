@@ -157,19 +157,19 @@ export function LectureTimingTemplatesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Lecture Timing Templates</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">Lecture Timing Templates</h1>
 
         {/* Branch Selector */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Select Branch</label>
+        <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-4 mb-6">
+          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">Select Branch</label>
           <div className="flex gap-4">
             <select
               value={selectedBranch}
               onChange={(e) => setSelectedBranch(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-secondary text-gray-900 dark:text-dark-text-primary"
             >
               <option value="">Choose a branch...</option>
               {branches.map(branch => (
@@ -179,7 +179,7 @@ export function LectureTimingTemplatesPage() {
             {selectedBranch && !activeTemplate && (
               <button
                 onClick={handleCreateTemplate}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
               >
                 Create Template
               </button>
@@ -191,31 +191,31 @@ export function LectureTimingTemplatesPage() {
         {selectedBranch && activeTemplate && (
           <div className="space-y-4">
             {DAYS_OF_WEEK.map(day => (
-              <div key={day} className="bg-white rounded-lg shadow p-6 border border-gray-200">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">{day}</h2>
+              <div key={day} className="bg-white dark:bg-dark-surface-primary rounded-lg shadow p-6 border border-gray-200 dark:border-dark-border-primary">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-dark-text-primary mb-4">{day}</h2>
 
                 {daySlots[day].length > 0 ? (
                   <div className="space-y-3 mb-4">
                     {daySlots[day].map((slot, index) => (
-                      <div key={slot.id || index} className="flex gap-4 items-center bg-gray-50 p-3 rounded-lg">
+                      <div key={slot.id || index} className="flex gap-4 items-center bg-gray-50 dark:bg-dark-surface-secondary p-3 rounded-lg">
                         <div className="flex items-center gap-2 flex-1">
                           <input
                             type="time"
                             value={slot.start_time}
                             onChange={(e) => handleUpdateSlot(day, index, 'start_time', e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg"
+                            className="px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-primary text-gray-900 dark:text-dark-text-primary"
                           />
-                          <span className="text-gray-500">to</span>
+                          <span className="text-gray-500 dark:text-gray-400">to</span>
                           <input
                             type="time"
                             value={slot.end_time}
                             onChange={(e) => handleUpdateSlot(day, index, 'end_time', e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg"
+                            className="px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-surface-primary text-gray-900 dark:text-dark-text-primary"
                           />
                         </div>
                         <button
                           onClick={() => handleDeleteSlot(day, slot.id)}
-                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
+                          className="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50"
                         >
                           <X size={18} />
                         </button>
@@ -223,12 +223,12 @@ export function LectureTimingTemplatesPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm mb-4">No slots configured</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">No slots configured</p>
                 )}
 
                 <button
                   onClick={() => handleAddSlot(day)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm font-medium"
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/50 text-sm font-medium"
                 >
                   <Plus size={16} /> Add Slot
                 </button>
@@ -240,10 +240,11 @@ export function LectureTimingTemplatesPage() {
         {selectedBranch && !activeTemplate && (
           <div className="text-center py-12">
             <Clock className="mx-auto mb-4 text-gray-400" size={48} />
-            <p className="text-gray-500 text-lg">Create a template to add lecture slots</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">Create a template to add lecture slots</p>
           </div>
         )}
       </div>
     </div>
   );
 }
+
