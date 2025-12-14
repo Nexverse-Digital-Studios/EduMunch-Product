@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, X, Check, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import { getStatusTailwindClass } from '@/config/theme-colors';
 import { ptmService, PTMRequest } from '@/services/ptmService';
 
 export function PTMRequestsPage() {
@@ -142,29 +143,16 @@ export function PTMRequestsPage() {
   });
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PENDING':
-        return 'bg-yellow-50 border-yellow-200';
-      case 'AWAITING_PARENT':
-        return 'bg-blue-50 border-blue-200';
-      case 'APPROVED':
-        return 'bg-green-50 border-green-200';
-      case 'DECLINED':
-        return 'bg-red-50 border-red-200';
-      default:
-        return 'bg-gray-50 border-gray-200';
-    }
+    const statusKey = status.toLowerCase().replace(/\s/g, '_');
+    const bg = getStatusTailwindClass(statusKey, 'ptmRequest', 'bg');
+    return bg;
   };
 
   const getStatusBadge = (status: string) => {
-    const colorMap: Record<string, string> = {
-      'PENDING': 'bg-yellow-100 text-yellow-800',
-      'AWAITING_PARENT': 'bg-blue-100 text-blue-800',
-      'APPROVED': 'bg-green-100 text-green-800',
-      'DECLINED': 'bg-red-100 text-red-800',
-    };
+    const statusKey = status.toLowerCase().replace(/\s/g, '_');
+    const tailwindClass = getStatusTailwindClass(statusKey, 'ptmRequest', 'badge');
     return (
-      <span className={`px-3 py-1 text-xs font-medium rounded-full ${colorMap[status]}`}>
+      <span className={`px-3 py-1 text-xs font-medium rounded-full ${tailwindClass}`}>
         {status.replace('_', ' ')}
       </span>
     );

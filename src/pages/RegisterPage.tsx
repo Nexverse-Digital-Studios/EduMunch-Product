@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { uiConfig } from '@/config/ui.config';
+import { themeColors } from '@/config/theme-colors';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ export default function RegisterPage() {
         <div
           className="rounded-lg border p-8"
           style={{
-            backgroundColor: '#1f2937',
+            backgroundColor: themeColors.dark.card,
             borderColor: uiConfig.colors.primary['500'],
           }}
         >

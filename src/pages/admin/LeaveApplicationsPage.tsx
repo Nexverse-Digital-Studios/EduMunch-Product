@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, CheckCircle, XCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import { getStatusTailwindClass } from '@/config/theme-colors';
 import { leaveService } from '@/services/leaveService';
 
 export function LeaveApplicationsPage() {
@@ -109,11 +110,11 @@ export function LeaveApplicationsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return 'bg-yellow-50 border-yellow-200';
+        return getStatusTailwindClass('PENDING', 'leave', 'bg');
       case 'APPROVED':
-        return 'bg-green-50 border-green-200';
+        return getStatusTailwindClass('APPROVED', 'leave', 'bg');
       case 'REJECTED':
-        return 'bg-red-50 border-red-200';
+        return getStatusTailwindClass('REJECTED', 'leave', 'bg');
       default:
         return 'bg-gray-50 border-gray-200';
     }
@@ -122,11 +123,11 @@ export function LeaveApplicationsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">PENDING</span>;
+        return <span className={`px-3 py-1 ${getStatusTailwindClass('PENDING', 'leave', 'badge')} rounded-full text-sm font-medium`}>PENDING</span>;
       case 'APPROVED':
-        return <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">APPROVED</span>;
+        return <span className={`px-3 py-1 ${getStatusTailwindClass('APPROVED', 'leave', 'badge')} rounded-full text-sm font-medium`}>APPROVED</span>;
       case 'REJECTED':
-        return <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">REJECTED</span>;
+        return <span className={`px-3 py-1 ${getStatusTailwindClass('REJECTED', 'leave', 'badge')} rounded-full text-sm font-medium`}>REJECTED</span>;
       default:
         return <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">{status}</span>;
     }

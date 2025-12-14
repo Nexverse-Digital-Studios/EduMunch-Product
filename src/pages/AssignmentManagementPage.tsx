@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { uiConfig } from '@/config/ui.config';
+import { getStatusColorHex } from '@/config/theme-colors';
 
 interface AssignmentTemplate {
   id: string;
@@ -133,10 +134,10 @@ export default function AssignmentManagementPage() {
                         style={{
                           backgroundColor:
                             template.type === 'Theory'
-                              ? '#3b82f6'
+                              ? getStatusColorHex('theory', 'assignmentType')
                               : template.type === 'MCQ'
-                                ? '#a855f7'
-                                : '#f59e0b',
+                                ? getStatusColorHex('mcq', 'assignmentType')
+                                : getStatusColorHex('practical', 'assignmentType'),
                         }}
                       >
                         {template.type}

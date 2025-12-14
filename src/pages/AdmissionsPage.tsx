@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, X, Loader } from 'lucide-react';
 import { uiConfig } from '@/config/ui.config';
+import { getStatusTailwindClass } from '@/config/theme-colors';
 import { admissionsService, AdmissionRecord } from '@/services/admissions.service';
 import { useAuthStore } from '@/store/authStore';
 
@@ -158,11 +159,11 @@ export default function AdmissionsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE':
-        return 'bg-green-100 text-green-800';
+        return getStatusTailwindClass('ACTIVE', 'admission', 'badge');
       case 'PENDING':
-        return 'bg-amber-100 text-amber-800';
+        return getStatusTailwindClass('PENDING', 'admission', 'badge');
       case 'REJECTED':
-        return 'bg-red-100 text-red-800';
+        return getStatusTailwindClass('REJECTED', 'admission', 'badge');
       default:
         return 'bg-gray-100 text-gray-800';
     }

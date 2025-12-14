@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, Menu, X, User } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -7,6 +7,8 @@ interface SidebarNavItemProps {
   isActive: boolean;
   isExpanded: boolean;
   onNavigate: (path: string) => void;
+  onToggleExpand?: () => void;
+  currentPath?: string;
 }
 
 const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
@@ -14,14 +16,36 @@ const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
   isActive,
   isExpanded,
   onNavigate,
+  onToggleExpand,
+  currentPath = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasChildren = item.children && item.children.length > 0;
+  
+  // Check if any child is active
+  const hasActiveChild = hasChildren && item.children.some((child: any) => 
+    currentPath.startsWith(child.path || '')
+  );
+
+  // Auto-expand if a child is active
+  useEffect(() => {
+    if (hasActiveChild && isExpanded) {
+      setIsOpen(true);
+    }
+  }, [hasActiveChild, isExpanded]);
 
   const handleClick = () => {
     if (hasChildren) {
-      setIsOpen(!isOpen);
+      // If sidebar is collapsed and item has children, expand the sidebar
+      if (!isExpanded) {
+        onToggleExpand?.();
+        setIsOpen(true);
+      } else {
+        // If sidebar is expanded, toggle the dropdown
+        setIsOpen(!isOpen);
+      }
     } else if (item.path) {
+      // If no children, navigate directly
       onNavigate(item.path);
     }
   };
@@ -29,54 +53,63 @@ const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
   const Icon = item.icon;
 
   return (
-    <div>
+    <div className="relative group">
       <button
         onClick={handleClick}
         className={cn(
-          'w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200',
-          isActive && !hasChildren
+          'w-full flex items-center justify-between transition-all duration-200',
+          isExpanded
+            ? 'px-3 py-2.5 text-sm font-medium rounded-xl'
+            : 'p-3 justify-center rounded-lg',
+          (isActive || hasActiveChild) && !hasChildren
             ? 'bg-indigo-50 text-indigo-600'
-            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-          !isExpanded && 'justify-center px-2'
+            : hasActiveChild && hasChildren
+            ? 'bg-indigo-50 text-indigo-600'
+            : isExpanded
+            ? 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            : 'text-gray-600 hover:bg-gray-100'
         )}
         title={!isExpanded ? item.label : undefined}
       >
-        <div className="flex items-center gap-3">
+        <div className={cn('flex items-center', isExpanded && 'gap-3')}>
           <Icon className={cn(
-            'w-5 h-5 flex-shrink-0',
-            isActive && !hasChildren ? 'text-indigo-600' : 'text-gray-500'
+            'flex-shrink-0',
+            (isActive || hasActiveChild) ? 'text-indigo-600' : 'text-gray-500'
           )} />
           {isExpanded && <span className="truncate">{item.label}</span>}
         </div>
         {isExpanded && hasChildren && (
           <ChevronDown
-            className={cn('w-4 h-4 transition-transform text-gray-400', isOpen && 'rotate-180')}
+            className={cn('w-4 h-4 transition-transform text-gray-400 flex-shrink-0', isOpen && 'rotate-180')}
           />
         )}
       </button>
 
-      {/* Dropdown children */}
+      {/* Dropdown children - expanded view only */}
       {isExpanded && hasChildren && isOpen && (
         <div className="ml-8 mt-1 space-y-1">
-          {item.children.map((child: any) => (
-            <button
-              key={child.id}
-              onClick={() => onNavigate(child.path)}
-              className={cn(
-                'w-full text-left px-3 py-2 text-sm rounded-lg transition-colors',
-                child.path && window.location.pathname === child.path
-                  ? 'text-indigo-600 bg-indigo-50 font-medium'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
-              )}
-            >
-              {child.label}
-              {child.badge && (
-                <span className="ml-2 inline-block bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">
-                  {child.badge}
-                </span>
-              )}
-            </button>
-          ))}
+          {item.children.map((child: any) => {
+            const isChildActive = currentPath.startsWith(child.path || '');
+            return (
+              <button
+                key={child.id}
+                onClick={() => onNavigate(child.path)}
+                className={cn(
+                  'w-full text-left px-3 py-2 text-sm rounded-lg transition-colors',
+                  isChildActive
+                    ? 'text-indigo-600 bg-indigo-50 font-medium'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                )}
+              >
+                {child.label}
+                {child.badge && (
+                  <span className="ml-2 inline-block bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">
+                    {child.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -193,6 +226,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       isActive={currentPath.startsWith(item.path || '')}
                       isExpanded={isExpanded}
                       onNavigate={handleNavigate}
+                      onToggleExpand={onToggleExpand}
+                      currentPath={currentPath}
                     />
                   ))}
                 </div>

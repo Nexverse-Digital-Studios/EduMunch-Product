@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { uiConfig } from '@/config/ui.config';
+import { getStatusColorHex } from '@/config/theme-colors';
 
 interface Class {
   id: string;
@@ -45,10 +46,10 @@ export default function AttendanceManagementPage() {
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case 'PRESENT': return '#10b981';
-      case 'LATE': return '#f59e0b';
-      case 'NOT_MARKED': return '#9ca3af';
-      default: return '#6b7280';
+      case 'PRESENT': return getStatusColorHex('PRESENT', 'attendance');
+      case 'LATE': return getStatusColorHex('LATE', 'attendance');
+      case 'NOT_MARKED': return getStatusColorHex('NOT_MARKED', 'attendance');
+      default: return getStatusColorHex('notMarked', 'attendance');
     }
   };
 
