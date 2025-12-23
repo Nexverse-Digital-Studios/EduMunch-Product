@@ -42,7 +42,9 @@ CREATE INDEX idx_users_role ON users_AZHBXC(role) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_active ON users_AZHBXC(is_active) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_index_token ON users_AZHBXC(index_token) WHERE deleted_at IS NULL;
 
-COMMENT ON TABL (Optional - Frontend can handle via INDEX_TOKEN in env)
+COMMENT ON TABLE users_AZHBXC IS 'User management table linked to Supabase auth.users via auth_user_id';
+
+-- 1.2 Sessions
 CREATE TABLE sessions_AZHBXC (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
@@ -62,13 +64,7 @@ CREATE INDEX idx_sessions_expires ON sessions_AZHBXC(expires_at);
 
 COMMENT ON TABLE sessions_AZHBXC IS 'Session tracking - Frontend routing handled via INDEX_TOKEN from .env';
 COMMENT ON COLUMN sessions_AZHBXC.device_info IS 'JSON containing device_type, browser, os, etc.';
-COMMENT ON COLUMN sessions_AZHBXC.index_token IS 'Ensures session is bound to correct school
-CREATE INDEX idx_sessions_user ON sessions_AZHBXC(user_id);
-CREATE INDEX idx_sessions_token ON sessions_AZHBXC(token);
-CREATE INDEX idx_sessions_expires ON sessions_AZHBXC(expires_at);
-
-COMMENT ON TABLE sessions_AZHBXC IS 'User session management for security';
-COMMENT ON COLUMN sessions_AZHBXC.device_info IS 'JSON containing device_type, browser, os, etc.';
+COMMENT ON COLUMN sessions_AZHBXC.index_token IS 'Ensures session is bound to correct school';
 
 -- 1.3 Permissions
 CREATE TABLE permissions_AZHBXC (
@@ -998,8 +994,17 @@ CREATE TABLE activity_logs_AZHBXC (
   new_values JSONB,
   ip_address VARCHAR(45),
   user_agent TEXT,
-  created_at TIMESTAMP  FOR SINGLE SCHOOL (AZHBXC)
--- ============================================================================
+  created_at TIMESTAMP DEFAULT NOW()
+);
 
+CREATE INDEX idx_activity_logs_user ON activity_logs_AZHBXC(user_id);
+CREATE INDEX idx_activity_logs_action ON activity_logs_AZHBXC(action);
+CREATE INDEX idx_activity_logs_module ON activity_logs_AZHBXC(module);
+CREATE INDEX idx_activity_logs_created ON activity_logs_AZHBXC(created_at);
+
+COMMENT ON TABLE activity_logs_AZHBXC IS 'Audit trail for all user actions in the system';
+
+-- ============================================================================
+-- END OF SCHEMA FOR SCHOOL 1 (AZHBXC)
 -- ============================================================================
 
