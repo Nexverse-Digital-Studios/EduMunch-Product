@@ -579,7 +579,70 @@ CREATE UNIQUE INDEX idx_homework_submissions_unique ON homework_submissions_CXKQ
 COMMENT ON TABLE homework_submissions_CXKQLA IS 'Student homework submission and evaluation';
 
 -- ============================================================================
+-- 5. FOREIGN KEY CONSTRAINTS
+-- ============================================================================
+
+-- LMS Module
+ALTER TABLE assignments_CXKQLA ADD CONSTRAINT fk_assignments_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE assignments_CXKQLA ADD CONSTRAINT fk_assignments_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE assignments_CXKQLA ADD CONSTRAINT fk_assignments_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE assignments_CXKQLA ADD CONSTRAINT fk_assignments_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE assignment_submissions_CXKQLA ADD CONSTRAINT fk_assignment_submissions_assignment FOREIGN KEY (assignment_id) REFERENCES assignments_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE assignment_submissions_CXKQLA ADD CONSTRAINT fk_assignment_submissions_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE assignment_submissions_CXKQLA ADD CONSTRAINT fk_assignment_submissions_evaluated_by FOREIGN KEY (evaluated_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE study_materials_CXKQLA ADD CONSTRAINT fk_study_materials_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE study_materials_CXKQLA ADD CONSTRAINT fk_study_materials_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE study_materials_CXKQLA ADD CONSTRAINT fk_study_materials_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE study_materials_CXKQLA ADD CONSTRAINT fk_study_materials_topic FOREIGN KEY (topic_id) REFERENCES topics_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE study_materials_CXKQLA ADD CONSTRAINT fk_study_materials_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE online_class_sessions_CXKQLA ADD CONSTRAINT fk_online_class_sessions_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE online_class_sessions_CXKQLA ADD CONSTRAINT fk_online_class_sessions_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE online_class_sessions_CXKQLA ADD CONSTRAINT fk_online_class_sessions_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE class_recordings_CXKQLA ADD CONSTRAINT fk_class_recordings_session FOREIGN KEY (session_id) REFERENCES online_class_sessions_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE material_access_logs_CXKQLA ADD CONSTRAINT fk_material_access_logs_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE material_access_logs_CXKQLA ADD CONSTRAINT fk_material_access_logs_material FOREIGN KEY (material_id) REFERENCES study_materials_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE material_access_logs_CXKQLA ADD CONSTRAINT fk_material_access_logs_recording FOREIGN KEY (recording_id) REFERENCES class_recordings_CXKQLA(id) ON DELETE SET NULL;
+
+-- Transport Module
+ALTER TABLE transport_stops_CXKQLA ADD CONSTRAINT fk_transport_stops_route FOREIGN KEY (route_id) REFERENCES transport_routes_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_route_assignments_CXKQLA ADD CONSTRAINT fk_vehicle_route_assignments_route FOREIGN KEY (route_id) REFERENCES transport_routes_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_route_assignments_CXKQLA ADD CONSTRAINT fk_vehicle_route_assignments_vehicle FOREIGN KEY (vehicle_id) REFERENCES transport_vehicles_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_route_assignments_CXKQLA ADD CONSTRAINT fk_vehicle_route_assignments_driver FOREIGN KEY (driver_id) REFERENCES vehicle_drivers_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_route_assignments_CXKQLA ADD CONSTRAINT fk_vehicle_route_assignments_conductor FOREIGN KEY (conductor_id) REFERENCES vehicle_drivers_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE student_transport_CXKQLA ADD CONSTRAINT fk_student_transport_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE student_transport_CXKQLA ADD CONSTRAINT fk_student_transport_route FOREIGN KEY (route_id) REFERENCES transport_routes_CXKQLA(id) ON DELETE RESTRICT;
+ALTER TABLE student_transport_CXKQLA ADD CONSTRAINT fk_student_transport_stop FOREIGN KEY (stop_id) REFERENCES transport_stops_CXKQLA(id) ON DELETE RESTRICT;
+ALTER TABLE student_transport_CXKQLA ADD CONSTRAINT fk_student_transport_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_maintenance_CXKQLA ADD CONSTRAINT fk_vehicle_maintenance_vehicle FOREIGN KEY (vehicle_id) REFERENCES transport_vehicles_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_maintenance_CXKQLA ADD CONSTRAINT fk_vehicle_maintenance_created_by FOREIGN KEY (created_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+
+-- HR & Payroll Module
+ALTER TABLE employees_CXKQLA ADD CONSTRAINT fk_employees_user FOREIGN KEY (user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE salary_components_CXKQLA ADD CONSTRAINT fk_salary_components_structure FOREIGN KEY (salary_structure_id) REFERENCES salary_structures_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE monthly_payroll_CXKQLA ADD CONSTRAINT fk_monthly_payroll_employee FOREIGN KEY (employee_id) REFERENCES employees_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE monthly_payroll_CXKQLA ADD CONSTRAINT fk_monthly_payroll_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE monthly_payroll_CXKQLA ADD CONSTRAINT fk_monthly_payroll_created_by FOREIGN KEY (created_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE pf_esi_records_CXKQLA ADD CONSTRAINT fk_pf_esi_records_employee FOREIGN KEY (employee_id) REFERENCES employees_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE pf_esi_records_CXKQLA ADD CONSTRAINT fk_pf_esi_records_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE performance_reviews_CXKQLA ADD CONSTRAINT fk_performance_reviews_employee FOREIGN KEY (employee_id) REFERENCES employees_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE performance_reviews_CXKQLA ADD CONSTRAINT fk_performance_reviews_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE performance_reviews_CXKQLA ADD CONSTRAINT fk_performance_reviews_reviewer FOREIGN KEY (reviewer_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE staff_leave_applications_CXKQLA ADD CONSTRAINT fk_staff_leave_applications_employee FOREIGN KEY (employee_id) REFERENCES employees_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE staff_leave_applications_CXKQLA ADD CONSTRAINT fk_staff_leave_applications_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE staff_leave_applications_CXKQLA ADD CONSTRAINT fk_staff_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+
+-- Homework Module
+ALTER TABLE homework_CXKQLA ADD CONSTRAINT fk_homework_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE homework_CXKQLA ADD CONSTRAINT fk_homework_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE homework_CXKQLA ADD CONSTRAINT fk_homework_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE homework_submissions_CXKQLA ADD CONSTRAINT fk_homework_submissions_homework FOREIGN KEY (homework_id) REFERENCES homework_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE homework_submissions_CXKQLA ADD CONSTRAINT fk_homework_submissions_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE homework_submissions_CXKQLA ADD CONSTRAINT fk_homework_submissions_evaluated_by FOREIGN KEY (evaluated_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+
+-- ============================================================================
 -- END OF TIER 2 SCHEMA FOR School 3
+-- ============================================================================
+-- Total Tables: 25 | Total Foreign Keys: 50
 -- ============================================================================
 -- Total Tables Added: 25
 -- 

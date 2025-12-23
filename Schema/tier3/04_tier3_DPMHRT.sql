@@ -1336,7 +1336,94 @@ CREATE INDEX idx_feedback_analytics_sentiment ON feedback_analytics_DPMHRT(overa
 COMMENT ON TABLE feedback_analytics_DPMHRT IS 'Survey analytics and sentiment analysis';
 
 -- ============================================================================
+-- 9. FOREIGN KEY CONSTRAINTS
+-- ============================================================================
+
+-- AI Analytics Module
+ALTER TABLE analytics_student_performance_DPMHRT ADD CONSTRAINT fk_analytics_student_performance_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_DPMHRT ADD CONSTRAINT fk_analytics_student_performance_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_DPMHRT ADD CONSTRAINT fk_analytics_student_performance_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE analytics_attendance_patterns_DPMHRT ADD CONSTRAINT fk_analytics_attendance_patterns_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE analytics_attendance_patterns_DPMHRT ADD CONSTRAINT fk_analytics_attendance_patterns_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_section FOREIGN KEY (section_id) REFERENCES sections_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
+
+-- PTM Module
+ALTER TABLE ptm_slots_DPMHRT ADD CONSTRAINT fk_ptm_slots_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_DPMHRT ADD CONSTRAINT fk_ptm_bookings_slot FOREIGN KEY (slot_id) REFERENCES ptm_slots_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_DPMHRT ADD CONSTRAINT fk_ptm_bookings_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_DPMHRT ADD CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_DPMHRT ADD CONSTRAINT fk_ptm_meeting_notes_booking FOREIGN KEY (booking_id) REFERENCES ptm_bookings_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_DPMHRT ADD CONSTRAINT fk_ptm_meeting_notes_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_DPMHRT ADD CONSTRAINT fk_ptm_meeting_notes_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_DPMHRT ADD CONSTRAINT fk_ptm_meeting_notes_recorded_by FOREIGN KEY (recorded_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+
+-- Alumni Module
+ALTER TABLE alumni_DPMHRT ADD CONSTRAINT fk_alumni_user FOREIGN KEY (user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE alumni_DPMHRT ADD CONSTRAINT fk_alumni_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE alumni_events_DPMHRT ADD CONSTRAINT fk_alumni_events_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE alumni_event_registrations_DPMHRT ADD CONSTRAINT fk_alumni_event_registrations_event FOREIGN KEY (event_id) REFERENCES alumni_events_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE alumni_event_registrations_DPMHRT ADD CONSTRAINT fk_alumni_event_registrations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE alumni_donations_DPMHRT ADD CONSTRAINT fk_alumni_donations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE alumni_mentorship_DPMHRT ADD CONSTRAINT fk_alumni_mentorship_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE alumni_mentorship_DPMHRT ADD CONSTRAINT fk_alumni_mentorship_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+
+-- Admission Module
+ALTER TABLE admission_applications_DPMHRT ADD CONSTRAINT fk_admission_applications_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE admission_interviews_DPMHRT ADD CONSTRAINT fk_admission_interviews_application FOREIGN KEY (application_id) REFERENCES admission_applications_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE admission_entrance_tests_DPMHRT ADD CONSTRAINT fk_admission_entrance_tests_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE admission_test_results_DPMHRT ADD CONSTRAINT fk_admission_test_results_test FOREIGN KEY (test_id) REFERENCES admission_entrance_tests_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE admission_test_results_DPMHRT ADD CONSTRAINT fk_admission_test_results_application FOREIGN KEY (application_id) REFERENCES admission_applications_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE admission_merit_list_DPMHRT ADD CONSTRAINT fk_admission_merit_list_application FOREIGN KEY (application_id) REFERENCES admission_applications_DPMHRT(id) ON DELETE CASCADE;
+
+-- Asset Management Module
+ALTER TABLE assets_DPMHRT ADD CONSTRAINT fk_assets_assigned_user FOREIGN KEY (assigned_to_user) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE asset_maintenance_DPMHRT ADD CONSTRAINT fk_asset_maintenance_asset FOREIGN KEY (asset_id) REFERENCES assets_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE asset_maintenance_DPMHRT ADD CONSTRAINT fk_asset_maintenance_performed_by FOREIGN KEY (performed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE lab_equipment_DPMHRT ADD CONSTRAINT fk_lab_equipment_asset FOREIGN KEY (asset_id) REFERENCES assets_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_DPMHRT ADD CONSTRAINT fk_stationery_transactions_item FOREIGN KEY (item_id) REFERENCES stationery_items_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE stationery_transactions_DPMHRT ADD CONSTRAINT fk_stationery_transactions_issued_to FOREIGN KEY (issued_to_user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_DPMHRT ADD CONSTRAINT fk_stationery_transactions_approved_by FOREIGN KEY (approved_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_DPMHRT ADD CONSTRAINT fk_stationery_transactions_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+
+-- Certificate Module
+ALTER TABLE certificate_templates_DPMHRT ADD CONSTRAINT fk_certificate_templates_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE certificate_requests_DPMHRT ADD CONSTRAINT fk_certificate_requests_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE certificate_requests_DPMHRT ADD CONSTRAINT fk_certificate_requests_requested_by FOREIGN KEY (requested_by_user_id) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE certificate_requests_DPMHRT ADD CONSTRAINT fk_certificate_requests_template FOREIGN KEY (template_id) REFERENCES certificate_templates_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE certificate_requests_DPMHRT ADD CONSTRAINT fk_certificate_requests_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE generated_certificates_DPMHRT ADD CONSTRAINT fk_generated_certificates_request FOREIGN KEY (request_id) REFERENCES certificate_requests_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE generated_certificates_DPMHRT ADD CONSTRAINT fk_generated_certificates_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE generated_certificates_DPMHRT ADD CONSTRAINT fk_generated_certificates_template FOREIGN KEY (template_id) REFERENCES certificate_templates_DPMHRT(id) ON DELETE RESTRICT;
+ALTER TABLE generated_certificates_DPMHRT ADD CONSTRAINT fk_generated_certificates_issued_by FOREIGN KEY (issued_by_user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+
+-- Online Payment Module
+ALTER TABLE online_payment_transactions_DPMHRT ADD CONSTRAINT fk_online_payment_transactions_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE online_payment_transactions_DPMHRT ADD CONSTRAINT fk_online_payment_transactions_paid_by FOREIGN KEY (paid_by_user_id) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE online_payment_transactions_DPMHRT ADD CONSTRAINT fk_online_payment_transactions_fee_payment FOREIGN KEY (fee_payment_id) REFERENCES fee_payments_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE payment_gateway_logs_DPMHRT ADD CONSTRAINT fk_payment_gateway_logs_transaction FOREIGN KEY (transaction_id) REFERENCES online_payment_transactions_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_payment FOREIGN KEY (original_payment_id) REFERENCES fee_payments_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_requested_by FOREIGN KEY (requested_by) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_approved_by FOREIGN KEY (approved_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_processed_by FOREIGN KEY (processed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+
+-- Survey Module
+ALTER TABLE surveys_DPMHRT ADD CONSTRAINT fk_surveys_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE survey_questions_DPMHRT ADD CONSTRAINT fk_survey_questions_survey FOREIGN KEY (survey_id) REFERENCES surveys_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_DPMHRT ADD CONSTRAINT fk_survey_responses_survey FOREIGN KEY (survey_id) REFERENCES surveys_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_DPMHRT ADD CONSTRAINT fk_survey_responses_question FOREIGN KEY (question_id) REFERENCES survey_questions_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_DPMHRT ADD CONSTRAINT fk_survey_responses_user FOREIGN KEY (respondent_user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE feedback_analytics_DPMHRT ADD CONSTRAINT fk_feedback_analytics_survey FOREIGN KEY (survey_id) REFERENCES surveys_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE feedback_analytics_DPMHRT ADD CONSTRAINT fk_feedback_analytics_analyzed_by FOREIGN KEY (analyzed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+
+-- ============================================================================
 -- END OF TIER 3 SCHEMA FOR School 4
+-- ============================================================================
+-- Total Tables: 32 | Total Foreign Keys: 73
 -- ============================================================================
 -- Total Tables Added: 37
 -- 

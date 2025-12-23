@@ -1005,6 +1005,91 @@ CREATE INDEX idx_activity_logs_created ON activity_logs_DPMHRT(created_at);
 COMMENT ON TABLE activity_logs_DPMHRT IS 'Audit trail for all user actions in the system';
 
 -- ============================================================================
+-- 10. FOREIGN KEY CONSTRAINTS
+-- ============================================================================
+
+ALTER TABLE students_DPMHRT ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE students_DPMHRT ADD CONSTRAINT fk_students_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE RESTRICT;
+ALTER TABLE students_DPMHRT ADD CONSTRAINT fk_students_section FOREIGN KEY (section_id) REFERENCES sections_DPMHRT(id) ON DELETE RESTRICT;
+ALTER TABLE students_DPMHRT ADD CONSTRAINT fk_students_academic_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE RESTRICT;
+ALTER TABLE parents_DPMHRT ADD CONSTRAINT fk_parents_user FOREIGN KEY (user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE student_parent_relations_DPMHRT ADD CONSTRAINT fk_student_parent_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE student_parent_relations_DPMHRT ADD CONSTRAINT fk_student_parent_parent FOREIGN KEY (parent_id) REFERENCES parents_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE sections_DPMHRT ADD CONSTRAINT fk_sections_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE sections_DPMHRT ADD CONSTRAINT fk_sections_teacher FOREIGN KEY (class_teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE class_subjects_DPMHRT ADD CONSTRAINT fk_class_subjects_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE class_subjects_DPMHRT ADD CONSTRAINT fk_class_subjects_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE topics_DPMHRT ADD CONSTRAINT fk_topics_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE topics_DPMHRT ADD CONSTRAINT fk_topics_parent FOREIGN KEY (parent_topic_id) REFERENCES topics_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE topic_content_DPMHRT ADD CONSTRAINT fk_topic_content_topic FOREIGN KEY (topic_id) REFERENCES topics_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE topic_content_DPMHRT ADD CONSTRAINT fk_topic_content_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE teachers_DPMHRT ADD CONSTRAINT fk_teachers_user FOREIGN KEY (user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE teacher_subject_sections_DPMHRT ADD CONSTRAINT fk_teacher_subject_sections_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_DPMHRT ADD CONSTRAINT fk_teacher_subject_sections_section FOREIGN KEY (section_id) REFERENCES sections_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_DPMHRT ADD CONSTRAINT fk_teacher_subject_sections_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_DPMHRT ADD CONSTRAINT fk_teacher_subject_sections_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE timetables_DPMHRT ADD CONSTRAINT fk_timetables_section FOREIGN KEY (section_id) REFERENCES sections_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE timetables_DPMHRT ADD CONSTRAINT fk_timetables_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE timetables_DPMHRT ADD CONSTRAINT fk_timetables_period FOREIGN KEY (period_id) REFERENCES timetable_periods_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE timetables_DPMHRT ADD CONSTRAINT fk_timetables_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE timetables_DPMHRT ADD CONSTRAINT fk_timetables_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE timetable_substitutions_DPMHRT ADD CONSTRAINT fk_timetable_subs_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_DPMHRT ADD CONSTRAINT fk_timetable_subs_original FOREIGN KEY (original_teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_DPMHRT ADD CONSTRAINT fk_timetable_subs_substitute FOREIGN KEY (substitute_teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_DPMHRT ADD CONSTRAINT fk_timetable_subs_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE lecture_templates_DPMHRT ADD CONSTRAINT fk_lecture_templates_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE lecture_templates_DPMHRT ADD CONSTRAINT fk_lecture_templates_teacher FOREIGN KEY (default_teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE attendance_DPMHRT ADD CONSTRAINT fk_attendance_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE attendance_DPMHRT ADD CONSTRAINT fk_attendance_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE attendance_DPMHRT ADD CONSTRAINT fk_attendance_section FOREIGN KEY (section_id) REFERENCES sections_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE attendance_DPMHRT ADD CONSTRAINT fk_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_DPMHRT ADD CONSTRAINT fk_attendance_subject_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_DPMHRT ADD CONSTRAINT fk_attendance_subject_section FOREIGN KEY (section_id) REFERENCES sections_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_DPMHRT ADD CONSTRAINT fk_attendance_subject_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_DPMHRT ADD CONSTRAINT fk_attendance_subject_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_DPMHRT ADD CONSTRAINT fk_attendance_subject_period FOREIGN KEY (period_id) REFERENCES timetable_periods_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_DPMHRT ADD CONSTRAINT fk_attendance_subject_marked_by FOREIGN KEY (marked_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE leave_applications_DPMHRT ADD CONSTRAINT fk_leave_applications_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE leave_applications_DPMHRT ADD CONSTRAINT fk_leave_applications_applied_by FOREIGN KEY (applied_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE leave_applications_DPMHRT ADD CONSTRAINT fk_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE teacher_attendance_DPMHRT ADD CONSTRAINT fk_teacher_attendance_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE teacher_attendance_DPMHRT ADD CONSTRAINT fk_teacher_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE exams_DPMHRT ADD CONSTRAINT fk_exams_type FOREIGN KEY (exam_type_id) REFERENCES exam_types_DPMHRT(id) ON DELETE RESTRICT;
+ALTER TABLE exams_DPMHRT ADD CONSTRAINT fk_exams_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_DPMHRT ADD CONSTRAINT fk_exam_schedules_exam FOREIGN KEY (exam_id) REFERENCES exams_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_DPMHRT ADD CONSTRAINT fk_exam_schedules_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_DPMHRT ADD CONSTRAINT fk_exam_schedules_section FOREIGN KEY (section_id) REFERENCES sections_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE exam_schedules_DPMHRT ADD CONSTRAINT fk_exam_schedules_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE admit_cards_DPMHRT ADD CONSTRAINT fk_admit_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE admit_cards_DPMHRT ADD CONSTRAINT fk_admit_cards_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_DPMHRT ADD CONSTRAINT fk_exam_marks_schedule FOREIGN KEY (exam_schedule_id) REFERENCES exam_schedules_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_DPMHRT ADD CONSTRAINT fk_exam_marks_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_DPMHRT ADD CONSTRAINT fk_exam_marks_entered_by FOREIGN KEY (entered_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE exam_marks_DPMHRT ADD CONSTRAINT fk_exam_marks_verified_by FOREIGN KEY (verified_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE report_cards_DPMHRT ADD CONSTRAINT fk_report_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE report_cards_DPMHRT ADD CONSTRAINT fk_report_cards_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_structures_DPMHRT ADD CONSTRAINT fk_fee_structures_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_structures_DPMHRT ADD CONSTRAINT fk_fee_structures_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_structure_components_DPMHRT ADD CONSTRAINT fk_fee_structure_components_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_structure_components_DPMHRT ADD CONSTRAINT fk_fee_structure_components_component FOREIGN KEY (fee_component_id) REFERENCES fee_components_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE student_fees_DPMHRT ADD CONSTRAINT fk_student_fees_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE student_fees_DPMHRT ADD CONSTRAINT fk_student_fees_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_DPMHRT(id) ON DELETE RESTRICT;
+ALTER TABLE student_fees_DPMHRT ADD CONSTRAINT fk_student_fees_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_DPMHRT ADD CONSTRAINT fk_fee_payments_student_fee FOREIGN KEY (student_fee_id) REFERENCES student_fees_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_DPMHRT ADD CONSTRAINT fk_fee_payments_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_DPMHRT ADD CONSTRAINT fk_fee_payments_collected_by FOREIGN KEY (collected_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE late_fee_config_DPMHRT ADD CONSTRAINT fk_late_fee_config_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE announcements_DPMHRT ADD CONSTRAINT fk_announcements_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE announcements_DPMHRT ADD CONSTRAINT fk_announcements_section FOREIGN KEY (section_id) REFERENCES sections_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE announcements_DPMHRT ADD CONSTRAINT fk_announcements_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE notifications_DPMHRT ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE sms_logs_DPMHRT ADD CONSTRAINT fk_sms_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE email_logs_DPMHRT ADD CONSTRAINT fk_email_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE id_cards_DPMHRT ADD CONSTRAINT fk_id_cards_user FOREIGN KEY (user_id) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE activity_logs_DPMHRT ADD CONSTRAINT fk_activity_logs_user FOREIGN KEY (user_id) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
+
+-- ============================================================================
 -- END OF SCHEMA FOR SCHOOL 4 (DPMHRT)
+-- Total Tables: 42 | Total Foreign Keys: 86
 -- ============================================================================
 
