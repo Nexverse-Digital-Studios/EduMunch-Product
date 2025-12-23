@@ -8,6 +8,17 @@
 -- 1. USER MANAGEMENT & AUTHENTICATION
 -- ============================================================================
 
+-- Create ENUM type for user roles
+CREATE TYPE user_role_5HKSK AS ENUM (
+  'student', 
+  'teacher', 
+  'parent', 
+  'admin_super', 
+  'admin_hr', 
+  'admin_academic', 
+  'admin_finance'
+);
+
 -- 1.1 Users & Authentication
 CREATE TABLE users_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -16,15 +27,7 @@ CREATE TABLE users_5HKSK (
   email VARCHAR(255) NOT NULL,
   phone VARCHAR(15),
   full_name VARCHAR(255) NOT NULL,
-  role VARCHAR(50) NOT NULL CHECK (role IN (
-    'student', 
-    'teacher', 
-    'parent', 
-    'admin_super', 
-    'admin_hr', 
-    'admin_academic', 
-    'admin_finance'
-  )),
+  role user_role_5HKSK NOT NULL,
   profile_photo_url TEXT,
   is_active BOOLEAN DEFAULT true,
   is_email_verified BOOLEAN DEFAULT false,
@@ -69,7 +72,7 @@ COMMENT ON COLUMN sessions_5HKSK.index_token IS 'Ensures session is bound to cor
 -- 1.3 Permissions
 CREATE TABLE permissions_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  role VARCHAR(50) NOT NULL,
+  role user_role_5HKSK NOT NULL,
   module VARCHAR(100) NOT NULL,
   can_view BOOLEAN DEFAULT false,
   can_create BOOLEAN DEFAULT false,
