@@ -8,18 +8,97 @@
 -- 1. USER MANAGEMENT & AUTHENTICATION
 -- ============================================================================
 
--- Create ENUM type for user roles
-CREATE TYPE user_role_3AAA AS ENUM (
-  'student', 
-  'teacher', 
-  'parent', 
-  'admin_super', 
-  'admin_hr', 
-  'admin_academic', 
-  'admin_finance'
+-- 1.1 Dynamic Roles (Replaces hardcoded ENUM)
+CREATE TABLE roles_3AAA (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  role_code VARCHAR(50) UNIQUE NOT NULL,
+  role_name VARCHAR(100) NOT NULL,
+  description TEXT,
+  is_system_role BOOLEAN DEFAULT false,
+  is_active BOOLEAN DEFAULT true,
+  created_by UUID,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  index_token VARCHAR(6) DEFAULT '3AAA' NOT NULL
 );
 
--- 1.1 Users & Authentication
+CREATE INDEX idx_roles_code ON roles_3AAA(role_code);
+CREATE INDEX idx_roles_active ON roles_3AAA(is_active);
+CREATE INDEX idx_roles_system ON roles_3AAA(is_system_role);
+
+COMMENT ON TABLE roles_3AAA IS 'Dynamic role management - schools can create custom roles';
+COMMENT ON COLUMN roles_3AAA.is_system_role IS 'System roles (student, teacher, parent, admin) cannot be deleted';
+
+-- 1.2 Modules (Feature Grouping)
+CREATE TABLE modules_3AAA (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  module_code VARCHAR(50) UNIQUE NOT NULL,
+  module_name VARCHAR(100) NOT NULL,
+  parent_module_id UUID REFERENCES modules_3AAA(id) ON DELETE SET NULL,
+  description TEXT,
+  route_prefix VARCHAR(100),
+  icon VARCHAR(50),
+  display_order INTEGER,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT NOW(),
+  index_token VARCHAR(6) DEFAULT '3AAA' NOT NULL
+);
+
+CREATE INDEX idx_modules_code ON modules_3AAA(module_code);
+CREATE INDEX idx_modules_parent ON modules_3AAA(parent_module_id);
+CREATE INDEX idx_modules_active ON modules_3AAA(is_active);
+CREATE INDEX idx_modules_order ON modules_3AAA(display_order);
+
+COMMENT ON TABLE modules_3AAA IS 'Module hierarchy for organizing permissions';
+COMMENT ON COLUMN modules_3AAA.route_prefix IS 'Frontend route prefix for this module';
+
+-- 1.3 Permissions (Granular Actions)
+CREATE TABLE permissions_3AAA (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  module_id UUID NOT NULL REFERENCES modules_3AAA(id) ON DELETE CASCADE,
+  permission_code VARCHAR(100) UNIQUE NOT NULL,
+  permission_name VARCHAR(150) NOT NULL,
+  description TEXT,
+  resource_type VARCHAR(50),
+  resource_path VARCHAR(255),
+  http_method VARCHAR(10),
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT NOW(),
+  index_token VARCHAR(6) DEFAULT '3AAA' NOT NULL
+);
+
+CREATE INDEX idx_permissions_module ON permissions_3AAA(module_id);
+CREATE INDEX idx_permissions_code ON permissions_3AAA(permission_code);
+CREATE INDEX idx_permissions_resource ON permissions_3AAA(resource_type, resource_path);
+CREATE INDEX idx_permissions_active ON permissions_3AAA(is_active);
+
+COMMENT ON TABLE permissions_3AAA IS 'Granular permissions - specific actions within modules';
+COMMENT ON COLUMN permissions_3AAA.resource_type IS 'Type: api, route, ui_component';
+
+-- 1.4 Role-Permission Mapping
+CREATE TABLE role_permissions_3AAA (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  role_id UUID NOT NULL REFERENCES roles_3AAA(id) ON DELETE CASCADE,
+  permission_id UUID NOT NULL REFERENCES permissions_3AAA(id) ON DELETE CASCADE,
+  can_create BOOLEAN DEFAULT false,
+  can_read BOOLEAN DEFAULT false,
+  can_update BOOLEAN DEFAULT false,
+  can_delete BOOLEAN DEFAULT false,
+  can_approve BOOLEAN DEFAULT false,
+  can_export BOOLEAN DEFAULT false,
+  constraints JSONB,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(role_id, permission_id)
+);
+
+CREATE INDEX idx_role_permissions_role ON role_permissions_3AAA(role_id);
+CREATE INDEX idx_role_permissions_permission ON role_permissions_3AAA(permission_id);
+
+COMMENT ON TABLE role_permissions_3AAA IS 'Maps permissions to roles with CRUD + Approve + Export actions';
+COMMENT ON COLUMN role_permissions_3AAA.constraints IS 'JSON constraints like amount limits, department access';
+
+-- 1.5 Users & Authentication
 CREATE TABLE users_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   auth_user_id UUID UNIQUE,
@@ -27,7 +106,6 @@ CREATE TABLE users_3AAA (
   email VARCHAR(255) NOT NULL,
   phone VARCHAR(15),
   full_name VARCHAR(255) NOT NULL,
-  role user_role_3AAA NOT NULL,
   profile_photo_url TEXT,
   is_active BOOLEAN DEFAULT true,
   is_email_verified BOOLEAN DEFAULT false,
@@ -41,13 +119,132 @@ CREATE TABLE users_3AAA (
 CREATE INDEX idx_users_auth_user ON users_3AAA(auth_user_id) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_email ON users_3AAA(email) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_phone ON users_3AAA(phone) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_role ON users_3AAA(role) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_active ON users_3AAA(is_active) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_index_token ON users_3AAA(index_token) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE users_3AAA IS 'User management table linked to Supabase auth.users via auth_user_id';
+COMMENT ON TABLE users_3AAA IS 'User management table - roles assigned via user_roles_3AAA';
+COMMENT ON COLUMN users_3AAA.auth_user_id IS 'Links to Supabase auth.users table';
 
--- 1.2 Sessions
+-- 1.6 User-Role Assignment
+CREATE TABLE user_roles_3AAA (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users_3AAA(id) ON DELETE CASCADE,
+  role_id UUID NOT NULL REFERENCES roles_3AAA(id) ON DELETE RESTRICT,
+  is_primary BOOLEAN DEFAULT true,
+  assigned_by UUID REFERENCES users_3AAA(id) ON DELETE SET NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, role_id)
+);
+
+CREATE INDEX idx_user_roles_user ON user_roles_3AAA(user_id);
+CREATE INDEX idx_user_roles_role ON user_roles_3AAA(role_id);
+CREATE INDEX idx_user_roles_primary ON user_roles_3AAA(user_id, is_primary) WHERE is_primary = true;
+
+COMMENT ON TABLE user_roles_3AAA IS 'Assigns roles to users - only admin can modify';
+COMMENT ON COLUMN user_roles_3AAA.is_primary IS 'One primary role per user';
+
+-- 1.7 Additional Permissions (Cross-Role Access)
+CREATE TABLE user_additional_permissions_3AAA (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users_3AAA(id) ON DELETE CASCADE,
+  permission_id UUID NOT NULL REFERENCES permissions_3AAA(id) ON DELETE CASCADE,
+  granted_by UUID NOT NULL REFERENCES users_3AAA(id) ON DELETE SET NULL,
+  reason TEXT NOT NULL,
+  can_create BOOLEAN DEFAULT false,
+  can_read BOOLEAN DEFAULT false,
+  can_update BOOLEAN DEFAULT false,
+  can_delete BOOLEAN DEFAULT false,
+  can_approve BOOLEAN DEFAULT false,
+  can_export BOOLEAN DEFAULT false,
+  constraints JSONB,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, permission_id)
+);
+
+CREATE INDEX idx_user_additional_permissions_user ON user_additional_permissions_3AAA(user_id);
+CREATE INDEX idx_user_additional_permissions_permission ON user_additional_permissions_3AAA(permission_id);
+CREATE INDEX idx_user_additional_permissions_active ON user_additional_permissions_3AAA(user_id, is_active) WHERE is_active = true;
+
+COMMENT ON TABLE user_additional_permissions_3AAA IS 'Cross-role permissions granted by admin - permanent until revoked';
+COMMENT ON COLUMN user_additional_permissions_3AAA.reason IS 'Required justification for granting permission';
+
+-- 1.8 Permission Resolution Function
+CREATE OR REPLACE FUNCTION get_user_permissions_3AAA(p_user_id UUID)
+RETURNS TABLE (
+  permission_id UUID,
+  permission_code VARCHAR,
+  permission_name VARCHAR,
+  module_code VARCHAR,
+  module_name VARCHAR,
+  can_create BOOLEAN,
+  can_read BOOLEAN,
+  can_update BOOLEAN,
+  can_delete BOOLEAN,
+  can_approve BOOLEAN,
+  can_export BOOLEAN,
+  access_source VARCHAR,
+  constraints JSONB
+) AS $$
+BEGIN
+  RETURN QUERY
+  -- Primary role permissions
+  SELECT DISTINCT
+    p.id,
+    p.permission_code,
+    p.permission_name,
+    m.module_code,
+    m.module_name,
+    rp.can_create,
+    rp.can_read,
+    rp.can_update,
+    rp.can_delete,
+    rp.can_approve,
+    rp.can_export,
+    'primary_role'::VARCHAR,
+    rp.constraints
+  FROM user_roles_3AAA ur
+  JOIN roles_3AAA r ON ur.role_id = r.id
+  JOIN role_permissions_3AAA rp ON r.id = rp.role_id
+  JOIN permissions_3AAA p ON rp.permission_id = p.id
+  JOIN modules_3AAA m ON p.module_id = m.id
+  WHERE ur.user_id = p_user_id
+    AND r.is_active = true
+    AND p.is_active = true
+    AND m.is_active = true
+
+  UNION
+
+  -- Additional permissions
+  SELECT DISTINCT
+    p.id,
+    p.permission_code,
+    p.permission_name,
+    m.module_code,
+    m.module_name,
+    uap.can_create,
+    uap.can_read,
+    uap.can_update,
+    uap.can_delete,
+    uap.can_approve,
+    uap.can_export,
+    'additional_permission'::VARCHAR,
+    uap.constraints
+  FROM user_additional_permissions_3AAA uap
+  JOIN permissions_3AAA p ON uap.permission_id = p.id
+  JOIN modules_3AAA m ON p.module_id = m.id
+  WHERE uap.user_id = p_user_id
+    AND uap.is_active = true
+    AND p.is_active = true
+    AND m.is_active = true;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+COMMENT ON FUNCTION get_user_permissions_3AAA IS 'Returns all effective permissions for a user from role and additional permissions';
+
+-- 1.9 Sessions
 CREATE TABLE sessions_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
@@ -68,25 +265,6 @@ CREATE INDEX idx_sessions_expires ON sessions_3AAA(expires_at);
 COMMENT ON TABLE sessions_3AAA IS 'Session tracking - Frontend routing handled via INDEX_TOKEN from .env';
 COMMENT ON COLUMN sessions_3AAA.device_info IS 'JSON containing device_type, browser, os, etc.';
 COMMENT ON COLUMN sessions_3AAA.index_token IS 'Ensures session is bound to correct school';
-
--- 1.3 Permissions
-CREATE TABLE permissions_3AAA (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  role user_role_3AAA NOT NULL,
-  module VARCHAR(100) NOT NULL,
-  can_view BOOLEAN DEFAULT false,
-  can_create BOOLEAN DEFAULT false,
-  can_edit BOOLEAN DEFAULT false,
-  can_delete BOOLEAN DEFAULT false,
-  custom_permissions JSONB,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_3AAA(role, module);
-
-COMMENT ON TABLE permissions_3AAA IS 'Granular permission management for role-based access control';
-COMMENT ON COLUMN permissions_3AAA.module IS 'Module name: attendance, fee, exam, student, teacher, etc.';
 
 -- ============================================================================
 -- 2. STUDENT MANAGEMENT
@@ -1011,6 +1189,7 @@ COMMENT ON TABLE activity_logs_3AAA IS 'Audit trail for all user actions in the 
 -- 10. FOREIGN KEY CONSTRAINTS
 -- ============================================================================
 
+ALTER TABLE roles_3AAA ADD CONSTRAINT fk_roles_created_by FOREIGN KEY (created_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
 ALTER TABLE students_3AAA ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
 ALTER TABLE students_3AAA ADD CONSTRAINT fk_students_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE RESTRICT;
 ALTER TABLE students_3AAA ADD CONSTRAINT fk_students_section FOREIGN KEY (section_id) REFERENCES sections_3AAA(id) ON DELETE RESTRICT;
