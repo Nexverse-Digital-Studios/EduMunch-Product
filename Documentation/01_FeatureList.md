@@ -62,10 +62,8 @@ Each school can enable/disable features through code-based configuration embedde
 
 ### 1.4 Academic Management
 - **Course Management**
-  - Course creation (Class 1-12, JEE, NEET, etc.)
+  - Course creation (Class 1-12, Standard streams: Science, Commerce, Arts)
   - Course code assignment
-  - Branch-wise pricing configuration
-  - Multiple branch support for same course
 - **Subject Management**
   - Subject creation with codes
   - Subject type (Theory, Practical, General Knowledge)
@@ -76,7 +74,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Content hierarchy (Topic → Subtopics)
   - Learning material attachment
   - Progress tracking
-- **Class/Section Management (Batches)**
+- **Class/Section Management (Batches, Remember its for schools)**
   - Batch creation with capacity limits
   - Multiple batches per course
   - Section/Batch division
@@ -338,27 +336,39 @@ Each school can enable/disable features through code-based configuration embedde
 
 ---
 
-## TIER 4: ENTERPRISE FEATURES (Custom/XTRA Tables)
+## TIER 4: ENTERPRISE FEATURES (Future Implementation)
 
-### 4.1 
+> **Note:** TIER 4 is planned for future development. Current implementation focuses on TIER 1, TIER 2, and TIER 3 only.
 
-### 4.4 AI Proctored Exams
+### 4.1 Multi-Campus Management (Planned)
+- **Campus Master**
+  - Multiple branch/campus management
+  - Campus-wise data isolation
+  - Centralized reporting across campuses
+- **Inter-Campus Operations**
+  - Student transfers between campuses
+  - Staff relocation tracking
+  - Consolidated analytics
+
+### 4.2 AI Proctored Exams (Planned)
 - **Online Exam Platform**
   - Question bank management
   - Random question generation
   - Timer and auto-submit
 - **AI Proctoring**
   - Face detection
+  - Eye tracking
   - Tab switching detection
   - Suspicious activity alerts
 - **Auto-Evaluation**
   - MCQ auto-grading
   - Descriptive answer AI evaluation (experimental)
 
-### 4.5 Custom Integrations (Optional)
+### 4.3 Custom Integrations (Planned)
 - **ERP Integration**
   - Integration with existing school ERPs
   - Data sync APIs
+  - Real-time data exchange
 - **Government Portal Integration**
   - UDISE data upload
   - Scholarship portal integration
@@ -368,12 +378,12 @@ Each school can enable/disable features through code-based configuration embedde
   - Microsoft 365 integration
   - WhatsApp Business API
 
-### 4.6 Advanced Security & Compliance
+### 4.4 Advanced Security & Compliance (Planned)
 - **Data Backup & Recovery**
   - Automated daily backups
   - Point-in-time recovery
   - Disaster recovery plan
-- **Audit Logs**
+- **Enhanced Audit Logs**
   - Complete activity logging
   - User action tracking
   - Compliance reporting
@@ -441,13 +451,25 @@ export const SCHOOL_FEATURES = {
 
 ## Pricing Tier Recommendation
 
-| Tier | Price/School/Year | Features Included |
-|------|-------------------|-------------------|
-| **Basic** | ₹6,800 | Tier 1 Features |
-| **Standard** | ₹12,000 | Tier 1 + Tier 2 |
-| **Advanced** | ₹20,000 | Tier 1 + Tier 2 + Tier 3 |
-| **Enterprise** | Custom | All + Custom Development |
+| Tier | Price/School/Year | Features Included | Status |
+|------|-------------------|-------------------|--------|
+| **Basic** | ₹6,800 | Tier 1 Features (42 tables/school) | ✅ Schema Ready |
+| **Standard** | ₹12,000 | Tier 1 + Tier 2 (67 tables/school) | ✅ Schema Ready |
+| **Advanced** | ₹20,000 | Tier 1 + Tier 2 + Tier 3 (104 tables/school) | ✅ Schema Ready |
+| **Enterprise** | Custom | All + Tier 4 + Custom Development | 🔮 Future |
 
 ---
 
-**Status:** Ready for Architecture Planning
+## Current Implementation Status
+
+### ✅ Completed (Ready for Development)
+- **TIER 1**: 42 tables per school - Basic features (User Management, Students, Attendance, Exams, Fees, Communication)
+- **TIER 2**: 25 tables per school - Standard features (LMS, Transport, HR/Payroll, Homework)
+- **TIER 3**: 37 tables per school - Advanced features (AI Analytics, PTM, Alumni, Admissions, Assets, Certificates, Online Payments, Surveys)
+
+### 🔮 Future Roadmap
+- **TIER 4**: Enterprise features (AI Proctored Exams, Multi-Campus, Government Integrations, GDPR Compliance)
+
+---
+
+**Status:** Schema Complete for TIER 1-3 | Ready for Application Development
