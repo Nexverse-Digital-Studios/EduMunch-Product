@@ -1,5 +1,5 @@
 -- ============================================================================
--- EduMunch: TIER 3 Schema - School 5 (EWNTKS)
+-- EduMunch: TIER 3 Schema - School 5 (5HKSK)
 -- ============================================================================
 -- TIER 3: ADVANCED FEATURES (Premium Offerings)
 -- Requires TIER 1 and TIER 2 to be deployed first
@@ -20,7 +20,7 @@
 -- ============================================================================
 
 -- 1.1 Student Performance Analytics
-CREATE TABLE analytics_student_performance_EWNTKS (
+CREATE TABLE analytics_student_performance_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -48,14 +48,14 @@ CREATE TABLE analytics_student_performance_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_student_performance_student ON analytics_student_performance_EWNTKS(student_id);
-CREATE INDEX idx_analytics_student_performance_subject ON analytics_student_performance_EWNTKS(subject_id);
-CREATE INDEX idx_analytics_student_performance_risk ON analytics_student_performance_EWNTKS(risk_level);
+CREATE INDEX idx_analytics_student_performance_student ON analytics_student_performance_5HKSK(student_id);
+CREATE INDEX idx_analytics_student_performance_subject ON analytics_student_performance_5HKSK(subject_id);
+CREATE INDEX idx_analytics_student_performance_risk ON analytics_student_performance_5HKSK(risk_level);
 
-COMMENT ON TABLE analytics_student_performance_EWNTKS IS 'ML-based student performance analysis and predictions';
+COMMENT ON TABLE analytics_student_performance_5HKSK IS 'ML-based student performance analysis and predictions';
 
 -- 1.2 Attendance Pattern Analysis
-CREATE TABLE analytics_attendance_patterns_EWNTKS (
+CREATE TABLE analytics_attendance_patterns_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -87,14 +87,14 @@ CREATE TABLE analytics_attendance_patterns_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_attendance_patterns_student ON analytics_attendance_patterns_EWNTKS(student_id);
-CREATE INDEX idx_analytics_attendance_patterns_risk ON analytics_attendance_patterns_EWNTKS(dropout_risk_level);
-CREATE INDEX idx_analytics_attendance_patterns_alert ON analytics_attendance_patterns_EWNTKS(alert_sent);
+CREATE INDEX idx_analytics_attendance_patterns_student ON analytics_attendance_patterns_5HKSK(student_id);
+CREATE INDEX idx_analytics_attendance_patterns_risk ON analytics_attendance_patterns_5HKSK(dropout_risk_level);
+CREATE INDEX idx_analytics_attendance_patterns_alert ON analytics_attendance_patterns_5HKSK(alert_sent);
 
-COMMENT ON TABLE analytics_attendance_patterns_EWNTKS IS 'Attendance pattern analysis for dropout risk detection';
+COMMENT ON TABLE analytics_attendance_patterns_5HKSK IS 'Attendance pattern analysis for dropout risk detection';
 
 -- 1.3 Academic Trend Reports
-CREATE TABLE analytics_academic_trends_EWNTKS (
+CREATE TABLE analytics_academic_trends_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   
   -- Scope
@@ -132,19 +132,19 @@ CREATE TABLE analytics_academic_trends_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_academic_trends_type ON analytics_academic_trends_EWNTKS(analysis_type);
-CREATE INDEX idx_analytics_academic_trends_class ON analytics_academic_trends_EWNTKS(class_id);
-CREATE INDEX idx_analytics_academic_trends_section ON analytics_academic_trends_EWNTKS(section_id);
-CREATE INDEX idx_analytics_academic_trends_teacher ON analytics_academic_trends_EWNTKS(teacher_id);
+CREATE INDEX idx_analytics_academic_trends_type ON analytics_academic_trends_5HKSK(analysis_type);
+CREATE INDEX idx_analytics_academic_trends_class ON analytics_academic_trends_5HKSK(class_id);
+CREATE INDEX idx_analytics_academic_trends_section ON analytics_academic_trends_5HKSK(section_id);
+CREATE INDEX idx_analytics_academic_trends_teacher ON analytics_academic_trends_5HKSK(teacher_id);
 
-COMMENT ON TABLE analytics_academic_trends_EWNTKS IS 'Academic performance trends and comparative analysis';
+COMMENT ON TABLE analytics_academic_trends_5HKSK IS 'Academic performance trends and comparative analysis';
 
 -- ============================================================================
 -- 2. PARENT-TEACHER MEETING (PTM)
 -- ============================================================================
 
 -- 2.1 PTM Slots
-CREATE TABLE ptm_slots_EWNTKS (
+CREATE TABLE ptm_slots_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   ptm_date DATE NOT NULL,
@@ -161,14 +161,14 @@ CREATE TABLE ptm_slots_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_ptm_slots_teacher ON ptm_slots_EWNTKS(teacher_id);
-CREATE INDEX idx_ptm_slots_date ON ptm_slots_EWNTKS(ptm_date);
-CREATE INDEX idx_ptm_slots_status ON ptm_slots_EWNTKS(status);
+CREATE INDEX idx_ptm_slots_teacher ON ptm_slots_5HKSK(teacher_id);
+CREATE INDEX idx_ptm_slots_date ON ptm_slots_5HKSK(ptm_date);
+CREATE INDEX idx_ptm_slots_status ON ptm_slots_5HKSK(status);
 
-COMMENT ON TABLE ptm_slots_EWNTKS IS 'Teacher availability slots for PTM';
+COMMENT ON TABLE ptm_slots_5HKSK IS 'Teacher availability slots for PTM';
 
 -- 2.2 PTM Bookings
-CREATE TABLE ptm_bookings_EWNTKS (
+CREATE TABLE ptm_bookings_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slot_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -192,15 +192,15 @@ CREATE TABLE ptm_bookings_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_ptm_bookings_slot ON ptm_bookings_EWNTKS(slot_id);
-CREATE INDEX idx_ptm_bookings_student ON ptm_bookings_EWNTKS(student_id);
-CREATE INDEX idx_ptm_bookings_parent ON ptm_bookings_EWNTKS(parent_user_id);
-CREATE INDEX idx_ptm_bookings_status ON ptm_bookings_EWNTKS(status);
+CREATE INDEX idx_ptm_bookings_slot ON ptm_bookings_5HKSK(slot_id);
+CREATE INDEX idx_ptm_bookings_student ON ptm_bookings_5HKSK(student_id);
+CREATE INDEX idx_ptm_bookings_parent ON ptm_bookings_5HKSK(parent_user_id);
+CREATE INDEX idx_ptm_bookings_status ON ptm_bookings_5HKSK(status);
 
-COMMENT ON TABLE ptm_bookings_EWNTKS IS 'Parent booking records for PTM slots';
+COMMENT ON TABLE ptm_bookings_5HKSK IS 'Parent booking records for PTM slots';
 
 -- 2.3 PTM Meeting Notes
-CREATE TABLE ptm_meeting_notes_EWNTKS (
+CREATE TABLE ptm_meeting_notes_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   booking_id UUID NOT NULL,
   teacher_id UUID NOT NULL,
@@ -231,19 +231,19 @@ CREATE TABLE ptm_meeting_notes_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_ptm_meeting_notes_booking ON ptm_meeting_notes_EWNTKS(booking_id);
-CREATE INDEX idx_ptm_meeting_notes_student ON ptm_meeting_notes_EWNTKS(student_id);
-CREATE INDEX idx_ptm_meeting_notes_teacher ON ptm_meeting_notes_EWNTKS(teacher_id);
-CREATE INDEX idx_ptm_meeting_notes_follow_up ON ptm_meeting_notes_EWNTKS(follow_up_required, follow_up_completed);
+CREATE INDEX idx_ptm_meeting_notes_booking ON ptm_meeting_notes_5HKSK(booking_id);
+CREATE INDEX idx_ptm_meeting_notes_student ON ptm_meeting_notes_5HKSK(student_id);
+CREATE INDEX idx_ptm_meeting_notes_teacher ON ptm_meeting_notes_5HKSK(teacher_id);
+CREATE INDEX idx_ptm_meeting_notes_follow_up ON ptm_meeting_notes_5HKSK(follow_up_required, follow_up_completed);
 
-COMMENT ON TABLE ptm_meeting_notes_EWNTKS IS 'Discussion notes and action items from PTM';
+COMMENT ON TABLE ptm_meeting_notes_5HKSK IS 'Discussion notes and action items from PTM';
 
 -- ============================================================================
 -- 3. ALUMNI MANAGEMENT
 -- ============================================================================
 
 -- 3.1 Alumni Directory
-CREATE TABLE alumni_EWNTKS (
+CREATE TABLE alumni_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE, -- Link to users table if registered
   
@@ -291,15 +291,15 @@ CREATE TABLE alumni_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_batch ON alumni_EWNTKS(batch_year);
-CREATE INDEX idx_alumni_email ON alumni_EWNTKS(email);
-CREATE INDEX idx_alumni_mentor ON alumni_EWNTKS(is_mentor);
-CREATE INDEX idx_alumni_active ON alumni_EWNTKS(is_active);
+CREATE INDEX idx_alumni_batch ON alumni_5HKSK(batch_year);
+CREATE INDEX idx_alumni_email ON alumni_5HKSK(email);
+CREATE INDEX idx_alumni_mentor ON alumni_5HKSK(is_mentor);
+CREATE INDEX idx_alumni_active ON alumni_5HKSK(is_active);
 
-COMMENT ON TABLE alumni_EWNTKS IS 'Alumni directory with engagement preferences';
+COMMENT ON TABLE alumni_5HKSK IS 'Alumni directory with engagement preferences';
 
 -- 3.2 Alumni Events
-CREATE TABLE alumni_events_EWNTKS (
+CREATE TABLE alumni_events_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_title VARCHAR(255) NOT NULL,
   event_description TEXT,
@@ -335,14 +335,14 @@ CREATE TABLE alumni_events_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_events_date ON alumni_events_EWNTKS(event_date);
-CREATE INDEX idx_alumni_events_type ON alumni_events_EWNTKS(event_type);
-CREATE INDEX idx_alumni_events_status ON alumni_events_EWNTKS(status);
+CREATE INDEX idx_alumni_events_date ON alumni_events_5HKSK(event_date);
+CREATE INDEX idx_alumni_events_type ON alumni_events_5HKSK(event_type);
+CREATE INDEX idx_alumni_events_status ON alumni_events_5HKSK(status);
 
-COMMENT ON TABLE alumni_events_EWNTKS IS 'Alumni reunions, webinars, and networking events';
+COMMENT ON TABLE alumni_events_5HKSK IS 'Alumni reunions, webinars, and networking events';
 
 -- 3.3 Alumni Event Registrations
-CREATE TABLE alumni_event_registrations_EWNTKS (
+CREATE TABLE alumni_event_registrations_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_id UUID NOT NULL,
   alumni_id UUID NOT NULL,
@@ -365,14 +365,14 @@ CREATE TABLE alumni_event_registrations_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_event_registrations_event ON alumni_event_registrations_EWNTKS(event_id);
-CREATE INDEX idx_alumni_event_registrations_alumni ON alumni_event_registrations_EWNTKS(alumni_id);
-CREATE UNIQUE INDEX idx_alumni_event_registrations_unique ON alumni_event_registrations_EWNTKS(event_id, alumni_id);
+CREATE INDEX idx_alumni_event_registrations_event ON alumni_event_registrations_5HKSK(event_id);
+CREATE INDEX idx_alumni_event_registrations_alumni ON alumni_event_registrations_5HKSK(alumni_id);
+CREATE UNIQUE INDEX idx_alumni_event_registrations_unique ON alumni_event_registrations_5HKSK(event_id, alumni_id);
 
-COMMENT ON TABLE alumni_event_registrations_EWNTKS IS 'Alumni event registrations and attendance';
+COMMENT ON TABLE alumni_event_registrations_5HKSK IS 'Alumni event registrations and attendance';
 
 -- 3.4 Alumni Donations
-CREATE TABLE alumni_donations_EWNTKS (
+CREATE TABLE alumni_donations_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   alumni_id UUID NOT NULL,
   
@@ -404,14 +404,14 @@ CREATE TABLE alumni_donations_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_donations_alumni ON alumni_donations_EWNTKS(alumni_id);
-CREATE INDEX idx_alumni_donations_date ON alumni_donations_EWNTKS(donation_date);
-CREATE INDEX idx_alumni_donations_status ON alumni_donations_EWNTKS(payment_status);
+CREATE INDEX idx_alumni_donations_alumni ON alumni_donations_5HKSK(alumni_id);
+CREATE INDEX idx_alumni_donations_date ON alumni_donations_5HKSK(donation_date);
+CREATE INDEX idx_alumni_donations_status ON alumni_donations_5HKSK(payment_status);
 
-COMMENT ON TABLE alumni_donations_EWNTKS IS 'Alumni fundraising and donation tracking';
+COMMENT ON TABLE alumni_donations_5HKSK IS 'Alumni fundraising and donation tracking';
 
 -- 3.5 Alumni Mentorship Program
-CREATE TABLE alumni_mentorship_EWNTKS (
+CREATE TABLE alumni_mentorship_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   alumni_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -438,18 +438,18 @@ CREATE TABLE alumni_mentorship_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_mentorship_alumni ON alumni_mentorship_EWNTKS(alumni_id);
-CREATE INDEX idx_alumni_mentorship_student ON alumni_mentorship_EWNTKS(student_id);
-CREATE INDEX idx_alumni_mentorship_status ON alumni_mentorship_EWNTKS(status);
+CREATE INDEX idx_alumni_mentorship_alumni ON alumni_mentorship_5HKSK(alumni_id);
+CREATE INDEX idx_alumni_mentorship_student ON alumni_mentorship_5HKSK(student_id);
+CREATE INDEX idx_alumni_mentorship_status ON alumni_mentorship_5HKSK(status);
 
-COMMENT ON TABLE alumni_mentorship_EWNTKS IS 'Alumni-student mentorship matching and tracking';
+COMMENT ON TABLE alumni_mentorship_5HKSK IS 'Alumni-student mentorship matching and tracking';
 
 -- ============================================================================
 -- 4. ADMISSION MANAGEMENT
 -- ============================================================================
 
 -- 4.1 Admission Applications
-CREATE TABLE admission_applications_EWNTKS (
+CREATE TABLE admission_applications_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -512,15 +512,15 @@ CREATE TABLE admission_applications_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_applications_number ON admission_applications_EWNTKS(application_number);
-CREATE INDEX idx_admission_applications_status ON admission_applications_EWNTKS(status);
-CREATE INDEX idx_admission_applications_class ON admission_applications_EWNTKS(applying_for_class);
-CREATE INDEX idx_admission_applications_date ON admission_applications_EWNTKS(submission_date);
+CREATE INDEX idx_admission_applications_number ON admission_applications_5HKSK(application_number);
+CREATE INDEX idx_admission_applications_status ON admission_applications_5HKSK(status);
+CREATE INDEX idx_admission_applications_class ON admission_applications_5HKSK(applying_for_class);
+CREATE INDEX idx_admission_applications_date ON admission_applications_5HKSK(submission_date);
 
-COMMENT ON TABLE admission_applications_EWNTKS IS 'Online admission application portal';
+COMMENT ON TABLE admission_applications_5HKSK IS 'Online admission application portal';
 
 -- 4.2 Admission Interviews
-CREATE TABLE admission_interviews_EWNTKS (
+CREATE TABLE admission_interviews_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID NOT NULL,
   
@@ -551,14 +551,14 @@ CREATE TABLE admission_interviews_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_interviews_application ON admission_interviews_EWNTKS(application_id);
-CREATE INDEX idx_admission_interviews_date ON admission_interviews_EWNTKS(interview_date);
-CREATE INDEX idx_admission_interviews_status ON admission_interviews_EWNTKS(status);
+CREATE INDEX idx_admission_interviews_application ON admission_interviews_5HKSK(application_id);
+CREATE INDEX idx_admission_interviews_date ON admission_interviews_5HKSK(interview_date);
+CREATE INDEX idx_admission_interviews_status ON admission_interviews_5HKSK(status);
 
-COMMENT ON TABLE admission_interviews_EWNTKS IS 'Interview scheduling and evaluation';
+COMMENT ON TABLE admission_interviews_5HKSK IS 'Interview scheduling and evaluation';
 
 -- 4.3 Admission Entrance Tests
-CREATE TABLE admission_entrance_tests_EWNTKS (
+CREATE TABLE admission_entrance_tests_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   test_name VARCHAR(255) NOT NULL,
   test_code VARCHAR(50) UNIQUE NOT NULL,
@@ -588,14 +588,14 @@ CREATE TABLE admission_entrance_tests_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_entrance_tests_date ON admission_entrance_tests_EWNTKS(test_date);
-CREATE INDEX idx_admission_entrance_tests_class ON admission_entrance_tests_EWNTKS(for_class);
-CREATE INDEX idx_admission_entrance_tests_status ON admission_entrance_tests_EWNTKS(status);
+CREATE INDEX idx_admission_entrance_tests_date ON admission_entrance_tests_5HKSK(test_date);
+CREATE INDEX idx_admission_entrance_tests_class ON admission_entrance_tests_5HKSK(for_class);
+CREATE INDEX idx_admission_entrance_tests_status ON admission_entrance_tests_5HKSK(status);
 
-COMMENT ON TABLE admission_entrance_tests_EWNTKS IS 'Entrance test configuration';
+COMMENT ON TABLE admission_entrance_tests_5HKSK IS 'Entrance test configuration';
 
 -- 4.4 Admission Test Results
-CREATE TABLE admission_test_results_EWNTKS (
+CREATE TABLE admission_test_results_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   test_id UUID NOT NULL,
   application_id UUID NOT NULL,
@@ -617,15 +617,15 @@ CREATE TABLE admission_test_results_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_test_results_test ON admission_test_results_EWNTKS(test_id);
-CREATE INDEX idx_admission_test_results_application ON admission_test_results_EWNTKS(application_id);
-CREATE INDEX idx_admission_test_results_rank ON admission_test_results_EWNTKS(rank);
-CREATE UNIQUE INDEX idx_admission_test_results_unique ON admission_test_results_EWNTKS(test_id, application_id);
+CREATE INDEX idx_admission_test_results_test ON admission_test_results_5HKSK(test_id);
+CREATE INDEX idx_admission_test_results_application ON admission_test_results_5HKSK(application_id);
+CREATE INDEX idx_admission_test_results_rank ON admission_test_results_5HKSK(rank);
+CREATE UNIQUE INDEX idx_admission_test_results_unique ON admission_test_results_5HKSK(test_id, application_id);
 
-COMMENT ON TABLE admission_test_results_EWNTKS IS 'Entrance test results and ranking';
+COMMENT ON TABLE admission_test_results_5HKSK IS 'Entrance test results and ranking';
 
 -- 4.5 Admission Merit List
-CREATE TABLE admission_merit_list_EWNTKS (
+CREATE TABLE admission_merit_list_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID NOT NULL,
   for_class VARCHAR(20) NOT NULL,
@@ -658,19 +658,19 @@ CREATE TABLE admission_merit_list_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_merit_list_application ON admission_merit_list_EWNTKS(application_id);
-CREATE INDEX idx_admission_merit_list_class ON admission_merit_list_EWNTKS(for_class);
-CREATE INDEX idx_admission_merit_list_rank ON admission_merit_list_EWNTKS(merit_rank);
-CREATE INDEX idx_admission_merit_list_status ON admission_merit_list_EWNTKS(status);
+CREATE INDEX idx_admission_merit_list_application ON admission_merit_list_5HKSK(application_id);
+CREATE INDEX idx_admission_merit_list_class ON admission_merit_list_5HKSK(for_class);
+CREATE INDEX idx_admission_merit_list_rank ON admission_merit_list_5HKSK(merit_rank);
+CREATE INDEX idx_admission_merit_list_status ON admission_merit_list_5HKSK(status);
 
-COMMENT ON TABLE admission_merit_list_EWNTKS IS 'Final merit list and seat allocation';
+COMMENT ON TABLE admission_merit_list_5HKSK IS 'Final merit list and seat allocation';
 
 -- ============================================================================
 -- 5. INVENTORY & ASSET MANAGEMENT
 -- ============================================================================
 
 -- 5.1 Assets
-CREATE TABLE assets_EWNTKS (
+CREATE TABLE assets_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_code VARCHAR(50) UNIQUE NOT NULL,
   asset_name VARCHAR(255) NOT NULL,
@@ -712,15 +712,15 @@ CREATE TABLE assets_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_assets_code ON assets_EWNTKS(asset_code);
-CREATE INDEX idx_assets_category ON assets_EWNTKS(asset_category);
-CREATE INDEX idx_assets_status ON assets_EWNTKS(status);
-CREATE INDEX idx_assets_assigned_user ON assets_EWNTKS(assigned_to_user);
+CREATE INDEX idx_assets_code ON assets_5HKSK(asset_code);
+CREATE INDEX idx_assets_category ON assets_5HKSK(asset_category);
+CREATE INDEX idx_assets_status ON assets_5HKSK(status);
+CREATE INDEX idx_assets_assigned_user ON assets_5HKSK(assigned_to_user);
 
-COMMENT ON TABLE assets_EWNTKS IS 'School asset master (furniture, equipment, IT assets)';
+COMMENT ON TABLE assets_5HKSK IS 'School asset master (furniture, equipment, IT assets)';
 
 -- 5.2 Asset Maintenance
-CREATE TABLE asset_maintenance_EWNTKS (
+CREATE TABLE asset_maintenance_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_id UUID NOT NULL,
   
@@ -753,14 +753,14 @@ CREATE TABLE asset_maintenance_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_asset_maintenance_asset ON asset_maintenance_EWNTKS(asset_id);
-CREATE INDEX idx_asset_maintenance_date ON asset_maintenance_EWNTKS(maintenance_date);
-CREATE INDEX idx_asset_maintenance_status ON asset_maintenance_EWNTKS(status);
+CREATE INDEX idx_asset_maintenance_asset ON asset_maintenance_5HKSK(asset_id);
+CREATE INDEX idx_asset_maintenance_date ON asset_maintenance_5HKSK(maintenance_date);
+CREATE INDEX idx_asset_maintenance_status ON asset_maintenance_5HKSK(status);
 
-COMMENT ON TABLE asset_maintenance_EWNTKS IS 'Asset maintenance schedule and history';
+COMMENT ON TABLE asset_maintenance_5HKSK IS 'Asset maintenance schedule and history';
 
 -- 5.3 Lab Equipment
-CREATE TABLE lab_equipment_EWNTKS (
+CREATE TABLE lab_equipment_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_id UUID, -- Link to main assets table if applicable
   equipment_code VARCHAR(50) UNIQUE NOT NULL,
@@ -803,14 +803,14 @@ CREATE TABLE lab_equipment_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lab_equipment_code ON lab_equipment_EWNTKS(equipment_code);
-CREATE INDEX idx_lab_equipment_lab ON lab_equipment_EWNTKS(lab_name);
-CREATE INDEX idx_lab_equipment_type ON lab_equipment_EWNTKS(equipment_type);
+CREATE INDEX idx_lab_equipment_code ON lab_equipment_5HKSK(equipment_code);
+CREATE INDEX idx_lab_equipment_lab ON lab_equipment_5HKSK(lab_name);
+CREATE INDEX idx_lab_equipment_type ON lab_equipment_5HKSK(equipment_type);
 
-COMMENT ON TABLE lab_equipment_EWNTKS IS 'Lab-specific equipment inventory';
+COMMENT ON TABLE lab_equipment_5HKSK IS 'Lab-specific equipment inventory';
 
 -- 5.4 Lab Chemicals & Specimens
-CREATE TABLE lab_chemicals_EWNTKS (
+CREATE TABLE lab_chemicals_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   chemical_code VARCHAR(50) UNIQUE NOT NULL,
   chemical_name VARCHAR(255) NOT NULL,
@@ -849,15 +849,15 @@ CREATE TABLE lab_chemicals_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lab_chemicals_code ON lab_chemicals_EWNTKS(chemical_code);
-CREATE INDEX idx_lab_chemicals_lab ON lab_chemicals_EWNTKS(lab_name);
-CREATE INDEX idx_lab_chemicals_status ON lab_chemicals_EWNTKS(status);
-CREATE INDEX idx_lab_chemicals_expiry ON lab_chemicals_EWNTKS(expiry_date);
+CREATE INDEX idx_lab_chemicals_code ON lab_chemicals_5HKSK(chemical_code);
+CREATE INDEX idx_lab_chemicals_lab ON lab_chemicals_5HKSK(lab_name);
+CREATE INDEX idx_lab_chemicals_status ON lab_chemicals_5HKSK(status);
+CREATE INDEX idx_lab_chemicals_expiry ON lab_chemicals_5HKSK(expiry_date);
 
-COMMENT ON TABLE lab_chemicals_EWNTKS IS 'Chemical and specimen inventory with safety tracking';
+COMMENT ON TABLE lab_chemicals_5HKSK IS 'Chemical and specimen inventory with safety tracking';
 
 -- 5.5 Stationery Items
-CREATE TABLE stationery_items_EWNTKS (
+CREATE TABLE stationery_items_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   item_code VARCHAR(50) UNIQUE NOT NULL,
   item_name VARCHAR(255) NOT NULL,
@@ -881,14 +881,14 @@ CREATE TABLE stationery_items_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_stationery_items_code ON stationery_items_EWNTKS(item_code);
-CREATE INDEX idx_stationery_items_category ON stationery_items_EWNTKS(item_category);
-CREATE INDEX idx_stationery_items_status ON stationery_items_EWNTKS(status);
+CREATE INDEX idx_stationery_items_code ON stationery_items_5HKSK(item_code);
+CREATE INDEX idx_stationery_items_category ON stationery_items_5HKSK(item_category);
+CREATE INDEX idx_stationery_items_status ON stationery_items_5HKSK(status);
 
-COMMENT ON TABLE stationery_items_EWNTKS IS 'Stationery stock master';
+COMMENT ON TABLE stationery_items_5HKSK IS 'Stationery stock master';
 
 -- 5.6 Stationery Transactions
-CREATE TABLE stationery_transactions_EWNTKS (
+CREATE TABLE stationery_transactions_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   item_id UUID NOT NULL,
   
@@ -922,19 +922,19 @@ CREATE TABLE stationery_transactions_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_stationery_transactions_item ON stationery_transactions_EWNTKS(item_id);
-CREATE INDEX idx_stationery_transactions_type ON stationery_transactions_EWNTKS(transaction_type);
-CREATE INDEX idx_stationery_transactions_date ON stationery_transactions_EWNTKS(transaction_date);
-CREATE INDEX idx_stationery_transactions_user ON stationery_transactions_EWNTKS(issued_to_user_id);
+CREATE INDEX idx_stationery_transactions_item ON stationery_transactions_5HKSK(item_id);
+CREATE INDEX idx_stationery_transactions_type ON stationery_transactions_5HKSK(transaction_type);
+CREATE INDEX idx_stationery_transactions_date ON stationery_transactions_5HKSK(transaction_date);
+CREATE INDEX idx_stationery_transactions_user ON stationery_transactions_5HKSK(issued_to_user_id);
 
-COMMENT ON TABLE stationery_transactions_EWNTKS IS 'Stationery issue, return, and purchase tracking';
+COMMENT ON TABLE stationery_transactions_5HKSK IS 'Stationery issue, return, and purchase tracking';
 
 -- ============================================================================
 -- 6. CERTIFICATE & DOCUMENT GENERATION
 -- ============================================================================
 
 -- 6.1 Certificate Templates
-CREATE TABLE certificate_templates_EWNTKS (
+CREATE TABLE certificate_templates_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   template_name VARCHAR(255) NOT NULL,
   template_code VARCHAR(50) UNIQUE NOT NULL,
@@ -964,14 +964,14 @@ CREATE TABLE certificate_templates_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_certificate_templates_code ON certificate_templates_EWNTKS(template_code);
-CREATE INDEX idx_certificate_templates_type ON certificate_templates_EWNTKS(certificate_type);
-CREATE INDEX idx_certificate_templates_active ON certificate_templates_EWNTKS(is_active);
+CREATE INDEX idx_certificate_templates_code ON certificate_templates_5HKSK(template_code);
+CREATE INDEX idx_certificate_templates_type ON certificate_templates_5HKSK(certificate_type);
+CREATE INDEX idx_certificate_templates_active ON certificate_templates_5HKSK(is_active);
 
-COMMENT ON TABLE certificate_templates_EWNTKS IS 'Certificate templates with custom design';
+COMMENT ON TABLE certificate_templates_5HKSK IS 'Certificate templates with custom design';
 
 -- 6.2 Certificate Requests
-CREATE TABLE certificate_requests_EWNTKS (
+CREATE TABLE certificate_requests_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   request_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -1009,15 +1009,15 @@ CREATE TABLE certificate_requests_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_certificate_requests_number ON certificate_requests_EWNTKS(request_number);
-CREATE INDEX idx_certificate_requests_student ON certificate_requests_EWNTKS(student_id);
-CREATE INDEX idx_certificate_requests_status ON certificate_requests_EWNTKS(status);
-CREATE INDEX idx_certificate_requests_type ON certificate_requests_EWNTKS(certificate_type);
+CREATE INDEX idx_certificate_requests_number ON certificate_requests_5HKSK(request_number);
+CREATE INDEX idx_certificate_requests_student ON certificate_requests_5HKSK(student_id);
+CREATE INDEX idx_certificate_requests_status ON certificate_requests_5HKSK(status);
+CREATE INDEX idx_certificate_requests_type ON certificate_requests_5HKSK(certificate_type);
 
-COMMENT ON TABLE certificate_requests_EWNTKS IS 'Certificate request and approval workflow';
+COMMENT ON TABLE certificate_requests_5HKSK IS 'Certificate request and approval workflow';
 
 -- 6.3 Generated Certificates
-CREATE TABLE generated_certificates_EWNTKS (
+CREATE TABLE generated_certificates_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   certificate_number VARCHAR(50) UNIQUE NOT NULL,
   request_id UUID,
@@ -1051,19 +1051,19 @@ CREATE TABLE generated_certificates_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_generated_certificates_number ON generated_certificates_EWNTKS(certificate_number);
-CREATE INDEX idx_generated_certificates_student ON generated_certificates_EWNTKS(student_id);
-CREATE INDEX idx_generated_certificates_type ON generated_certificates_EWNTKS(certificate_type);
-CREATE INDEX idx_generated_certificates_request ON generated_certificates_EWNTKS(request_id);
+CREATE INDEX idx_generated_certificates_number ON generated_certificates_5HKSK(certificate_number);
+CREATE INDEX idx_generated_certificates_student ON generated_certificates_5HKSK(student_id);
+CREATE INDEX idx_generated_certificates_type ON generated_certificates_5HKSK(certificate_type);
+CREATE INDEX idx_generated_certificates_request ON generated_certificates_5HKSK(request_id);
 
-COMMENT ON TABLE generated_certificates_EWNTKS IS 'Issued certificate log with digital signature';
+COMMENT ON TABLE generated_certificates_5HKSK IS 'Issued certificate log with digital signature';
 
 -- ============================================================================
 -- 7. ADVANCED FEE MANAGEMENT (ONLINE PAYMENTS)
 -- ============================================================================
 
 -- 7.1 Online Payment Transactions
-CREATE TABLE online_payment_transactions_EWNTKS (
+CREATE TABLE online_payment_transactions_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   transaction_id VARCHAR(100) UNIQUE NOT NULL,
   
@@ -1113,16 +1113,16 @@ CREATE TABLE online_payment_transactions_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_online_payment_transactions_id ON online_payment_transactions_EWNTKS(transaction_id);
-CREATE INDEX idx_online_payment_transactions_gateway_id ON online_payment_transactions_EWNTKS(gateway_transaction_id);
-CREATE INDEX idx_online_payment_transactions_student ON online_payment_transactions_EWNTKS(student_id);
-CREATE INDEX idx_online_payment_transactions_status ON online_payment_transactions_EWNTKS(status);
-CREATE INDEX idx_online_payment_transactions_date ON online_payment_transactions_EWNTKS(initiated_at);
+CREATE INDEX idx_online_payment_transactions_id ON online_payment_transactions_5HKSK(transaction_id);
+CREATE INDEX idx_online_payment_transactions_gateway_id ON online_payment_transactions_5HKSK(gateway_transaction_id);
+CREATE INDEX idx_online_payment_transactions_student ON online_payment_transactions_5HKSK(student_id);
+CREATE INDEX idx_online_payment_transactions_status ON online_payment_transactions_5HKSK(status);
+CREATE INDEX idx_online_payment_transactions_date ON online_payment_transactions_5HKSK(initiated_at);
 
-COMMENT ON TABLE online_payment_transactions_EWNTKS IS 'Payment gateway transaction tracking';
+COMMENT ON TABLE online_payment_transactions_5HKSK IS 'Payment gateway transaction tracking';
 
 -- 7.2 Payment Gateway Logs
-CREATE TABLE payment_gateway_logs_EWNTKS (
+CREATE TABLE payment_gateway_logs_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   transaction_id UUID NOT NULL,
   
@@ -1142,14 +1142,14 @@ CREATE TABLE payment_gateway_logs_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_payment_gateway_logs_transaction ON payment_gateway_logs_EWNTKS(transaction_id);
-CREATE INDEX idx_payment_gateway_logs_event ON payment_gateway_logs_EWNTKS(event_type);
-CREATE INDEX idx_payment_gateway_logs_reconciled ON payment_gateway_logs_EWNTKS(is_reconciled);
+CREATE INDEX idx_payment_gateway_logs_transaction ON payment_gateway_logs_5HKSK(transaction_id);
+CREATE INDEX idx_payment_gateway_logs_event ON payment_gateway_logs_5HKSK(event_type);
+CREATE INDEX idx_payment_gateway_logs_reconciled ON payment_gateway_logs_5HKSK(is_reconciled);
 
-COMMENT ON TABLE payment_gateway_logs_EWNTKS IS 'Payment gateway webhook logs for reconciliation';
+COMMENT ON TABLE payment_gateway_logs_5HKSK IS 'Payment gateway webhook logs for reconciliation';
 
 -- 7.3 Fee Refunds
-CREATE TABLE fee_refunds_EWNTKS (
+CREATE TABLE fee_refunds_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   refund_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -1190,19 +1190,19 @@ CREATE TABLE fee_refunds_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_refunds_number ON fee_refunds_EWNTKS(refund_number);
-CREATE INDEX idx_fee_refunds_student ON fee_refunds_EWNTKS(student_id);
-CREATE INDEX idx_fee_refunds_status ON fee_refunds_EWNTKS(status);
-CREATE INDEX idx_fee_refunds_date ON fee_refunds_EWNTKS(request_date);
+CREATE INDEX idx_fee_refunds_number ON fee_refunds_5HKSK(refund_number);
+CREATE INDEX idx_fee_refunds_student ON fee_refunds_5HKSK(student_id);
+CREATE INDEX idx_fee_refunds_status ON fee_refunds_5HKSK(status);
+CREATE INDEX idx_fee_refunds_date ON fee_refunds_5HKSK(request_date);
 
-COMMENT ON TABLE fee_refunds_EWNTKS IS 'Fee refund request and processing workflow';
+COMMENT ON TABLE fee_refunds_5HKSK IS 'Fee refund request and processing workflow';
 
 -- ============================================================================
 -- 8. SURVEY & FEEDBACK SYSTEM
 -- ============================================================================
 
 -- 8.1 Surveys
-CREATE TABLE surveys_EWNTKS (
+CREATE TABLE surveys_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_title VARCHAR(255) NOT NULL,
   survey_description TEXT,
@@ -1233,14 +1233,14 @@ CREATE TABLE surveys_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_surveys_type ON surveys_EWNTKS(survey_type);
-CREATE INDEX idx_surveys_status ON surveys_EWNTKS(status);
-CREATE INDEX idx_surveys_dates ON surveys_EWNTKS(start_date, end_date);
+CREATE INDEX idx_surveys_type ON surveys_5HKSK(survey_type);
+CREATE INDEX idx_surveys_status ON surveys_5HKSK(status);
+CREATE INDEX idx_surveys_dates ON surveys_5HKSK(start_date, end_date);
 
-COMMENT ON TABLE surveys_EWNTKS IS 'Survey builder and configuration';
+COMMENT ON TABLE surveys_5HKSK IS 'Survey builder and configuration';
 
 -- 8.2 Survey Questions
-CREATE TABLE survey_questions_EWNTKS (
+CREATE TABLE survey_questions_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_id UUID NOT NULL,
   
@@ -1265,13 +1265,13 @@ CREATE TABLE survey_questions_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_survey_questions_survey ON survey_questions_EWNTKS(survey_id);
-CREATE INDEX idx_survey_questions_order ON survey_questions_EWNTKS(survey_id, display_order);
+CREATE INDEX idx_survey_questions_survey ON survey_questions_5HKSK(survey_id);
+CREATE INDEX idx_survey_questions_order ON survey_questions_5HKSK(survey_id, display_order);
 
-COMMENT ON TABLE survey_questions_EWNTKS IS 'Survey questions with multiple types';
+COMMENT ON TABLE survey_questions_5HKSK IS 'Survey questions with multiple types';
 
 -- 8.3 Survey Responses
-CREATE TABLE survey_responses_EWNTKS (
+CREATE TABLE survey_responses_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_id UUID NOT NULL,
   question_id UUID NOT NULL,
@@ -1293,14 +1293,14 @@ CREATE TABLE survey_responses_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_survey_responses_survey ON survey_responses_EWNTKS(survey_id);
-CREATE INDEX idx_survey_responses_question ON survey_responses_EWNTKS(question_id);
-CREATE INDEX idx_survey_responses_user ON survey_responses_EWNTKS(respondent_user_id);
+CREATE INDEX idx_survey_responses_survey ON survey_responses_5HKSK(survey_id);
+CREATE INDEX idx_survey_responses_question ON survey_responses_5HKSK(question_id);
+CREATE INDEX idx_survey_responses_user ON survey_responses_5HKSK(respondent_user_id);
 
-COMMENT ON TABLE survey_responses_EWNTKS IS 'Survey response submissions';
+COMMENT ON TABLE survey_responses_5HKSK IS 'Survey response submissions';
 
 -- 8.4 Feedback Analytics
-CREATE TABLE feedback_analytics_EWNTKS (
+CREATE TABLE feedback_analytics_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_id UUID NOT NULL,
   
@@ -1330,95 +1330,95 @@ CREATE TABLE feedback_analytics_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_feedback_analytics_survey ON feedback_analytics_EWNTKS(survey_id);
-CREATE INDEX idx_feedback_analytics_sentiment ON feedback_analytics_EWNTKS(overall_sentiment);
+CREATE INDEX idx_feedback_analytics_survey ON feedback_analytics_5HKSK(survey_id);
+CREATE INDEX idx_feedback_analytics_sentiment ON feedback_analytics_5HKSK(overall_sentiment);
 
-COMMENT ON TABLE feedback_analytics_EWNTKS IS 'Survey analytics and sentiment analysis';
+COMMENT ON TABLE feedback_analytics_5HKSK IS 'Survey analytics and sentiment analysis';
 
 -- ============================================================================
 -- 9. FOREIGN KEY CONSTRAINTS
 -- ============================================================================
 
 -- AI Analytics Module
-ALTER TABLE analytics_student_performance_EWNTKS ADD CONSTRAINT fk_analytics_student_performance_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE analytics_student_performance_EWNTKS ADD CONSTRAINT fk_analytics_student_performance_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE analytics_student_performance_EWNTKS ADD CONSTRAINT fk_analytics_student_performance_subject FOREIGN KEY (subject_id) REFERENCES subjects_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE analytics_attendance_patterns_EWNTKS ADD CONSTRAINT fk_analytics_attendance_patterns_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE analytics_attendance_patterns_EWNTKS ADD CONSTRAINT fk_analytics_attendance_patterns_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE analytics_academic_trends_EWNTKS ADD CONSTRAINT fk_analytics_academic_trends_class FOREIGN KEY (class_id) REFERENCES classes_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_EWNTKS ADD CONSTRAINT fk_analytics_academic_trends_section FOREIGN KEY (section_id) REFERENCES sections_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_EWNTKS ADD CONSTRAINT fk_analytics_academic_trends_subject FOREIGN KEY (subject_id) REFERENCES subjects_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_EWNTKS ADD CONSTRAINT fk_analytics_academic_trends_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_EWNTKS ADD CONSTRAINT fk_analytics_academic_trends_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_EWNTKS(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_5HKSK ADD CONSTRAINT fk_analytics_student_performance_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_5HKSK ADD CONSTRAINT fk_analytics_student_performance_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_5HKSK ADD CONSTRAINT fk_analytics_student_performance_subject FOREIGN KEY (subject_id) REFERENCES subjects_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE analytics_attendance_patterns_5HKSK ADD CONSTRAINT fk_analytics_attendance_patterns_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE analytics_attendance_patterns_5HKSK ADD CONSTRAINT fk_analytics_attendance_patterns_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE analytics_academic_trends_5HKSK ADD CONSTRAINT fk_analytics_academic_trends_class FOREIGN KEY (class_id) REFERENCES classes_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_5HKSK ADD CONSTRAINT fk_analytics_academic_trends_section FOREIGN KEY (section_id) REFERENCES sections_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_5HKSK ADD CONSTRAINT fk_analytics_academic_trends_subject FOREIGN KEY (subject_id) REFERENCES subjects_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_5HKSK ADD CONSTRAINT fk_analytics_academic_trends_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_5HKSK ADD CONSTRAINT fk_analytics_academic_trends_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_5HKSK(id) ON DELETE CASCADE;
 
 -- PTM Module
-ALTER TABLE ptm_slots_EWNTKS ADD CONSTRAINT fk_ptm_slots_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE ptm_bookings_EWNTKS ADD CONSTRAINT fk_ptm_bookings_slot FOREIGN KEY (slot_id) REFERENCES ptm_slots_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE ptm_bookings_EWNTKS ADD CONSTRAINT fk_ptm_bookings_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE ptm_bookings_EWNTKS ADD CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES users_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_EWNTKS ADD CONSTRAINT fk_ptm_meeting_notes_booking FOREIGN KEY (booking_id) REFERENCES ptm_bookings_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_EWNTKS ADD CONSTRAINT fk_ptm_meeting_notes_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_EWNTKS ADD CONSTRAINT fk_ptm_meeting_notes_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_EWNTKS ADD CONSTRAINT fk_ptm_meeting_notes_recorded_by FOREIGN KEY (recorded_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
+ALTER TABLE ptm_slots_5HKSK ADD CONSTRAINT fk_ptm_slots_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_5HKSK ADD CONSTRAINT fk_ptm_bookings_slot FOREIGN KEY (slot_id) REFERENCES ptm_slots_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_5HKSK ADD CONSTRAINT fk_ptm_bookings_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_5HKSK ADD CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES users_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_5HKSK ADD CONSTRAINT fk_ptm_meeting_notes_booking FOREIGN KEY (booking_id) REFERENCES ptm_bookings_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_5HKSK ADD CONSTRAINT fk_ptm_meeting_notes_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_5HKSK ADD CONSTRAINT fk_ptm_meeting_notes_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_5HKSK ADD CONSTRAINT fk_ptm_meeting_notes_recorded_by FOREIGN KEY (recorded_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
 
 -- Alumni Module
-ALTER TABLE alumni_EWNTKS ADD CONSTRAINT fk_alumni_user FOREIGN KEY (user_id) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE alumni_EWNTKS ADD CONSTRAINT fk_alumni_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE alumni_events_EWNTKS ADD CONSTRAINT fk_alumni_events_created_by FOREIGN KEY (created_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE alumni_event_registrations_EWNTKS ADD CONSTRAINT fk_alumni_event_registrations_event FOREIGN KEY (event_id) REFERENCES alumni_events_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE alumni_event_registrations_EWNTKS ADD CONSTRAINT fk_alumni_event_registrations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE alumni_donations_EWNTKS ADD CONSTRAINT fk_alumni_donations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE alumni_mentorship_EWNTKS ADD CONSTRAINT fk_alumni_mentorship_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE alumni_mentorship_EWNTKS ADD CONSTRAINT fk_alumni_mentorship_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
+ALTER TABLE alumni_5HKSK ADD CONSTRAINT fk_alumni_user FOREIGN KEY (user_id) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE alumni_5HKSK ADD CONSTRAINT fk_alumni_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE alumni_events_5HKSK ADD CONSTRAINT fk_alumni_events_created_by FOREIGN KEY (created_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE alumni_event_registrations_5HKSK ADD CONSTRAINT fk_alumni_event_registrations_event FOREIGN KEY (event_id) REFERENCES alumni_events_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE alumni_event_registrations_5HKSK ADD CONSTRAINT fk_alumni_event_registrations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE alumni_donations_5HKSK ADD CONSTRAINT fk_alumni_donations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE alumni_mentorship_5HKSK ADD CONSTRAINT fk_alumni_mentorship_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE alumni_mentorship_5HKSK ADD CONSTRAINT fk_alumni_mentorship_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
 
 -- Admission Module
-ALTER TABLE admission_applications_EWNTKS ADD CONSTRAINT fk_admission_applications_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE admission_interviews_EWNTKS ADD CONSTRAINT fk_admission_interviews_application FOREIGN KEY (application_id) REFERENCES admission_applications_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE admission_entrance_tests_EWNTKS ADD CONSTRAINT fk_admission_entrance_tests_created_by FOREIGN KEY (created_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE admission_test_results_EWNTKS ADD CONSTRAINT fk_admission_test_results_test FOREIGN KEY (test_id) REFERENCES admission_entrance_tests_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE admission_test_results_EWNTKS ADD CONSTRAINT fk_admission_test_results_application FOREIGN KEY (application_id) REFERENCES admission_applications_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE admission_merit_list_EWNTKS ADD CONSTRAINT fk_admission_merit_list_application FOREIGN KEY (application_id) REFERENCES admission_applications_EWNTKS(id) ON DELETE CASCADE;
+ALTER TABLE admission_applications_5HKSK ADD CONSTRAINT fk_admission_applications_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE admission_interviews_5HKSK ADD CONSTRAINT fk_admission_interviews_application FOREIGN KEY (application_id) REFERENCES admission_applications_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE admission_entrance_tests_5HKSK ADD CONSTRAINT fk_admission_entrance_tests_created_by FOREIGN KEY (created_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE admission_test_results_5HKSK ADD CONSTRAINT fk_admission_test_results_test FOREIGN KEY (test_id) REFERENCES admission_entrance_tests_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE admission_test_results_5HKSK ADD CONSTRAINT fk_admission_test_results_application FOREIGN KEY (application_id) REFERENCES admission_applications_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE admission_merit_list_5HKSK ADD CONSTRAINT fk_admission_merit_list_application FOREIGN KEY (application_id) REFERENCES admission_applications_5HKSK(id) ON DELETE CASCADE;
 
 -- Asset Management Module
-ALTER TABLE assets_EWNTKS ADD CONSTRAINT fk_assets_assigned_user FOREIGN KEY (assigned_to_user) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE asset_maintenance_EWNTKS ADD CONSTRAINT fk_asset_maintenance_asset FOREIGN KEY (asset_id) REFERENCES assets_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE asset_maintenance_EWNTKS ADD CONSTRAINT fk_asset_maintenance_performed_by FOREIGN KEY (performed_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE lab_equipment_EWNTKS ADD CONSTRAINT fk_lab_equipment_asset FOREIGN KEY (asset_id) REFERENCES assets_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE stationery_transactions_EWNTKS ADD CONSTRAINT fk_stationery_transactions_item FOREIGN KEY (item_id) REFERENCES stationery_items_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE stationery_transactions_EWNTKS ADD CONSTRAINT fk_stationery_transactions_issued_to FOREIGN KEY (issued_to_user_id) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE stationery_transactions_EWNTKS ADD CONSTRAINT fk_stationery_transactions_approved_by FOREIGN KEY (approved_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE stationery_transactions_EWNTKS ADD CONSTRAINT fk_stationery_transactions_created_by FOREIGN KEY (created_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
+ALTER TABLE assets_5HKSK ADD CONSTRAINT fk_assets_assigned_user FOREIGN KEY (assigned_to_user) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE asset_maintenance_5HKSK ADD CONSTRAINT fk_asset_maintenance_asset FOREIGN KEY (asset_id) REFERENCES assets_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE asset_maintenance_5HKSK ADD CONSTRAINT fk_asset_maintenance_performed_by FOREIGN KEY (performed_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE lab_equipment_5HKSK ADD CONSTRAINT fk_lab_equipment_asset FOREIGN KEY (asset_id) REFERENCES assets_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_5HKSK ADD CONSTRAINT fk_stationery_transactions_item FOREIGN KEY (item_id) REFERENCES stationery_items_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE stationery_transactions_5HKSK ADD CONSTRAINT fk_stationery_transactions_issued_to FOREIGN KEY (issued_to_user_id) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_5HKSK ADD CONSTRAINT fk_stationery_transactions_approved_by FOREIGN KEY (approved_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_5HKSK ADD CONSTRAINT fk_stationery_transactions_created_by FOREIGN KEY (created_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
 
 -- Certificate Module
-ALTER TABLE certificate_templates_EWNTKS ADD CONSTRAINT fk_certificate_templates_created_by FOREIGN KEY (created_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE certificate_requests_EWNTKS ADD CONSTRAINT fk_certificate_requests_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE certificate_requests_EWNTKS ADD CONSTRAINT fk_certificate_requests_requested_by FOREIGN KEY (requested_by_user_id) REFERENCES users_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE certificate_requests_EWNTKS ADD CONSTRAINT fk_certificate_requests_template FOREIGN KEY (template_id) REFERENCES certificate_templates_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE certificate_requests_EWNTKS ADD CONSTRAINT fk_certificate_requests_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE generated_certificates_EWNTKS ADD CONSTRAINT fk_generated_certificates_request FOREIGN KEY (request_id) REFERENCES certificate_requests_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE generated_certificates_EWNTKS ADD CONSTRAINT fk_generated_certificates_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE generated_certificates_EWNTKS ADD CONSTRAINT fk_generated_certificates_template FOREIGN KEY (template_id) REFERENCES certificate_templates_EWNTKS(id) ON DELETE RESTRICT;
-ALTER TABLE generated_certificates_EWNTKS ADD CONSTRAINT fk_generated_certificates_issued_by FOREIGN KEY (issued_by_user_id) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
+ALTER TABLE certificate_templates_5HKSK ADD CONSTRAINT fk_certificate_templates_created_by FOREIGN KEY (created_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE certificate_requests_5HKSK ADD CONSTRAINT fk_certificate_requests_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE certificate_requests_5HKSK ADD CONSTRAINT fk_certificate_requests_requested_by FOREIGN KEY (requested_by_user_id) REFERENCES users_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE certificate_requests_5HKSK ADD CONSTRAINT fk_certificate_requests_template FOREIGN KEY (template_id) REFERENCES certificate_templates_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE certificate_requests_5HKSK ADD CONSTRAINT fk_certificate_requests_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE generated_certificates_5HKSK ADD CONSTRAINT fk_generated_certificates_request FOREIGN KEY (request_id) REFERENCES certificate_requests_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE generated_certificates_5HKSK ADD CONSTRAINT fk_generated_certificates_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE generated_certificates_5HKSK ADD CONSTRAINT fk_generated_certificates_template FOREIGN KEY (template_id) REFERENCES certificate_templates_5HKSK(id) ON DELETE RESTRICT;
+ALTER TABLE generated_certificates_5HKSK ADD CONSTRAINT fk_generated_certificates_issued_by FOREIGN KEY (issued_by_user_id) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
 
 -- Online Payment Module
-ALTER TABLE online_payment_transactions_EWNTKS ADD CONSTRAINT fk_online_payment_transactions_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE online_payment_transactions_EWNTKS ADD CONSTRAINT fk_online_payment_transactions_paid_by FOREIGN KEY (paid_by_user_id) REFERENCES users_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE online_payment_transactions_EWNTKS ADD CONSTRAINT fk_online_payment_transactions_fee_payment FOREIGN KEY (fee_payment_id) REFERENCES fee_payments_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE payment_gateway_logs_EWNTKS ADD CONSTRAINT fk_payment_gateway_logs_transaction FOREIGN KEY (transaction_id) REFERENCES online_payment_transactions_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_refunds_EWNTKS ADD CONSTRAINT fk_fee_refunds_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_refunds_EWNTKS ADD CONSTRAINT fk_fee_refunds_payment FOREIGN KEY (original_payment_id) REFERENCES fee_payments_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE fee_refunds_EWNTKS ADD CONSTRAINT fk_fee_refunds_requested_by FOREIGN KEY (requested_by) REFERENCES users_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_refunds_EWNTKS ADD CONSTRAINT fk_fee_refunds_approved_by FOREIGN KEY (approved_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE fee_refunds_EWNTKS ADD CONSTRAINT fk_fee_refunds_processed_by FOREIGN KEY (processed_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
+ALTER TABLE online_payment_transactions_5HKSK ADD CONSTRAINT fk_online_payment_transactions_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE online_payment_transactions_5HKSK ADD CONSTRAINT fk_online_payment_transactions_paid_by FOREIGN KEY (paid_by_user_id) REFERENCES users_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE online_payment_transactions_5HKSK ADD CONSTRAINT fk_online_payment_transactions_fee_payment FOREIGN KEY (fee_payment_id) REFERENCES fee_payments_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE payment_gateway_logs_5HKSK ADD CONSTRAINT fk_payment_gateway_logs_transaction FOREIGN KEY (transaction_id) REFERENCES online_payment_transactions_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_5HKSK ADD CONSTRAINT fk_fee_refunds_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_5HKSK ADD CONSTRAINT fk_fee_refunds_payment FOREIGN KEY (original_payment_id) REFERENCES fee_payments_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE fee_refunds_5HKSK ADD CONSTRAINT fk_fee_refunds_requested_by FOREIGN KEY (requested_by) REFERENCES users_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_5HKSK ADD CONSTRAINT fk_fee_refunds_approved_by FOREIGN KEY (approved_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE fee_refunds_5HKSK ADD CONSTRAINT fk_fee_refunds_processed_by FOREIGN KEY (processed_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
 
 -- Survey Module
-ALTER TABLE surveys_EWNTKS ADD CONSTRAINT fk_surveys_created_by FOREIGN KEY (created_by) REFERENCES users_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE survey_questions_EWNTKS ADD CONSTRAINT fk_survey_questions_survey FOREIGN KEY (survey_id) REFERENCES surveys_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE survey_responses_EWNTKS ADD CONSTRAINT fk_survey_responses_survey FOREIGN KEY (survey_id) REFERENCES surveys_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE survey_responses_EWNTKS ADD CONSTRAINT fk_survey_responses_question FOREIGN KEY (question_id) REFERENCES survey_questions_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE survey_responses_EWNTKS ADD CONSTRAINT fk_survey_responses_user FOREIGN KEY (respondent_user_id) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE feedback_analytics_EWNTKS ADD CONSTRAINT fk_feedback_analytics_survey FOREIGN KEY (survey_id) REFERENCES surveys_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE feedback_analytics_EWNTKS ADD CONSTRAINT fk_feedback_analytics_analyzed_by FOREIGN KEY (analyzed_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
+ALTER TABLE surveys_5HKSK ADD CONSTRAINT fk_surveys_created_by FOREIGN KEY (created_by) REFERENCES users_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE survey_questions_5HKSK ADD CONSTRAINT fk_survey_questions_survey FOREIGN KEY (survey_id) REFERENCES surveys_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_5HKSK ADD CONSTRAINT fk_survey_responses_survey FOREIGN KEY (survey_id) REFERENCES surveys_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_5HKSK ADD CONSTRAINT fk_survey_responses_question FOREIGN KEY (question_id) REFERENCES survey_questions_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_5HKSK ADD CONSTRAINT fk_survey_responses_user FOREIGN KEY (respondent_user_id) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE feedback_analytics_5HKSK ADD CONSTRAINT fk_feedback_analytics_survey FOREIGN KEY (survey_id) REFERENCES surveys_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE feedback_analytics_5HKSK ADD CONSTRAINT fk_feedback_analytics_analyzed_by FOREIGN KEY (analyzed_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
 
 -- ============================================================================
 -- END OF TIER 3 SCHEMA FOR School 5

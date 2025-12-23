@@ -1,18 +1,18 @@
 -- ============================================================================
--- EduMunch: School-Specific Tables for CXKQLA
+-- EduMunch: School-Specific Tables for 3AAA
 -- ============================================================================
 -- This file creates 45 tables for School 3
--- INDEX_TOKEN: CXKQLA
+-- INDEX_TOKEN: 3AAA
 -- ============================================================================
 
 -- 1. USER MANAGEMENT & AUTHENTICATION
 -- ============================================================================
 
 -- 1.1 Users & Authentication
-CREATE TABLE users_CXKQLA (
+CREATE TABLE users_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   auth_user_id UUID UNIQUE,
-  index_token VARCHAR(6) DEFAULT 'CXKQLA' NOT NULL,
+  index_token VARCHAR(6) DEFAULT '3AAA' NOT NULL,
   email VARCHAR(255) NOT NULL,
   phone VARCHAR(15),
   full_name VARCHAR(255) NOT NULL,
@@ -35,21 +35,21 @@ CREATE TABLE users_CXKQLA (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_users_auth_user ON users_CXKQLA(auth_user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_email ON users_CXKQLA(email) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_phone ON users_CXKQLA(phone) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_role ON users_CXKQLA(role) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_active ON users_CXKQLA(is_active) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_index_token ON users_CXKQLA(index_token) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_auth_user ON users_3AAA(auth_user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_email ON users_3AAA(email) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_phone ON users_3AAA(phone) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_role ON users_3AAA(role) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_active ON users_3AAA(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_index_token ON users_3AAA(index_token) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE users_CXKQLA IS 'User management table linked to Supabase auth.users via auth_user_id';
+COMMENT ON TABLE users_3AAA IS 'User management table linked to Supabase auth.users via auth_user_id';
 
 -- 1.2 Sessions
-CREATE TABLE sessions_CXKQLA (
+CREATE TABLE sessions_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   auth_user_id UUID,
-  index_token VARCHAR(6) DEFAULT 'CXKQLA' NOT NULL,
+  index_token VARCHAR(6) DEFAULT '3AAA' NOT NULL,
   token TEXT UNIQUE NOT NULL,
   device_info JSONB,
   ip_address VARCHAR(45),
@@ -57,17 +57,17 @@ CREATE TABLE sessions_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_sessions_user ON sessions_CXKQLA(user_id);
-CREATE INDEX idx_sessions_auth_user ON sessions_CXKQLA(auth_user_id);
-CREATE INDEX idx_sessions_token ON sessions_CXKQLA(token);
-CREATE INDEX idx_sessions_expires ON sessions_CXKQLA(expires_at);
+CREATE INDEX idx_sessions_user ON sessions_3AAA(user_id);
+CREATE INDEX idx_sessions_auth_user ON sessions_3AAA(auth_user_id);
+CREATE INDEX idx_sessions_token ON sessions_3AAA(token);
+CREATE INDEX idx_sessions_expires ON sessions_3AAA(expires_at);
 
-COMMENT ON TABLE sessions_CXKQLA IS 'Session tracking - Frontend routing handled via INDEX_TOKEN from .env';
-COMMENT ON COLUMN sessions_CXKQLA.device_info IS 'JSON containing device_type, browser, os, etc.';
-COMMENT ON COLUMN sessions_CXKQLA.index_token IS 'Ensures session is bound to correct school';
+COMMENT ON TABLE sessions_3AAA IS 'Session tracking - Frontend routing handled via INDEX_TOKEN from .env';
+COMMENT ON COLUMN sessions_3AAA.device_info IS 'JSON containing device_type, browser, os, etc.';
+COMMENT ON COLUMN sessions_3AAA.index_token IS 'Ensures session is bound to correct school';
 
 -- 1.3 Permissions
-CREATE TABLE permissions_CXKQLA (
+CREATE TABLE permissions_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   role VARCHAR(50) NOT NULL,
   module VARCHAR(100) NOT NULL,
@@ -80,17 +80,17 @@ CREATE TABLE permissions_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_CXKQLA(role, module);
+CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_3AAA(role, module);
 
-COMMENT ON TABLE permissions_CXKQLA IS 'Granular permission management for role-based access control';
-COMMENT ON COLUMN permissions_CXKQLA.module IS 'Module name: attendance, fee, exam, student, teacher, etc.';
+COMMENT ON TABLE permissions_3AAA IS 'Granular permission management for role-based access control';
+COMMENT ON COLUMN permissions_3AAA.module IS 'Module name: attendance, fee, exam, student, teacher, etc.';
 
 -- ============================================================================
 -- 2. STUDENT MANAGEMENT
 -- ============================================================================
 
 -- 2.1 Students
-CREATE TABLE students_CXKQLA (
+CREATE TABLE students_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   admission_number VARCHAR(50) UNIQUE NOT NULL,
@@ -150,19 +150,19 @@ CREATE TABLE students_CXKQLA (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_students_user ON students_CXKQLA(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_admission ON students_CXKQLA(admission_number) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_class ON students_CXKQLA(class_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_section ON students_CXKQLA(section_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_academic_year ON students_CXKQLA(academic_year_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_status ON students_CXKQLA(status) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_name ON students_CXKQLA(first_name, last_name) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_user ON students_3AAA(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_admission ON students_3AAA(admission_number) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_class ON students_3AAA(class_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_section ON students_3AAA(section_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_academic_year ON students_3AAA(academic_year_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_status ON students_3AAA(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_name ON students_3AAA(first_name, last_name) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE students_CXKQLA IS 'Core student information with personal, academic, and medical details';
-COMMENT ON COLUMN students_CXKQLA.medical_conditions IS 'JSON array of {condition, severity, medication}';
+COMMENT ON TABLE students_3AAA IS 'Core student information with personal, academic, and medical details';
+COMMENT ON COLUMN students_3AAA.medical_conditions IS 'JSON array of {condition, severity, medication}';
 
 -- 2.2 Parents/Guardians
-CREATE TABLE parents_CXKQLA (
+CREATE TABLE parents_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   
@@ -192,13 +192,13 @@ CREATE TABLE parents_CXKQLA (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_parents_user ON parents_CXKQLA(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_parents_phone ON parents_CXKQLA(phone) WHERE deleted_at IS NULL;
+CREATE INDEX idx_parents_user ON parents_3AAA(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_parents_phone ON parents_3AAA(phone) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE parents_CXKQLA IS 'Parent and guardian information';
+COMMENT ON TABLE parents_3AAA IS 'Parent and guardian information';
 
 -- 2.3 Student-Parent Relations
-CREATE TABLE student_parent_relations_CXKQLA (
+CREATE TABLE student_parent_relations_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   parent_id UUID NOT NULL,
@@ -207,18 +207,18 @@ CREATE TABLE student_parent_relations_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_parent_student ON student_parent_relations_CXKQLA(student_id);
-CREATE INDEX idx_student_parent_parent ON student_parent_relations_CXKQLA(parent_id);
-CREATE UNIQUE INDEX idx_student_parent_unique ON student_parent_relations_CXKQLA(student_id, parent_id);
+CREATE INDEX idx_student_parent_student ON student_parent_relations_3AAA(student_id);
+CREATE INDEX idx_student_parent_parent ON student_parent_relations_3AAA(parent_id);
+CREATE UNIQUE INDEX idx_student_parent_unique ON student_parent_relations_3AAA(student_id, parent_id);
 
-COMMENT ON TABLE student_parent_relations_CXKQLA IS 'Many-to-many relationship between students and parents';
+COMMENT ON TABLE student_parent_relations_3AAA IS 'Many-to-many relationship between students and parents';
 
 -- ============================================================================
 -- 3. ACADEMIC MANAGEMENT
 -- ============================================================================
 
 -- 3.1 Academic Years
-CREATE TABLE academic_years_CXKQLA (
+CREATE TABLE academic_years_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   year_code VARCHAR(20) UNIQUE NOT NULL,
   year_name VARCHAR(50) NOT NULL,
@@ -229,12 +229,12 @@ CREATE TABLE academic_years_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_academic_years_current ON academic_years_CXKQLA(is_current);
+CREATE INDEX idx_academic_years_current ON academic_years_3AAA(is_current);
 
-COMMENT ON TABLE academic_years_CXKQLA IS 'Academic year configuration (e.g., 2024-25)';
+COMMENT ON TABLE academic_years_3AAA IS 'Academic year configuration (e.g., 2024-25)';
 
 -- 3.2 Classes
-CREATE TABLE classes_CXKQLA (
+CREATE TABLE classes_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_name VARCHAR(100) NOT NULL,
   class_code VARCHAR(20) UNIQUE NOT NULL,
@@ -246,14 +246,14 @@ CREATE TABLE classes_CXKQLA (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_classes_code ON classes_CXKQLA(class_code) WHERE deleted_at IS NULL;
-CREATE INDEX idx_classes_active ON classes_CXKQLA(is_active) WHERE deleted_at IS NULL;
-CREATE INDEX idx_classes_order ON classes_CXKQLA(class_order) WHERE deleted_at IS NULL;
+CREATE INDEX idx_classes_code ON classes_3AAA(class_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_classes_active ON classes_3AAA(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_classes_order ON classes_3AAA(class_order) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE classes_CXKQLA IS 'Class master data (e.g., Class 1, Class 2, ..., Class 12)';
+COMMENT ON TABLE classes_3AAA IS 'Class master data (e.g., Class 1, Class 2, ..., Class 12)';
 
 -- 3.3 Sections
-CREATE TABLE sections_CXKQLA (
+CREATE TABLE sections_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID NOT NULL,
   section_name VARCHAR(50) NOT NULL,
@@ -267,15 +267,15 @@ CREATE TABLE sections_CXKQLA (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_sections_class ON sections_CXKQLA(class_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_sections_teacher ON sections_CXKQLA(class_teacher_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_sections_active ON sections_CXKQLA(is_active) WHERE deleted_at IS NULL;
-CREATE UNIQUE INDEX idx_sections_class_code ON sections_CXKQLA(class_id, section_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_sections_class ON sections_3AAA(class_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_sections_teacher ON sections_3AAA(class_teacher_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_sections_active ON sections_3AAA(is_active) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX idx_sections_class_code ON sections_3AAA(class_id, section_code) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE sections_CXKQLA IS 'Section/Division within a class (e.g., Section A, B, C)';
+COMMENT ON TABLE sections_3AAA IS 'Section/Division within a class (e.g., Section A, B, C)';
 
 -- 3.4 Subjects
-CREATE TABLE subjects_CXKQLA (
+CREATE TABLE subjects_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subject_name VARCHAR(100) NOT NULL,
   subject_code VARCHAR(20) UNIQUE NOT NULL,
@@ -287,13 +287,13 @@ CREATE TABLE subjects_CXKQLA (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_subjects_code ON subjects_CXKQLA(subject_code) WHERE deleted_at IS NULL;
-CREATE INDEX idx_subjects_active ON subjects_CXKQLA(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_subjects_code ON subjects_3AAA(subject_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_subjects_active ON subjects_3AAA(is_active) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE subjects_CXKQLA IS 'Subject master data (e.g., Mathematics, Physics, English)';
+COMMENT ON TABLE subjects_3AAA IS 'Subject master data (e.g., Mathematics, Physics, English)';
 
 -- 3.5 Class-Subject Mapping
-CREATE TABLE class_subjects_CXKQLA (
+CREATE TABLE class_subjects_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID NOT NULL,
   subject_id UUID NOT NULL,
@@ -304,14 +304,14 @@ CREATE TABLE class_subjects_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_class_subjects_class ON class_subjects_CXKQLA(class_id);
-CREATE INDEX idx_class_subjects_subject ON class_subjects_CXKQLA(subject_id);
-CREATE UNIQUE INDEX idx_class_subjects_unique ON class_subjects_CXKQLA(class_id, subject_id);
+CREATE INDEX idx_class_subjects_class ON class_subjects_3AAA(class_id);
+CREATE INDEX idx_class_subjects_subject ON class_subjects_3AAA(subject_id);
+CREATE UNIQUE INDEX idx_class_subjects_unique ON class_subjects_3AAA(class_id, subject_id);
 
-COMMENT ON TABLE class_subjects_CXKQLA IS 'Subject allocation to classes';
+COMMENT ON TABLE class_subjects_3AAA IS 'Subject allocation to classes';
 
 -- 3.6 Topics (Chapters/Units within subjects)
-CREATE TABLE topics_CXKQLA (
+CREATE TABLE topics_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subject_id UUID NOT NULL,
   topic_name VARCHAR(255) NOT NULL,
@@ -325,15 +325,15 @@ CREATE TABLE topics_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_topics_subject ON topics_CXKQLA(subject_id);
-CREATE INDEX idx_topics_parent ON topics_CXKQLA(parent_topic_id);
-CREATE INDEX idx_topics_active ON topics_CXKQLA(is_active);
+CREATE INDEX idx_topics_subject ON topics_3AAA(subject_id);
+CREATE INDEX idx_topics_parent ON topics_3AAA(parent_topic_id);
+CREATE INDEX idx_topics_active ON topics_3AAA(is_active);
 
-COMMENT ON TABLE topics_CXKQLA IS 'Topics/chapters within subjects with hierarchical structure';
-COMMENT ON COLUMN topics_CXKQLA.parent_topic_id IS 'For subtopics - references parent topic';
+COMMENT ON TABLE topics_3AAA IS 'Topics/chapters within subjects with hierarchical structure';
+COMMENT ON COLUMN topics_3AAA.parent_topic_id IS 'For subtopics - references parent topic';
 
 -- 3.7 Topic Content (Learning Materials)
-CREATE TABLE topic_content_CXKQLA (
+CREATE TABLE topic_content_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   topic_id UUID NOT NULL,
   content_type VARCHAR(50) NOT NULL CHECK (content_type IN ('PDF', 'Video', 'Link', 'Document', 'Image', 'Quiz')),
@@ -345,13 +345,13 @@ CREATE TABLE topic_content_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_topic_content_topic ON topic_content_CXKQLA(topic_id);
-CREATE INDEX idx_topic_content_type ON topic_content_CXKQLA(content_type);
+CREATE INDEX idx_topic_content_topic ON topic_content_3AAA(topic_id);
+CREATE INDEX idx_topic_content_type ON topic_content_3AAA(content_type);
 
-COMMENT ON TABLE topic_content_CXKQLA IS 'Learning materials attached to topics';
+COMMENT ON TABLE topic_content_3AAA IS 'Learning materials attached to topics';
 
 -- 3.8 Teachers
-CREATE TABLE teachers_CXKQLA (
+CREATE TABLE teachers_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   employee_code VARCHAR(50) UNIQUE NOT NULL,
@@ -398,14 +398,14 @@ CREATE TABLE teachers_CXKQLA (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_teachers_user ON teachers_CXKQLA(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_teachers_code ON teachers_CXKQLA(employee_code) WHERE deleted_at IS NULL;
-CREATE INDEX idx_teachers_status ON teachers_CXKQLA(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_user ON teachers_3AAA(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_code ON teachers_3AAA(employee_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_status ON teachers_3AAA(status) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE teachers_CXKQLA IS 'Teacher information with professional and personal details';
+COMMENT ON TABLE teachers_3AAA IS 'Teacher information with professional and personal details';
 
 -- 3.9 Teacher-Subject-Section Mapping
-CREATE TABLE teacher_subject_sections_CXKQLA (
+CREATE TABLE teacher_subject_sections_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   section_id UUID NOT NULL,
@@ -414,15 +414,15 @@ CREATE TABLE teacher_subject_sections_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_teacher_subject_sections_teacher ON teacher_subject_sections_CXKQLA(teacher_id);
-CREATE INDEX idx_teacher_subject_sections_section ON teacher_subject_sections_CXKQLA(section_id);
-CREATE INDEX idx_teacher_subject_sections_subject ON teacher_subject_sections_CXKQLA(subject_id);
-CREATE UNIQUE INDEX idx_teacher_subject_sections_unique ON teacher_subject_sections_CXKQLA(section_id, subject_id, academic_year_id);
+CREATE INDEX idx_teacher_subject_sections_teacher ON teacher_subject_sections_3AAA(teacher_id);
+CREATE INDEX idx_teacher_subject_sections_section ON teacher_subject_sections_3AAA(section_id);
+CREATE INDEX idx_teacher_subject_sections_subject ON teacher_subject_sections_3AAA(subject_id);
+CREATE UNIQUE INDEX idx_teacher_subject_sections_unique ON teacher_subject_sections_3AAA(section_id, subject_id, academic_year_id);
 
-COMMENT ON TABLE teacher_subject_sections_CXKQLA IS 'Maps which teacher teaches which subject to which section';
+COMMENT ON TABLE teacher_subject_sections_3AAA IS 'Maps which teacher teaches which subject to which section';
 
 -- 3.10 Timetable Periods Configuration
-CREATE TABLE timetable_periods_CXKQLA (
+CREATE TABLE timetable_periods_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   period_number INTEGER NOT NULL,
   period_name VARCHAR(50),
@@ -434,13 +434,13 @@ CREATE TABLE timetable_periods_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetable_periods_number ON timetable_periods_CXKQLA(period_number);
-CREATE UNIQUE INDEX idx_timetable_periods_order ON timetable_periods_CXKQLA(display_order);
+CREATE INDEX idx_timetable_periods_number ON timetable_periods_3AAA(period_number);
+CREATE UNIQUE INDEX idx_timetable_periods_order ON timetable_periods_3AAA(display_order);
 
-COMMENT ON TABLE timetable_periods_CXKQLA IS 'School period configuration (Period 1, Break, Period 2, etc.)';
+COMMENT ON TABLE timetable_periods_3AAA IS 'School period configuration (Period 1, Break, Period 2, etc.)';
 
 -- 3.11 Timetables
-CREATE TABLE timetables_CXKQLA (
+CREATE TABLE timetables_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   section_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -454,16 +454,16 @@ CREATE TABLE timetables_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetables_section ON timetables_CXKQLA(section_id);
-CREATE INDEX idx_timetables_teacher ON timetables_CXKQLA(teacher_id);
-CREATE INDEX idx_timetables_subject ON timetables_CXKQLA(subject_id);
-CREATE INDEX idx_timetables_day ON timetables_CXKQLA(day_of_week);
-CREATE UNIQUE INDEX idx_timetables_unique ON timetables_CXKQLA(section_id, day_of_week, period_id, academic_year_id) WHERE is_active = true;
+CREATE INDEX idx_timetables_section ON timetables_3AAA(section_id);
+CREATE INDEX idx_timetables_teacher ON timetables_3AAA(teacher_id);
+CREATE INDEX idx_timetables_subject ON timetables_3AAA(subject_id);
+CREATE INDEX idx_timetables_day ON timetables_3AAA(day_of_week);
+CREATE UNIQUE INDEX idx_timetables_unique ON timetables_3AAA(section_id, day_of_week, period_id, academic_year_id) WHERE is_active = true;
 
-COMMENT ON TABLE timetables_CXKQLA IS 'Weekly timetable for sections';
+COMMENT ON TABLE timetables_3AAA IS 'Weekly timetable for sections';
 
 -- 3.12 Timetable Substitutions
-CREATE TABLE timetable_substitutions_CXKQLA (
+CREATE TABLE timetable_substitutions_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   timetable_id UUID NOT NULL,
   original_teacher_id UUID NOT NULL,
@@ -474,13 +474,13 @@ CREATE TABLE timetable_substitutions_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetable_substitutions_timetable ON timetable_substitutions_CXKQLA(timetable_id);
-CREATE INDEX idx_timetable_substitutions_date ON timetable_substitutions_CXKQLA(substitution_date);
+CREATE INDEX idx_timetable_substitutions_timetable ON timetable_substitutions_3AAA(timetable_id);
+CREATE INDEX idx_timetable_substitutions_date ON timetable_substitutions_3AAA(substitution_date);
 
-COMMENT ON TABLE timetable_substitutions_CXKQLA IS 'Substitute teacher assignments for specific dates';
+COMMENT ON TABLE timetable_substitutions_3AAA IS 'Substitute teacher assignments for specific dates';
 
 -- 3.13 Lecture Templates
-CREATE TABLE lecture_templates_CXKQLA (
+CREATE TABLE lecture_templates_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   template_name VARCHAR(255) NOT NULL,
   subject_id UUID NOT NULL,
@@ -491,16 +491,16 @@ CREATE TABLE lecture_templates_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lecture_templates_subject ON lecture_templates_CXKQLA(subject_id);
+CREATE INDEX idx_lecture_templates_subject ON lecture_templates_3AAA(subject_id);
 
-COMMENT ON TABLE lecture_templates_CXKQLA IS 'Reusable lecture templates for quick timetable creation';
+COMMENT ON TABLE lecture_templates_3AAA IS 'Reusable lecture templates for quick timetable creation';
 
 -- ============================================================================
 -- 4. ATTENDANCE MANAGEMENT
 -- ============================================================================
 
 -- 4.1 Daily Attendance (Class-wise)
-CREATE TABLE attendance_CXKQLA (
+CREATE TABLE attendance_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   class_id UUID NOT NULL,
@@ -514,16 +514,16 @@ CREATE TABLE attendance_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_attendance_student ON attendance_CXKQLA(student_id);
-CREATE INDEX idx_attendance_date ON attendance_CXKQLA(attendance_date);
-CREATE INDEX idx_attendance_section ON attendance_CXKQLA(section_id);
-CREATE INDEX idx_attendance_status ON attendance_CXKQLA(status);
-CREATE UNIQUE INDEX idx_attendance_unique ON attendance_CXKQLA(student_id, attendance_date);
+CREATE INDEX idx_attendance_student ON attendance_3AAA(student_id);
+CREATE INDEX idx_attendance_date ON attendance_3AAA(attendance_date);
+CREATE INDEX idx_attendance_section ON attendance_3AAA(section_id);
+CREATE INDEX idx_attendance_status ON attendance_3AAA(status);
+CREATE UNIQUE INDEX idx_attendance_unique ON attendance_3AAA(student_id, attendance_date);
 
-COMMENT ON TABLE attendance_CXKQLA IS 'Daily class-wise attendance for students';
+COMMENT ON TABLE attendance_3AAA IS 'Daily class-wise attendance for students';
 
 -- 4.2 Subject-wise Attendance (for colleges/senior classes)
-CREATE TABLE attendance_subject_wise_CXKQLA (
+CREATE TABLE attendance_subject_wise_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   section_id UUID NOT NULL,
@@ -537,15 +537,15 @@ CREATE TABLE attendance_subject_wise_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_attendance_subject_student ON attendance_subject_wise_CXKQLA(student_id);
-CREATE INDEX idx_attendance_subject_date ON attendance_subject_wise_CXKQLA(attendance_date);
-CREATE INDEX idx_attendance_subject_subject ON attendance_subject_wise_CXKQLA(subject_id);
-CREATE UNIQUE INDEX idx_attendance_subject_unique ON attendance_subject_wise_CXKQLA(student_id, subject_id, attendance_date, period_id);
+CREATE INDEX idx_attendance_subject_student ON attendance_subject_wise_3AAA(student_id);
+CREATE INDEX idx_attendance_subject_date ON attendance_subject_wise_3AAA(attendance_date);
+CREATE INDEX idx_attendance_subject_subject ON attendance_subject_wise_3AAA(subject_id);
+CREATE UNIQUE INDEX idx_attendance_subject_unique ON attendance_subject_wise_3AAA(student_id, subject_id, attendance_date, period_id);
 
-COMMENT ON TABLE attendance_subject_wise_CXKQLA IS 'Subject and period-wise attendance tracking';
+COMMENT ON TABLE attendance_subject_wise_3AAA IS 'Subject and period-wise attendance tracking';
 
 -- 4.3 Leave Applications
-CREATE TABLE leave_applications_CXKQLA (
+CREATE TABLE leave_applications_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   leave_type VARCHAR(50) NOT NULL CHECK (leave_type IN ('Sick', 'Medical', 'Casual', 'Emergency', 'Other')),
@@ -564,14 +564,14 @@ CREATE TABLE leave_applications_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_leave_applications_student ON leave_applications_CXKQLA(student_id);
-CREATE INDEX idx_leave_applications_status ON leave_applications_CXKQLA(status);
-CREATE INDEX idx_leave_applications_dates ON leave_applications_CXKQLA(from_date, to_date);
+CREATE INDEX idx_leave_applications_student ON leave_applications_3AAA(student_id);
+CREATE INDEX idx_leave_applications_status ON leave_applications_3AAA(status);
+CREATE INDEX idx_leave_applications_dates ON leave_applications_3AAA(from_date, to_date);
 
-COMMENT ON TABLE leave_applications_CXKQLA IS 'Student leave application and approval system';
+COMMENT ON TABLE leave_applications_3AAA IS 'Student leave application and approval system';
 
 -- 4.4 Teacher Attendance
-CREATE TABLE teacher_attendance_CXKQLA (
+CREATE TABLE teacher_attendance_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   attendance_date DATE NOT NULL,
@@ -583,18 +583,18 @@ CREATE TABLE teacher_attendance_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_teacher_attendance_teacher ON teacher_attendance_CXKQLA(teacher_id);
-CREATE INDEX idx_teacher_attendance_date ON teacher_attendance_CXKQLA(attendance_date);
-CREATE UNIQUE INDEX idx_teacher_attendance_unique ON teacher_attendance_CXKQLA(teacher_id, attendance_date);
+CREATE INDEX idx_teacher_attendance_teacher ON teacher_attendance_3AAA(teacher_id);
+CREATE INDEX idx_teacher_attendance_date ON teacher_attendance_3AAA(attendance_date);
+CREATE UNIQUE INDEX idx_teacher_attendance_unique ON teacher_attendance_3AAA(teacher_id, attendance_date);
 
-COMMENT ON TABLE teacher_attendance_CXKQLA IS 'Daily attendance tracking for teachers';
+COMMENT ON TABLE teacher_attendance_3AAA IS 'Daily attendance tracking for teachers';
 
 -- ============================================================================
 -- 5. EXAMINATION SYSTEM
 -- ============================================================================
 
 -- 5.1 Exam Types
-CREATE TABLE exam_types_CXKQLA (
+CREATE TABLE exam_types_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_type_name VARCHAR(100) NOT NULL,
   exam_type_code VARCHAR(20) UNIQUE NOT NULL,
@@ -604,12 +604,12 @@ CREATE TABLE exam_types_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_types_active ON exam_types_CXKQLA(is_active);
+CREATE INDEX idx_exam_types_active ON exam_types_3AAA(is_active);
 
-COMMENT ON TABLE exam_types_CXKQLA IS 'Exam type definitions (Unit Test, Mid-term, Final, etc.)';
+COMMENT ON TABLE exam_types_3AAA IS 'Exam type definitions (Unit Test, Mid-term, Final, etc.)';
 
 -- 5.2 Exams
-CREATE TABLE exams_CXKQLA (
+CREATE TABLE exams_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_name VARCHAR(255) NOT NULL,
   exam_code VARCHAR(50) UNIQUE NOT NULL,
@@ -624,14 +624,14 @@ CREATE TABLE exams_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exams_type ON exams_CXKQLA(exam_type_id);
-CREATE INDEX idx_exams_academic_year ON exams_CXKQLA(academic_year_id);
-CREATE INDEX idx_exams_active ON exams_CXKQLA(is_active);
+CREATE INDEX idx_exams_type ON exams_3AAA(exam_type_id);
+CREATE INDEX idx_exams_academic_year ON exams_3AAA(academic_year_id);
+CREATE INDEX idx_exams_active ON exams_3AAA(is_active);
 
-COMMENT ON TABLE exams_CXKQLA IS 'Exam master data with schedules';
+COMMENT ON TABLE exams_3AAA IS 'Exam master data with schedules';
 
 -- 5.3 Exam Schedules
-CREATE TABLE exam_schedules_CXKQLA (
+CREATE TABLE exam_schedules_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   class_id UUID NOT NULL,
@@ -649,15 +649,15 @@ CREATE TABLE exam_schedules_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_schedules_exam ON exam_schedules_CXKQLA(exam_id);
-CREATE INDEX idx_exam_schedules_class ON exam_schedules_CXKQLA(class_id);
-CREATE INDEX idx_exam_schedules_subject ON exam_schedules_CXKQLA(subject_id);
-CREATE INDEX idx_exam_schedules_date ON exam_schedules_CXKQLA(exam_date);
+CREATE INDEX idx_exam_schedules_exam ON exam_schedules_3AAA(exam_id);
+CREATE INDEX idx_exam_schedules_class ON exam_schedules_3AAA(class_id);
+CREATE INDEX idx_exam_schedules_subject ON exam_schedules_3AAA(subject_id);
+CREATE INDEX idx_exam_schedules_date ON exam_schedules_3AAA(exam_date);
 
-COMMENT ON TABLE exam_schedules_CXKQLA IS 'Detailed exam schedule for each subject';
+COMMENT ON TABLE exam_schedules_3AAA IS 'Detailed exam schedule for each subject';
 
 -- 5.4 Admit Cards
-CREATE TABLE admit_cards_CXKQLA (
+CREATE TABLE admit_cards_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -670,14 +670,14 @@ CREATE TABLE admit_cards_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admit_cards_exam ON admit_cards_CXKQLA(exam_id);
-CREATE INDEX idx_admit_cards_student ON admit_cards_CXKQLA(student_id);
-CREATE UNIQUE INDEX idx_admit_cards_unique ON admit_cards_CXKQLA(exam_id, student_id);
+CREATE INDEX idx_admit_cards_exam ON admit_cards_3AAA(exam_id);
+CREATE INDEX idx_admit_cards_student ON admit_cards_3AAA(student_id);
+CREATE UNIQUE INDEX idx_admit_cards_unique ON admit_cards_3AAA(exam_id, student_id);
 
-COMMENT ON TABLE admit_cards_CXKQLA IS 'Admit card generation and tracking';
+COMMENT ON TABLE admit_cards_3AAA IS 'Admit card generation and tracking';
 
 -- 5.5 Exam Marks
-CREATE TABLE exam_marks_CXKQLA (
+CREATE TABLE exam_marks_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_schedule_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -692,15 +692,15 @@ CREATE TABLE exam_marks_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_marks_schedule ON exam_marks_CXKQLA(exam_schedule_id);
-CREATE INDEX idx_exam_marks_student ON exam_marks_CXKQLA(student_id);
-CREATE INDEX idx_exam_marks_verified ON exam_marks_CXKQLA(verified_by, verified_at);
-CREATE UNIQUE INDEX idx_exam_marks_unique ON exam_marks_CXKQLA(exam_schedule_id, student_id);
+CREATE INDEX idx_exam_marks_schedule ON exam_marks_3AAA(exam_schedule_id);
+CREATE INDEX idx_exam_marks_student ON exam_marks_3AAA(student_id);
+CREATE INDEX idx_exam_marks_verified ON exam_marks_3AAA(verified_by, verified_at);
+CREATE UNIQUE INDEX idx_exam_marks_unique ON exam_marks_3AAA(exam_schedule_id, student_id);
 
-COMMENT ON TABLE exam_marks_CXKQLA IS 'Student marks for each exam subject';
+COMMENT ON TABLE exam_marks_3AAA IS 'Student marks for each exam subject';
 
 -- 5.6 Report Cards
-CREATE TABLE report_cards_CXKQLA (
+CREATE TABLE report_cards_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -718,15 +718,15 @@ CREATE TABLE report_cards_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_report_cards_exam ON report_cards_CXKQLA(exam_id);
-CREATE INDEX idx_report_cards_student ON report_cards_CXKQLA(student_id);
-CREATE INDEX idx_report_cards_published ON report_cards_CXKQLA(is_published);
-CREATE UNIQUE INDEX idx_report_cards_unique ON report_cards_CXKQLA(exam_id, student_id);
+CREATE INDEX idx_report_cards_exam ON report_cards_3AAA(exam_id);
+CREATE INDEX idx_report_cards_student ON report_cards_3AAA(student_id);
+CREATE INDEX idx_report_cards_published ON report_cards_3AAA(is_published);
+CREATE UNIQUE INDEX idx_report_cards_unique ON report_cards_3AAA(exam_id, student_id);
 
-COMMENT ON TABLE report_cards_CXKQLA IS 'Consolidated report cards for students';
+COMMENT ON TABLE report_cards_3AAA IS 'Consolidated report cards for students';
 
 -- 5.7 Grade Configuration
-CREATE TABLE grade_config_CXKQLA (
+CREATE TABLE grade_config_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   grade VARCHAR(5) NOT NULL,
   min_percentage DECIMAL(5,2) NOT NULL,
@@ -736,16 +736,16 @@ CREATE TABLE grade_config_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_grade_config_range ON grade_config_CXKQLA(min_percentage, max_percentage);
+CREATE INDEX idx_grade_config_range ON grade_config_3AAA(min_percentage, max_percentage);
 
-COMMENT ON TABLE grade_config_CXKQLA IS 'Grade calculation configuration (A+, A, B+, etc.)';
+COMMENT ON TABLE grade_config_3AAA IS 'Grade calculation configuration (A+, A, B+, etc.)';
 
 -- ============================================================================
 -- 6. FEE MANAGEMENT
 -- ============================================================================
 
 -- 6.1 Fee Components
-CREATE TABLE fee_components_CXKQLA (
+CREATE TABLE fee_components_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   component_name VARCHAR(100) NOT NULL,
   component_code VARCHAR(20) UNIQUE NOT NULL,
@@ -756,12 +756,12 @@ CREATE TABLE fee_components_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_components_active ON fee_components_CXKQLA(is_active);
+CREATE INDEX idx_fee_components_active ON fee_components_3AAA(is_active);
 
-COMMENT ON TABLE fee_components_CXKQLA IS 'Fee component definitions (Tuition, Transport, Library, etc.)';
+COMMENT ON TABLE fee_components_3AAA IS 'Fee component definitions (Tuition, Transport, Library, etc.)';
 
 -- 6.2 Fee Structures
-CREATE TABLE fee_structures_CXKQLA (
+CREATE TABLE fee_structures_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   structure_name VARCHAR(255) NOT NULL,
   class_id UUID NOT NULL,
@@ -773,14 +773,14 @@ CREATE TABLE fee_structures_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_structures_class ON fee_structures_CXKQLA(class_id);
-CREATE INDEX idx_fee_structures_year ON fee_structures_CXKQLA(academic_year_id);
-CREATE INDEX idx_fee_structures_active ON fee_structures_CXKQLA(is_active);
+CREATE INDEX idx_fee_structures_class ON fee_structures_3AAA(class_id);
+CREATE INDEX idx_fee_structures_year ON fee_structures_3AAA(academic_year_id);
+CREATE INDEX idx_fee_structures_active ON fee_structures_3AAA(is_active);
 
-COMMENT ON TABLE fee_structures_CXKQLA IS 'Class-wise fee structure for academic year';
+COMMENT ON TABLE fee_structures_3AAA IS 'Class-wise fee structure for academic year';
 
 -- 6.3 Fee Structure Components
-CREATE TABLE fee_structure_components_CXKQLA (
+CREATE TABLE fee_structure_components_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   fee_structure_id UUID NOT NULL,
   fee_component_id UUID NOT NULL,
@@ -788,13 +788,13 @@ CREATE TABLE fee_structure_components_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_structure_components_structure ON fee_structure_components_CXKQLA(fee_structure_id);
-CREATE INDEX idx_fee_structure_components_component ON fee_structure_components_CXKQLA(fee_component_id);
+CREATE INDEX idx_fee_structure_components_structure ON fee_structure_components_3AAA(fee_structure_id);
+CREATE INDEX idx_fee_structure_components_component ON fee_structure_components_3AAA(fee_component_id);
 
-COMMENT ON TABLE fee_structure_components_CXKQLA IS 'Component-wise breakdown of fee structure';
+COMMENT ON TABLE fee_structure_components_3AAA IS 'Component-wise breakdown of fee structure';
 
 -- 6.4 Student Fees
-CREATE TABLE student_fees_CXKQLA (
+CREATE TABLE student_fees_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   fee_structure_id UUID NOT NULL,
@@ -810,15 +810,15 @@ CREATE TABLE student_fees_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_fees_student ON student_fees_CXKQLA(student_id);
-CREATE INDEX idx_student_fees_structure ON student_fees_CXKQLA(fee_structure_id);
-CREATE INDEX idx_student_fees_status ON student_fees_CXKQLA(status);
-CREATE UNIQUE INDEX idx_student_fees_unique ON student_fees_CXKQLA(student_id, academic_year_id);
+CREATE INDEX idx_student_fees_student ON student_fees_3AAA(student_id);
+CREATE INDEX idx_student_fees_structure ON student_fees_3AAA(fee_structure_id);
+CREATE INDEX idx_student_fees_status ON student_fees_3AAA(status);
+CREATE UNIQUE INDEX idx_student_fees_unique ON student_fees_3AAA(student_id, academic_year_id);
 
-COMMENT ON TABLE student_fees_CXKQLA IS 'Fee allocation to individual students with discounts';
+COMMENT ON TABLE student_fees_3AAA IS 'Fee allocation to individual students with discounts';
 
 -- 6.5 Fee Payments
-CREATE TABLE fee_payments_CXKQLA (
+CREATE TABLE fee_payments_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_fee_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -836,15 +836,15 @@ CREATE TABLE fee_payments_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_payments_student_fee ON fee_payments_CXKQLA(student_fee_id);
-CREATE INDEX idx_fee_payments_student ON fee_payments_CXKQLA(student_id);
-CREATE INDEX idx_fee_payments_date ON fee_payments_CXKQLA(payment_date);
-CREATE INDEX idx_fee_payments_receipt ON fee_payments_CXKQLA(receipt_number);
+CREATE INDEX idx_fee_payments_student_fee ON fee_payments_3AAA(student_fee_id);
+CREATE INDEX idx_fee_payments_student ON fee_payments_3AAA(student_id);
+CREATE INDEX idx_fee_payments_date ON fee_payments_3AAA(payment_date);
+CREATE INDEX idx_fee_payments_receipt ON fee_payments_3AAA(receipt_number);
 
-COMMENT ON TABLE fee_payments_CXKQLA IS 'Individual fee payment transactions with receipt generation';
+COMMENT ON TABLE fee_payments_3AAA IS 'Individual fee payment transactions with receipt generation';
 
 -- 6.6 Late Fee Configuration
-CREATE TABLE late_fee_config_CXKQLA (
+CREATE TABLE late_fee_config_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID NOT NULL,
   due_date INTEGER NOT NULL,
@@ -855,16 +855,16 @@ CREATE TABLE late_fee_config_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_late_fee_config_class ON late_fee_config_CXKQLA(class_id);
+CREATE INDEX idx_late_fee_config_class ON late_fee_config_3AAA(class_id);
 
-COMMENT ON TABLE late_fee_config_CXKQLA IS 'Late fee configuration for classes';
+COMMENT ON TABLE late_fee_config_3AAA IS 'Late fee configuration for classes';
 
 -- ============================================================================
 -- 7. COMMUNICATION SYSTEM
 -- ============================================================================
 
 -- 7.1 Announcements
-CREATE TABLE announcements_CXKQLA (
+CREATE TABLE announcements_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
@@ -882,16 +882,16 @@ CREATE TABLE announcements_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_announcements_type ON announcements_CXKQLA(announcement_type);
-CREATE INDEX idx_announcements_audience ON announcements_CXKQLA(target_audience);
-CREATE INDEX idx_announcements_class ON announcements_CXKQLA(class_id);
-CREATE INDEX idx_announcements_active ON announcements_CXKQLA(is_active);
-CREATE INDEX idx_announcements_publish ON announcements_CXKQLA(publish_date);
+CREATE INDEX idx_announcements_type ON announcements_3AAA(announcement_type);
+CREATE INDEX idx_announcements_audience ON announcements_3AAA(target_audience);
+CREATE INDEX idx_announcements_class ON announcements_3AAA(class_id);
+CREATE INDEX idx_announcements_active ON announcements_3AAA(is_active);
+CREATE INDEX idx_announcements_publish ON announcements_3AAA(publish_date);
 
-COMMENT ON TABLE announcements_CXKQLA IS 'School-wide and targeted announcements';
+COMMENT ON TABLE announcements_3AAA IS 'School-wide and targeted announcements';
 
 -- 7.2 Notifications
-CREATE TABLE notifications_CXKQLA (
+CREATE TABLE notifications_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   title VARCHAR(255) NOT NULL,
@@ -904,15 +904,15 @@ CREATE TABLE notifications_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_notifications_user ON notifications_CXKQLA(user_id);
-CREATE INDEX idx_notifications_read ON notifications_CXKQLA(is_read);
-CREATE INDEX idx_notifications_type ON notifications_CXKQLA(notification_type);
-CREATE INDEX idx_notifications_created ON notifications_CXKQLA(created_at);
+CREATE INDEX idx_notifications_user ON notifications_3AAA(user_id);
+CREATE INDEX idx_notifications_read ON notifications_3AAA(is_read);
+CREATE INDEX idx_notifications_type ON notifications_3AAA(notification_type);
+CREATE INDEX idx_notifications_created ON notifications_3AAA(created_at);
 
-COMMENT ON TABLE notifications_CXKQLA IS 'In-app notification center for users';
+COMMENT ON TABLE notifications_3AAA IS 'In-app notification center for users';
 
 -- 7.3 SMS Logs
-CREATE TABLE sms_logs_CXKQLA (
+CREATE TABLE sms_logs_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_phone VARCHAR(15) NOT NULL,
   recipient_user_id UUID,
@@ -925,15 +925,15 @@ CREATE TABLE sms_logs_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_sms_logs_phone ON sms_logs_CXKQLA(recipient_phone);
-CREATE INDEX idx_sms_logs_user ON sms_logs_CXKQLA(recipient_user_id);
-CREATE INDEX idx_sms_logs_status ON sms_logs_CXKQLA(status);
-CREATE INDEX idx_sms_logs_sent ON sms_logs_CXKQLA(sent_at);
+CREATE INDEX idx_sms_logs_phone ON sms_logs_3AAA(recipient_phone);
+CREATE INDEX idx_sms_logs_user ON sms_logs_3AAA(recipient_user_id);
+CREATE INDEX idx_sms_logs_status ON sms_logs_3AAA(status);
+CREATE INDEX idx_sms_logs_sent ON sms_logs_3AAA(sent_at);
 
-COMMENT ON TABLE sms_logs_CXKQLA IS 'SMS sending logs and delivery tracking';
+COMMENT ON TABLE sms_logs_3AAA IS 'SMS sending logs and delivery tracking';
 
 -- 7.4 Email Logs
-CREATE TABLE email_logs_CXKQLA (
+CREATE TABLE email_logs_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_email VARCHAR(255) NOT NULL,
   recipient_user_id UUID,
@@ -946,19 +946,19 @@ CREATE TABLE email_logs_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_email_logs_email ON email_logs_CXKQLA(recipient_email);
-CREATE INDEX idx_email_logs_user ON email_logs_CXKQLA(recipient_user_id);
-CREATE INDEX idx_email_logs_status ON email_logs_CXKQLA(status);
-CREATE INDEX idx_email_logs_sent ON email_logs_CXKQLA(sent_at);
+CREATE INDEX idx_email_logs_email ON email_logs_3AAA(recipient_email);
+CREATE INDEX idx_email_logs_user ON email_logs_3AAA(recipient_user_id);
+CREATE INDEX idx_email_logs_status ON email_logs_3AAA(status);
+CREATE INDEX idx_email_logs_sent ON email_logs_3AAA(sent_at);
 
-COMMENT ON TABLE email_logs_CXKQLA IS 'Email sending logs and tracking';
+COMMENT ON TABLE email_logs_3AAA IS 'Email sending logs and tracking';
 
 -- ============================================================================
 -- 8. ID CARD GENERATION
 -- ============================================================================
 
 -- 7.5 ID Cards
-CREATE TABLE id_cards_CXKQLA (
+CREATE TABLE id_cards_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_type VARCHAR(20) NOT NULL CHECK (user_type IN ('Student', 'Teacher', 'Staff')),
   user_id UUID NOT NULL,
@@ -973,18 +973,18 @@ CREATE TABLE id_cards_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_id_cards_user ON id_cards_CXKQLA(user_id, user_type);
-CREATE INDEX idx_id_cards_number ON id_cards_CXKQLA(card_number);
-CREATE INDEX idx_id_cards_active ON id_cards_CXKQLA(is_active);
+CREATE INDEX idx_id_cards_user ON id_cards_3AAA(user_id, user_type);
+CREATE INDEX idx_id_cards_number ON id_cards_3AAA(card_number);
+CREATE INDEX idx_id_cards_active ON id_cards_3AAA(is_active);
 
-COMMENT ON TABLE id_cards_CXKQLA IS 'ID card generation and tracking with QR codes';
+COMMENT ON TABLE id_cards_3AAA IS 'ID card generation and tracking with QR codes';
 
 -- ============================================================================
 -- 9. AUDIT & LOGS
 -- ============================================================================
 
 -- 9.1 Activity Logs
-CREATE TABLE activity_logs_CXKQLA (
+CREATE TABLE activity_logs_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   action VARCHAR(100) NOT NULL,
@@ -997,99 +997,99 @@ CREATE TABLE activity_logs_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_activity_logs_user ON activity_logs_CXKQLA(user_id);
-CREATE INDEX idx_activity_logs_action ON activity_logs_CXKQLA(action);
-CREATE INDEX idx_activity_logs_module ON activity_logs_CXKQLA(module);
-CREATE INDEX idx_activity_logs_created ON activity_logs_CXKQLA(created_at);
+CREATE INDEX idx_activity_logs_user ON activity_logs_3AAA(user_id);
+CREATE INDEX idx_activity_logs_action ON activity_logs_3AAA(action);
+CREATE INDEX idx_activity_logs_module ON activity_logs_3AAA(module);
+CREATE INDEX idx_activity_logs_created ON activity_logs_3AAA(created_at);
 
-COMMENT ON TABLE activity_logs_CXKQLA IS 'Audit trail for all user actions in the system';
+COMMENT ON TABLE activity_logs_3AAA IS 'Audit trail for all user actions in the system';
 
 -- ============================================================================
 -- 10. FOREIGN KEY CONSTRAINTS
 -- ============================================================================
 
-ALTER TABLE students_CXKQLA ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE students_CXKQLA ADD CONSTRAINT fk_students_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE RESTRICT;
-ALTER TABLE students_CXKQLA ADD CONSTRAINT fk_students_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE RESTRICT;
-ALTER TABLE students_CXKQLA ADD CONSTRAINT fk_students_academic_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE RESTRICT;
-ALTER TABLE parents_CXKQLA ADD CONSTRAINT fk_parents_user FOREIGN KEY (user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE student_parent_relations_CXKQLA ADD CONSTRAINT fk_student_parent_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE student_parent_relations_CXKQLA ADD CONSTRAINT fk_student_parent_parent FOREIGN KEY (parent_id) REFERENCES parents_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE sections_CXKQLA ADD CONSTRAINT fk_sections_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE sections_CXKQLA ADD CONSTRAINT fk_sections_teacher FOREIGN KEY (class_teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE class_subjects_CXKQLA ADD CONSTRAINT fk_class_subjects_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE class_subjects_CXKQLA ADD CONSTRAINT fk_class_subjects_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE topics_CXKQLA ADD CONSTRAINT fk_topics_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE topics_CXKQLA ADD CONSTRAINT fk_topics_parent FOREIGN KEY (parent_topic_id) REFERENCES topics_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE topic_content_CXKQLA ADD CONSTRAINT fk_topic_content_topic FOREIGN KEY (topic_id) REFERENCES topics_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE topic_content_CXKQLA ADD CONSTRAINT fk_topic_content_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE teachers_CXKQLA ADD CONSTRAINT fk_teachers_user FOREIGN KEY (user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE teacher_subject_sections_CXKQLA ADD CONSTRAINT fk_teacher_subject_sections_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE teacher_subject_sections_CXKQLA ADD CONSTRAINT fk_teacher_subject_sections_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE teacher_subject_sections_CXKQLA ADD CONSTRAINT fk_teacher_subject_sections_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE teacher_subject_sections_CXKQLA ADD CONSTRAINT fk_teacher_subject_sections_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE timetables_CXKQLA ADD CONSTRAINT fk_timetables_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE timetables_CXKQLA ADD CONSTRAINT fk_timetables_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE timetables_CXKQLA ADD CONSTRAINT fk_timetables_period FOREIGN KEY (period_id) REFERENCES timetable_periods_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE timetables_CXKQLA ADD CONSTRAINT fk_timetables_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE timetables_CXKQLA ADD CONSTRAINT fk_timetables_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE timetable_substitutions_CXKQLA ADD CONSTRAINT fk_timetable_subs_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE timetable_substitutions_CXKQLA ADD CONSTRAINT fk_timetable_subs_original FOREIGN KEY (original_teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE timetable_substitutions_CXKQLA ADD CONSTRAINT fk_timetable_subs_substitute FOREIGN KEY (substitute_teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE timetable_substitutions_CXKQLA ADD CONSTRAINT fk_timetable_subs_created_by FOREIGN KEY (created_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE lecture_templates_CXKQLA ADD CONSTRAINT fk_lecture_templates_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE lecture_templates_CXKQLA ADD CONSTRAINT fk_lecture_templates_teacher FOREIGN KEY (default_teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE attendance_CXKQLA ADD CONSTRAINT fk_attendance_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE attendance_CXKQLA ADD CONSTRAINT fk_attendance_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE attendance_CXKQLA ADD CONSTRAINT fk_attendance_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE attendance_CXKQLA ADD CONSTRAINT fk_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE attendance_subject_wise_CXKQLA ADD CONSTRAINT fk_attendance_subject_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE attendance_subject_wise_CXKQLA ADD CONSTRAINT fk_attendance_subject_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE attendance_subject_wise_CXKQLA ADD CONSTRAINT fk_attendance_subject_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE attendance_subject_wise_CXKQLA ADD CONSTRAINT fk_attendance_subject_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE attendance_subject_wise_CXKQLA ADD CONSTRAINT fk_attendance_subject_period FOREIGN KEY (period_id) REFERENCES timetable_periods_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE attendance_subject_wise_CXKQLA ADD CONSTRAINT fk_attendance_subject_marked_by FOREIGN KEY (marked_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE leave_applications_CXKQLA ADD CONSTRAINT fk_leave_applications_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE leave_applications_CXKQLA ADD CONSTRAINT fk_leave_applications_applied_by FOREIGN KEY (applied_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE leave_applications_CXKQLA ADD CONSTRAINT fk_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE teacher_attendance_CXKQLA ADD CONSTRAINT fk_teacher_attendance_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE teacher_attendance_CXKQLA ADD CONSTRAINT fk_teacher_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE exams_CXKQLA ADD CONSTRAINT fk_exams_type FOREIGN KEY (exam_type_id) REFERENCES exam_types_CXKQLA(id) ON DELETE RESTRICT;
-ALTER TABLE exams_CXKQLA ADD CONSTRAINT fk_exams_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE exam_schedules_CXKQLA ADD CONSTRAINT fk_exam_schedules_exam FOREIGN KEY (exam_id) REFERENCES exams_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE exam_schedules_CXKQLA ADD CONSTRAINT fk_exam_schedules_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE exam_schedules_CXKQLA ADD CONSTRAINT fk_exam_schedules_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE exam_schedules_CXKQLA ADD CONSTRAINT fk_exam_schedules_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE admit_cards_CXKQLA ADD CONSTRAINT fk_admit_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE admit_cards_CXKQLA ADD CONSTRAINT fk_admit_cards_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE exam_marks_CXKQLA ADD CONSTRAINT fk_exam_marks_schedule FOREIGN KEY (exam_schedule_id) REFERENCES exam_schedules_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE exam_marks_CXKQLA ADD CONSTRAINT fk_exam_marks_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE exam_marks_CXKQLA ADD CONSTRAINT fk_exam_marks_entered_by FOREIGN KEY (entered_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE exam_marks_CXKQLA ADD CONSTRAINT fk_exam_marks_verified_by FOREIGN KEY (verified_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE report_cards_CXKQLA ADD CONSTRAINT fk_report_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE report_cards_CXKQLA ADD CONSTRAINT fk_report_cards_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_structures_CXKQLA ADD CONSTRAINT fk_fee_structures_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_structures_CXKQLA ADD CONSTRAINT fk_fee_structures_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_structure_components_CXKQLA ADD CONSTRAINT fk_fee_structure_components_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_structure_components_CXKQLA ADD CONSTRAINT fk_fee_structure_components_component FOREIGN KEY (fee_component_id) REFERENCES fee_components_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE student_fees_CXKQLA ADD CONSTRAINT fk_student_fees_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE student_fees_CXKQLA ADD CONSTRAINT fk_student_fees_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_CXKQLA(id) ON DELETE RESTRICT;
-ALTER TABLE student_fees_CXKQLA ADD CONSTRAINT fk_student_fees_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_payments_CXKQLA ADD CONSTRAINT fk_fee_payments_student_fee FOREIGN KEY (student_fee_id) REFERENCES student_fees_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_payments_CXKQLA ADD CONSTRAINT fk_fee_payments_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_payments_CXKQLA ADD CONSTRAINT fk_fee_payments_collected_by FOREIGN KEY (collected_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE late_fee_config_CXKQLA ADD CONSTRAINT fk_late_fee_config_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE announcements_CXKQLA ADD CONSTRAINT fk_announcements_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE announcements_CXKQLA ADD CONSTRAINT fk_announcements_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE announcements_CXKQLA ADD CONSTRAINT fk_announcements_created_by FOREIGN KEY (created_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE notifications_CXKQLA ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE sms_logs_CXKQLA ADD CONSTRAINT fk_sms_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE email_logs_CXKQLA ADD CONSTRAINT fk_email_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE id_cards_CXKQLA ADD CONSTRAINT fk_id_cards_user FOREIGN KEY (user_id) REFERENCES users_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE activity_logs_CXKQLA ADD CONSTRAINT fk_activity_logs_user FOREIGN KEY (user_id) REFERENCES users_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE students_3AAA ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE students_3AAA ADD CONSTRAINT fk_students_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE RESTRICT;
+ALTER TABLE students_3AAA ADD CONSTRAINT fk_students_section FOREIGN KEY (section_id) REFERENCES sections_3AAA(id) ON DELETE RESTRICT;
+ALTER TABLE students_3AAA ADD CONSTRAINT fk_students_academic_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_3AAA(id) ON DELETE RESTRICT;
+ALTER TABLE parents_3AAA ADD CONSTRAINT fk_parents_user FOREIGN KEY (user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE student_parent_relations_3AAA ADD CONSTRAINT fk_student_parent_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE student_parent_relations_3AAA ADD CONSTRAINT fk_student_parent_parent FOREIGN KEY (parent_id) REFERENCES parents_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE sections_3AAA ADD CONSTRAINT fk_sections_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE sections_3AAA ADD CONSTRAINT fk_sections_teacher FOREIGN KEY (class_teacher_id) REFERENCES teachers_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE class_subjects_3AAA ADD CONSTRAINT fk_class_subjects_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE class_subjects_3AAA ADD CONSTRAINT fk_class_subjects_subject FOREIGN KEY (subject_id) REFERENCES subjects_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE topics_3AAA ADD CONSTRAINT fk_topics_subject FOREIGN KEY (subject_id) REFERENCES subjects_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE topics_3AAA ADD CONSTRAINT fk_topics_parent FOREIGN KEY (parent_topic_id) REFERENCES topics_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE topic_content_3AAA ADD CONSTRAINT fk_topic_content_topic FOREIGN KEY (topic_id) REFERENCES topics_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE topic_content_3AAA ADD CONSTRAINT fk_topic_content_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE teachers_3AAA ADD CONSTRAINT fk_teachers_user FOREIGN KEY (user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE teacher_subject_sections_3AAA ADD CONSTRAINT fk_teacher_subject_sections_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_3AAA ADD CONSTRAINT fk_teacher_subject_sections_section FOREIGN KEY (section_id) REFERENCES sections_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_3AAA ADD CONSTRAINT fk_teacher_subject_sections_subject FOREIGN KEY (subject_id) REFERENCES subjects_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_3AAA ADD CONSTRAINT fk_teacher_subject_sections_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE timetables_3AAA ADD CONSTRAINT fk_timetables_section FOREIGN KEY (section_id) REFERENCES sections_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE timetables_3AAA ADD CONSTRAINT fk_timetables_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE timetables_3AAA ADD CONSTRAINT fk_timetables_period FOREIGN KEY (period_id) REFERENCES timetable_periods_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE timetables_3AAA ADD CONSTRAINT fk_timetables_subject FOREIGN KEY (subject_id) REFERENCES subjects_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE timetables_3AAA ADD CONSTRAINT fk_timetables_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE timetable_substitutions_3AAA ADD CONSTRAINT fk_timetable_subs_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_3AAA ADD CONSTRAINT fk_timetable_subs_original FOREIGN KEY (original_teacher_id) REFERENCES teachers_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_3AAA ADD CONSTRAINT fk_timetable_subs_substitute FOREIGN KEY (substitute_teacher_id) REFERENCES teachers_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_3AAA ADD CONSTRAINT fk_timetable_subs_created_by FOREIGN KEY (created_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE lecture_templates_3AAA ADD CONSTRAINT fk_lecture_templates_subject FOREIGN KEY (subject_id) REFERENCES subjects_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE lecture_templates_3AAA ADD CONSTRAINT fk_lecture_templates_teacher FOREIGN KEY (default_teacher_id) REFERENCES teachers_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE attendance_3AAA ADD CONSTRAINT fk_attendance_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE attendance_3AAA ADD CONSTRAINT fk_attendance_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE attendance_3AAA ADD CONSTRAINT fk_attendance_section FOREIGN KEY (section_id) REFERENCES sections_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE attendance_3AAA ADD CONSTRAINT fk_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_3AAA ADD CONSTRAINT fk_attendance_subject_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_3AAA ADD CONSTRAINT fk_attendance_subject_section FOREIGN KEY (section_id) REFERENCES sections_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_3AAA ADD CONSTRAINT fk_attendance_subject_subject FOREIGN KEY (subject_id) REFERENCES subjects_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_3AAA ADD CONSTRAINT fk_attendance_subject_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_3AAA ADD CONSTRAINT fk_attendance_subject_period FOREIGN KEY (period_id) REFERENCES timetable_periods_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_3AAA ADD CONSTRAINT fk_attendance_subject_marked_by FOREIGN KEY (marked_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE leave_applications_3AAA ADD CONSTRAINT fk_leave_applications_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE leave_applications_3AAA ADD CONSTRAINT fk_leave_applications_applied_by FOREIGN KEY (applied_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE leave_applications_3AAA ADD CONSTRAINT fk_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE teacher_attendance_3AAA ADD CONSTRAINT fk_teacher_attendance_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE teacher_attendance_3AAA ADD CONSTRAINT fk_teacher_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE exams_3AAA ADD CONSTRAINT fk_exams_type FOREIGN KEY (exam_type_id) REFERENCES exam_types_3AAA(id) ON DELETE RESTRICT;
+ALTER TABLE exams_3AAA ADD CONSTRAINT fk_exams_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_3AAA ADD CONSTRAINT fk_exam_schedules_exam FOREIGN KEY (exam_id) REFERENCES exams_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_3AAA ADD CONSTRAINT fk_exam_schedules_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_3AAA ADD CONSTRAINT fk_exam_schedules_section FOREIGN KEY (section_id) REFERENCES sections_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE exam_schedules_3AAA ADD CONSTRAINT fk_exam_schedules_subject FOREIGN KEY (subject_id) REFERENCES subjects_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE admit_cards_3AAA ADD CONSTRAINT fk_admit_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE admit_cards_3AAA ADD CONSTRAINT fk_admit_cards_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_3AAA ADD CONSTRAINT fk_exam_marks_schedule FOREIGN KEY (exam_schedule_id) REFERENCES exam_schedules_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_3AAA ADD CONSTRAINT fk_exam_marks_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_3AAA ADD CONSTRAINT fk_exam_marks_entered_by FOREIGN KEY (entered_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE exam_marks_3AAA ADD CONSTRAINT fk_exam_marks_verified_by FOREIGN KEY (verified_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE report_cards_3AAA ADD CONSTRAINT fk_report_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE report_cards_3AAA ADD CONSTRAINT fk_report_cards_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_structures_3AAA ADD CONSTRAINT fk_fee_structures_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_structures_3AAA ADD CONSTRAINT fk_fee_structures_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_structure_components_3AAA ADD CONSTRAINT fk_fee_structure_components_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_structure_components_3AAA ADD CONSTRAINT fk_fee_structure_components_component FOREIGN KEY (fee_component_id) REFERENCES fee_components_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE student_fees_3AAA ADD CONSTRAINT fk_student_fees_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE student_fees_3AAA ADD CONSTRAINT fk_student_fees_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_3AAA(id) ON DELETE RESTRICT;
+ALTER TABLE student_fees_3AAA ADD CONSTRAINT fk_student_fees_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_3AAA ADD CONSTRAINT fk_fee_payments_student_fee FOREIGN KEY (student_fee_id) REFERENCES student_fees_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_3AAA ADD CONSTRAINT fk_fee_payments_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_3AAA ADD CONSTRAINT fk_fee_payments_collected_by FOREIGN KEY (collected_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE late_fee_config_3AAA ADD CONSTRAINT fk_late_fee_config_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE announcements_3AAA ADD CONSTRAINT fk_announcements_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE announcements_3AAA ADD CONSTRAINT fk_announcements_section FOREIGN KEY (section_id) REFERENCES sections_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE announcements_3AAA ADD CONSTRAINT fk_announcements_created_by FOREIGN KEY (created_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE notifications_3AAA ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE sms_logs_3AAA ADD CONSTRAINT fk_sms_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE email_logs_3AAA ADD CONSTRAINT fk_email_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE id_cards_3AAA ADD CONSTRAINT fk_id_cards_user FOREIGN KEY (user_id) REFERENCES users_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE activity_logs_3AAA ADD CONSTRAINT fk_activity_logs_user FOREIGN KEY (user_id) REFERENCES users_3AAA(id) ON DELETE CASCADE;
 
 -- ============================================================================
--- END OF SCHEMA FOR SCHOOL 3 (CXKQLA)
+-- END OF SCHEMA FOR SCHOOL 3 (3AAA)
 -- Total Tables: 42 | Total Foreign Keys: 86
 -- ============================================================================
 

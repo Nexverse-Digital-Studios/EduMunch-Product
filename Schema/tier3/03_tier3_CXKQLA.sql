@@ -1,5 +1,5 @@
 -- ============================================================================
--- EduMunch: TIER 3 Schema - School 3 (CXKQLA)
+-- EduMunch: TIER 3 Schema - School 3 (3AAA)
 -- ============================================================================
 -- TIER 3: ADVANCED FEATURES (Premium Offerings)
 -- Requires TIER 1 and TIER 2 to be deployed first
@@ -20,7 +20,7 @@
 -- ============================================================================
 
 -- 1.1 Student Performance Analytics
-CREATE TABLE analytics_student_performance_CXKQLA (
+CREATE TABLE analytics_student_performance_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -48,14 +48,14 @@ CREATE TABLE analytics_student_performance_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_student_performance_student ON analytics_student_performance_CXKQLA(student_id);
-CREATE INDEX idx_analytics_student_performance_subject ON analytics_student_performance_CXKQLA(subject_id);
-CREATE INDEX idx_analytics_student_performance_risk ON analytics_student_performance_CXKQLA(risk_level);
+CREATE INDEX idx_analytics_student_performance_student ON analytics_student_performance_3AAA(student_id);
+CREATE INDEX idx_analytics_student_performance_subject ON analytics_student_performance_3AAA(subject_id);
+CREATE INDEX idx_analytics_student_performance_risk ON analytics_student_performance_3AAA(risk_level);
 
-COMMENT ON TABLE analytics_student_performance_CXKQLA IS 'ML-based student performance analysis and predictions';
+COMMENT ON TABLE analytics_student_performance_3AAA IS 'ML-based student performance analysis and predictions';
 
 -- 1.2 Attendance Pattern Analysis
-CREATE TABLE analytics_attendance_patterns_CXKQLA (
+CREATE TABLE analytics_attendance_patterns_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -87,14 +87,14 @@ CREATE TABLE analytics_attendance_patterns_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_attendance_patterns_student ON analytics_attendance_patterns_CXKQLA(student_id);
-CREATE INDEX idx_analytics_attendance_patterns_risk ON analytics_attendance_patterns_CXKQLA(dropout_risk_level);
-CREATE INDEX idx_analytics_attendance_patterns_alert ON analytics_attendance_patterns_CXKQLA(alert_sent);
+CREATE INDEX idx_analytics_attendance_patterns_student ON analytics_attendance_patterns_3AAA(student_id);
+CREATE INDEX idx_analytics_attendance_patterns_risk ON analytics_attendance_patterns_3AAA(dropout_risk_level);
+CREATE INDEX idx_analytics_attendance_patterns_alert ON analytics_attendance_patterns_3AAA(alert_sent);
 
-COMMENT ON TABLE analytics_attendance_patterns_CXKQLA IS 'Attendance pattern analysis for dropout risk detection';
+COMMENT ON TABLE analytics_attendance_patterns_3AAA IS 'Attendance pattern analysis for dropout risk detection';
 
 -- 1.3 Academic Trend Reports
-CREATE TABLE analytics_academic_trends_CXKQLA (
+CREATE TABLE analytics_academic_trends_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   
   -- Scope
@@ -132,19 +132,19 @@ CREATE TABLE analytics_academic_trends_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_academic_trends_type ON analytics_academic_trends_CXKQLA(analysis_type);
-CREATE INDEX idx_analytics_academic_trends_class ON analytics_academic_trends_CXKQLA(class_id);
-CREATE INDEX idx_analytics_academic_trends_section ON analytics_academic_trends_CXKQLA(section_id);
-CREATE INDEX idx_analytics_academic_trends_teacher ON analytics_academic_trends_CXKQLA(teacher_id);
+CREATE INDEX idx_analytics_academic_trends_type ON analytics_academic_trends_3AAA(analysis_type);
+CREATE INDEX idx_analytics_academic_trends_class ON analytics_academic_trends_3AAA(class_id);
+CREATE INDEX idx_analytics_academic_trends_section ON analytics_academic_trends_3AAA(section_id);
+CREATE INDEX idx_analytics_academic_trends_teacher ON analytics_academic_trends_3AAA(teacher_id);
 
-COMMENT ON TABLE analytics_academic_trends_CXKQLA IS 'Academic performance trends and comparative analysis';
+COMMENT ON TABLE analytics_academic_trends_3AAA IS 'Academic performance trends and comparative analysis';
 
 -- ============================================================================
 -- 2. PARENT-TEACHER MEETING (PTM)
 -- ============================================================================
 
 -- 2.1 PTM Slots
-CREATE TABLE ptm_slots_CXKQLA (
+CREATE TABLE ptm_slots_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   ptm_date DATE NOT NULL,
@@ -161,14 +161,14 @@ CREATE TABLE ptm_slots_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_ptm_slots_teacher ON ptm_slots_CXKQLA(teacher_id);
-CREATE INDEX idx_ptm_slots_date ON ptm_slots_CXKQLA(ptm_date);
-CREATE INDEX idx_ptm_slots_status ON ptm_slots_CXKQLA(status);
+CREATE INDEX idx_ptm_slots_teacher ON ptm_slots_3AAA(teacher_id);
+CREATE INDEX idx_ptm_slots_date ON ptm_slots_3AAA(ptm_date);
+CREATE INDEX idx_ptm_slots_status ON ptm_slots_3AAA(status);
 
-COMMENT ON TABLE ptm_slots_CXKQLA IS 'Teacher availability slots for PTM';
+COMMENT ON TABLE ptm_slots_3AAA IS 'Teacher availability slots for PTM';
 
 -- 2.2 PTM Bookings
-CREATE TABLE ptm_bookings_CXKQLA (
+CREATE TABLE ptm_bookings_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slot_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -192,15 +192,15 @@ CREATE TABLE ptm_bookings_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_ptm_bookings_slot ON ptm_bookings_CXKQLA(slot_id);
-CREATE INDEX idx_ptm_bookings_student ON ptm_bookings_CXKQLA(student_id);
-CREATE INDEX idx_ptm_bookings_parent ON ptm_bookings_CXKQLA(parent_user_id);
-CREATE INDEX idx_ptm_bookings_status ON ptm_bookings_CXKQLA(status);
+CREATE INDEX idx_ptm_bookings_slot ON ptm_bookings_3AAA(slot_id);
+CREATE INDEX idx_ptm_bookings_student ON ptm_bookings_3AAA(student_id);
+CREATE INDEX idx_ptm_bookings_parent ON ptm_bookings_3AAA(parent_user_id);
+CREATE INDEX idx_ptm_bookings_status ON ptm_bookings_3AAA(status);
 
-COMMENT ON TABLE ptm_bookings_CXKQLA IS 'Parent booking records for PTM slots';
+COMMENT ON TABLE ptm_bookings_3AAA IS 'Parent booking records for PTM slots';
 
 -- 2.3 PTM Meeting Notes
-CREATE TABLE ptm_meeting_notes_CXKQLA (
+CREATE TABLE ptm_meeting_notes_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   booking_id UUID NOT NULL,
   teacher_id UUID NOT NULL,
@@ -231,19 +231,19 @@ CREATE TABLE ptm_meeting_notes_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_ptm_meeting_notes_booking ON ptm_meeting_notes_CXKQLA(booking_id);
-CREATE INDEX idx_ptm_meeting_notes_student ON ptm_meeting_notes_CXKQLA(student_id);
-CREATE INDEX idx_ptm_meeting_notes_teacher ON ptm_meeting_notes_CXKQLA(teacher_id);
-CREATE INDEX idx_ptm_meeting_notes_follow_up ON ptm_meeting_notes_CXKQLA(follow_up_required, follow_up_completed);
+CREATE INDEX idx_ptm_meeting_notes_booking ON ptm_meeting_notes_3AAA(booking_id);
+CREATE INDEX idx_ptm_meeting_notes_student ON ptm_meeting_notes_3AAA(student_id);
+CREATE INDEX idx_ptm_meeting_notes_teacher ON ptm_meeting_notes_3AAA(teacher_id);
+CREATE INDEX idx_ptm_meeting_notes_follow_up ON ptm_meeting_notes_3AAA(follow_up_required, follow_up_completed);
 
-COMMENT ON TABLE ptm_meeting_notes_CXKQLA IS 'Discussion notes and action items from PTM';
+COMMENT ON TABLE ptm_meeting_notes_3AAA IS 'Discussion notes and action items from PTM';
 
 -- ============================================================================
 -- 3. ALUMNI MANAGEMENT
 -- ============================================================================
 
 -- 3.1 Alumni Directory
-CREATE TABLE alumni_CXKQLA (
+CREATE TABLE alumni_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE, -- Link to users table if registered
   
@@ -291,15 +291,15 @@ CREATE TABLE alumni_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_batch ON alumni_CXKQLA(batch_year);
-CREATE INDEX idx_alumni_email ON alumni_CXKQLA(email);
-CREATE INDEX idx_alumni_mentor ON alumni_CXKQLA(is_mentor);
-CREATE INDEX idx_alumni_active ON alumni_CXKQLA(is_active);
+CREATE INDEX idx_alumni_batch ON alumni_3AAA(batch_year);
+CREATE INDEX idx_alumni_email ON alumni_3AAA(email);
+CREATE INDEX idx_alumni_mentor ON alumni_3AAA(is_mentor);
+CREATE INDEX idx_alumni_active ON alumni_3AAA(is_active);
 
-COMMENT ON TABLE alumni_CXKQLA IS 'Alumni directory with engagement preferences';
+COMMENT ON TABLE alumni_3AAA IS 'Alumni directory with engagement preferences';
 
 -- 3.2 Alumni Events
-CREATE TABLE alumni_events_CXKQLA (
+CREATE TABLE alumni_events_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_title VARCHAR(255) NOT NULL,
   event_description TEXT,
@@ -335,14 +335,14 @@ CREATE TABLE alumni_events_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_events_date ON alumni_events_CXKQLA(event_date);
-CREATE INDEX idx_alumni_events_type ON alumni_events_CXKQLA(event_type);
-CREATE INDEX idx_alumni_events_status ON alumni_events_CXKQLA(status);
+CREATE INDEX idx_alumni_events_date ON alumni_events_3AAA(event_date);
+CREATE INDEX idx_alumni_events_type ON alumni_events_3AAA(event_type);
+CREATE INDEX idx_alumni_events_status ON alumni_events_3AAA(status);
 
-COMMENT ON TABLE alumni_events_CXKQLA IS 'Alumni reunions, webinars, and networking events';
+COMMENT ON TABLE alumni_events_3AAA IS 'Alumni reunions, webinars, and networking events';
 
 -- 3.3 Alumni Event Registrations
-CREATE TABLE alumni_event_registrations_CXKQLA (
+CREATE TABLE alumni_event_registrations_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_id UUID NOT NULL,
   alumni_id UUID NOT NULL,
@@ -365,14 +365,14 @@ CREATE TABLE alumni_event_registrations_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_event_registrations_event ON alumni_event_registrations_CXKQLA(event_id);
-CREATE INDEX idx_alumni_event_registrations_alumni ON alumni_event_registrations_CXKQLA(alumni_id);
-CREATE UNIQUE INDEX idx_alumni_event_registrations_unique ON alumni_event_registrations_CXKQLA(event_id, alumni_id);
+CREATE INDEX idx_alumni_event_registrations_event ON alumni_event_registrations_3AAA(event_id);
+CREATE INDEX idx_alumni_event_registrations_alumni ON alumni_event_registrations_3AAA(alumni_id);
+CREATE UNIQUE INDEX idx_alumni_event_registrations_unique ON alumni_event_registrations_3AAA(event_id, alumni_id);
 
-COMMENT ON TABLE alumni_event_registrations_CXKQLA IS 'Alumni event registrations and attendance';
+COMMENT ON TABLE alumni_event_registrations_3AAA IS 'Alumni event registrations and attendance';
 
 -- 3.4 Alumni Donations
-CREATE TABLE alumni_donations_CXKQLA (
+CREATE TABLE alumni_donations_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   alumni_id UUID NOT NULL,
   
@@ -404,14 +404,14 @@ CREATE TABLE alumni_donations_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_donations_alumni ON alumni_donations_CXKQLA(alumni_id);
-CREATE INDEX idx_alumni_donations_date ON alumni_donations_CXKQLA(donation_date);
-CREATE INDEX idx_alumni_donations_status ON alumni_donations_CXKQLA(payment_status);
+CREATE INDEX idx_alumni_donations_alumni ON alumni_donations_3AAA(alumni_id);
+CREATE INDEX idx_alumni_donations_date ON alumni_donations_3AAA(donation_date);
+CREATE INDEX idx_alumni_donations_status ON alumni_donations_3AAA(payment_status);
 
-COMMENT ON TABLE alumni_donations_CXKQLA IS 'Alumni fundraising and donation tracking';
+COMMENT ON TABLE alumni_donations_3AAA IS 'Alumni fundraising and donation tracking';
 
 -- 3.5 Alumni Mentorship Program
-CREATE TABLE alumni_mentorship_CXKQLA (
+CREATE TABLE alumni_mentorship_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   alumni_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -438,18 +438,18 @@ CREATE TABLE alumni_mentorship_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_mentorship_alumni ON alumni_mentorship_CXKQLA(alumni_id);
-CREATE INDEX idx_alumni_mentorship_student ON alumni_mentorship_CXKQLA(student_id);
-CREATE INDEX idx_alumni_mentorship_status ON alumni_mentorship_CXKQLA(status);
+CREATE INDEX idx_alumni_mentorship_alumni ON alumni_mentorship_3AAA(alumni_id);
+CREATE INDEX idx_alumni_mentorship_student ON alumni_mentorship_3AAA(student_id);
+CREATE INDEX idx_alumni_mentorship_status ON alumni_mentorship_3AAA(status);
 
-COMMENT ON TABLE alumni_mentorship_CXKQLA IS 'Alumni-student mentorship matching and tracking';
+COMMENT ON TABLE alumni_mentorship_3AAA IS 'Alumni-student mentorship matching and tracking';
 
 -- ============================================================================
 -- 4. ADMISSION MANAGEMENT
 -- ============================================================================
 
 -- 4.1 Admission Applications
-CREATE TABLE admission_applications_CXKQLA (
+CREATE TABLE admission_applications_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -512,15 +512,15 @@ CREATE TABLE admission_applications_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_applications_number ON admission_applications_CXKQLA(application_number);
-CREATE INDEX idx_admission_applications_status ON admission_applications_CXKQLA(status);
-CREATE INDEX idx_admission_applications_class ON admission_applications_CXKQLA(applying_for_class);
-CREATE INDEX idx_admission_applications_date ON admission_applications_CXKQLA(submission_date);
+CREATE INDEX idx_admission_applications_number ON admission_applications_3AAA(application_number);
+CREATE INDEX idx_admission_applications_status ON admission_applications_3AAA(status);
+CREATE INDEX idx_admission_applications_class ON admission_applications_3AAA(applying_for_class);
+CREATE INDEX idx_admission_applications_date ON admission_applications_3AAA(submission_date);
 
-COMMENT ON TABLE admission_applications_CXKQLA IS 'Online admission application portal';
+COMMENT ON TABLE admission_applications_3AAA IS 'Online admission application portal';
 
 -- 4.2 Admission Interviews
-CREATE TABLE admission_interviews_CXKQLA (
+CREATE TABLE admission_interviews_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID NOT NULL,
   
@@ -551,14 +551,14 @@ CREATE TABLE admission_interviews_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_interviews_application ON admission_interviews_CXKQLA(application_id);
-CREATE INDEX idx_admission_interviews_date ON admission_interviews_CXKQLA(interview_date);
-CREATE INDEX idx_admission_interviews_status ON admission_interviews_CXKQLA(status);
+CREATE INDEX idx_admission_interviews_application ON admission_interviews_3AAA(application_id);
+CREATE INDEX idx_admission_interviews_date ON admission_interviews_3AAA(interview_date);
+CREATE INDEX idx_admission_interviews_status ON admission_interviews_3AAA(status);
 
-COMMENT ON TABLE admission_interviews_CXKQLA IS 'Interview scheduling and evaluation';
+COMMENT ON TABLE admission_interviews_3AAA IS 'Interview scheduling and evaluation';
 
 -- 4.3 Admission Entrance Tests
-CREATE TABLE admission_entrance_tests_CXKQLA (
+CREATE TABLE admission_entrance_tests_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   test_name VARCHAR(255) NOT NULL,
   test_code VARCHAR(50) UNIQUE NOT NULL,
@@ -588,14 +588,14 @@ CREATE TABLE admission_entrance_tests_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_entrance_tests_date ON admission_entrance_tests_CXKQLA(test_date);
-CREATE INDEX idx_admission_entrance_tests_class ON admission_entrance_tests_CXKQLA(for_class);
-CREATE INDEX idx_admission_entrance_tests_status ON admission_entrance_tests_CXKQLA(status);
+CREATE INDEX idx_admission_entrance_tests_date ON admission_entrance_tests_3AAA(test_date);
+CREATE INDEX idx_admission_entrance_tests_class ON admission_entrance_tests_3AAA(for_class);
+CREATE INDEX idx_admission_entrance_tests_status ON admission_entrance_tests_3AAA(status);
 
-COMMENT ON TABLE admission_entrance_tests_CXKQLA IS 'Entrance test configuration';
+COMMENT ON TABLE admission_entrance_tests_3AAA IS 'Entrance test configuration';
 
 -- 4.4 Admission Test Results
-CREATE TABLE admission_test_results_CXKQLA (
+CREATE TABLE admission_test_results_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   test_id UUID NOT NULL,
   application_id UUID NOT NULL,
@@ -617,15 +617,15 @@ CREATE TABLE admission_test_results_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_test_results_test ON admission_test_results_CXKQLA(test_id);
-CREATE INDEX idx_admission_test_results_application ON admission_test_results_CXKQLA(application_id);
-CREATE INDEX idx_admission_test_results_rank ON admission_test_results_CXKQLA(rank);
-CREATE UNIQUE INDEX idx_admission_test_results_unique ON admission_test_results_CXKQLA(test_id, application_id);
+CREATE INDEX idx_admission_test_results_test ON admission_test_results_3AAA(test_id);
+CREATE INDEX idx_admission_test_results_application ON admission_test_results_3AAA(application_id);
+CREATE INDEX idx_admission_test_results_rank ON admission_test_results_3AAA(rank);
+CREATE UNIQUE INDEX idx_admission_test_results_unique ON admission_test_results_3AAA(test_id, application_id);
 
-COMMENT ON TABLE admission_test_results_CXKQLA IS 'Entrance test results and ranking';
+COMMENT ON TABLE admission_test_results_3AAA IS 'Entrance test results and ranking';
 
 -- 4.5 Admission Merit List
-CREATE TABLE admission_merit_list_CXKQLA (
+CREATE TABLE admission_merit_list_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID NOT NULL,
   for_class VARCHAR(20) NOT NULL,
@@ -658,19 +658,19 @@ CREATE TABLE admission_merit_list_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_merit_list_application ON admission_merit_list_CXKQLA(application_id);
-CREATE INDEX idx_admission_merit_list_class ON admission_merit_list_CXKQLA(for_class);
-CREATE INDEX idx_admission_merit_list_rank ON admission_merit_list_CXKQLA(merit_rank);
-CREATE INDEX idx_admission_merit_list_status ON admission_merit_list_CXKQLA(status);
+CREATE INDEX idx_admission_merit_list_application ON admission_merit_list_3AAA(application_id);
+CREATE INDEX idx_admission_merit_list_class ON admission_merit_list_3AAA(for_class);
+CREATE INDEX idx_admission_merit_list_rank ON admission_merit_list_3AAA(merit_rank);
+CREATE INDEX idx_admission_merit_list_status ON admission_merit_list_3AAA(status);
 
-COMMENT ON TABLE admission_merit_list_CXKQLA IS 'Final merit list and seat allocation';
+COMMENT ON TABLE admission_merit_list_3AAA IS 'Final merit list and seat allocation';
 
 -- ============================================================================
 -- 5. INVENTORY & ASSET MANAGEMENT
 -- ============================================================================
 
 -- 5.1 Assets
-CREATE TABLE assets_CXKQLA (
+CREATE TABLE assets_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_code VARCHAR(50) UNIQUE NOT NULL,
   asset_name VARCHAR(255) NOT NULL,
@@ -712,15 +712,15 @@ CREATE TABLE assets_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_assets_code ON assets_CXKQLA(asset_code);
-CREATE INDEX idx_assets_category ON assets_CXKQLA(asset_category);
-CREATE INDEX idx_assets_status ON assets_CXKQLA(status);
-CREATE INDEX idx_assets_assigned_user ON assets_CXKQLA(assigned_to_user);
+CREATE INDEX idx_assets_code ON assets_3AAA(asset_code);
+CREATE INDEX idx_assets_category ON assets_3AAA(asset_category);
+CREATE INDEX idx_assets_status ON assets_3AAA(status);
+CREATE INDEX idx_assets_assigned_user ON assets_3AAA(assigned_to_user);
 
-COMMENT ON TABLE assets_CXKQLA IS 'School asset master (furniture, equipment, IT assets)';
+COMMENT ON TABLE assets_3AAA IS 'School asset master (furniture, equipment, IT assets)';
 
 -- 5.2 Asset Maintenance
-CREATE TABLE asset_maintenance_CXKQLA (
+CREATE TABLE asset_maintenance_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_id UUID NOT NULL,
   
@@ -753,14 +753,14 @@ CREATE TABLE asset_maintenance_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_asset_maintenance_asset ON asset_maintenance_CXKQLA(asset_id);
-CREATE INDEX idx_asset_maintenance_date ON asset_maintenance_CXKQLA(maintenance_date);
-CREATE INDEX idx_asset_maintenance_status ON asset_maintenance_CXKQLA(status);
+CREATE INDEX idx_asset_maintenance_asset ON asset_maintenance_3AAA(asset_id);
+CREATE INDEX idx_asset_maintenance_date ON asset_maintenance_3AAA(maintenance_date);
+CREATE INDEX idx_asset_maintenance_status ON asset_maintenance_3AAA(status);
 
-COMMENT ON TABLE asset_maintenance_CXKQLA IS 'Asset maintenance schedule and history';
+COMMENT ON TABLE asset_maintenance_3AAA IS 'Asset maintenance schedule and history';
 
 -- 5.3 Lab Equipment
-CREATE TABLE lab_equipment_CXKQLA (
+CREATE TABLE lab_equipment_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_id UUID, -- Link to main assets table if applicable
   equipment_code VARCHAR(50) UNIQUE NOT NULL,
@@ -803,14 +803,14 @@ CREATE TABLE lab_equipment_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lab_equipment_code ON lab_equipment_CXKQLA(equipment_code);
-CREATE INDEX idx_lab_equipment_lab ON lab_equipment_CXKQLA(lab_name);
-CREATE INDEX idx_lab_equipment_type ON lab_equipment_CXKQLA(equipment_type);
+CREATE INDEX idx_lab_equipment_code ON lab_equipment_3AAA(equipment_code);
+CREATE INDEX idx_lab_equipment_lab ON lab_equipment_3AAA(lab_name);
+CREATE INDEX idx_lab_equipment_type ON lab_equipment_3AAA(equipment_type);
 
-COMMENT ON TABLE lab_equipment_CXKQLA IS 'Lab-specific equipment inventory';
+COMMENT ON TABLE lab_equipment_3AAA IS 'Lab-specific equipment inventory';
 
 -- 5.4 Lab Chemicals & Specimens
-CREATE TABLE lab_chemicals_CXKQLA (
+CREATE TABLE lab_chemicals_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   chemical_code VARCHAR(50) UNIQUE NOT NULL,
   chemical_name VARCHAR(255) NOT NULL,
@@ -849,15 +849,15 @@ CREATE TABLE lab_chemicals_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lab_chemicals_code ON lab_chemicals_CXKQLA(chemical_code);
-CREATE INDEX idx_lab_chemicals_lab ON lab_chemicals_CXKQLA(lab_name);
-CREATE INDEX idx_lab_chemicals_status ON lab_chemicals_CXKQLA(status);
-CREATE INDEX idx_lab_chemicals_expiry ON lab_chemicals_CXKQLA(expiry_date);
+CREATE INDEX idx_lab_chemicals_code ON lab_chemicals_3AAA(chemical_code);
+CREATE INDEX idx_lab_chemicals_lab ON lab_chemicals_3AAA(lab_name);
+CREATE INDEX idx_lab_chemicals_status ON lab_chemicals_3AAA(status);
+CREATE INDEX idx_lab_chemicals_expiry ON lab_chemicals_3AAA(expiry_date);
 
-COMMENT ON TABLE lab_chemicals_CXKQLA IS 'Chemical and specimen inventory with safety tracking';
+COMMENT ON TABLE lab_chemicals_3AAA IS 'Chemical and specimen inventory with safety tracking';
 
 -- 5.5 Stationery Items
-CREATE TABLE stationery_items_CXKQLA (
+CREATE TABLE stationery_items_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   item_code VARCHAR(50) UNIQUE NOT NULL,
   item_name VARCHAR(255) NOT NULL,
@@ -881,14 +881,14 @@ CREATE TABLE stationery_items_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_stationery_items_code ON stationery_items_CXKQLA(item_code);
-CREATE INDEX idx_stationery_items_category ON stationery_items_CXKQLA(item_category);
-CREATE INDEX idx_stationery_items_status ON stationery_items_CXKQLA(status);
+CREATE INDEX idx_stationery_items_code ON stationery_items_3AAA(item_code);
+CREATE INDEX idx_stationery_items_category ON stationery_items_3AAA(item_category);
+CREATE INDEX idx_stationery_items_status ON stationery_items_3AAA(status);
 
-COMMENT ON TABLE stationery_items_CXKQLA IS 'Stationery stock master';
+COMMENT ON TABLE stationery_items_3AAA IS 'Stationery stock master';
 
 -- 5.6 Stationery Transactions
-CREATE TABLE stationery_transactions_CXKQLA (
+CREATE TABLE stationery_transactions_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   item_id UUID NOT NULL,
   
@@ -922,19 +922,19 @@ CREATE TABLE stationery_transactions_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_stationery_transactions_item ON stationery_transactions_CXKQLA(item_id);
-CREATE INDEX idx_stationery_transactions_type ON stationery_transactions_CXKQLA(transaction_type);
-CREATE INDEX idx_stationery_transactions_date ON stationery_transactions_CXKQLA(transaction_date);
-CREATE INDEX idx_stationery_transactions_user ON stationery_transactions_CXKQLA(issued_to_user_id);
+CREATE INDEX idx_stationery_transactions_item ON stationery_transactions_3AAA(item_id);
+CREATE INDEX idx_stationery_transactions_type ON stationery_transactions_3AAA(transaction_type);
+CREATE INDEX idx_stationery_transactions_date ON stationery_transactions_3AAA(transaction_date);
+CREATE INDEX idx_stationery_transactions_user ON stationery_transactions_3AAA(issued_to_user_id);
 
-COMMENT ON TABLE stationery_transactions_CXKQLA IS 'Stationery issue, return, and purchase tracking';
+COMMENT ON TABLE stationery_transactions_3AAA IS 'Stationery issue, return, and purchase tracking';
 
 -- ============================================================================
 -- 6. CERTIFICATE & DOCUMENT GENERATION
 -- ============================================================================
 
 -- 6.1 Certificate Templates
-CREATE TABLE certificate_templates_CXKQLA (
+CREATE TABLE certificate_templates_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   template_name VARCHAR(255) NOT NULL,
   template_code VARCHAR(50) UNIQUE NOT NULL,
@@ -964,14 +964,14 @@ CREATE TABLE certificate_templates_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_certificate_templates_code ON certificate_templates_CXKQLA(template_code);
-CREATE INDEX idx_certificate_templates_type ON certificate_templates_CXKQLA(certificate_type);
-CREATE INDEX idx_certificate_templates_active ON certificate_templates_CXKQLA(is_active);
+CREATE INDEX idx_certificate_templates_code ON certificate_templates_3AAA(template_code);
+CREATE INDEX idx_certificate_templates_type ON certificate_templates_3AAA(certificate_type);
+CREATE INDEX idx_certificate_templates_active ON certificate_templates_3AAA(is_active);
 
-COMMENT ON TABLE certificate_templates_CXKQLA IS 'Certificate templates with custom design';
+COMMENT ON TABLE certificate_templates_3AAA IS 'Certificate templates with custom design';
 
 -- 6.2 Certificate Requests
-CREATE TABLE certificate_requests_CXKQLA (
+CREATE TABLE certificate_requests_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   request_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -1009,15 +1009,15 @@ CREATE TABLE certificate_requests_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_certificate_requests_number ON certificate_requests_CXKQLA(request_number);
-CREATE INDEX idx_certificate_requests_student ON certificate_requests_CXKQLA(student_id);
-CREATE INDEX idx_certificate_requests_status ON certificate_requests_CXKQLA(status);
-CREATE INDEX idx_certificate_requests_type ON certificate_requests_CXKQLA(certificate_type);
+CREATE INDEX idx_certificate_requests_number ON certificate_requests_3AAA(request_number);
+CREATE INDEX idx_certificate_requests_student ON certificate_requests_3AAA(student_id);
+CREATE INDEX idx_certificate_requests_status ON certificate_requests_3AAA(status);
+CREATE INDEX idx_certificate_requests_type ON certificate_requests_3AAA(certificate_type);
 
-COMMENT ON TABLE certificate_requests_CXKQLA IS 'Certificate request and approval workflow';
+COMMENT ON TABLE certificate_requests_3AAA IS 'Certificate request and approval workflow';
 
 -- 6.3 Generated Certificates
-CREATE TABLE generated_certificates_CXKQLA (
+CREATE TABLE generated_certificates_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   certificate_number VARCHAR(50) UNIQUE NOT NULL,
   request_id UUID,
@@ -1051,19 +1051,19 @@ CREATE TABLE generated_certificates_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_generated_certificates_number ON generated_certificates_CXKQLA(certificate_number);
-CREATE INDEX idx_generated_certificates_student ON generated_certificates_CXKQLA(student_id);
-CREATE INDEX idx_generated_certificates_type ON generated_certificates_CXKQLA(certificate_type);
-CREATE INDEX idx_generated_certificates_request ON generated_certificates_CXKQLA(request_id);
+CREATE INDEX idx_generated_certificates_number ON generated_certificates_3AAA(certificate_number);
+CREATE INDEX idx_generated_certificates_student ON generated_certificates_3AAA(student_id);
+CREATE INDEX idx_generated_certificates_type ON generated_certificates_3AAA(certificate_type);
+CREATE INDEX idx_generated_certificates_request ON generated_certificates_3AAA(request_id);
 
-COMMENT ON TABLE generated_certificates_CXKQLA IS 'Issued certificate log with digital signature';
+COMMENT ON TABLE generated_certificates_3AAA IS 'Issued certificate log with digital signature';
 
 -- ============================================================================
 -- 7. ADVANCED FEE MANAGEMENT (ONLINE PAYMENTS)
 -- ============================================================================
 
 -- 7.1 Online Payment Transactions
-CREATE TABLE online_payment_transactions_CXKQLA (
+CREATE TABLE online_payment_transactions_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   transaction_id VARCHAR(100) UNIQUE NOT NULL,
   
@@ -1113,16 +1113,16 @@ CREATE TABLE online_payment_transactions_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_online_payment_transactions_id ON online_payment_transactions_CXKQLA(transaction_id);
-CREATE INDEX idx_online_payment_transactions_gateway_id ON online_payment_transactions_CXKQLA(gateway_transaction_id);
-CREATE INDEX idx_online_payment_transactions_student ON online_payment_transactions_CXKQLA(student_id);
-CREATE INDEX idx_online_payment_transactions_status ON online_payment_transactions_CXKQLA(status);
-CREATE INDEX idx_online_payment_transactions_date ON online_payment_transactions_CXKQLA(initiated_at);
+CREATE INDEX idx_online_payment_transactions_id ON online_payment_transactions_3AAA(transaction_id);
+CREATE INDEX idx_online_payment_transactions_gateway_id ON online_payment_transactions_3AAA(gateway_transaction_id);
+CREATE INDEX idx_online_payment_transactions_student ON online_payment_transactions_3AAA(student_id);
+CREATE INDEX idx_online_payment_transactions_status ON online_payment_transactions_3AAA(status);
+CREATE INDEX idx_online_payment_transactions_date ON online_payment_transactions_3AAA(initiated_at);
 
-COMMENT ON TABLE online_payment_transactions_CXKQLA IS 'Payment gateway transaction tracking';
+COMMENT ON TABLE online_payment_transactions_3AAA IS 'Payment gateway transaction tracking';
 
 -- 7.2 Payment Gateway Logs
-CREATE TABLE payment_gateway_logs_CXKQLA (
+CREATE TABLE payment_gateway_logs_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   transaction_id UUID NOT NULL,
   
@@ -1142,14 +1142,14 @@ CREATE TABLE payment_gateway_logs_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_payment_gateway_logs_transaction ON payment_gateway_logs_CXKQLA(transaction_id);
-CREATE INDEX idx_payment_gateway_logs_event ON payment_gateway_logs_CXKQLA(event_type);
-CREATE INDEX idx_payment_gateway_logs_reconciled ON payment_gateway_logs_CXKQLA(is_reconciled);
+CREATE INDEX idx_payment_gateway_logs_transaction ON payment_gateway_logs_3AAA(transaction_id);
+CREATE INDEX idx_payment_gateway_logs_event ON payment_gateway_logs_3AAA(event_type);
+CREATE INDEX idx_payment_gateway_logs_reconciled ON payment_gateway_logs_3AAA(is_reconciled);
 
-COMMENT ON TABLE payment_gateway_logs_CXKQLA IS 'Payment gateway webhook logs for reconciliation';
+COMMENT ON TABLE payment_gateway_logs_3AAA IS 'Payment gateway webhook logs for reconciliation';
 
 -- 7.3 Fee Refunds
-CREATE TABLE fee_refunds_CXKQLA (
+CREATE TABLE fee_refunds_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   refund_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -1190,19 +1190,19 @@ CREATE TABLE fee_refunds_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_refunds_number ON fee_refunds_CXKQLA(refund_number);
-CREATE INDEX idx_fee_refunds_student ON fee_refunds_CXKQLA(student_id);
-CREATE INDEX idx_fee_refunds_status ON fee_refunds_CXKQLA(status);
-CREATE INDEX idx_fee_refunds_date ON fee_refunds_CXKQLA(request_date);
+CREATE INDEX idx_fee_refunds_number ON fee_refunds_3AAA(refund_number);
+CREATE INDEX idx_fee_refunds_student ON fee_refunds_3AAA(student_id);
+CREATE INDEX idx_fee_refunds_status ON fee_refunds_3AAA(status);
+CREATE INDEX idx_fee_refunds_date ON fee_refunds_3AAA(request_date);
 
-COMMENT ON TABLE fee_refunds_CXKQLA IS 'Fee refund request and processing workflow';
+COMMENT ON TABLE fee_refunds_3AAA IS 'Fee refund request and processing workflow';
 
 -- ============================================================================
 -- 8. SURVEY & FEEDBACK SYSTEM
 -- ============================================================================
 
 -- 8.1 Surveys
-CREATE TABLE surveys_CXKQLA (
+CREATE TABLE surveys_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_title VARCHAR(255) NOT NULL,
   survey_description TEXT,
@@ -1233,14 +1233,14 @@ CREATE TABLE surveys_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_surveys_type ON surveys_CXKQLA(survey_type);
-CREATE INDEX idx_surveys_status ON surveys_CXKQLA(status);
-CREATE INDEX idx_surveys_dates ON surveys_CXKQLA(start_date, end_date);
+CREATE INDEX idx_surveys_type ON surveys_3AAA(survey_type);
+CREATE INDEX idx_surveys_status ON surveys_3AAA(status);
+CREATE INDEX idx_surveys_dates ON surveys_3AAA(start_date, end_date);
 
-COMMENT ON TABLE surveys_CXKQLA IS 'Survey builder and configuration';
+COMMENT ON TABLE surveys_3AAA IS 'Survey builder and configuration';
 
 -- 8.2 Survey Questions
-CREATE TABLE survey_questions_CXKQLA (
+CREATE TABLE survey_questions_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_id UUID NOT NULL,
   
@@ -1265,13 +1265,13 @@ CREATE TABLE survey_questions_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_survey_questions_survey ON survey_questions_CXKQLA(survey_id);
-CREATE INDEX idx_survey_questions_order ON survey_questions_CXKQLA(survey_id, display_order);
+CREATE INDEX idx_survey_questions_survey ON survey_questions_3AAA(survey_id);
+CREATE INDEX idx_survey_questions_order ON survey_questions_3AAA(survey_id, display_order);
 
-COMMENT ON TABLE survey_questions_CXKQLA IS 'Survey questions with multiple types';
+COMMENT ON TABLE survey_questions_3AAA IS 'Survey questions with multiple types';
 
 -- 8.3 Survey Responses
-CREATE TABLE survey_responses_CXKQLA (
+CREATE TABLE survey_responses_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_id UUID NOT NULL,
   question_id UUID NOT NULL,
@@ -1293,14 +1293,14 @@ CREATE TABLE survey_responses_CXKQLA (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_survey_responses_survey ON survey_responses_CXKQLA(survey_id);
-CREATE INDEX idx_survey_responses_question ON survey_responses_CXKQLA(question_id);
-CREATE INDEX idx_survey_responses_user ON survey_responses_CXKQLA(respondent_user_id);
+CREATE INDEX idx_survey_responses_survey ON survey_responses_3AAA(survey_id);
+CREATE INDEX idx_survey_responses_question ON survey_responses_3AAA(question_id);
+CREATE INDEX idx_survey_responses_user ON survey_responses_3AAA(respondent_user_id);
 
-COMMENT ON TABLE survey_responses_CXKQLA IS 'Survey response submissions';
+COMMENT ON TABLE survey_responses_3AAA IS 'Survey response submissions';
 
 -- 8.4 Feedback Analytics
-CREATE TABLE feedback_analytics_CXKQLA (
+CREATE TABLE feedback_analytics_3AAA (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_id UUID NOT NULL,
   
@@ -1330,95 +1330,95 @@ CREATE TABLE feedback_analytics_CXKQLA (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_feedback_analytics_survey ON feedback_analytics_CXKQLA(survey_id);
-CREATE INDEX idx_feedback_analytics_sentiment ON feedback_analytics_CXKQLA(overall_sentiment);
+CREATE INDEX idx_feedback_analytics_survey ON feedback_analytics_3AAA(survey_id);
+CREATE INDEX idx_feedback_analytics_sentiment ON feedback_analytics_3AAA(overall_sentiment);
 
-COMMENT ON TABLE feedback_analytics_CXKQLA IS 'Survey analytics and sentiment analysis';
+COMMENT ON TABLE feedback_analytics_3AAA IS 'Survey analytics and sentiment analysis';
 
 -- ============================================================================
 -- 9. FOREIGN KEY CONSTRAINTS
 -- ============================================================================
 
 -- AI Analytics Module
-ALTER TABLE analytics_student_performance_CXKQLA ADD CONSTRAINT fk_analytics_student_performance_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE analytics_student_performance_CXKQLA ADD CONSTRAINT fk_analytics_student_performance_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE analytics_student_performance_CXKQLA ADD CONSTRAINT fk_analytics_student_performance_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE analytics_attendance_patterns_CXKQLA ADD CONSTRAINT fk_analytics_attendance_patterns_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE analytics_attendance_patterns_CXKQLA ADD CONSTRAINT fk_analytics_attendance_patterns_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE analytics_academic_trends_CXKQLA ADD CONSTRAINT fk_analytics_academic_trends_class FOREIGN KEY (class_id) REFERENCES classes_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_CXKQLA ADD CONSTRAINT fk_analytics_academic_trends_section FOREIGN KEY (section_id) REFERENCES sections_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_CXKQLA ADD CONSTRAINT fk_analytics_academic_trends_subject FOREIGN KEY (subject_id) REFERENCES subjects_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_CXKQLA ADD CONSTRAINT fk_analytics_academic_trends_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_CXKQLA ADD CONSTRAINT fk_analytics_academic_trends_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_3AAA ADD CONSTRAINT fk_analytics_student_performance_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_3AAA ADD CONSTRAINT fk_analytics_student_performance_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_3AAA ADD CONSTRAINT fk_analytics_student_performance_subject FOREIGN KEY (subject_id) REFERENCES subjects_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE analytics_attendance_patterns_3AAA ADD CONSTRAINT fk_analytics_attendance_patterns_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE analytics_attendance_patterns_3AAA ADD CONSTRAINT fk_analytics_attendance_patterns_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE analytics_academic_trends_3AAA ADD CONSTRAINT fk_analytics_academic_trends_class FOREIGN KEY (class_id) REFERENCES classes_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_3AAA ADD CONSTRAINT fk_analytics_academic_trends_section FOREIGN KEY (section_id) REFERENCES sections_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_3AAA ADD CONSTRAINT fk_analytics_academic_trends_subject FOREIGN KEY (subject_id) REFERENCES subjects_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_3AAA ADD CONSTRAINT fk_analytics_academic_trends_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_3AAA ADD CONSTRAINT fk_analytics_academic_trends_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_3AAA(id) ON DELETE CASCADE;
 
 -- PTM Module
-ALTER TABLE ptm_slots_CXKQLA ADD CONSTRAINT fk_ptm_slots_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE ptm_bookings_CXKQLA ADD CONSTRAINT fk_ptm_bookings_slot FOREIGN KEY (slot_id) REFERENCES ptm_slots_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE ptm_bookings_CXKQLA ADD CONSTRAINT fk_ptm_bookings_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE ptm_bookings_CXKQLA ADD CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES users_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_CXKQLA ADD CONSTRAINT fk_ptm_meeting_notes_booking FOREIGN KEY (booking_id) REFERENCES ptm_bookings_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_CXKQLA ADD CONSTRAINT fk_ptm_meeting_notes_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_CXKQLA ADD CONSTRAINT fk_ptm_meeting_notes_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_CXKQLA ADD CONSTRAINT fk_ptm_meeting_notes_recorded_by FOREIGN KEY (recorded_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE ptm_slots_3AAA ADD CONSTRAINT fk_ptm_slots_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_3AAA ADD CONSTRAINT fk_ptm_bookings_slot FOREIGN KEY (slot_id) REFERENCES ptm_slots_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_3AAA ADD CONSTRAINT fk_ptm_bookings_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_3AAA ADD CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES users_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_3AAA ADD CONSTRAINT fk_ptm_meeting_notes_booking FOREIGN KEY (booking_id) REFERENCES ptm_bookings_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_3AAA ADD CONSTRAINT fk_ptm_meeting_notes_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_3AAA ADD CONSTRAINT fk_ptm_meeting_notes_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_3AAA ADD CONSTRAINT fk_ptm_meeting_notes_recorded_by FOREIGN KEY (recorded_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
 
 -- Alumni Module
-ALTER TABLE alumni_CXKQLA ADD CONSTRAINT fk_alumni_user FOREIGN KEY (user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE alumni_CXKQLA ADD CONSTRAINT fk_alumni_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE alumni_events_CXKQLA ADD CONSTRAINT fk_alumni_events_created_by FOREIGN KEY (created_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE alumni_event_registrations_CXKQLA ADD CONSTRAINT fk_alumni_event_registrations_event FOREIGN KEY (event_id) REFERENCES alumni_events_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE alumni_event_registrations_CXKQLA ADD CONSTRAINT fk_alumni_event_registrations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE alumni_donations_CXKQLA ADD CONSTRAINT fk_alumni_donations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE alumni_mentorship_CXKQLA ADD CONSTRAINT fk_alumni_mentorship_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE alumni_mentorship_CXKQLA ADD CONSTRAINT fk_alumni_mentorship_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE alumni_3AAA ADD CONSTRAINT fk_alumni_user FOREIGN KEY (user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE alumni_3AAA ADD CONSTRAINT fk_alumni_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE alumni_events_3AAA ADD CONSTRAINT fk_alumni_events_created_by FOREIGN KEY (created_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE alumni_event_registrations_3AAA ADD CONSTRAINT fk_alumni_event_registrations_event FOREIGN KEY (event_id) REFERENCES alumni_events_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE alumni_event_registrations_3AAA ADD CONSTRAINT fk_alumni_event_registrations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE alumni_donations_3AAA ADD CONSTRAINT fk_alumni_donations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE alumni_mentorship_3AAA ADD CONSTRAINT fk_alumni_mentorship_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE alumni_mentorship_3AAA ADD CONSTRAINT fk_alumni_mentorship_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
 
 -- Admission Module
-ALTER TABLE admission_applications_CXKQLA ADD CONSTRAINT fk_admission_applications_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE admission_interviews_CXKQLA ADD CONSTRAINT fk_admission_interviews_application FOREIGN KEY (application_id) REFERENCES admission_applications_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE admission_entrance_tests_CXKQLA ADD CONSTRAINT fk_admission_entrance_tests_created_by FOREIGN KEY (created_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE admission_test_results_CXKQLA ADD CONSTRAINT fk_admission_test_results_test FOREIGN KEY (test_id) REFERENCES admission_entrance_tests_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE admission_test_results_CXKQLA ADD CONSTRAINT fk_admission_test_results_application FOREIGN KEY (application_id) REFERENCES admission_applications_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE admission_merit_list_CXKQLA ADD CONSTRAINT fk_admission_merit_list_application FOREIGN KEY (application_id) REFERENCES admission_applications_CXKQLA(id) ON DELETE CASCADE;
+ALTER TABLE admission_applications_3AAA ADD CONSTRAINT fk_admission_applications_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE admission_interviews_3AAA ADD CONSTRAINT fk_admission_interviews_application FOREIGN KEY (application_id) REFERENCES admission_applications_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE admission_entrance_tests_3AAA ADD CONSTRAINT fk_admission_entrance_tests_created_by FOREIGN KEY (created_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE admission_test_results_3AAA ADD CONSTRAINT fk_admission_test_results_test FOREIGN KEY (test_id) REFERENCES admission_entrance_tests_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE admission_test_results_3AAA ADD CONSTRAINT fk_admission_test_results_application FOREIGN KEY (application_id) REFERENCES admission_applications_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE admission_merit_list_3AAA ADD CONSTRAINT fk_admission_merit_list_application FOREIGN KEY (application_id) REFERENCES admission_applications_3AAA(id) ON DELETE CASCADE;
 
 -- Asset Management Module
-ALTER TABLE assets_CXKQLA ADD CONSTRAINT fk_assets_assigned_user FOREIGN KEY (assigned_to_user) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE asset_maintenance_CXKQLA ADD CONSTRAINT fk_asset_maintenance_asset FOREIGN KEY (asset_id) REFERENCES assets_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE asset_maintenance_CXKQLA ADD CONSTRAINT fk_asset_maintenance_performed_by FOREIGN KEY (performed_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE lab_equipment_CXKQLA ADD CONSTRAINT fk_lab_equipment_asset FOREIGN KEY (asset_id) REFERENCES assets_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE stationery_transactions_CXKQLA ADD CONSTRAINT fk_stationery_transactions_item FOREIGN KEY (item_id) REFERENCES stationery_items_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE stationery_transactions_CXKQLA ADD CONSTRAINT fk_stationery_transactions_issued_to FOREIGN KEY (issued_to_user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE stationery_transactions_CXKQLA ADD CONSTRAINT fk_stationery_transactions_approved_by FOREIGN KEY (approved_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE stationery_transactions_CXKQLA ADD CONSTRAINT fk_stationery_transactions_created_by FOREIGN KEY (created_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE assets_3AAA ADD CONSTRAINT fk_assets_assigned_user FOREIGN KEY (assigned_to_user) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE asset_maintenance_3AAA ADD CONSTRAINT fk_asset_maintenance_asset FOREIGN KEY (asset_id) REFERENCES assets_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE asset_maintenance_3AAA ADD CONSTRAINT fk_asset_maintenance_performed_by FOREIGN KEY (performed_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE lab_equipment_3AAA ADD CONSTRAINT fk_lab_equipment_asset FOREIGN KEY (asset_id) REFERENCES assets_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_3AAA ADD CONSTRAINT fk_stationery_transactions_item FOREIGN KEY (item_id) REFERENCES stationery_items_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE stationery_transactions_3AAA ADD CONSTRAINT fk_stationery_transactions_issued_to FOREIGN KEY (issued_to_user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_3AAA ADD CONSTRAINT fk_stationery_transactions_approved_by FOREIGN KEY (approved_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_3AAA ADD CONSTRAINT fk_stationery_transactions_created_by FOREIGN KEY (created_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
 
 -- Certificate Module
-ALTER TABLE certificate_templates_CXKQLA ADD CONSTRAINT fk_certificate_templates_created_by FOREIGN KEY (created_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE certificate_requests_CXKQLA ADD CONSTRAINT fk_certificate_requests_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE certificate_requests_CXKQLA ADD CONSTRAINT fk_certificate_requests_requested_by FOREIGN KEY (requested_by_user_id) REFERENCES users_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE certificate_requests_CXKQLA ADD CONSTRAINT fk_certificate_requests_template FOREIGN KEY (template_id) REFERENCES certificate_templates_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE certificate_requests_CXKQLA ADD CONSTRAINT fk_certificate_requests_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE generated_certificates_CXKQLA ADD CONSTRAINT fk_generated_certificates_request FOREIGN KEY (request_id) REFERENCES certificate_requests_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE generated_certificates_CXKQLA ADD CONSTRAINT fk_generated_certificates_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE generated_certificates_CXKQLA ADD CONSTRAINT fk_generated_certificates_template FOREIGN KEY (template_id) REFERENCES certificate_templates_CXKQLA(id) ON DELETE RESTRICT;
-ALTER TABLE generated_certificates_CXKQLA ADD CONSTRAINT fk_generated_certificates_issued_by FOREIGN KEY (issued_by_user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE certificate_templates_3AAA ADD CONSTRAINT fk_certificate_templates_created_by FOREIGN KEY (created_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE certificate_requests_3AAA ADD CONSTRAINT fk_certificate_requests_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE certificate_requests_3AAA ADD CONSTRAINT fk_certificate_requests_requested_by FOREIGN KEY (requested_by_user_id) REFERENCES users_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE certificate_requests_3AAA ADD CONSTRAINT fk_certificate_requests_template FOREIGN KEY (template_id) REFERENCES certificate_templates_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE certificate_requests_3AAA ADD CONSTRAINT fk_certificate_requests_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE generated_certificates_3AAA ADD CONSTRAINT fk_generated_certificates_request FOREIGN KEY (request_id) REFERENCES certificate_requests_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE generated_certificates_3AAA ADD CONSTRAINT fk_generated_certificates_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE generated_certificates_3AAA ADD CONSTRAINT fk_generated_certificates_template FOREIGN KEY (template_id) REFERENCES certificate_templates_3AAA(id) ON DELETE RESTRICT;
+ALTER TABLE generated_certificates_3AAA ADD CONSTRAINT fk_generated_certificates_issued_by FOREIGN KEY (issued_by_user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
 
 -- Online Payment Module
-ALTER TABLE online_payment_transactions_CXKQLA ADD CONSTRAINT fk_online_payment_transactions_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE online_payment_transactions_CXKQLA ADD CONSTRAINT fk_online_payment_transactions_paid_by FOREIGN KEY (paid_by_user_id) REFERENCES users_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE online_payment_transactions_CXKQLA ADD CONSTRAINT fk_online_payment_transactions_fee_payment FOREIGN KEY (fee_payment_id) REFERENCES fee_payments_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE payment_gateway_logs_CXKQLA ADD CONSTRAINT fk_payment_gateway_logs_transaction FOREIGN KEY (transaction_id) REFERENCES online_payment_transactions_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_refunds_CXKQLA ADD CONSTRAINT fk_fee_refunds_student FOREIGN KEY (student_id) REFERENCES students_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_refunds_CXKQLA ADD CONSTRAINT fk_fee_refunds_payment FOREIGN KEY (original_payment_id) REFERENCES fee_payments_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE fee_refunds_CXKQLA ADD CONSTRAINT fk_fee_refunds_requested_by FOREIGN KEY (requested_by) REFERENCES users_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE fee_refunds_CXKQLA ADD CONSTRAINT fk_fee_refunds_approved_by FOREIGN KEY (approved_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE fee_refunds_CXKQLA ADD CONSTRAINT fk_fee_refunds_processed_by FOREIGN KEY (processed_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE online_payment_transactions_3AAA ADD CONSTRAINT fk_online_payment_transactions_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE online_payment_transactions_3AAA ADD CONSTRAINT fk_online_payment_transactions_paid_by FOREIGN KEY (paid_by_user_id) REFERENCES users_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE online_payment_transactions_3AAA ADD CONSTRAINT fk_online_payment_transactions_fee_payment FOREIGN KEY (fee_payment_id) REFERENCES fee_payments_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE payment_gateway_logs_3AAA ADD CONSTRAINT fk_payment_gateway_logs_transaction FOREIGN KEY (transaction_id) REFERENCES online_payment_transactions_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_3AAA ADD CONSTRAINT fk_fee_refunds_student FOREIGN KEY (student_id) REFERENCES students_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_3AAA ADD CONSTRAINT fk_fee_refunds_payment FOREIGN KEY (original_payment_id) REFERENCES fee_payments_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE fee_refunds_3AAA ADD CONSTRAINT fk_fee_refunds_requested_by FOREIGN KEY (requested_by) REFERENCES users_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_3AAA ADD CONSTRAINT fk_fee_refunds_approved_by FOREIGN KEY (approved_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE fee_refunds_3AAA ADD CONSTRAINT fk_fee_refunds_processed_by FOREIGN KEY (processed_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
 
 -- Survey Module
-ALTER TABLE surveys_CXKQLA ADD CONSTRAINT fk_surveys_created_by FOREIGN KEY (created_by) REFERENCES users_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE survey_questions_CXKQLA ADD CONSTRAINT fk_survey_questions_survey FOREIGN KEY (survey_id) REFERENCES surveys_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE survey_responses_CXKQLA ADD CONSTRAINT fk_survey_responses_survey FOREIGN KEY (survey_id) REFERENCES surveys_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE survey_responses_CXKQLA ADD CONSTRAINT fk_survey_responses_question FOREIGN KEY (question_id) REFERENCES survey_questions_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE survey_responses_CXKQLA ADD CONSTRAINT fk_survey_responses_user FOREIGN KEY (respondent_user_id) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
-ALTER TABLE feedback_analytics_CXKQLA ADD CONSTRAINT fk_feedback_analytics_survey FOREIGN KEY (survey_id) REFERENCES surveys_CXKQLA(id) ON DELETE CASCADE;
-ALTER TABLE feedback_analytics_CXKQLA ADD CONSTRAINT fk_feedback_analytics_analyzed_by FOREIGN KEY (analyzed_by) REFERENCES users_CXKQLA(id) ON DELETE SET NULL;
+ALTER TABLE surveys_3AAA ADD CONSTRAINT fk_surveys_created_by FOREIGN KEY (created_by) REFERENCES users_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE survey_questions_3AAA ADD CONSTRAINT fk_survey_questions_survey FOREIGN KEY (survey_id) REFERENCES surveys_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_3AAA ADD CONSTRAINT fk_survey_responses_survey FOREIGN KEY (survey_id) REFERENCES surveys_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_3AAA ADD CONSTRAINT fk_survey_responses_question FOREIGN KEY (question_id) REFERENCES survey_questions_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_3AAA ADD CONSTRAINT fk_survey_responses_user FOREIGN KEY (respondent_user_id) REFERENCES users_3AAA(id) ON DELETE SET NULL;
+ALTER TABLE feedback_analytics_3AAA ADD CONSTRAINT fk_feedback_analytics_survey FOREIGN KEY (survey_id) REFERENCES surveys_3AAA(id) ON DELETE CASCADE;
+ALTER TABLE feedback_analytics_3AAA ADD CONSTRAINT fk_feedback_analytics_analyzed_by FOREIGN KEY (analyzed_by) REFERENCES users_3AAA(id) ON DELETE SET NULL;
 
 -- ============================================================================
 -- END OF TIER 3 SCHEMA FOR School 3

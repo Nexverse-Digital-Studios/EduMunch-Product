@@ -9,11 +9,11 @@ TIER 3 adds premium advanced features on top of TIER 1 (Basic) and TIER 2 (Stand
 
 ```
 tier3/
-├── 01_tier3_AZHBXC.sql    # School 1 TIER 3 tables
-├── 02_tier3_BYJVWD.sql    # School 2 TIER 3 tables
-├── 03_tier3_CXKQLA.sql    # School 3 TIER 3 tables
-├── 04_tier3_DPMHRT.sql    # School 4 TIER 3 tables
-├── 05_tier3_EWNTKS.sql    # School 5 TIER 3 tables
+├── 01_tier3_1EMAET.sql    # School 1 TIER 3 tables
+├── 02_tier3_2DDMK.sql    # School 2 TIER 3 tables
+├── 03_tier3_3AAA.sql    # School 3 TIER 3 tables
+├── 04_tier3_4CBV.sql    # School 4 TIER 3 tables
+├── 05_tier3_5HKSK.sql    # School 5 TIER 3 tables
 └── README.md              # This file
 ```
 
@@ -77,17 +77,17 @@ TIER 3 adds **37 new tables per school** covering:
 **Option A: All Schools at Once (Recommended for new hub)**
 ```sql
 -- Run all 5 files in sequence
-\i 01_tier3_AZHBXC.sql
-\i 02_tier3_BYJVWD.sql
-\i 03_tier3_CXKQLA.sql
-\i 04_tier3_DPMHRT.sql
-\i 05_tier3_EWNTKS.sql
+\i 01_tier3_1EMAET.sql
+\i 02_tier3_2DDMK.sql
+\i 03_tier3_3AAA.sql
+\i 04_tier3_4CBV.sql
+\i 05_tier3_5HKSK.sql
 ```
 
 **Option B: Individual School Deployment (For gradual rollout)**
 ```sql
 -- Deploy only for schools subscribing to Advanced package
-\i 01_tier3_AZHBXC.sql  -- School 1 only
+\i 01_tier3_1EMAET.sql  -- School 1 only
 ```
 
 ## 🏫 School Index Tokens
@@ -96,11 +96,11 @@ Each school has a unique 6-character token appended to table names:
 
 | School | Index Token | File Name                  |
 |--------|-------------|----------------------------|
-| School 1 | AZHBXC    | `01_tier3_AZHBXC.sql`     |
-| School 2 | BYJVWD    | `02_tier3_BYJVWD.sql`     |
-| School 3 | CXKQLA    | `03_tier3_CXKQLA.sql`     |
-| School 4 | DPMHRT    | `04_tier3_DPMHRT.sql`     |
-| School 5 | EWNTKS    | `05_tier3_EWNTKS.sql`     |
+| School 1 | 1EMAET    | `01_tier3_1EMAET.sql`     |
+| School 2 | 2DDMK    | `02_tier3_2DDMK.sql`     |
+| School 3 | 3AAA    | `03_tier3_3AAA.sql`     |
+| School 4 | 4CBV    | `04_tier3_4CBV.sql`     |
+| School 5 | 5HKSK    | `05_tier3_5HKSK.sql`     |
 
 ## 💰 Pricing Context
 
@@ -124,16 +124,16 @@ TIER 3 tables reference these TIER 1 & TIER 2 tables:
 -- Count TIER 3 tables for School 1
 SELECT COUNT(*) as tier3_tables
 FROM information_schema.tables 
-WHERE table_name LIKE '%_AZHBXC'
+WHERE table_name LIKE '%_1EMAET'
 AND table_name IN (
-  'analytics_student_performance_AZHBXC',
-  'ptm_slots_AZHBXC',
-  'alumni_AZHBXC',
-  'admission_applications_AZHBXC',
-  'assets_AZHBXC',
-  'certificate_templates_AZHBXC',
-  'online_payment_transactions_AZHBXC',
-  'surveys_AZHBXC'
+  'analytics_student_performance_1EMAET',
+  'ptm_slots_1EMAET',
+  'alumni_1EMAET',
+  'admission_applications_1EMAET',
+  'assets_1EMAET',
+  'certificate_templates_1EMAET',
+  'online_payment_transactions_1EMAET',
+  'surveys_1EMAET'
 );
 -- Expected: 8 (sample check)
 ```
@@ -142,11 +142,11 @@ AND table_name IN (
 ```sql
 SELECT 
   CASE 
-    WHEN table_name LIKE '%_AZHBXC' THEN 'School 1'
-    WHEN table_name LIKE '%_BYJVWD' THEN 'School 2'
-    WHEN table_name LIKE '%_CXKQLA' THEN 'School 3'
-    WHEN table_name LIKE '%_DPMHRT' THEN 'School 4'
-    WHEN table_name LIKE '%_EWNTKS' THEN 'School 5'
+    WHEN table_name LIKE '%_1EMAET' THEN 'School 1'
+    WHEN table_name LIKE '%_2DDMK' THEN 'School 2'
+    WHEN table_name LIKE '%_3AAA' THEN 'School 3'
+    WHEN table_name LIKE '%_4CBV' THEN 'School 4'
+    WHEN table_name LIKE '%_5HKSK' THEN 'School 5'
   END as school,
   COUNT(*) as tier3_tables
 FROM information_schema.tables
@@ -174,13 +174,13 @@ ORDER BY school;
 
 #### Alumni Registration
 ```sql
-INSERT INTO alumni_AZHBXC (first_name, last_name, email, phone, batch_year, class_graduated, current_occupation, current_company, is_mentor)
+INSERT INTO alumni_1EMAET (first_name, last_name, email, phone, batch_year, class_graduated, current_occupation, current_company, is_mentor)
 VALUES ('Rajesh', 'Kumar', 'rajesh.kumar@example.com', '9876543210', 2018, 'Class 12', 'Software Engineer', 'Google India', true);
 ```
 
 #### Admission Application
 ```sql
-INSERT INTO admission_applications_AZHBXC (
+INSERT INTO admission_applications_1EMAET (
   application_number, first_name, last_name, date_of_birth, gender, 
   phone, parent_name, parent_phone, applying_for_class, academic_year, 
   previous_school_name, previous_percentage
@@ -194,7 +194,7 @@ VALUES (
 
 #### Survey Creation
 ```sql
-INSERT INTO surveys_AZHBXC (survey_title, survey_type, target_audience, start_date, end_date, status, created_by)
+INSERT INTO surveys_1EMAET (survey_title, survey_type, target_audience, start_date, end_date, status, created_by)
 VALUES (
   'Teacher Effectiveness Feedback Q1 2025',
   'Teacher Feedback',
@@ -202,27 +202,27 @@ VALUES (
   '2025-03-01',
   '2025-03-15',
   'Active',
-  (SELECT id FROM users_AZHBXC WHERE role = 'academic_admin' LIMIT 1)
+  (SELECT id FROM users_1EMAET WHERE role = 'academic_admin' LIMIT 1)
 );
 ```
 
 #### Asset Registration
 ```sql
-INSERT INTO assets_AZHBXC (asset_code, asset_name, asset_category, asset_type, purchase_date, purchase_cost, assigned_to_department, condition_status)
+INSERT INTO assets_1EMAET (asset_code, asset_name, asset_category, asset_type, purchase_date, purchase_cost, assigned_to_department, condition_status)
 VALUES ('LPT001', 'Dell Latitude 5420', 'IT Equipment', 'Laptop', '2024-01-15', 55000, 'Computer Lab', 'Excellent');
 ```
 
 #### Online Payment Transaction
 ```sql
-INSERT INTO online_payment_transactions_AZHBXC (
+INSERT INTO online_payment_transactions_1EMAET (
   transaction_id, gateway, student_id, paid_by_user_id, payer_name, 
   amount, payment_method, status, initiated_at
 )
 VALUES (
   'TXN' || EXTRACT(EPOCH FROM NOW())::TEXT,
   'Razorpay',
-  (SELECT id FROM students_AZHBXC LIMIT 1),
-  (SELECT id FROM users_AZHBXC WHERE role = 'parent' LIMIT 1),
+  (SELECT id FROM students_1EMAET LIMIT 1),
+  (SELECT id FROM users_1EMAET WHERE role = 'parent' LIMIT 1),
   'Parent Name',
   5000.00,
   'UPI',

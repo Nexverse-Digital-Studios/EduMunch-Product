@@ -306,7 +306,7 @@ const StudentList = () => {
 ```sql
 -- Students can only view their own records
 CREATE POLICY "Students can view own record"
-ON students_AZHBXC
+ON students_1EMAET
 FOR SELECT
 USING (
   auth.uid() = user_id
@@ -314,41 +314,41 @@ USING (
 
 -- Teachers can view students in their assigned classes
 CREATE POLICY "Teachers can view assigned students"
-ON students_AZHBXC
+ON students_1EMAET
 FOR SELECT
 USING (
   EXISTS (
     SELECT 1
-    FROM teacher_subjects_AZHBXC ts
+    FROM teacher_subjects_1EMAET ts
     WHERE ts.teacher_id = (
-      SELECT id FROM teachers_AZHBXC WHERE user_id = auth.uid()
+      SELECT id FROM teachers_1EMAET WHERE user_id = auth.uid()
     )
-    AND ts.class_id = students_AZHBXC.class_id
+    AND ts.class_id = students_1EMAET.class_id
   )
 );
 
 -- Parents can view their children
 CREATE POLICY "Parents can view their children"
-ON students_AZHBXC
+ON students_1EMAET
 FOR SELECT
 USING (
   EXISTS (
     SELECT 1
-    FROM student_parent_relations_AZHBXC spr
-    JOIN parents_AZHBXC p ON p.id = spr.parent_id
+    FROM student_parent_relations_1EMAET spr
+    JOIN parents_1EMAET p ON p.id = spr.parent_id
     WHERE p.user_id = auth.uid()
-    AND spr.student_id = students_AZHBXC.id
+    AND spr.student_id = students_1EMAET.id
   )
 );
 
 -- Admins can view all students
 CREATE POLICY "Admins can view all students"
-ON students_AZHBXC
+ON students_1EMAET
 FOR SELECT
 USING (
   EXISTS (
     SELECT 1
-    FROM users_AZHBXC
+    FROM users_1EMAET
     WHERE id = auth.uid()
     AND role IN ('admin_super', 'admin_hr', 'admin_academic')
   )
@@ -356,12 +356,12 @@ USING (
 
 -- Only admins can create/update/delete students
 CREATE POLICY "Admins can manage students"
-ON students_AZHBXC
+ON students_1EMAET
 FOR ALL
 USING (
   EXISTS (
     SELECT 1
-    FROM users_AZHBXC
+    FROM users_1EMAET
     WHERE id = auth.uid()
     AND role IN ('admin_super', 'admin_hr', 'admin_academic')
   )

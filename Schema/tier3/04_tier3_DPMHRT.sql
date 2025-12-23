@@ -1,5 +1,5 @@
 -- ============================================================================
--- EduMunch: TIER 3 Schema - School 4 (DPMHRT)
+-- EduMunch: TIER 3 Schema - School 4 (4CBV)
 -- ============================================================================
 -- TIER 3: ADVANCED FEATURES (Premium Offerings)
 -- Requires TIER 1 and TIER 2 to be deployed first
@@ -20,7 +20,7 @@
 -- ============================================================================
 
 -- 1.1 Student Performance Analytics
-CREATE TABLE analytics_student_performance_DPMHRT (
+CREATE TABLE analytics_student_performance_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -48,14 +48,14 @@ CREATE TABLE analytics_student_performance_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_student_performance_student ON analytics_student_performance_DPMHRT(student_id);
-CREATE INDEX idx_analytics_student_performance_subject ON analytics_student_performance_DPMHRT(subject_id);
-CREATE INDEX idx_analytics_student_performance_risk ON analytics_student_performance_DPMHRT(risk_level);
+CREATE INDEX idx_analytics_student_performance_student ON analytics_student_performance_4CBV(student_id);
+CREATE INDEX idx_analytics_student_performance_subject ON analytics_student_performance_4CBV(subject_id);
+CREATE INDEX idx_analytics_student_performance_risk ON analytics_student_performance_4CBV(risk_level);
 
-COMMENT ON TABLE analytics_student_performance_DPMHRT IS 'ML-based student performance analysis and predictions';
+COMMENT ON TABLE analytics_student_performance_4CBV IS 'ML-based student performance analysis and predictions';
 
 -- 1.2 Attendance Pattern Analysis
-CREATE TABLE analytics_attendance_patterns_DPMHRT (
+CREATE TABLE analytics_attendance_patterns_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -87,14 +87,14 @@ CREATE TABLE analytics_attendance_patterns_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_attendance_patterns_student ON analytics_attendance_patterns_DPMHRT(student_id);
-CREATE INDEX idx_analytics_attendance_patterns_risk ON analytics_attendance_patterns_DPMHRT(dropout_risk_level);
-CREATE INDEX idx_analytics_attendance_patterns_alert ON analytics_attendance_patterns_DPMHRT(alert_sent);
+CREATE INDEX idx_analytics_attendance_patterns_student ON analytics_attendance_patterns_4CBV(student_id);
+CREATE INDEX idx_analytics_attendance_patterns_risk ON analytics_attendance_patterns_4CBV(dropout_risk_level);
+CREATE INDEX idx_analytics_attendance_patterns_alert ON analytics_attendance_patterns_4CBV(alert_sent);
 
-COMMENT ON TABLE analytics_attendance_patterns_DPMHRT IS 'Attendance pattern analysis for dropout risk detection';
+COMMENT ON TABLE analytics_attendance_patterns_4CBV IS 'Attendance pattern analysis for dropout risk detection';
 
 -- 1.3 Academic Trend Reports
-CREATE TABLE analytics_academic_trends_DPMHRT (
+CREATE TABLE analytics_academic_trends_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   
   -- Scope
@@ -132,19 +132,19 @@ CREATE TABLE analytics_academic_trends_DPMHRT (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_academic_trends_type ON analytics_academic_trends_DPMHRT(analysis_type);
-CREATE INDEX idx_analytics_academic_trends_class ON analytics_academic_trends_DPMHRT(class_id);
-CREATE INDEX idx_analytics_academic_trends_section ON analytics_academic_trends_DPMHRT(section_id);
-CREATE INDEX idx_analytics_academic_trends_teacher ON analytics_academic_trends_DPMHRT(teacher_id);
+CREATE INDEX idx_analytics_academic_trends_type ON analytics_academic_trends_4CBV(analysis_type);
+CREATE INDEX idx_analytics_academic_trends_class ON analytics_academic_trends_4CBV(class_id);
+CREATE INDEX idx_analytics_academic_trends_section ON analytics_academic_trends_4CBV(section_id);
+CREATE INDEX idx_analytics_academic_trends_teacher ON analytics_academic_trends_4CBV(teacher_id);
 
-COMMENT ON TABLE analytics_academic_trends_DPMHRT IS 'Academic performance trends and comparative analysis';
+COMMENT ON TABLE analytics_academic_trends_4CBV IS 'Academic performance trends and comparative analysis';
 
 -- ============================================================================
 -- 2. PARENT-TEACHER MEETING (PTM)
 -- ============================================================================
 
 -- 2.1 PTM Slots
-CREATE TABLE ptm_slots_DPMHRT (
+CREATE TABLE ptm_slots_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   ptm_date DATE NOT NULL,
@@ -161,14 +161,14 @@ CREATE TABLE ptm_slots_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_ptm_slots_teacher ON ptm_slots_DPMHRT(teacher_id);
-CREATE INDEX idx_ptm_slots_date ON ptm_slots_DPMHRT(ptm_date);
-CREATE INDEX idx_ptm_slots_status ON ptm_slots_DPMHRT(status);
+CREATE INDEX idx_ptm_slots_teacher ON ptm_slots_4CBV(teacher_id);
+CREATE INDEX idx_ptm_slots_date ON ptm_slots_4CBV(ptm_date);
+CREATE INDEX idx_ptm_slots_status ON ptm_slots_4CBV(status);
 
-COMMENT ON TABLE ptm_slots_DPMHRT IS 'Teacher availability slots for PTM';
+COMMENT ON TABLE ptm_slots_4CBV IS 'Teacher availability slots for PTM';
 
 -- 2.2 PTM Bookings
-CREATE TABLE ptm_bookings_DPMHRT (
+CREATE TABLE ptm_bookings_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slot_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -192,15 +192,15 @@ CREATE TABLE ptm_bookings_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_ptm_bookings_slot ON ptm_bookings_DPMHRT(slot_id);
-CREATE INDEX idx_ptm_bookings_student ON ptm_bookings_DPMHRT(student_id);
-CREATE INDEX idx_ptm_bookings_parent ON ptm_bookings_DPMHRT(parent_user_id);
-CREATE INDEX idx_ptm_bookings_status ON ptm_bookings_DPMHRT(status);
+CREATE INDEX idx_ptm_bookings_slot ON ptm_bookings_4CBV(slot_id);
+CREATE INDEX idx_ptm_bookings_student ON ptm_bookings_4CBV(student_id);
+CREATE INDEX idx_ptm_bookings_parent ON ptm_bookings_4CBV(parent_user_id);
+CREATE INDEX idx_ptm_bookings_status ON ptm_bookings_4CBV(status);
 
-COMMENT ON TABLE ptm_bookings_DPMHRT IS 'Parent booking records for PTM slots';
+COMMENT ON TABLE ptm_bookings_4CBV IS 'Parent booking records for PTM slots';
 
 -- 2.3 PTM Meeting Notes
-CREATE TABLE ptm_meeting_notes_DPMHRT (
+CREATE TABLE ptm_meeting_notes_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   booking_id UUID NOT NULL,
   teacher_id UUID NOT NULL,
@@ -231,19 +231,19 @@ CREATE TABLE ptm_meeting_notes_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_ptm_meeting_notes_booking ON ptm_meeting_notes_DPMHRT(booking_id);
-CREATE INDEX idx_ptm_meeting_notes_student ON ptm_meeting_notes_DPMHRT(student_id);
-CREATE INDEX idx_ptm_meeting_notes_teacher ON ptm_meeting_notes_DPMHRT(teacher_id);
-CREATE INDEX idx_ptm_meeting_notes_follow_up ON ptm_meeting_notes_DPMHRT(follow_up_required, follow_up_completed);
+CREATE INDEX idx_ptm_meeting_notes_booking ON ptm_meeting_notes_4CBV(booking_id);
+CREATE INDEX idx_ptm_meeting_notes_student ON ptm_meeting_notes_4CBV(student_id);
+CREATE INDEX idx_ptm_meeting_notes_teacher ON ptm_meeting_notes_4CBV(teacher_id);
+CREATE INDEX idx_ptm_meeting_notes_follow_up ON ptm_meeting_notes_4CBV(follow_up_required, follow_up_completed);
 
-COMMENT ON TABLE ptm_meeting_notes_DPMHRT IS 'Discussion notes and action items from PTM';
+COMMENT ON TABLE ptm_meeting_notes_4CBV IS 'Discussion notes and action items from PTM';
 
 -- ============================================================================
 -- 3. ALUMNI MANAGEMENT
 -- ============================================================================
 
 -- 3.1 Alumni Directory
-CREATE TABLE alumni_DPMHRT (
+CREATE TABLE alumni_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE, -- Link to users table if registered
   
@@ -291,15 +291,15 @@ CREATE TABLE alumni_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_batch ON alumni_DPMHRT(batch_year);
-CREATE INDEX idx_alumni_email ON alumni_DPMHRT(email);
-CREATE INDEX idx_alumni_mentor ON alumni_DPMHRT(is_mentor);
-CREATE INDEX idx_alumni_active ON alumni_DPMHRT(is_active);
+CREATE INDEX idx_alumni_batch ON alumni_4CBV(batch_year);
+CREATE INDEX idx_alumni_email ON alumni_4CBV(email);
+CREATE INDEX idx_alumni_mentor ON alumni_4CBV(is_mentor);
+CREATE INDEX idx_alumni_active ON alumni_4CBV(is_active);
 
-COMMENT ON TABLE alumni_DPMHRT IS 'Alumni directory with engagement preferences';
+COMMENT ON TABLE alumni_4CBV IS 'Alumni directory with engagement preferences';
 
 -- 3.2 Alumni Events
-CREATE TABLE alumni_events_DPMHRT (
+CREATE TABLE alumni_events_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_title VARCHAR(255) NOT NULL,
   event_description TEXT,
@@ -335,14 +335,14 @@ CREATE TABLE alumni_events_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_events_date ON alumni_events_DPMHRT(event_date);
-CREATE INDEX idx_alumni_events_type ON alumni_events_DPMHRT(event_type);
-CREATE INDEX idx_alumni_events_status ON alumni_events_DPMHRT(status);
+CREATE INDEX idx_alumni_events_date ON alumni_events_4CBV(event_date);
+CREATE INDEX idx_alumni_events_type ON alumni_events_4CBV(event_type);
+CREATE INDEX idx_alumni_events_status ON alumni_events_4CBV(status);
 
-COMMENT ON TABLE alumni_events_DPMHRT IS 'Alumni reunions, webinars, and networking events';
+COMMENT ON TABLE alumni_events_4CBV IS 'Alumni reunions, webinars, and networking events';
 
 -- 3.3 Alumni Event Registrations
-CREATE TABLE alumni_event_registrations_DPMHRT (
+CREATE TABLE alumni_event_registrations_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_id UUID NOT NULL,
   alumni_id UUID NOT NULL,
@@ -365,14 +365,14 @@ CREATE TABLE alumni_event_registrations_DPMHRT (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_event_registrations_event ON alumni_event_registrations_DPMHRT(event_id);
-CREATE INDEX idx_alumni_event_registrations_alumni ON alumni_event_registrations_DPMHRT(alumni_id);
-CREATE UNIQUE INDEX idx_alumni_event_registrations_unique ON alumni_event_registrations_DPMHRT(event_id, alumni_id);
+CREATE INDEX idx_alumni_event_registrations_event ON alumni_event_registrations_4CBV(event_id);
+CREATE INDEX idx_alumni_event_registrations_alumni ON alumni_event_registrations_4CBV(alumni_id);
+CREATE UNIQUE INDEX idx_alumni_event_registrations_unique ON alumni_event_registrations_4CBV(event_id, alumni_id);
 
-COMMENT ON TABLE alumni_event_registrations_DPMHRT IS 'Alumni event registrations and attendance';
+COMMENT ON TABLE alumni_event_registrations_4CBV IS 'Alumni event registrations and attendance';
 
 -- 3.4 Alumni Donations
-CREATE TABLE alumni_donations_DPMHRT (
+CREATE TABLE alumni_donations_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   alumni_id UUID NOT NULL,
   
@@ -404,14 +404,14 @@ CREATE TABLE alumni_donations_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_donations_alumni ON alumni_donations_DPMHRT(alumni_id);
-CREATE INDEX idx_alumni_donations_date ON alumni_donations_DPMHRT(donation_date);
-CREATE INDEX idx_alumni_donations_status ON alumni_donations_DPMHRT(payment_status);
+CREATE INDEX idx_alumni_donations_alumni ON alumni_donations_4CBV(alumni_id);
+CREATE INDEX idx_alumni_donations_date ON alumni_donations_4CBV(donation_date);
+CREATE INDEX idx_alumni_donations_status ON alumni_donations_4CBV(payment_status);
 
-COMMENT ON TABLE alumni_donations_DPMHRT IS 'Alumni fundraising and donation tracking';
+COMMENT ON TABLE alumni_donations_4CBV IS 'Alumni fundraising and donation tracking';
 
 -- 3.5 Alumni Mentorship Program
-CREATE TABLE alumni_mentorship_DPMHRT (
+CREATE TABLE alumni_mentorship_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   alumni_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -438,18 +438,18 @@ CREATE TABLE alumni_mentorship_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_mentorship_alumni ON alumni_mentorship_DPMHRT(alumni_id);
-CREATE INDEX idx_alumni_mentorship_student ON alumni_mentorship_DPMHRT(student_id);
-CREATE INDEX idx_alumni_mentorship_status ON alumni_mentorship_DPMHRT(status);
+CREATE INDEX idx_alumni_mentorship_alumni ON alumni_mentorship_4CBV(alumni_id);
+CREATE INDEX idx_alumni_mentorship_student ON alumni_mentorship_4CBV(student_id);
+CREATE INDEX idx_alumni_mentorship_status ON alumni_mentorship_4CBV(status);
 
-COMMENT ON TABLE alumni_mentorship_DPMHRT IS 'Alumni-student mentorship matching and tracking';
+COMMENT ON TABLE alumni_mentorship_4CBV IS 'Alumni-student mentorship matching and tracking';
 
 -- ============================================================================
 -- 4. ADMISSION MANAGEMENT
 -- ============================================================================
 
 -- 4.1 Admission Applications
-CREATE TABLE admission_applications_DPMHRT (
+CREATE TABLE admission_applications_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -512,15 +512,15 @@ CREATE TABLE admission_applications_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_applications_number ON admission_applications_DPMHRT(application_number);
-CREATE INDEX idx_admission_applications_status ON admission_applications_DPMHRT(status);
-CREATE INDEX idx_admission_applications_class ON admission_applications_DPMHRT(applying_for_class);
-CREATE INDEX idx_admission_applications_date ON admission_applications_DPMHRT(submission_date);
+CREATE INDEX idx_admission_applications_number ON admission_applications_4CBV(application_number);
+CREATE INDEX idx_admission_applications_status ON admission_applications_4CBV(status);
+CREATE INDEX idx_admission_applications_class ON admission_applications_4CBV(applying_for_class);
+CREATE INDEX idx_admission_applications_date ON admission_applications_4CBV(submission_date);
 
-COMMENT ON TABLE admission_applications_DPMHRT IS 'Online admission application portal';
+COMMENT ON TABLE admission_applications_4CBV IS 'Online admission application portal';
 
 -- 4.2 Admission Interviews
-CREATE TABLE admission_interviews_DPMHRT (
+CREATE TABLE admission_interviews_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID NOT NULL,
   
@@ -551,14 +551,14 @@ CREATE TABLE admission_interviews_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_interviews_application ON admission_interviews_DPMHRT(application_id);
-CREATE INDEX idx_admission_interviews_date ON admission_interviews_DPMHRT(interview_date);
-CREATE INDEX idx_admission_interviews_status ON admission_interviews_DPMHRT(status);
+CREATE INDEX idx_admission_interviews_application ON admission_interviews_4CBV(application_id);
+CREATE INDEX idx_admission_interviews_date ON admission_interviews_4CBV(interview_date);
+CREATE INDEX idx_admission_interviews_status ON admission_interviews_4CBV(status);
 
-COMMENT ON TABLE admission_interviews_DPMHRT IS 'Interview scheduling and evaluation';
+COMMENT ON TABLE admission_interviews_4CBV IS 'Interview scheduling and evaluation';
 
 -- 4.3 Admission Entrance Tests
-CREATE TABLE admission_entrance_tests_DPMHRT (
+CREATE TABLE admission_entrance_tests_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   test_name VARCHAR(255) NOT NULL,
   test_code VARCHAR(50) UNIQUE NOT NULL,
@@ -588,14 +588,14 @@ CREATE TABLE admission_entrance_tests_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_entrance_tests_date ON admission_entrance_tests_DPMHRT(test_date);
-CREATE INDEX idx_admission_entrance_tests_class ON admission_entrance_tests_DPMHRT(for_class);
-CREATE INDEX idx_admission_entrance_tests_status ON admission_entrance_tests_DPMHRT(status);
+CREATE INDEX idx_admission_entrance_tests_date ON admission_entrance_tests_4CBV(test_date);
+CREATE INDEX idx_admission_entrance_tests_class ON admission_entrance_tests_4CBV(for_class);
+CREATE INDEX idx_admission_entrance_tests_status ON admission_entrance_tests_4CBV(status);
 
-COMMENT ON TABLE admission_entrance_tests_DPMHRT IS 'Entrance test configuration';
+COMMENT ON TABLE admission_entrance_tests_4CBV IS 'Entrance test configuration';
 
 -- 4.4 Admission Test Results
-CREATE TABLE admission_test_results_DPMHRT (
+CREATE TABLE admission_test_results_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   test_id UUID NOT NULL,
   application_id UUID NOT NULL,
@@ -617,15 +617,15 @@ CREATE TABLE admission_test_results_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_test_results_test ON admission_test_results_DPMHRT(test_id);
-CREATE INDEX idx_admission_test_results_application ON admission_test_results_DPMHRT(application_id);
-CREATE INDEX idx_admission_test_results_rank ON admission_test_results_DPMHRT(rank);
-CREATE UNIQUE INDEX idx_admission_test_results_unique ON admission_test_results_DPMHRT(test_id, application_id);
+CREATE INDEX idx_admission_test_results_test ON admission_test_results_4CBV(test_id);
+CREATE INDEX idx_admission_test_results_application ON admission_test_results_4CBV(application_id);
+CREATE INDEX idx_admission_test_results_rank ON admission_test_results_4CBV(rank);
+CREATE UNIQUE INDEX idx_admission_test_results_unique ON admission_test_results_4CBV(test_id, application_id);
 
-COMMENT ON TABLE admission_test_results_DPMHRT IS 'Entrance test results and ranking';
+COMMENT ON TABLE admission_test_results_4CBV IS 'Entrance test results and ranking';
 
 -- 4.5 Admission Merit List
-CREATE TABLE admission_merit_list_DPMHRT (
+CREATE TABLE admission_merit_list_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID NOT NULL,
   for_class VARCHAR(20) NOT NULL,
@@ -658,19 +658,19 @@ CREATE TABLE admission_merit_list_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admission_merit_list_application ON admission_merit_list_DPMHRT(application_id);
-CREATE INDEX idx_admission_merit_list_class ON admission_merit_list_DPMHRT(for_class);
-CREATE INDEX idx_admission_merit_list_rank ON admission_merit_list_DPMHRT(merit_rank);
-CREATE INDEX idx_admission_merit_list_status ON admission_merit_list_DPMHRT(status);
+CREATE INDEX idx_admission_merit_list_application ON admission_merit_list_4CBV(application_id);
+CREATE INDEX idx_admission_merit_list_class ON admission_merit_list_4CBV(for_class);
+CREATE INDEX idx_admission_merit_list_rank ON admission_merit_list_4CBV(merit_rank);
+CREATE INDEX idx_admission_merit_list_status ON admission_merit_list_4CBV(status);
 
-COMMENT ON TABLE admission_merit_list_DPMHRT IS 'Final merit list and seat allocation';
+COMMENT ON TABLE admission_merit_list_4CBV IS 'Final merit list and seat allocation';
 
 -- ============================================================================
 -- 5. INVENTORY & ASSET MANAGEMENT
 -- ============================================================================
 
 -- 5.1 Assets
-CREATE TABLE assets_DPMHRT (
+CREATE TABLE assets_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_code VARCHAR(50) UNIQUE NOT NULL,
   asset_name VARCHAR(255) NOT NULL,
@@ -712,15 +712,15 @@ CREATE TABLE assets_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_assets_code ON assets_DPMHRT(asset_code);
-CREATE INDEX idx_assets_category ON assets_DPMHRT(asset_category);
-CREATE INDEX idx_assets_status ON assets_DPMHRT(status);
-CREATE INDEX idx_assets_assigned_user ON assets_DPMHRT(assigned_to_user);
+CREATE INDEX idx_assets_code ON assets_4CBV(asset_code);
+CREATE INDEX idx_assets_category ON assets_4CBV(asset_category);
+CREATE INDEX idx_assets_status ON assets_4CBV(status);
+CREATE INDEX idx_assets_assigned_user ON assets_4CBV(assigned_to_user);
 
-COMMENT ON TABLE assets_DPMHRT IS 'School asset master (furniture, equipment, IT assets)';
+COMMENT ON TABLE assets_4CBV IS 'School asset master (furniture, equipment, IT assets)';
 
 -- 5.2 Asset Maintenance
-CREATE TABLE asset_maintenance_DPMHRT (
+CREATE TABLE asset_maintenance_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_id UUID NOT NULL,
   
@@ -753,14 +753,14 @@ CREATE TABLE asset_maintenance_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_asset_maintenance_asset ON asset_maintenance_DPMHRT(asset_id);
-CREATE INDEX idx_asset_maintenance_date ON asset_maintenance_DPMHRT(maintenance_date);
-CREATE INDEX idx_asset_maintenance_status ON asset_maintenance_DPMHRT(status);
+CREATE INDEX idx_asset_maintenance_asset ON asset_maintenance_4CBV(asset_id);
+CREATE INDEX idx_asset_maintenance_date ON asset_maintenance_4CBV(maintenance_date);
+CREATE INDEX idx_asset_maintenance_status ON asset_maintenance_4CBV(status);
 
-COMMENT ON TABLE asset_maintenance_DPMHRT IS 'Asset maintenance schedule and history';
+COMMENT ON TABLE asset_maintenance_4CBV IS 'Asset maintenance schedule and history';
 
 -- 5.3 Lab Equipment
-CREATE TABLE lab_equipment_DPMHRT (
+CREATE TABLE lab_equipment_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_id UUID, -- Link to main assets table if applicable
   equipment_code VARCHAR(50) UNIQUE NOT NULL,
@@ -803,14 +803,14 @@ CREATE TABLE lab_equipment_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lab_equipment_code ON lab_equipment_DPMHRT(equipment_code);
-CREATE INDEX idx_lab_equipment_lab ON lab_equipment_DPMHRT(lab_name);
-CREATE INDEX idx_lab_equipment_type ON lab_equipment_DPMHRT(equipment_type);
+CREATE INDEX idx_lab_equipment_code ON lab_equipment_4CBV(equipment_code);
+CREATE INDEX idx_lab_equipment_lab ON lab_equipment_4CBV(lab_name);
+CREATE INDEX idx_lab_equipment_type ON lab_equipment_4CBV(equipment_type);
 
-COMMENT ON TABLE lab_equipment_DPMHRT IS 'Lab-specific equipment inventory';
+COMMENT ON TABLE lab_equipment_4CBV IS 'Lab-specific equipment inventory';
 
 -- 5.4 Lab Chemicals & Specimens
-CREATE TABLE lab_chemicals_DPMHRT (
+CREATE TABLE lab_chemicals_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   chemical_code VARCHAR(50) UNIQUE NOT NULL,
   chemical_name VARCHAR(255) NOT NULL,
@@ -849,15 +849,15 @@ CREATE TABLE lab_chemicals_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lab_chemicals_code ON lab_chemicals_DPMHRT(chemical_code);
-CREATE INDEX idx_lab_chemicals_lab ON lab_chemicals_DPMHRT(lab_name);
-CREATE INDEX idx_lab_chemicals_status ON lab_chemicals_DPMHRT(status);
-CREATE INDEX idx_lab_chemicals_expiry ON lab_chemicals_DPMHRT(expiry_date);
+CREATE INDEX idx_lab_chemicals_code ON lab_chemicals_4CBV(chemical_code);
+CREATE INDEX idx_lab_chemicals_lab ON lab_chemicals_4CBV(lab_name);
+CREATE INDEX idx_lab_chemicals_status ON lab_chemicals_4CBV(status);
+CREATE INDEX idx_lab_chemicals_expiry ON lab_chemicals_4CBV(expiry_date);
 
-COMMENT ON TABLE lab_chemicals_DPMHRT IS 'Chemical and specimen inventory with safety tracking';
+COMMENT ON TABLE lab_chemicals_4CBV IS 'Chemical and specimen inventory with safety tracking';
 
 -- 5.5 Stationery Items
-CREATE TABLE stationery_items_DPMHRT (
+CREATE TABLE stationery_items_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   item_code VARCHAR(50) UNIQUE NOT NULL,
   item_name VARCHAR(255) NOT NULL,
@@ -881,14 +881,14 @@ CREATE TABLE stationery_items_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_stationery_items_code ON stationery_items_DPMHRT(item_code);
-CREATE INDEX idx_stationery_items_category ON stationery_items_DPMHRT(item_category);
-CREATE INDEX idx_stationery_items_status ON stationery_items_DPMHRT(status);
+CREATE INDEX idx_stationery_items_code ON stationery_items_4CBV(item_code);
+CREATE INDEX idx_stationery_items_category ON stationery_items_4CBV(item_category);
+CREATE INDEX idx_stationery_items_status ON stationery_items_4CBV(status);
 
-COMMENT ON TABLE stationery_items_DPMHRT IS 'Stationery stock master';
+COMMENT ON TABLE stationery_items_4CBV IS 'Stationery stock master';
 
 -- 5.6 Stationery Transactions
-CREATE TABLE stationery_transactions_DPMHRT (
+CREATE TABLE stationery_transactions_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   item_id UUID NOT NULL,
   
@@ -922,19 +922,19 @@ CREATE TABLE stationery_transactions_DPMHRT (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_stationery_transactions_item ON stationery_transactions_DPMHRT(item_id);
-CREATE INDEX idx_stationery_transactions_type ON stationery_transactions_DPMHRT(transaction_type);
-CREATE INDEX idx_stationery_transactions_date ON stationery_transactions_DPMHRT(transaction_date);
-CREATE INDEX idx_stationery_transactions_user ON stationery_transactions_DPMHRT(issued_to_user_id);
+CREATE INDEX idx_stationery_transactions_item ON stationery_transactions_4CBV(item_id);
+CREATE INDEX idx_stationery_transactions_type ON stationery_transactions_4CBV(transaction_type);
+CREATE INDEX idx_stationery_transactions_date ON stationery_transactions_4CBV(transaction_date);
+CREATE INDEX idx_stationery_transactions_user ON stationery_transactions_4CBV(issued_to_user_id);
 
-COMMENT ON TABLE stationery_transactions_DPMHRT IS 'Stationery issue, return, and purchase tracking';
+COMMENT ON TABLE stationery_transactions_4CBV IS 'Stationery issue, return, and purchase tracking';
 
 -- ============================================================================
 -- 6. CERTIFICATE & DOCUMENT GENERATION
 -- ============================================================================
 
 -- 6.1 Certificate Templates
-CREATE TABLE certificate_templates_DPMHRT (
+CREATE TABLE certificate_templates_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   template_name VARCHAR(255) NOT NULL,
   template_code VARCHAR(50) UNIQUE NOT NULL,
@@ -964,14 +964,14 @@ CREATE TABLE certificate_templates_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_certificate_templates_code ON certificate_templates_DPMHRT(template_code);
-CREATE INDEX idx_certificate_templates_type ON certificate_templates_DPMHRT(certificate_type);
-CREATE INDEX idx_certificate_templates_active ON certificate_templates_DPMHRT(is_active);
+CREATE INDEX idx_certificate_templates_code ON certificate_templates_4CBV(template_code);
+CREATE INDEX idx_certificate_templates_type ON certificate_templates_4CBV(certificate_type);
+CREATE INDEX idx_certificate_templates_active ON certificate_templates_4CBV(is_active);
 
-COMMENT ON TABLE certificate_templates_DPMHRT IS 'Certificate templates with custom design';
+COMMENT ON TABLE certificate_templates_4CBV IS 'Certificate templates with custom design';
 
 -- 6.2 Certificate Requests
-CREATE TABLE certificate_requests_DPMHRT (
+CREATE TABLE certificate_requests_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   request_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -1009,15 +1009,15 @@ CREATE TABLE certificate_requests_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_certificate_requests_number ON certificate_requests_DPMHRT(request_number);
-CREATE INDEX idx_certificate_requests_student ON certificate_requests_DPMHRT(student_id);
-CREATE INDEX idx_certificate_requests_status ON certificate_requests_DPMHRT(status);
-CREATE INDEX idx_certificate_requests_type ON certificate_requests_DPMHRT(certificate_type);
+CREATE INDEX idx_certificate_requests_number ON certificate_requests_4CBV(request_number);
+CREATE INDEX idx_certificate_requests_student ON certificate_requests_4CBV(student_id);
+CREATE INDEX idx_certificate_requests_status ON certificate_requests_4CBV(status);
+CREATE INDEX idx_certificate_requests_type ON certificate_requests_4CBV(certificate_type);
 
-COMMENT ON TABLE certificate_requests_DPMHRT IS 'Certificate request and approval workflow';
+COMMENT ON TABLE certificate_requests_4CBV IS 'Certificate request and approval workflow';
 
 -- 6.3 Generated Certificates
-CREATE TABLE generated_certificates_DPMHRT (
+CREATE TABLE generated_certificates_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   certificate_number VARCHAR(50) UNIQUE NOT NULL,
   request_id UUID,
@@ -1051,19 +1051,19 @@ CREATE TABLE generated_certificates_DPMHRT (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_generated_certificates_number ON generated_certificates_DPMHRT(certificate_number);
-CREATE INDEX idx_generated_certificates_student ON generated_certificates_DPMHRT(student_id);
-CREATE INDEX idx_generated_certificates_type ON generated_certificates_DPMHRT(certificate_type);
-CREATE INDEX idx_generated_certificates_request ON generated_certificates_DPMHRT(request_id);
+CREATE INDEX idx_generated_certificates_number ON generated_certificates_4CBV(certificate_number);
+CREATE INDEX idx_generated_certificates_student ON generated_certificates_4CBV(student_id);
+CREATE INDEX idx_generated_certificates_type ON generated_certificates_4CBV(certificate_type);
+CREATE INDEX idx_generated_certificates_request ON generated_certificates_4CBV(request_id);
 
-COMMENT ON TABLE generated_certificates_DPMHRT IS 'Issued certificate log with digital signature';
+COMMENT ON TABLE generated_certificates_4CBV IS 'Issued certificate log with digital signature';
 
 -- ============================================================================
 -- 7. ADVANCED FEE MANAGEMENT (ONLINE PAYMENTS)
 -- ============================================================================
 
 -- 7.1 Online Payment Transactions
-CREATE TABLE online_payment_transactions_DPMHRT (
+CREATE TABLE online_payment_transactions_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   transaction_id VARCHAR(100) UNIQUE NOT NULL,
   
@@ -1113,16 +1113,16 @@ CREATE TABLE online_payment_transactions_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_online_payment_transactions_id ON online_payment_transactions_DPMHRT(transaction_id);
-CREATE INDEX idx_online_payment_transactions_gateway_id ON online_payment_transactions_DPMHRT(gateway_transaction_id);
-CREATE INDEX idx_online_payment_transactions_student ON online_payment_transactions_DPMHRT(student_id);
-CREATE INDEX idx_online_payment_transactions_status ON online_payment_transactions_DPMHRT(status);
-CREATE INDEX idx_online_payment_transactions_date ON online_payment_transactions_DPMHRT(initiated_at);
+CREATE INDEX idx_online_payment_transactions_id ON online_payment_transactions_4CBV(transaction_id);
+CREATE INDEX idx_online_payment_transactions_gateway_id ON online_payment_transactions_4CBV(gateway_transaction_id);
+CREATE INDEX idx_online_payment_transactions_student ON online_payment_transactions_4CBV(student_id);
+CREATE INDEX idx_online_payment_transactions_status ON online_payment_transactions_4CBV(status);
+CREATE INDEX idx_online_payment_transactions_date ON online_payment_transactions_4CBV(initiated_at);
 
-COMMENT ON TABLE online_payment_transactions_DPMHRT IS 'Payment gateway transaction tracking';
+COMMENT ON TABLE online_payment_transactions_4CBV IS 'Payment gateway transaction tracking';
 
 -- 7.2 Payment Gateway Logs
-CREATE TABLE payment_gateway_logs_DPMHRT (
+CREATE TABLE payment_gateway_logs_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   transaction_id UUID NOT NULL,
   
@@ -1142,14 +1142,14 @@ CREATE TABLE payment_gateway_logs_DPMHRT (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_payment_gateway_logs_transaction ON payment_gateway_logs_DPMHRT(transaction_id);
-CREATE INDEX idx_payment_gateway_logs_event ON payment_gateway_logs_DPMHRT(event_type);
-CREATE INDEX idx_payment_gateway_logs_reconciled ON payment_gateway_logs_DPMHRT(is_reconciled);
+CREATE INDEX idx_payment_gateway_logs_transaction ON payment_gateway_logs_4CBV(transaction_id);
+CREATE INDEX idx_payment_gateway_logs_event ON payment_gateway_logs_4CBV(event_type);
+CREATE INDEX idx_payment_gateway_logs_reconciled ON payment_gateway_logs_4CBV(is_reconciled);
 
-COMMENT ON TABLE payment_gateway_logs_DPMHRT IS 'Payment gateway webhook logs for reconciliation';
+COMMENT ON TABLE payment_gateway_logs_4CBV IS 'Payment gateway webhook logs for reconciliation';
 
 -- 7.3 Fee Refunds
-CREATE TABLE fee_refunds_DPMHRT (
+CREATE TABLE fee_refunds_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   refund_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -1190,19 +1190,19 @@ CREATE TABLE fee_refunds_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_refunds_number ON fee_refunds_DPMHRT(refund_number);
-CREATE INDEX idx_fee_refunds_student ON fee_refunds_DPMHRT(student_id);
-CREATE INDEX idx_fee_refunds_status ON fee_refunds_DPMHRT(status);
-CREATE INDEX idx_fee_refunds_date ON fee_refunds_DPMHRT(request_date);
+CREATE INDEX idx_fee_refunds_number ON fee_refunds_4CBV(refund_number);
+CREATE INDEX idx_fee_refunds_student ON fee_refunds_4CBV(student_id);
+CREATE INDEX idx_fee_refunds_status ON fee_refunds_4CBV(status);
+CREATE INDEX idx_fee_refunds_date ON fee_refunds_4CBV(request_date);
 
-COMMENT ON TABLE fee_refunds_DPMHRT IS 'Fee refund request and processing workflow';
+COMMENT ON TABLE fee_refunds_4CBV IS 'Fee refund request and processing workflow';
 
 -- ============================================================================
 -- 8. SURVEY & FEEDBACK SYSTEM
 -- ============================================================================
 
 -- 8.1 Surveys
-CREATE TABLE surveys_DPMHRT (
+CREATE TABLE surveys_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_title VARCHAR(255) NOT NULL,
   survey_description TEXT,
@@ -1233,14 +1233,14 @@ CREATE TABLE surveys_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_surveys_type ON surveys_DPMHRT(survey_type);
-CREATE INDEX idx_surveys_status ON surveys_DPMHRT(status);
-CREATE INDEX idx_surveys_dates ON surveys_DPMHRT(start_date, end_date);
+CREATE INDEX idx_surveys_type ON surveys_4CBV(survey_type);
+CREATE INDEX idx_surveys_status ON surveys_4CBV(status);
+CREATE INDEX idx_surveys_dates ON surveys_4CBV(start_date, end_date);
 
-COMMENT ON TABLE surveys_DPMHRT IS 'Survey builder and configuration';
+COMMENT ON TABLE surveys_4CBV IS 'Survey builder and configuration';
 
 -- 8.2 Survey Questions
-CREATE TABLE survey_questions_DPMHRT (
+CREATE TABLE survey_questions_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_id UUID NOT NULL,
   
@@ -1265,13 +1265,13 @@ CREATE TABLE survey_questions_DPMHRT (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_survey_questions_survey ON survey_questions_DPMHRT(survey_id);
-CREATE INDEX idx_survey_questions_order ON survey_questions_DPMHRT(survey_id, display_order);
+CREATE INDEX idx_survey_questions_survey ON survey_questions_4CBV(survey_id);
+CREATE INDEX idx_survey_questions_order ON survey_questions_4CBV(survey_id, display_order);
 
-COMMENT ON TABLE survey_questions_DPMHRT IS 'Survey questions with multiple types';
+COMMENT ON TABLE survey_questions_4CBV IS 'Survey questions with multiple types';
 
 -- 8.3 Survey Responses
-CREATE TABLE survey_responses_DPMHRT (
+CREATE TABLE survey_responses_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_id UUID NOT NULL,
   question_id UUID NOT NULL,
@@ -1293,14 +1293,14 @@ CREATE TABLE survey_responses_DPMHRT (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_survey_responses_survey ON survey_responses_DPMHRT(survey_id);
-CREATE INDEX idx_survey_responses_question ON survey_responses_DPMHRT(question_id);
-CREATE INDEX idx_survey_responses_user ON survey_responses_DPMHRT(respondent_user_id);
+CREATE INDEX idx_survey_responses_survey ON survey_responses_4CBV(survey_id);
+CREATE INDEX idx_survey_responses_question ON survey_responses_4CBV(question_id);
+CREATE INDEX idx_survey_responses_user ON survey_responses_4CBV(respondent_user_id);
 
-COMMENT ON TABLE survey_responses_DPMHRT IS 'Survey response submissions';
+COMMENT ON TABLE survey_responses_4CBV IS 'Survey response submissions';
 
 -- 8.4 Feedback Analytics
-CREATE TABLE feedback_analytics_DPMHRT (
+CREATE TABLE feedback_analytics_4CBV (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   survey_id UUID NOT NULL,
   
@@ -1330,95 +1330,95 @@ CREATE TABLE feedback_analytics_DPMHRT (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_feedback_analytics_survey ON feedback_analytics_DPMHRT(survey_id);
-CREATE INDEX idx_feedback_analytics_sentiment ON feedback_analytics_DPMHRT(overall_sentiment);
+CREATE INDEX idx_feedback_analytics_survey ON feedback_analytics_4CBV(survey_id);
+CREATE INDEX idx_feedback_analytics_sentiment ON feedback_analytics_4CBV(overall_sentiment);
 
-COMMENT ON TABLE feedback_analytics_DPMHRT IS 'Survey analytics and sentiment analysis';
+COMMENT ON TABLE feedback_analytics_4CBV IS 'Survey analytics and sentiment analysis';
 
 -- ============================================================================
 -- 9. FOREIGN KEY CONSTRAINTS
 -- ============================================================================
 
 -- AI Analytics Module
-ALTER TABLE analytics_student_performance_DPMHRT ADD CONSTRAINT fk_analytics_student_performance_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE analytics_student_performance_DPMHRT ADD CONSTRAINT fk_analytics_student_performance_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE analytics_student_performance_DPMHRT ADD CONSTRAINT fk_analytics_student_performance_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE analytics_attendance_patterns_DPMHRT ADD CONSTRAINT fk_analytics_attendance_patterns_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE analytics_attendance_patterns_DPMHRT ADD CONSTRAINT fk_analytics_attendance_patterns_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_class FOREIGN KEY (class_id) REFERENCES classes_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_section FOREIGN KEY (section_id) REFERENCES sections_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_subject FOREIGN KEY (subject_id) REFERENCES subjects_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE analytics_academic_trends_DPMHRT ADD CONSTRAINT fk_analytics_academic_trends_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_4CBV ADD CONSTRAINT fk_analytics_student_performance_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_4CBV ADD CONSTRAINT fk_analytics_student_performance_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE analytics_student_performance_4CBV ADD CONSTRAINT fk_analytics_student_performance_subject FOREIGN KEY (subject_id) REFERENCES subjects_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE analytics_attendance_patterns_4CBV ADD CONSTRAINT fk_analytics_attendance_patterns_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE analytics_attendance_patterns_4CBV ADD CONSTRAINT fk_analytics_attendance_patterns_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE analytics_academic_trends_4CBV ADD CONSTRAINT fk_analytics_academic_trends_class FOREIGN KEY (class_id) REFERENCES classes_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_4CBV ADD CONSTRAINT fk_analytics_academic_trends_section FOREIGN KEY (section_id) REFERENCES sections_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_4CBV ADD CONSTRAINT fk_analytics_academic_trends_subject FOREIGN KEY (subject_id) REFERENCES subjects_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_4CBV ADD CONSTRAINT fk_analytics_academic_trends_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE analytics_academic_trends_4CBV ADD CONSTRAINT fk_analytics_academic_trends_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_4CBV(id) ON DELETE CASCADE;
 
 -- PTM Module
-ALTER TABLE ptm_slots_DPMHRT ADD CONSTRAINT fk_ptm_slots_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE ptm_bookings_DPMHRT ADD CONSTRAINT fk_ptm_bookings_slot FOREIGN KEY (slot_id) REFERENCES ptm_slots_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE ptm_bookings_DPMHRT ADD CONSTRAINT fk_ptm_bookings_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE ptm_bookings_DPMHRT ADD CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_DPMHRT ADD CONSTRAINT fk_ptm_meeting_notes_booking FOREIGN KEY (booking_id) REFERENCES ptm_bookings_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_DPMHRT ADD CONSTRAINT fk_ptm_meeting_notes_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_DPMHRT ADD CONSTRAINT fk_ptm_meeting_notes_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE ptm_meeting_notes_DPMHRT ADD CONSTRAINT fk_ptm_meeting_notes_recorded_by FOREIGN KEY (recorded_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE ptm_slots_4CBV ADD CONSTRAINT fk_ptm_slots_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_4CBV ADD CONSTRAINT fk_ptm_bookings_slot FOREIGN KEY (slot_id) REFERENCES ptm_slots_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_4CBV ADD CONSTRAINT fk_ptm_bookings_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE ptm_bookings_4CBV ADD CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES users_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_4CBV ADD CONSTRAINT fk_ptm_meeting_notes_booking FOREIGN KEY (booking_id) REFERENCES ptm_bookings_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_4CBV ADD CONSTRAINT fk_ptm_meeting_notes_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_4CBV ADD CONSTRAINT fk_ptm_meeting_notes_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE ptm_meeting_notes_4CBV ADD CONSTRAINT fk_ptm_meeting_notes_recorded_by FOREIGN KEY (recorded_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
 
 -- Alumni Module
-ALTER TABLE alumni_DPMHRT ADD CONSTRAINT fk_alumni_user FOREIGN KEY (user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE alumni_DPMHRT ADD CONSTRAINT fk_alumni_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE alumni_events_DPMHRT ADD CONSTRAINT fk_alumni_events_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE alumni_event_registrations_DPMHRT ADD CONSTRAINT fk_alumni_event_registrations_event FOREIGN KEY (event_id) REFERENCES alumni_events_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE alumni_event_registrations_DPMHRT ADD CONSTRAINT fk_alumni_event_registrations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE alumni_donations_DPMHRT ADD CONSTRAINT fk_alumni_donations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE alumni_mentorship_DPMHRT ADD CONSTRAINT fk_alumni_mentorship_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE alumni_mentorship_DPMHRT ADD CONSTRAINT fk_alumni_mentorship_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE alumni_4CBV ADD CONSTRAINT fk_alumni_user FOREIGN KEY (user_id) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE alumni_4CBV ADD CONSTRAINT fk_alumni_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE alumni_events_4CBV ADD CONSTRAINT fk_alumni_events_created_by FOREIGN KEY (created_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE alumni_event_registrations_4CBV ADD CONSTRAINT fk_alumni_event_registrations_event FOREIGN KEY (event_id) REFERENCES alumni_events_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE alumni_event_registrations_4CBV ADD CONSTRAINT fk_alumni_event_registrations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE alumni_donations_4CBV ADD CONSTRAINT fk_alumni_donations_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE alumni_mentorship_4CBV ADD CONSTRAINT fk_alumni_mentorship_alumni FOREIGN KEY (alumni_id) REFERENCES alumni_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE alumni_mentorship_4CBV ADD CONSTRAINT fk_alumni_mentorship_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE CASCADE;
 
 -- Admission Module
-ALTER TABLE admission_applications_DPMHRT ADD CONSTRAINT fk_admission_applications_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE admission_interviews_DPMHRT ADD CONSTRAINT fk_admission_interviews_application FOREIGN KEY (application_id) REFERENCES admission_applications_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE admission_entrance_tests_DPMHRT ADD CONSTRAINT fk_admission_entrance_tests_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE admission_test_results_DPMHRT ADD CONSTRAINT fk_admission_test_results_test FOREIGN KEY (test_id) REFERENCES admission_entrance_tests_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE admission_test_results_DPMHRT ADD CONSTRAINT fk_admission_test_results_application FOREIGN KEY (application_id) REFERENCES admission_applications_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE admission_merit_list_DPMHRT ADD CONSTRAINT fk_admission_merit_list_application FOREIGN KEY (application_id) REFERENCES admission_applications_DPMHRT(id) ON DELETE CASCADE;
+ALTER TABLE admission_applications_4CBV ADD CONSTRAINT fk_admission_applications_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE admission_interviews_4CBV ADD CONSTRAINT fk_admission_interviews_application FOREIGN KEY (application_id) REFERENCES admission_applications_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE admission_entrance_tests_4CBV ADD CONSTRAINT fk_admission_entrance_tests_created_by FOREIGN KEY (created_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE admission_test_results_4CBV ADD CONSTRAINT fk_admission_test_results_test FOREIGN KEY (test_id) REFERENCES admission_entrance_tests_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE admission_test_results_4CBV ADD CONSTRAINT fk_admission_test_results_application FOREIGN KEY (application_id) REFERENCES admission_applications_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE admission_merit_list_4CBV ADD CONSTRAINT fk_admission_merit_list_application FOREIGN KEY (application_id) REFERENCES admission_applications_4CBV(id) ON DELETE CASCADE;
 
 -- Asset Management Module
-ALTER TABLE assets_DPMHRT ADD CONSTRAINT fk_assets_assigned_user FOREIGN KEY (assigned_to_user) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE asset_maintenance_DPMHRT ADD CONSTRAINT fk_asset_maintenance_asset FOREIGN KEY (asset_id) REFERENCES assets_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE asset_maintenance_DPMHRT ADD CONSTRAINT fk_asset_maintenance_performed_by FOREIGN KEY (performed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE lab_equipment_DPMHRT ADD CONSTRAINT fk_lab_equipment_asset FOREIGN KEY (asset_id) REFERENCES assets_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE stationery_transactions_DPMHRT ADD CONSTRAINT fk_stationery_transactions_item FOREIGN KEY (item_id) REFERENCES stationery_items_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE stationery_transactions_DPMHRT ADD CONSTRAINT fk_stationery_transactions_issued_to FOREIGN KEY (issued_to_user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE stationery_transactions_DPMHRT ADD CONSTRAINT fk_stationery_transactions_approved_by FOREIGN KEY (approved_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE stationery_transactions_DPMHRT ADD CONSTRAINT fk_stationery_transactions_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE assets_4CBV ADD CONSTRAINT fk_assets_assigned_user FOREIGN KEY (assigned_to_user) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE asset_maintenance_4CBV ADD CONSTRAINT fk_asset_maintenance_asset FOREIGN KEY (asset_id) REFERENCES assets_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE asset_maintenance_4CBV ADD CONSTRAINT fk_asset_maintenance_performed_by FOREIGN KEY (performed_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE lab_equipment_4CBV ADD CONSTRAINT fk_lab_equipment_asset FOREIGN KEY (asset_id) REFERENCES assets_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_4CBV ADD CONSTRAINT fk_stationery_transactions_item FOREIGN KEY (item_id) REFERENCES stationery_items_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE stationery_transactions_4CBV ADD CONSTRAINT fk_stationery_transactions_issued_to FOREIGN KEY (issued_to_user_id) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_4CBV ADD CONSTRAINT fk_stationery_transactions_approved_by FOREIGN KEY (approved_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE stationery_transactions_4CBV ADD CONSTRAINT fk_stationery_transactions_created_by FOREIGN KEY (created_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
 
 -- Certificate Module
-ALTER TABLE certificate_templates_DPMHRT ADD CONSTRAINT fk_certificate_templates_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE certificate_requests_DPMHRT ADD CONSTRAINT fk_certificate_requests_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE certificate_requests_DPMHRT ADD CONSTRAINT fk_certificate_requests_requested_by FOREIGN KEY (requested_by_user_id) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE certificate_requests_DPMHRT ADD CONSTRAINT fk_certificate_requests_template FOREIGN KEY (template_id) REFERENCES certificate_templates_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE certificate_requests_DPMHRT ADD CONSTRAINT fk_certificate_requests_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE generated_certificates_DPMHRT ADD CONSTRAINT fk_generated_certificates_request FOREIGN KEY (request_id) REFERENCES certificate_requests_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE generated_certificates_DPMHRT ADD CONSTRAINT fk_generated_certificates_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE generated_certificates_DPMHRT ADD CONSTRAINT fk_generated_certificates_template FOREIGN KEY (template_id) REFERENCES certificate_templates_DPMHRT(id) ON DELETE RESTRICT;
-ALTER TABLE generated_certificates_DPMHRT ADD CONSTRAINT fk_generated_certificates_issued_by FOREIGN KEY (issued_by_user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE certificate_templates_4CBV ADD CONSTRAINT fk_certificate_templates_created_by FOREIGN KEY (created_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE certificate_requests_4CBV ADD CONSTRAINT fk_certificate_requests_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE certificate_requests_4CBV ADD CONSTRAINT fk_certificate_requests_requested_by FOREIGN KEY (requested_by_user_id) REFERENCES users_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE certificate_requests_4CBV ADD CONSTRAINT fk_certificate_requests_template FOREIGN KEY (template_id) REFERENCES certificate_templates_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE certificate_requests_4CBV ADD CONSTRAINT fk_certificate_requests_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE generated_certificates_4CBV ADD CONSTRAINT fk_generated_certificates_request FOREIGN KEY (request_id) REFERENCES certificate_requests_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE generated_certificates_4CBV ADD CONSTRAINT fk_generated_certificates_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE generated_certificates_4CBV ADD CONSTRAINT fk_generated_certificates_template FOREIGN KEY (template_id) REFERENCES certificate_templates_4CBV(id) ON DELETE RESTRICT;
+ALTER TABLE generated_certificates_4CBV ADD CONSTRAINT fk_generated_certificates_issued_by FOREIGN KEY (issued_by_user_id) REFERENCES users_4CBV(id) ON DELETE SET NULL;
 
 -- Online Payment Module
-ALTER TABLE online_payment_transactions_DPMHRT ADD CONSTRAINT fk_online_payment_transactions_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE online_payment_transactions_DPMHRT ADD CONSTRAINT fk_online_payment_transactions_paid_by FOREIGN KEY (paid_by_user_id) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE online_payment_transactions_DPMHRT ADD CONSTRAINT fk_online_payment_transactions_fee_payment FOREIGN KEY (fee_payment_id) REFERENCES fee_payments_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE payment_gateway_logs_DPMHRT ADD CONSTRAINT fk_payment_gateway_logs_transaction FOREIGN KEY (transaction_id) REFERENCES online_payment_transactions_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_student FOREIGN KEY (student_id) REFERENCES students_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_payment FOREIGN KEY (original_payment_id) REFERENCES fee_payments_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_requested_by FOREIGN KEY (requested_by) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_approved_by FOREIGN KEY (approved_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE fee_refunds_DPMHRT ADD CONSTRAINT fk_fee_refunds_processed_by FOREIGN KEY (processed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE online_payment_transactions_4CBV ADD CONSTRAINT fk_online_payment_transactions_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE online_payment_transactions_4CBV ADD CONSTRAINT fk_online_payment_transactions_paid_by FOREIGN KEY (paid_by_user_id) REFERENCES users_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE online_payment_transactions_4CBV ADD CONSTRAINT fk_online_payment_transactions_fee_payment FOREIGN KEY (fee_payment_id) REFERENCES fee_payments_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE payment_gateway_logs_4CBV ADD CONSTRAINT fk_payment_gateway_logs_transaction FOREIGN KEY (transaction_id) REFERENCES online_payment_transactions_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_4CBV ADD CONSTRAINT fk_fee_refunds_student FOREIGN KEY (student_id) REFERENCES students_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_4CBV ADD CONSTRAINT fk_fee_refunds_payment FOREIGN KEY (original_payment_id) REFERENCES fee_payments_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE fee_refunds_4CBV ADD CONSTRAINT fk_fee_refunds_requested_by FOREIGN KEY (requested_by) REFERENCES users_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE fee_refunds_4CBV ADD CONSTRAINT fk_fee_refunds_approved_by FOREIGN KEY (approved_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE fee_refunds_4CBV ADD CONSTRAINT fk_fee_refunds_processed_by FOREIGN KEY (processed_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
 
 -- Survey Module
-ALTER TABLE surveys_DPMHRT ADD CONSTRAINT fk_surveys_created_by FOREIGN KEY (created_by) REFERENCES users_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE survey_questions_DPMHRT ADD CONSTRAINT fk_survey_questions_survey FOREIGN KEY (survey_id) REFERENCES surveys_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE survey_responses_DPMHRT ADD CONSTRAINT fk_survey_responses_survey FOREIGN KEY (survey_id) REFERENCES surveys_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE survey_responses_DPMHRT ADD CONSTRAINT fk_survey_responses_question FOREIGN KEY (question_id) REFERENCES survey_questions_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE survey_responses_DPMHRT ADD CONSTRAINT fk_survey_responses_user FOREIGN KEY (respondent_user_id) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
-ALTER TABLE feedback_analytics_DPMHRT ADD CONSTRAINT fk_feedback_analytics_survey FOREIGN KEY (survey_id) REFERENCES surveys_DPMHRT(id) ON DELETE CASCADE;
-ALTER TABLE feedback_analytics_DPMHRT ADD CONSTRAINT fk_feedback_analytics_analyzed_by FOREIGN KEY (analyzed_by) REFERENCES users_DPMHRT(id) ON DELETE SET NULL;
+ALTER TABLE surveys_4CBV ADD CONSTRAINT fk_surveys_created_by FOREIGN KEY (created_by) REFERENCES users_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE survey_questions_4CBV ADD CONSTRAINT fk_survey_questions_survey FOREIGN KEY (survey_id) REFERENCES surveys_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_4CBV ADD CONSTRAINT fk_survey_responses_survey FOREIGN KEY (survey_id) REFERENCES surveys_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_4CBV ADD CONSTRAINT fk_survey_responses_question FOREIGN KEY (question_id) REFERENCES survey_questions_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE survey_responses_4CBV ADD CONSTRAINT fk_survey_responses_user FOREIGN KEY (respondent_user_id) REFERENCES users_4CBV(id) ON DELETE SET NULL;
+ALTER TABLE feedback_analytics_4CBV ADD CONSTRAINT fk_feedback_analytics_survey FOREIGN KEY (survey_id) REFERENCES surveys_4CBV(id) ON DELETE CASCADE;
+ALTER TABLE feedback_analytics_4CBV ADD CONSTRAINT fk_feedback_analytics_analyzed_by FOREIGN KEY (analyzed_by) REFERENCES users_4CBV(id) ON DELETE SET NULL;
 
 -- ============================================================================
 -- END OF TIER 3 SCHEMA FOR School 4

@@ -9,11 +9,11 @@ This folder contains the complete database schema for **TIER 1 (Basic Features)*
 | File | Description | Tables Created |
 |------|-------------|----------------|
 | `00_hub_common.sql` | Common hub registry table | 1 table |
-| `01_school_AZHBXC.sql` | School 1 specific tables | 45 tables |
-| `02_school_BYJVWD.sql` | School 2 specific tables | 45 tables |
-| `03_school_CXKQLA.sql` | School 3 specific tables | 45 tables |
-| `04_school_DPMHRT.sql` | School 4 specific tables | 45 tables |
-| `05_school_EWNTKS.sql` | School 5 specific tables | 45 tables |
+| `01_school_1EMAET.sql` | School 1 specific tables | 45 tables |
+| `02_school_2DDMK.sql` | School 2 specific tables | 45 tables |
+| `03_school_3AAA.sql` | School 3 specific tables | 45 tables |
+| `04_school_4CBV.sql` | School 4 specific tables | 45 tables |
+| `05_school_5HKSK.sql` | School 5 specific tables | 45 tables |
 
 **Total: 226 tables** (1 common + 225 school-specific)
 
@@ -32,27 +32,27 @@ This creates:
 
 ### Step 2: Create School 1 Tables
 ```bash
-psql -U postgres -d your_database -f 01_school_AZHBXC.sql
+psql -U postgres -d your_database -f 01_school_1EMAET.sql
 ```
 
 ### Step 3: Create School 2 Tables
 ```bash
-psql -U postgres -d your_database -f 02_school_BYJVWD.sql
+psql -U postgres -d your_database -f 02_school_2DDMK.sql
 ```
 
 ### Step 4: Create School 3 Tables
 ```bash
-psql -U postgres -d your_database -f 03_school_CXKQLA.sql
+psql -U postgres -d your_database -f 03_school_3AAA.sql
 ```
 
 ### Step 5: Create School 4 Tables
 ```bash
-psql -U postgres -d your_database -f 04_school_DPMHRT.sql
+psql -U postgres -d your_database -f 04_school_4CBV.sql
 ```
 
 ### Step 6: Create School 5 Tables
 ```bash
-psql -U postgres -d your_database -f 05_school_EWNTKS.sql
+psql -U postgres -d your_database -f 05_school_5HKSK.sql
 ```
 
 ---
@@ -86,21 +86,21 @@ Get-ChildItem *.sql | Sort-Object Name | ForEach-Object {
 
 | School | INDEX_TOKEN | Default Name (Editable) |
 |--------|-------------|-------------------------|
-| School 1 | `AZHBXC` | School 1 - Edit Name |
-| School 2 | `BYJVWD` | School 2 - Edit Name |
-| School 3 | `CXKQLA` | School 3 - Edit Name |
-| School 4 | `DPMHRT` | School 4 - Edit Name |
-| School 5 | `EWNTKS` | School 5 - Edit Name |
+| School 1 | `1EMAET` | School 1 - Edit Name |
+| School 2 | `2DDMK` | School 2 - Edit Name |
+| School 3 | `3AAA` | School 3 - Edit Name |
+| School 4 | `4CBV` | School 4 - Edit Name |
+| School 5 | `5HKSK` | School 5 - Edit Name |
 
 ### Update School Names:
 ```sql
 UPDATE hub_school_registry 
 SET school_name = 'Green Valley School' 
-WHERE index_token = 'AZHBXC';
+WHERE index_token = '1EMAET';
 
 UPDATE hub_school_registry 
 SET school_name = 'Sunrise Academy' 
-WHERE index_token = 'BYJVWD';
+WHERE index_token = '2DDMK';
 -- ... and so on
 ```
 
@@ -171,8 +171,8 @@ All documents, photos, PDFs are stored in **Cloudflare R2**, not in database.
 Database only stores URLs:
 ```
 /{INDEX_TOKEN}/{module}/{filename}
-/AZHBXC/students/photo_12345.jpg
-/BYJVWD/documents/tc_67890.pdf
+/1EMAET/students/photo_12345.jpg
+/2DDMK/documents/tc_67890.pdf
 ```
 
 ---
@@ -187,11 +187,11 @@ SELECT * FROM hub_school_registry;
 
 -- Check School 1 tables exist
 SELECT table_name FROM information_schema.tables 
-WHERE table_name LIKE '%_AZHBXC';
+WHERE table_name LIKE '%_1EMAET';
 
 -- Check School 2 tables exist
 SELECT table_name FROM information_schema.tables 
-WHERE table_name LIKE '%_BYJVWD';
+WHERE table_name LIKE '%_2DDMK';
 
 -- Expected result: 45 tables for each school
 ```

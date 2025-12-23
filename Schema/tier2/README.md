@@ -9,11 +9,11 @@ TIER 2 extends the base schema with advanced features. It depends on tables crea
 
 ```
 tier2/
-├── 01_tier2_AZHBXC.sql    # School 1 TIER 2 tables
-├── 02_tier2_BYJVWD.sql    # School 2 TIER 2 tables
-├── 03_tier2_CXKQLA.sql    # School 3 TIER 2 tables
-├── 04_tier2_DPMHRT.sql    # School 4 TIER 2 tables
-├── 05_tier2_EWNTKS.sql    # School 5 TIER 2 tables
+├── 01_tier2_1EMAET.sql    # School 1 TIER 2 tables
+├── 02_tier2_2DDMK.sql    # School 2 TIER 2 tables
+├── 03_tier2_3AAA.sql    # School 3 TIER 2 tables
+├── 04_tier2_4CBV.sql    # School 4 TIER 2 tables
+├── 05_tier2_5HKSK.sql    # School 5 TIER 2 tables
 └── README.md              # This file
 ```
 
@@ -62,17 +62,17 @@ TIER 2 adds **25 new tables per school** covering:
 **Option A: All Schools at Once (Recommended for new hub)**
 ```sql
 -- Run all 5 files in sequence
-\i 01_tier2_AZHBXC.sql
-\i 02_tier2_BYJVWD.sql
-\i 03_tier2_CXKQLA.sql
-\i 04_tier2_DPMHRT.sql
-\i 05_tier2_EWNTKS.sql
+\i 01_tier2_1EMAET.sql
+\i 02_tier2_2DDMK.sql
+\i 03_tier2_3AAA.sql
+\i 04_tier2_4CBV.sql
+\i 05_tier2_5HKSK.sql
 ```
 
 **Option B: Individual School Deployment (For gradual rollout)**
 ```sql
 -- Deploy only for schools subscribing to Standard package
-\i 01_tier2_AZHBXC.sql  -- School 1 only
+\i 01_tier2_1EMAET.sql  -- School 1 only
 ```
 
 ## 🏫 School Index Tokens
@@ -81,11 +81,11 @@ Each school has a unique 6-character token appended to table names:
 
 | School | Index Token | File Name                  |
 |--------|-------------|----------------------------|
-| School 1 | AZHBXC    | `01_tier2_AZHBXC.sql`     |
-| School 2 | BYJVWD    | `02_tier2_BYJVWD.sql`     |
-| School 3 | CXKQLA    | `03_tier2_CXKQLA.sql`     |
-| School 4 | DPMHRT    | `04_tier2_DPMHRT.sql`     |
-| School 5 | EWNTKS    | `05_tier2_EWNTKS.sql`     |
+| School 1 | 1EMAET    | `01_tier2_1EMAET.sql`     |
+| School 2 | 2DDMK    | `02_tier2_2DDMK.sql`     |
+| School 3 | 3AAA    | `03_tier2_3AAA.sql`     |
+| School 4 | 4CBV    | `04_tier2_4CBV.sql`     |
+| School 5 | 5HKSK    | `05_tier2_5HKSK.sql`     |
 
 ## 💰 Pricing Context
 
@@ -110,12 +110,12 @@ TIER 2 tables reference these TIER 1 tables:
 -- Count TIER 2 tables for a school
 SELECT COUNT(*) 
 FROM information_schema.tables 
-WHERE table_name LIKE '%_AZHBXC'
+WHERE table_name LIKE '%_1EMAET'
 AND table_name IN (
-  'assignments_AZHBXC',
-  'transport_routes_AZHBXC',
-  'employees_AZHBXC',
-  'homework_AZHBXC'
+  'assignments_1EMAET',
+  'transport_routes_1EMAET',
+  'employees_1EMAET',
+  'homework_1EMAET'
 );
 -- Expected: 4 (sample tables)
 ```
@@ -124,11 +124,11 @@ AND table_name IN (
 ```sql
 SELECT 
   CASE 
-    WHEN table_name LIKE '%_AZHBXC' THEN 'School 1'
-    WHEN table_name LIKE '%_BYJVWD' THEN 'School 2'
-    WHEN table_name LIKE '%_CXKQLA' THEN 'School 3'
-    WHEN table_name LIKE '%_DPMHRT' THEN 'School 4'
-    WHEN table_name LIKE '%_EWNTKS' THEN 'School 5'
+    WHEN table_name LIKE '%_1EMAET' THEN 'School 1'
+    WHEN table_name LIKE '%_2DDMK' THEN 'School 2'
+    WHEN table_name LIKE '%_3AAA' THEN 'School 3'
+    WHEN table_name LIKE '%_4CBV' THEN 'School 4'
+    WHEN table_name LIKE '%_5HKSK' THEN 'School 5'
   END as school,
   COUNT(*) as tier2_tables
 FROM information_schema.tables
@@ -147,16 +147,16 @@ ORDER BY school;
 ### Sample Data Insertion (School 1)
 ```sql
 -- Add a transport route
-INSERT INTO transport_routes_AZHBXC (route_name, route_code, start_location, end_location, total_distance_km, fare_amount)
+INSERT INTO transport_routes_1EMAET (route_name, route_code, start_location, end_location, total_distance_km, fare_amount)
 VALUES ('Route 1 - North', 'R001', 'Central Bus Stand', 'School Main Gate', 15.5, 800.00);
 
 -- Add an online class session
-INSERT INTO online_class_sessions_AZHBXC (session_title, section_id, subject_id, teacher_id, session_date, start_time, end_time, platform, meeting_link)
+INSERT INTO online_class_sessions_1EMAET (session_title, section_id, subject_id, teacher_id, session_date, start_time, end_time, platform, meeting_link)
 VALUES (
   'Physics Chapter 3',
-  (SELECT id FROM sections_AZHBXC WHERE section_name = 'A' LIMIT 1),
-  (SELECT id FROM subjects_AZHBXC WHERE subject_name = 'Physics' LIMIT 1),
-  (SELECT id FROM teachers_AZHBXC LIMIT 1),
+  (SELECT id FROM sections_1EMAET WHERE section_name = 'A' LIMIT 1),
+  (SELECT id FROM subjects_1EMAET WHERE subject_name = 'Physics' LIMIT 1),
+  (SELECT id FROM teachers_1EMAET LIMIT 1),
   CURRENT_DATE + 1,
   '10:00:00',
   '11:00:00',

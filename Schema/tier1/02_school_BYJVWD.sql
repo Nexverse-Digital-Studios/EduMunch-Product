@@ -1,18 +1,18 @@
 -- ============================================================================
--- EduMunch: School-Specific Tables for BYJVWD
+-- EduMunch: School-Specific Tables for 2DDMK
 -- ============================================================================
 -- This file creates 45 tables for School 2
--- INDEX_TOKEN: BYJVWD
+-- INDEX_TOKEN: 2DDMK
 -- ============================================================================
 
 -- 1. USER MANAGEMENT & AUTHENTICATION
 -- ============================================================================
 
 -- 1.1 Users & Authentication
-CREATE TABLE users_BYJVWD (
+CREATE TABLE users_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   auth_user_id UUID UNIQUE,
-  index_token VARCHAR(6) DEFAULT 'BYJVWD' NOT NULL,
+  index_token VARCHAR(6) DEFAULT '2DDMK' NOT NULL,
   email VARCHAR(255) NOT NULL,
   phone VARCHAR(15),
   full_name VARCHAR(255) NOT NULL,
@@ -35,21 +35,21 @@ CREATE TABLE users_BYJVWD (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_users_auth_user ON users_BYJVWD(auth_user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_email ON users_BYJVWD(email) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_phone ON users_BYJVWD(phone) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_role ON users_BYJVWD(role) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_active ON users_BYJVWD(is_active) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_index_token ON users_BYJVWD(index_token) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_auth_user ON users_2DDMK(auth_user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_email ON users_2DDMK(email) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_phone ON users_2DDMK(phone) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_role ON users_2DDMK(role) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_active ON users_2DDMK(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_index_token ON users_2DDMK(index_token) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE users_BYJVWD IS 'User management table linked to Supabase auth.users via auth_user_id';
+COMMENT ON TABLE users_2DDMK IS 'User management table linked to Supabase auth.users via auth_user_id';
 
 -- 1.2 Sessions
-CREATE TABLE sessions_BYJVWD (
+CREATE TABLE sessions_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   auth_user_id UUID,
-  index_token VARCHAR(6) DEFAULT 'BYJVWD' NOT NULL,
+  index_token VARCHAR(6) DEFAULT '2DDMK' NOT NULL,
   token TEXT UNIQUE NOT NULL,
   device_info JSONB,
   ip_address VARCHAR(45),
@@ -57,17 +57,17 @@ CREATE TABLE sessions_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_sessions_user ON sessions_BYJVWD(user_id);
-CREATE INDEX idx_sessions_auth_user ON sessions_BYJVWD(auth_user_id);
-CREATE INDEX idx_sessions_token ON sessions_BYJVWD(token);
-CREATE INDEX idx_sessions_expires ON sessions_BYJVWD(expires_at);
+CREATE INDEX idx_sessions_user ON sessions_2DDMK(user_id);
+CREATE INDEX idx_sessions_auth_user ON sessions_2DDMK(auth_user_id);
+CREATE INDEX idx_sessions_token ON sessions_2DDMK(token);
+CREATE INDEX idx_sessions_expires ON sessions_2DDMK(expires_at);
 
-COMMENT ON TABLE sessions_BYJVWD IS 'Session tracking - Frontend routing handled via INDEX_TOKEN from .env';
-COMMENT ON COLUMN sessions_BYJVWD.device_info IS 'JSON containing device_type, browser, os, etc.';
-COMMENT ON COLUMN sessions_BYJVWD.index_token IS 'Ensures session is bound to correct school';
+COMMENT ON TABLE sessions_2DDMK IS 'Session tracking - Frontend routing handled via INDEX_TOKEN from .env';
+COMMENT ON COLUMN sessions_2DDMK.device_info IS 'JSON containing device_type, browser, os, etc.';
+COMMENT ON COLUMN sessions_2DDMK.index_token IS 'Ensures session is bound to correct school';
 
 -- 1.3 Permissions
-CREATE TABLE permissions_BYJVWD (
+CREATE TABLE permissions_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   role VARCHAR(50) NOT NULL,
   module VARCHAR(100) NOT NULL,
@@ -80,17 +80,17 @@ CREATE TABLE permissions_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_BYJVWD(role, module);
+CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_2DDMK(role, module);
 
-COMMENT ON TABLE permissions_BYJVWD IS 'Granular permission management for role-based access control';
-COMMENT ON COLUMN permissions_BYJVWD.module IS 'Module name: attendance, fee, exam, student, teacher, etc.';
+COMMENT ON TABLE permissions_2DDMK IS 'Granular permission management for role-based access control';
+COMMENT ON COLUMN permissions_2DDMK.module IS 'Module name: attendance, fee, exam, student, teacher, etc.';
 
 -- ============================================================================
 -- 2. STUDENT MANAGEMENT
 -- ============================================================================
 
 -- 2.1 Students
-CREATE TABLE students_BYJVWD (
+CREATE TABLE students_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   admission_number VARCHAR(50) UNIQUE NOT NULL,
@@ -150,19 +150,19 @@ CREATE TABLE students_BYJVWD (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_students_user ON students_BYJVWD(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_admission ON students_BYJVWD(admission_number) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_class ON students_BYJVWD(class_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_section ON students_BYJVWD(section_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_academic_year ON students_BYJVWD(academic_year_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_status ON students_BYJVWD(status) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_name ON students_BYJVWD(first_name, last_name) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_user ON students_2DDMK(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_admission ON students_2DDMK(admission_number) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_class ON students_2DDMK(class_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_section ON students_2DDMK(section_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_academic_year ON students_2DDMK(academic_year_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_status ON students_2DDMK(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_name ON students_2DDMK(first_name, last_name) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE students_BYJVWD IS 'Core student information with personal, academic, and medical details';
-COMMENT ON COLUMN students_BYJVWD.medical_conditions IS 'JSON array of {condition, severity, medication}';
+COMMENT ON TABLE students_2DDMK IS 'Core student information with personal, academic, and medical details';
+COMMENT ON COLUMN students_2DDMK.medical_conditions IS 'JSON array of {condition, severity, medication}';
 
 -- 2.2 Parents/Guardians
-CREATE TABLE parents_BYJVWD (
+CREATE TABLE parents_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   
@@ -192,13 +192,13 @@ CREATE TABLE parents_BYJVWD (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_parents_user ON parents_BYJVWD(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_parents_phone ON parents_BYJVWD(phone) WHERE deleted_at IS NULL;
+CREATE INDEX idx_parents_user ON parents_2DDMK(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_parents_phone ON parents_2DDMK(phone) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE parents_BYJVWD IS 'Parent and guardian information';
+COMMENT ON TABLE parents_2DDMK IS 'Parent and guardian information';
 
 -- 2.3 Student-Parent Relations
-CREATE TABLE student_parent_relations_BYJVWD (
+CREATE TABLE student_parent_relations_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   parent_id UUID NOT NULL,
@@ -207,18 +207,18 @@ CREATE TABLE student_parent_relations_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_parent_student ON student_parent_relations_BYJVWD(student_id);
-CREATE INDEX idx_student_parent_parent ON student_parent_relations_BYJVWD(parent_id);
-CREATE UNIQUE INDEX idx_student_parent_unique ON student_parent_relations_BYJVWD(student_id, parent_id);
+CREATE INDEX idx_student_parent_student ON student_parent_relations_2DDMK(student_id);
+CREATE INDEX idx_student_parent_parent ON student_parent_relations_2DDMK(parent_id);
+CREATE UNIQUE INDEX idx_student_parent_unique ON student_parent_relations_2DDMK(student_id, parent_id);
 
-COMMENT ON TABLE student_parent_relations_BYJVWD IS 'Many-to-many relationship between students and parents';
+COMMENT ON TABLE student_parent_relations_2DDMK IS 'Many-to-many relationship between students and parents';
 
 -- ============================================================================
 -- 3. ACADEMIC MANAGEMENT
 -- ============================================================================
 
 -- 3.1 Academic Years
-CREATE TABLE academic_years_BYJVWD (
+CREATE TABLE academic_years_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   year_code VARCHAR(20) UNIQUE NOT NULL,
   year_name VARCHAR(50) NOT NULL,
@@ -229,12 +229,12 @@ CREATE TABLE academic_years_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_academic_years_current ON academic_years_BYJVWD(is_current);
+CREATE INDEX idx_academic_years_current ON academic_years_2DDMK(is_current);
 
-COMMENT ON TABLE academic_years_BYJVWD IS 'Academic year configuration (e.g., 2024-25)';
+COMMENT ON TABLE academic_years_2DDMK IS 'Academic year configuration (e.g., 2024-25)';
 
 -- 3.2 Classes
-CREATE TABLE classes_BYJVWD (
+CREATE TABLE classes_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_name VARCHAR(100) NOT NULL,
   class_code VARCHAR(20) UNIQUE NOT NULL,
@@ -246,14 +246,14 @@ CREATE TABLE classes_BYJVWD (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_classes_code ON classes_BYJVWD(class_code) WHERE deleted_at IS NULL;
-CREATE INDEX idx_classes_active ON classes_BYJVWD(is_active) WHERE deleted_at IS NULL;
-CREATE INDEX idx_classes_order ON classes_BYJVWD(class_order) WHERE deleted_at IS NULL;
+CREATE INDEX idx_classes_code ON classes_2DDMK(class_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_classes_active ON classes_2DDMK(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_classes_order ON classes_2DDMK(class_order) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE classes_BYJVWD IS 'Class master data (e.g., Class 1, Class 2, ..., Class 12)';
+COMMENT ON TABLE classes_2DDMK IS 'Class master data (e.g., Class 1, Class 2, ..., Class 12)';
 
 -- 3.3 Sections
-CREATE TABLE sections_BYJVWD (
+CREATE TABLE sections_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID NOT NULL,
   section_name VARCHAR(50) NOT NULL,
@@ -267,15 +267,15 @@ CREATE TABLE sections_BYJVWD (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_sections_class ON sections_BYJVWD(class_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_sections_teacher ON sections_BYJVWD(class_teacher_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_sections_active ON sections_BYJVWD(is_active) WHERE deleted_at IS NULL;
-CREATE UNIQUE INDEX idx_sections_class_code ON sections_BYJVWD(class_id, section_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_sections_class ON sections_2DDMK(class_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_sections_teacher ON sections_2DDMK(class_teacher_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_sections_active ON sections_2DDMK(is_active) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX idx_sections_class_code ON sections_2DDMK(class_id, section_code) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE sections_BYJVWD IS 'Section/Division within a class (e.g., Section A, B, C)';
+COMMENT ON TABLE sections_2DDMK IS 'Section/Division within a class (e.g., Section A, B, C)';
 
 -- 3.4 Subjects
-CREATE TABLE subjects_BYJVWD (
+CREATE TABLE subjects_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subject_name VARCHAR(100) NOT NULL,
   subject_code VARCHAR(20) UNIQUE NOT NULL,
@@ -287,13 +287,13 @@ CREATE TABLE subjects_BYJVWD (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_subjects_code ON subjects_BYJVWD(subject_code) WHERE deleted_at IS NULL;
-CREATE INDEX idx_subjects_active ON subjects_BYJVWD(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_subjects_code ON subjects_2DDMK(subject_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_subjects_active ON subjects_2DDMK(is_active) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE subjects_BYJVWD IS 'Subject master data (e.g., Mathematics, Physics, English)';
+COMMENT ON TABLE subjects_2DDMK IS 'Subject master data (e.g., Mathematics, Physics, English)';
 
 -- 3.5 Class-Subject Mapping
-CREATE TABLE class_subjects_BYJVWD (
+CREATE TABLE class_subjects_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID NOT NULL,
   subject_id UUID NOT NULL,
@@ -304,14 +304,14 @@ CREATE TABLE class_subjects_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_class_subjects_class ON class_subjects_BYJVWD(class_id);
-CREATE INDEX idx_class_subjects_subject ON class_subjects_BYJVWD(subject_id);
-CREATE UNIQUE INDEX idx_class_subjects_unique ON class_subjects_BYJVWD(class_id, subject_id);
+CREATE INDEX idx_class_subjects_class ON class_subjects_2DDMK(class_id);
+CREATE INDEX idx_class_subjects_subject ON class_subjects_2DDMK(subject_id);
+CREATE UNIQUE INDEX idx_class_subjects_unique ON class_subjects_2DDMK(class_id, subject_id);
 
-COMMENT ON TABLE class_subjects_BYJVWD IS 'Subject allocation to classes';
+COMMENT ON TABLE class_subjects_2DDMK IS 'Subject allocation to classes';
 
 -- 3.6 Topics (Chapters/Units within subjects)
-CREATE TABLE topics_BYJVWD (
+CREATE TABLE topics_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subject_id UUID NOT NULL,
   topic_name VARCHAR(255) NOT NULL,
@@ -325,15 +325,15 @@ CREATE TABLE topics_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_topics_subject ON topics_BYJVWD(subject_id);
-CREATE INDEX idx_topics_parent ON topics_BYJVWD(parent_topic_id);
-CREATE INDEX idx_topics_active ON topics_BYJVWD(is_active);
+CREATE INDEX idx_topics_subject ON topics_2DDMK(subject_id);
+CREATE INDEX idx_topics_parent ON topics_2DDMK(parent_topic_id);
+CREATE INDEX idx_topics_active ON topics_2DDMK(is_active);
 
-COMMENT ON TABLE topics_BYJVWD IS 'Topics/chapters within subjects with hierarchical structure';
-COMMENT ON COLUMN topics_BYJVWD.parent_topic_id IS 'For subtopics - references parent topic';
+COMMENT ON TABLE topics_2DDMK IS 'Topics/chapters within subjects with hierarchical structure';
+COMMENT ON COLUMN topics_2DDMK.parent_topic_id IS 'For subtopics - references parent topic';
 
 -- 3.7 Topic Content (Learning Materials)
-CREATE TABLE topic_content_BYJVWD (
+CREATE TABLE topic_content_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   topic_id UUID NOT NULL,
   content_type VARCHAR(50) NOT NULL CHECK (content_type IN ('PDF', 'Video', 'Link', 'Document', 'Image', 'Quiz')),
@@ -345,13 +345,13 @@ CREATE TABLE topic_content_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_topic_content_topic ON topic_content_BYJVWD(topic_id);
-CREATE INDEX idx_topic_content_type ON topic_content_BYJVWD(content_type);
+CREATE INDEX idx_topic_content_topic ON topic_content_2DDMK(topic_id);
+CREATE INDEX idx_topic_content_type ON topic_content_2DDMK(content_type);
 
-COMMENT ON TABLE topic_content_BYJVWD IS 'Learning materials attached to topics';
+COMMENT ON TABLE topic_content_2DDMK IS 'Learning materials attached to topics';
 
 -- 3.8 Teachers
-CREATE TABLE teachers_BYJVWD (
+CREATE TABLE teachers_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   employee_code VARCHAR(50) UNIQUE NOT NULL,
@@ -398,14 +398,14 @@ CREATE TABLE teachers_BYJVWD (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_teachers_user ON teachers_BYJVWD(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_teachers_code ON teachers_BYJVWD(employee_code) WHERE deleted_at IS NULL;
-CREATE INDEX idx_teachers_status ON teachers_BYJVWD(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_user ON teachers_2DDMK(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_code ON teachers_2DDMK(employee_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_status ON teachers_2DDMK(status) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE teachers_BYJVWD IS 'Teacher information with professional and personal details';
+COMMENT ON TABLE teachers_2DDMK IS 'Teacher information with professional and personal details';
 
 -- 3.9 Teacher-Subject-Section Mapping
-CREATE TABLE teacher_subject_sections_BYJVWD (
+CREATE TABLE teacher_subject_sections_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   section_id UUID NOT NULL,
@@ -414,15 +414,15 @@ CREATE TABLE teacher_subject_sections_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_teacher_subject_sections_teacher ON teacher_subject_sections_BYJVWD(teacher_id);
-CREATE INDEX idx_teacher_subject_sections_section ON teacher_subject_sections_BYJVWD(section_id);
-CREATE INDEX idx_teacher_subject_sections_subject ON teacher_subject_sections_BYJVWD(subject_id);
-CREATE UNIQUE INDEX idx_teacher_subject_sections_unique ON teacher_subject_sections_BYJVWD(section_id, subject_id, academic_year_id);
+CREATE INDEX idx_teacher_subject_sections_teacher ON teacher_subject_sections_2DDMK(teacher_id);
+CREATE INDEX idx_teacher_subject_sections_section ON teacher_subject_sections_2DDMK(section_id);
+CREATE INDEX idx_teacher_subject_sections_subject ON teacher_subject_sections_2DDMK(subject_id);
+CREATE UNIQUE INDEX idx_teacher_subject_sections_unique ON teacher_subject_sections_2DDMK(section_id, subject_id, academic_year_id);
 
-COMMENT ON TABLE teacher_subject_sections_BYJVWD IS 'Maps which teacher teaches which subject to which section';
+COMMENT ON TABLE teacher_subject_sections_2DDMK IS 'Maps which teacher teaches which subject to which section';
 
 -- 3.10 Timetable Periods Configuration
-CREATE TABLE timetable_periods_BYJVWD (
+CREATE TABLE timetable_periods_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   period_number INTEGER NOT NULL,
   period_name VARCHAR(50),
@@ -434,13 +434,13 @@ CREATE TABLE timetable_periods_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetable_periods_number ON timetable_periods_BYJVWD(period_number);
-CREATE UNIQUE INDEX idx_timetable_periods_order ON timetable_periods_BYJVWD(display_order);
+CREATE INDEX idx_timetable_periods_number ON timetable_periods_2DDMK(period_number);
+CREATE UNIQUE INDEX idx_timetable_periods_order ON timetable_periods_2DDMK(display_order);
 
-COMMENT ON TABLE timetable_periods_BYJVWD IS 'School period configuration (Period 1, Break, Period 2, etc.)';
+COMMENT ON TABLE timetable_periods_2DDMK IS 'School period configuration (Period 1, Break, Period 2, etc.)';
 
 -- 3.11 Timetables
-CREATE TABLE timetables_BYJVWD (
+CREATE TABLE timetables_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   section_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -454,16 +454,16 @@ CREATE TABLE timetables_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetables_section ON timetables_BYJVWD(section_id);
-CREATE INDEX idx_timetables_teacher ON timetables_BYJVWD(teacher_id);
-CREATE INDEX idx_timetables_subject ON timetables_BYJVWD(subject_id);
-CREATE INDEX idx_timetables_day ON timetables_BYJVWD(day_of_week);
-CREATE UNIQUE INDEX idx_timetables_unique ON timetables_BYJVWD(section_id, day_of_week, period_id, academic_year_id) WHERE is_active = true;
+CREATE INDEX idx_timetables_section ON timetables_2DDMK(section_id);
+CREATE INDEX idx_timetables_teacher ON timetables_2DDMK(teacher_id);
+CREATE INDEX idx_timetables_subject ON timetables_2DDMK(subject_id);
+CREATE INDEX idx_timetables_day ON timetables_2DDMK(day_of_week);
+CREATE UNIQUE INDEX idx_timetables_unique ON timetables_2DDMK(section_id, day_of_week, period_id, academic_year_id) WHERE is_active = true;
 
-COMMENT ON TABLE timetables_BYJVWD IS 'Weekly timetable for sections';
+COMMENT ON TABLE timetables_2DDMK IS 'Weekly timetable for sections';
 
 -- 3.12 Timetable Substitutions
-CREATE TABLE timetable_substitutions_BYJVWD (
+CREATE TABLE timetable_substitutions_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   timetable_id UUID NOT NULL,
   original_teacher_id UUID NOT NULL,
@@ -474,13 +474,13 @@ CREATE TABLE timetable_substitutions_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetable_substitutions_timetable ON timetable_substitutions_BYJVWD(timetable_id);
-CREATE INDEX idx_timetable_substitutions_date ON timetable_substitutions_BYJVWD(substitution_date);
+CREATE INDEX idx_timetable_substitutions_timetable ON timetable_substitutions_2DDMK(timetable_id);
+CREATE INDEX idx_timetable_substitutions_date ON timetable_substitutions_2DDMK(substitution_date);
 
-COMMENT ON TABLE timetable_substitutions_BYJVWD IS 'Substitute teacher assignments for specific dates';
+COMMENT ON TABLE timetable_substitutions_2DDMK IS 'Substitute teacher assignments for specific dates';
 
 -- 3.13 Lecture Templates
-CREATE TABLE lecture_templates_BYJVWD (
+CREATE TABLE lecture_templates_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   template_name VARCHAR(255) NOT NULL,
   subject_id UUID NOT NULL,
@@ -491,16 +491,16 @@ CREATE TABLE lecture_templates_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lecture_templates_subject ON lecture_templates_BYJVWD(subject_id);
+CREATE INDEX idx_lecture_templates_subject ON lecture_templates_2DDMK(subject_id);
 
-COMMENT ON TABLE lecture_templates_BYJVWD IS 'Reusable lecture templates for quick timetable creation';
+COMMENT ON TABLE lecture_templates_2DDMK IS 'Reusable lecture templates for quick timetable creation';
 
 -- ============================================================================
 -- 4. ATTENDANCE MANAGEMENT
 -- ============================================================================
 
 -- 4.1 Daily Attendance (Class-wise)
-CREATE TABLE attendance_BYJVWD (
+CREATE TABLE attendance_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   class_id UUID NOT NULL,
@@ -514,16 +514,16 @@ CREATE TABLE attendance_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_attendance_student ON attendance_BYJVWD(student_id);
-CREATE INDEX idx_attendance_date ON attendance_BYJVWD(attendance_date);
-CREATE INDEX idx_attendance_section ON attendance_BYJVWD(section_id);
-CREATE INDEX idx_attendance_status ON attendance_BYJVWD(status);
-CREATE UNIQUE INDEX idx_attendance_unique ON attendance_BYJVWD(student_id, attendance_date);
+CREATE INDEX idx_attendance_student ON attendance_2DDMK(student_id);
+CREATE INDEX idx_attendance_date ON attendance_2DDMK(attendance_date);
+CREATE INDEX idx_attendance_section ON attendance_2DDMK(section_id);
+CREATE INDEX idx_attendance_status ON attendance_2DDMK(status);
+CREATE UNIQUE INDEX idx_attendance_unique ON attendance_2DDMK(student_id, attendance_date);
 
-COMMENT ON TABLE attendance_BYJVWD IS 'Daily class-wise attendance for students';
+COMMENT ON TABLE attendance_2DDMK IS 'Daily class-wise attendance for students';
 
 -- 4.2 Subject-wise Attendance (for colleges/senior classes)
-CREATE TABLE attendance_subject_wise_BYJVWD (
+CREATE TABLE attendance_subject_wise_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   section_id UUID NOT NULL,
@@ -537,15 +537,15 @@ CREATE TABLE attendance_subject_wise_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_attendance_subject_student ON attendance_subject_wise_BYJVWD(student_id);
-CREATE INDEX idx_attendance_subject_date ON attendance_subject_wise_BYJVWD(attendance_date);
-CREATE INDEX idx_attendance_subject_subject ON attendance_subject_wise_BYJVWD(subject_id);
-CREATE UNIQUE INDEX idx_attendance_subject_unique ON attendance_subject_wise_BYJVWD(student_id, subject_id, attendance_date, period_id);
+CREATE INDEX idx_attendance_subject_student ON attendance_subject_wise_2DDMK(student_id);
+CREATE INDEX idx_attendance_subject_date ON attendance_subject_wise_2DDMK(attendance_date);
+CREATE INDEX idx_attendance_subject_subject ON attendance_subject_wise_2DDMK(subject_id);
+CREATE UNIQUE INDEX idx_attendance_subject_unique ON attendance_subject_wise_2DDMK(student_id, subject_id, attendance_date, period_id);
 
-COMMENT ON TABLE attendance_subject_wise_BYJVWD IS 'Subject and period-wise attendance tracking';
+COMMENT ON TABLE attendance_subject_wise_2DDMK IS 'Subject and period-wise attendance tracking';
 
 -- 4.3 Leave Applications
-CREATE TABLE leave_applications_BYJVWD (
+CREATE TABLE leave_applications_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   leave_type VARCHAR(50) NOT NULL CHECK (leave_type IN ('Sick', 'Medical', 'Casual', 'Emergency', 'Other')),
@@ -564,14 +564,14 @@ CREATE TABLE leave_applications_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_leave_applications_student ON leave_applications_BYJVWD(student_id);
-CREATE INDEX idx_leave_applications_status ON leave_applications_BYJVWD(status);
-CREATE INDEX idx_leave_applications_dates ON leave_applications_BYJVWD(from_date, to_date);
+CREATE INDEX idx_leave_applications_student ON leave_applications_2DDMK(student_id);
+CREATE INDEX idx_leave_applications_status ON leave_applications_2DDMK(status);
+CREATE INDEX idx_leave_applications_dates ON leave_applications_2DDMK(from_date, to_date);
 
-COMMENT ON TABLE leave_applications_BYJVWD IS 'Student leave application and approval system';
+COMMENT ON TABLE leave_applications_2DDMK IS 'Student leave application and approval system';
 
 -- 4.4 Teacher Attendance
-CREATE TABLE teacher_attendance_BYJVWD (
+CREATE TABLE teacher_attendance_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   attendance_date DATE NOT NULL,
@@ -583,18 +583,18 @@ CREATE TABLE teacher_attendance_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_teacher_attendance_teacher ON teacher_attendance_BYJVWD(teacher_id);
-CREATE INDEX idx_teacher_attendance_date ON teacher_attendance_BYJVWD(attendance_date);
-CREATE UNIQUE INDEX idx_teacher_attendance_unique ON teacher_attendance_BYJVWD(teacher_id, attendance_date);
+CREATE INDEX idx_teacher_attendance_teacher ON teacher_attendance_2DDMK(teacher_id);
+CREATE INDEX idx_teacher_attendance_date ON teacher_attendance_2DDMK(attendance_date);
+CREATE UNIQUE INDEX idx_teacher_attendance_unique ON teacher_attendance_2DDMK(teacher_id, attendance_date);
 
-COMMENT ON TABLE teacher_attendance_BYJVWD IS 'Daily attendance tracking for teachers';
+COMMENT ON TABLE teacher_attendance_2DDMK IS 'Daily attendance tracking for teachers';
 
 -- ============================================================================
 -- 5. EXAMINATION SYSTEM
 -- ============================================================================
 
 -- 5.1 Exam Types
-CREATE TABLE exam_types_BYJVWD (
+CREATE TABLE exam_types_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_type_name VARCHAR(100) NOT NULL,
   exam_type_code VARCHAR(20) UNIQUE NOT NULL,
@@ -604,12 +604,12 @@ CREATE TABLE exam_types_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_types_active ON exam_types_BYJVWD(is_active);
+CREATE INDEX idx_exam_types_active ON exam_types_2DDMK(is_active);
 
-COMMENT ON TABLE exam_types_BYJVWD IS 'Exam type definitions (Unit Test, Mid-term, Final, etc.)';
+COMMENT ON TABLE exam_types_2DDMK IS 'Exam type definitions (Unit Test, Mid-term, Final, etc.)';
 
 -- 5.2 Exams
-CREATE TABLE exams_BYJVWD (
+CREATE TABLE exams_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_name VARCHAR(255) NOT NULL,
   exam_code VARCHAR(50) UNIQUE NOT NULL,
@@ -624,14 +624,14 @@ CREATE TABLE exams_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exams_type ON exams_BYJVWD(exam_type_id);
-CREATE INDEX idx_exams_academic_year ON exams_BYJVWD(academic_year_id);
-CREATE INDEX idx_exams_active ON exams_BYJVWD(is_active);
+CREATE INDEX idx_exams_type ON exams_2DDMK(exam_type_id);
+CREATE INDEX idx_exams_academic_year ON exams_2DDMK(academic_year_id);
+CREATE INDEX idx_exams_active ON exams_2DDMK(is_active);
 
-COMMENT ON TABLE exams_BYJVWD IS 'Exam master data with schedules';
+COMMENT ON TABLE exams_2DDMK IS 'Exam master data with schedules';
 
 -- 5.3 Exam Schedules
-CREATE TABLE exam_schedules_BYJVWD (
+CREATE TABLE exam_schedules_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   class_id UUID NOT NULL,
@@ -649,15 +649,15 @@ CREATE TABLE exam_schedules_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_schedules_exam ON exam_schedules_BYJVWD(exam_id);
-CREATE INDEX idx_exam_schedules_class ON exam_schedules_BYJVWD(class_id);
-CREATE INDEX idx_exam_schedules_subject ON exam_schedules_BYJVWD(subject_id);
-CREATE INDEX idx_exam_schedules_date ON exam_schedules_BYJVWD(exam_date);
+CREATE INDEX idx_exam_schedules_exam ON exam_schedules_2DDMK(exam_id);
+CREATE INDEX idx_exam_schedules_class ON exam_schedules_2DDMK(class_id);
+CREATE INDEX idx_exam_schedules_subject ON exam_schedules_2DDMK(subject_id);
+CREATE INDEX idx_exam_schedules_date ON exam_schedules_2DDMK(exam_date);
 
-COMMENT ON TABLE exam_schedules_BYJVWD IS 'Detailed exam schedule for each subject';
+COMMENT ON TABLE exam_schedules_2DDMK IS 'Detailed exam schedule for each subject';
 
 -- 5.4 Admit Cards
-CREATE TABLE admit_cards_BYJVWD (
+CREATE TABLE admit_cards_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -670,14 +670,14 @@ CREATE TABLE admit_cards_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admit_cards_exam ON admit_cards_BYJVWD(exam_id);
-CREATE INDEX idx_admit_cards_student ON admit_cards_BYJVWD(student_id);
-CREATE UNIQUE INDEX idx_admit_cards_unique ON admit_cards_BYJVWD(exam_id, student_id);
+CREATE INDEX idx_admit_cards_exam ON admit_cards_2DDMK(exam_id);
+CREATE INDEX idx_admit_cards_student ON admit_cards_2DDMK(student_id);
+CREATE UNIQUE INDEX idx_admit_cards_unique ON admit_cards_2DDMK(exam_id, student_id);
 
-COMMENT ON TABLE admit_cards_BYJVWD IS 'Admit card generation and tracking';
+COMMENT ON TABLE admit_cards_2DDMK IS 'Admit card generation and tracking';
 
 -- 5.5 Exam Marks
-CREATE TABLE exam_marks_BYJVWD (
+CREATE TABLE exam_marks_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_schedule_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -692,15 +692,15 @@ CREATE TABLE exam_marks_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_marks_schedule ON exam_marks_BYJVWD(exam_schedule_id);
-CREATE INDEX idx_exam_marks_student ON exam_marks_BYJVWD(student_id);
-CREATE INDEX idx_exam_marks_verified ON exam_marks_BYJVWD(verified_by, verified_at);
-CREATE UNIQUE INDEX idx_exam_marks_unique ON exam_marks_BYJVWD(exam_schedule_id, student_id);
+CREATE INDEX idx_exam_marks_schedule ON exam_marks_2DDMK(exam_schedule_id);
+CREATE INDEX idx_exam_marks_student ON exam_marks_2DDMK(student_id);
+CREATE INDEX idx_exam_marks_verified ON exam_marks_2DDMK(verified_by, verified_at);
+CREATE UNIQUE INDEX idx_exam_marks_unique ON exam_marks_2DDMK(exam_schedule_id, student_id);
 
-COMMENT ON TABLE exam_marks_BYJVWD IS 'Student marks for each exam subject';
+COMMENT ON TABLE exam_marks_2DDMK IS 'Student marks for each exam subject';
 
 -- 5.6 Report Cards
-CREATE TABLE report_cards_BYJVWD (
+CREATE TABLE report_cards_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -718,15 +718,15 @@ CREATE TABLE report_cards_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_report_cards_exam ON report_cards_BYJVWD(exam_id);
-CREATE INDEX idx_report_cards_student ON report_cards_BYJVWD(student_id);
-CREATE INDEX idx_report_cards_published ON report_cards_BYJVWD(is_published);
-CREATE UNIQUE INDEX idx_report_cards_unique ON report_cards_BYJVWD(exam_id, student_id);
+CREATE INDEX idx_report_cards_exam ON report_cards_2DDMK(exam_id);
+CREATE INDEX idx_report_cards_student ON report_cards_2DDMK(student_id);
+CREATE INDEX idx_report_cards_published ON report_cards_2DDMK(is_published);
+CREATE UNIQUE INDEX idx_report_cards_unique ON report_cards_2DDMK(exam_id, student_id);
 
-COMMENT ON TABLE report_cards_BYJVWD IS 'Consolidated report cards for students';
+COMMENT ON TABLE report_cards_2DDMK IS 'Consolidated report cards for students';
 
 -- 5.7 Grade Configuration
-CREATE TABLE grade_config_BYJVWD (
+CREATE TABLE grade_config_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   grade VARCHAR(5) NOT NULL,
   min_percentage DECIMAL(5,2) NOT NULL,
@@ -736,16 +736,16 @@ CREATE TABLE grade_config_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_grade_config_range ON grade_config_BYJVWD(min_percentage, max_percentage);
+CREATE INDEX idx_grade_config_range ON grade_config_2DDMK(min_percentage, max_percentage);
 
-COMMENT ON TABLE grade_config_BYJVWD IS 'Grade calculation configuration (A+, A, B+, etc.)';
+COMMENT ON TABLE grade_config_2DDMK IS 'Grade calculation configuration (A+, A, B+, etc.)';
 
 -- ============================================================================
 -- 6. FEE MANAGEMENT
 -- ============================================================================
 
 -- 6.1 Fee Components
-CREATE TABLE fee_components_BYJVWD (
+CREATE TABLE fee_components_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   component_name VARCHAR(100) NOT NULL,
   component_code VARCHAR(20) UNIQUE NOT NULL,
@@ -756,12 +756,12 @@ CREATE TABLE fee_components_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_components_active ON fee_components_BYJVWD(is_active);
+CREATE INDEX idx_fee_components_active ON fee_components_2DDMK(is_active);
 
-COMMENT ON TABLE fee_components_BYJVWD IS 'Fee component definitions (Tuition, Transport, Library, etc.)';
+COMMENT ON TABLE fee_components_2DDMK IS 'Fee component definitions (Tuition, Transport, Library, etc.)';
 
 -- 6.2 Fee Structures
-CREATE TABLE fee_structures_BYJVWD (
+CREATE TABLE fee_structures_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   structure_name VARCHAR(255) NOT NULL,
   class_id UUID NOT NULL,
@@ -773,14 +773,14 @@ CREATE TABLE fee_structures_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_structures_class ON fee_structures_BYJVWD(class_id);
-CREATE INDEX idx_fee_structures_year ON fee_structures_BYJVWD(academic_year_id);
-CREATE INDEX idx_fee_structures_active ON fee_structures_BYJVWD(is_active);
+CREATE INDEX idx_fee_structures_class ON fee_structures_2DDMK(class_id);
+CREATE INDEX idx_fee_structures_year ON fee_structures_2DDMK(academic_year_id);
+CREATE INDEX idx_fee_structures_active ON fee_structures_2DDMK(is_active);
 
-COMMENT ON TABLE fee_structures_BYJVWD IS 'Class-wise fee structure for academic year';
+COMMENT ON TABLE fee_structures_2DDMK IS 'Class-wise fee structure for academic year';
 
 -- 6.3 Fee Structure Components
-CREATE TABLE fee_structure_components_BYJVWD (
+CREATE TABLE fee_structure_components_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   fee_structure_id UUID NOT NULL,
   fee_component_id UUID NOT NULL,
@@ -788,13 +788,13 @@ CREATE TABLE fee_structure_components_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_structure_components_structure ON fee_structure_components_BYJVWD(fee_structure_id);
-CREATE INDEX idx_fee_structure_components_component ON fee_structure_components_BYJVWD(fee_component_id);
+CREATE INDEX idx_fee_structure_components_structure ON fee_structure_components_2DDMK(fee_structure_id);
+CREATE INDEX idx_fee_structure_components_component ON fee_structure_components_2DDMK(fee_component_id);
 
-COMMENT ON TABLE fee_structure_components_BYJVWD IS 'Component-wise breakdown of fee structure';
+COMMENT ON TABLE fee_structure_components_2DDMK IS 'Component-wise breakdown of fee structure';
 
 -- 6.4 Student Fees
-CREATE TABLE student_fees_BYJVWD (
+CREATE TABLE student_fees_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   fee_structure_id UUID NOT NULL,
@@ -810,15 +810,15 @@ CREATE TABLE student_fees_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_fees_student ON student_fees_BYJVWD(student_id);
-CREATE INDEX idx_student_fees_structure ON student_fees_BYJVWD(fee_structure_id);
-CREATE INDEX idx_student_fees_status ON student_fees_BYJVWD(status);
-CREATE UNIQUE INDEX idx_student_fees_unique ON student_fees_BYJVWD(student_id, academic_year_id);
+CREATE INDEX idx_student_fees_student ON student_fees_2DDMK(student_id);
+CREATE INDEX idx_student_fees_structure ON student_fees_2DDMK(fee_structure_id);
+CREATE INDEX idx_student_fees_status ON student_fees_2DDMK(status);
+CREATE UNIQUE INDEX idx_student_fees_unique ON student_fees_2DDMK(student_id, academic_year_id);
 
-COMMENT ON TABLE student_fees_BYJVWD IS 'Fee allocation to individual students with discounts';
+COMMENT ON TABLE student_fees_2DDMK IS 'Fee allocation to individual students with discounts';
 
 -- 6.5 Fee Payments
-CREATE TABLE fee_payments_BYJVWD (
+CREATE TABLE fee_payments_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_fee_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -836,15 +836,15 @@ CREATE TABLE fee_payments_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_payments_student_fee ON fee_payments_BYJVWD(student_fee_id);
-CREATE INDEX idx_fee_payments_student ON fee_payments_BYJVWD(student_id);
-CREATE INDEX idx_fee_payments_date ON fee_payments_BYJVWD(payment_date);
-CREATE INDEX idx_fee_payments_receipt ON fee_payments_BYJVWD(receipt_number);
+CREATE INDEX idx_fee_payments_student_fee ON fee_payments_2DDMK(student_fee_id);
+CREATE INDEX idx_fee_payments_student ON fee_payments_2DDMK(student_id);
+CREATE INDEX idx_fee_payments_date ON fee_payments_2DDMK(payment_date);
+CREATE INDEX idx_fee_payments_receipt ON fee_payments_2DDMK(receipt_number);
 
-COMMENT ON TABLE fee_payments_BYJVWD IS 'Individual fee payment transactions with receipt generation';
+COMMENT ON TABLE fee_payments_2DDMK IS 'Individual fee payment transactions with receipt generation';
 
 -- 6.6 Late Fee Configuration
-CREATE TABLE late_fee_config_BYJVWD (
+CREATE TABLE late_fee_config_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID NOT NULL,
   due_date INTEGER NOT NULL,
@@ -855,16 +855,16 @@ CREATE TABLE late_fee_config_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_late_fee_config_class ON late_fee_config_BYJVWD(class_id);
+CREATE INDEX idx_late_fee_config_class ON late_fee_config_2DDMK(class_id);
 
-COMMENT ON TABLE late_fee_config_BYJVWD IS 'Late fee configuration for classes';
+COMMENT ON TABLE late_fee_config_2DDMK IS 'Late fee configuration for classes';
 
 -- ============================================================================
 -- 7. COMMUNICATION SYSTEM
 -- ============================================================================
 
 -- 7.1 Announcements
-CREATE TABLE announcements_BYJVWD (
+CREATE TABLE announcements_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
@@ -882,16 +882,16 @@ CREATE TABLE announcements_BYJVWD (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_announcements_type ON announcements_BYJVWD(announcement_type);
-CREATE INDEX idx_announcements_audience ON announcements_BYJVWD(target_audience);
-CREATE INDEX idx_announcements_class ON announcements_BYJVWD(class_id);
-CREATE INDEX idx_announcements_active ON announcements_BYJVWD(is_active);
-CREATE INDEX idx_announcements_publish ON announcements_BYJVWD(publish_date);
+CREATE INDEX idx_announcements_type ON announcements_2DDMK(announcement_type);
+CREATE INDEX idx_announcements_audience ON announcements_2DDMK(target_audience);
+CREATE INDEX idx_announcements_class ON announcements_2DDMK(class_id);
+CREATE INDEX idx_announcements_active ON announcements_2DDMK(is_active);
+CREATE INDEX idx_announcements_publish ON announcements_2DDMK(publish_date);
 
-COMMENT ON TABLE announcements_BYJVWD IS 'School-wide and targeted announcements';
+COMMENT ON TABLE announcements_2DDMK IS 'School-wide and targeted announcements';
 
 -- 7.2 Notifications
-CREATE TABLE notifications_BYJVWD (
+CREATE TABLE notifications_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   title VARCHAR(255) NOT NULL,
@@ -904,15 +904,15 @@ CREATE TABLE notifications_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_notifications_user ON notifications_BYJVWD(user_id);
-CREATE INDEX idx_notifications_read ON notifications_BYJVWD(is_read);
-CREATE INDEX idx_notifications_type ON notifications_BYJVWD(notification_type);
-CREATE INDEX idx_notifications_created ON notifications_BYJVWD(created_at);
+CREATE INDEX idx_notifications_user ON notifications_2DDMK(user_id);
+CREATE INDEX idx_notifications_read ON notifications_2DDMK(is_read);
+CREATE INDEX idx_notifications_type ON notifications_2DDMK(notification_type);
+CREATE INDEX idx_notifications_created ON notifications_2DDMK(created_at);
 
-COMMENT ON TABLE notifications_BYJVWD IS 'In-app notification center for users';
+COMMENT ON TABLE notifications_2DDMK IS 'In-app notification center for users';
 
 -- 7.3 SMS Logs
-CREATE TABLE sms_logs_BYJVWD (
+CREATE TABLE sms_logs_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_phone VARCHAR(15) NOT NULL,
   recipient_user_id UUID,
@@ -925,15 +925,15 @@ CREATE TABLE sms_logs_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_sms_logs_phone ON sms_logs_BYJVWD(recipient_phone);
-CREATE INDEX idx_sms_logs_user ON sms_logs_BYJVWD(recipient_user_id);
-CREATE INDEX idx_sms_logs_status ON sms_logs_BYJVWD(status);
-CREATE INDEX idx_sms_logs_sent ON sms_logs_BYJVWD(sent_at);
+CREATE INDEX idx_sms_logs_phone ON sms_logs_2DDMK(recipient_phone);
+CREATE INDEX idx_sms_logs_user ON sms_logs_2DDMK(recipient_user_id);
+CREATE INDEX idx_sms_logs_status ON sms_logs_2DDMK(status);
+CREATE INDEX idx_sms_logs_sent ON sms_logs_2DDMK(sent_at);
 
-COMMENT ON TABLE sms_logs_BYJVWD IS 'SMS sending logs and delivery tracking';
+COMMENT ON TABLE sms_logs_2DDMK IS 'SMS sending logs and delivery tracking';
 
 -- 7.4 Email Logs
-CREATE TABLE email_logs_BYJVWD (
+CREATE TABLE email_logs_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_email VARCHAR(255) NOT NULL,
   recipient_user_id UUID,
@@ -946,19 +946,19 @@ CREATE TABLE email_logs_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_email_logs_email ON email_logs_BYJVWD(recipient_email);
-CREATE INDEX idx_email_logs_user ON email_logs_BYJVWD(recipient_user_id);
-CREATE INDEX idx_email_logs_status ON email_logs_BYJVWD(status);
-CREATE INDEX idx_email_logs_sent ON email_logs_BYJVWD(sent_at);
+CREATE INDEX idx_email_logs_email ON email_logs_2DDMK(recipient_email);
+CREATE INDEX idx_email_logs_user ON email_logs_2DDMK(recipient_user_id);
+CREATE INDEX idx_email_logs_status ON email_logs_2DDMK(status);
+CREATE INDEX idx_email_logs_sent ON email_logs_2DDMK(sent_at);
 
-COMMENT ON TABLE email_logs_BYJVWD IS 'Email sending logs and tracking';
+COMMENT ON TABLE email_logs_2DDMK IS 'Email sending logs and tracking';
 
 -- ============================================================================
 -- 8. ID CARD GENERATION
 -- ============================================================================
 
 -- 7.5 ID Cards
-CREATE TABLE id_cards_BYJVWD (
+CREATE TABLE id_cards_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_type VARCHAR(20) NOT NULL CHECK (user_type IN ('Student', 'Teacher', 'Staff')),
   user_id UUID NOT NULL,
@@ -973,18 +973,18 @@ CREATE TABLE id_cards_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_id_cards_user ON id_cards_BYJVWD(user_id, user_type);
-CREATE INDEX idx_id_cards_number ON id_cards_BYJVWD(card_number);
-CREATE INDEX idx_id_cards_active ON id_cards_BYJVWD(is_active);
+CREATE INDEX idx_id_cards_user ON id_cards_2DDMK(user_id, user_type);
+CREATE INDEX idx_id_cards_number ON id_cards_2DDMK(card_number);
+CREATE INDEX idx_id_cards_active ON id_cards_2DDMK(is_active);
 
-COMMENT ON TABLE id_cards_BYJVWD IS 'ID card generation and tracking with QR codes';
+COMMENT ON TABLE id_cards_2DDMK IS 'ID card generation and tracking with QR codes';
 
 -- ============================================================================
 -- 9. AUDIT & LOGS
 -- ============================================================================
 
 -- 9.1 Activity Logs
-CREATE TABLE activity_logs_BYJVWD (
+CREATE TABLE activity_logs_2DDMK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   action VARCHAR(100) NOT NULL,
@@ -997,12 +997,12 @@ CREATE TABLE activity_logs_BYJVWD (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_activity_logs_user ON activity_logs_BYJVWD(user_id);
-CREATE INDEX idx_activity_logs_action ON activity_logs_BYJVWD(action);
-CREATE INDEX idx_activity_logs_module ON activity_logs_BYJVWD(module);
-CREATE INDEX idx_activity_logs_created ON activity_logs_BYJVWD(created_at);
+CREATE INDEX idx_activity_logs_user ON activity_logs_2DDMK(user_id);
+CREATE INDEX idx_activity_logs_action ON activity_logs_2DDMK(action);
+CREATE INDEX idx_activity_logs_module ON activity_logs_2DDMK(module);
+CREATE INDEX idx_activity_logs_created ON activity_logs_2DDMK(created_at);
 
-COMMENT ON TABLE activity_logs_BYJVWD IS 'Audit trail for all user actions in the system';
+COMMENT ON TABLE activity_logs_2DDMK IS 'Audit trail for all user actions in the system';
 
 -- ============================================================================
 -- 10. FOREIGN KEY CONSTRAINTS
@@ -1010,150 +1010,150 @@ COMMENT ON TABLE activity_logs_BYJVWD IS 'Audit trail for all user actions in th
 -- Adding foreign keys after all tables are created to avoid dependency issues
 
 -- Students FK
-ALTER TABLE students_BYJVWD ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
-ALTER TABLE students_BYJVWD ADD CONSTRAINT fk_students_class FOREIGN KEY (class_id) REFERENCES classes_BYJVWD(id) ON DELETE RESTRICT;
-ALTER TABLE students_BYJVWD ADD CONSTRAINT fk_students_section FOREIGN KEY (section_id) REFERENCES sections_BYJVWD(id) ON DELETE RESTRICT;
-ALTER TABLE students_BYJVWD ADD CONSTRAINT fk_students_academic_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_BYJVWD(id) ON DELETE RESTRICT;
+ALTER TABLE students_2DDMK ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE students_2DDMK ADD CONSTRAINT fk_students_class FOREIGN KEY (class_id) REFERENCES classes_2DDMK(id) ON DELETE RESTRICT;
+ALTER TABLE students_2DDMK ADD CONSTRAINT fk_students_section FOREIGN KEY (section_id) REFERENCES sections_2DDMK(id) ON DELETE RESTRICT;
+ALTER TABLE students_2DDMK ADD CONSTRAINT fk_students_academic_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_2DDMK(id) ON DELETE RESTRICT;
 
 -- Parents FK
-ALTER TABLE parents_BYJVWD ADD CONSTRAINT fk_parents_user FOREIGN KEY (user_id) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE parents_2DDMK ADD CONSTRAINT fk_parents_user FOREIGN KEY (user_id) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Student-Parent Relations FK
-ALTER TABLE student_parent_relations_BYJVWD ADD CONSTRAINT fk_student_parent_student FOREIGN KEY (student_id) REFERENCES students_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE student_parent_relations_BYJVWD ADD CONSTRAINT fk_student_parent_parent FOREIGN KEY (parent_id) REFERENCES parents_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE student_parent_relations_2DDMK ADD CONSTRAINT fk_student_parent_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE student_parent_relations_2DDMK ADD CONSTRAINT fk_student_parent_parent FOREIGN KEY (parent_id) REFERENCES parents_2DDMK(id) ON DELETE CASCADE;
 
 -- Sections FK
-ALTER TABLE sections_BYJVWD ADD CONSTRAINT fk_sections_class FOREIGN KEY (class_id) REFERENCES classes_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE sections_BYJVWD ADD CONSTRAINT fk_sections_teacher FOREIGN KEY (class_teacher_id) REFERENCES teachers_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE sections_2DDMK ADD CONSTRAINT fk_sections_class FOREIGN KEY (class_id) REFERENCES classes_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE sections_2DDMK ADD CONSTRAINT fk_sections_teacher FOREIGN KEY (class_teacher_id) REFERENCES teachers_2DDMK(id) ON DELETE SET NULL;
 
 -- Class-Subject Mapping FK
-ALTER TABLE class_subjects_BYJVWD ADD CONSTRAINT fk_class_subjects_class FOREIGN KEY (class_id) REFERENCES classes_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE class_subjects_BYJVWD ADD CONSTRAINT fk_class_subjects_subject FOREIGN KEY (subject_id) REFERENCES subjects_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE class_subjects_2DDMK ADD CONSTRAINT fk_class_subjects_class FOREIGN KEY (class_id) REFERENCES classes_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE class_subjects_2DDMK ADD CONSTRAINT fk_class_subjects_subject FOREIGN KEY (subject_id) REFERENCES subjects_2DDMK(id) ON DELETE CASCADE;
 
 -- Topics FK
-ALTER TABLE topics_BYJVWD ADD CONSTRAINT fk_topics_subject FOREIGN KEY (subject_id) REFERENCES subjects_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE topics_BYJVWD ADD CONSTRAINT fk_topics_parent FOREIGN KEY (parent_topic_id) REFERENCES topics_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE topics_2DDMK ADD CONSTRAINT fk_topics_subject FOREIGN KEY (subject_id) REFERENCES subjects_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE topics_2DDMK ADD CONSTRAINT fk_topics_parent FOREIGN KEY (parent_topic_id) REFERENCES topics_2DDMK(id) ON DELETE SET NULL;
 
 -- Topic Content FK
-ALTER TABLE topic_content_BYJVWD ADD CONSTRAINT fk_topic_content_topic FOREIGN KEY (topic_id) REFERENCES topics_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE topic_content_BYJVWD ADD CONSTRAINT fk_topic_content_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE topic_content_2DDMK ADD CONSTRAINT fk_topic_content_topic FOREIGN KEY (topic_id) REFERENCES topics_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE topic_content_2DDMK ADD CONSTRAINT fk_topic_content_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Teachers FK
-ALTER TABLE teachers_BYJVWD ADD CONSTRAINT fk_teachers_user FOREIGN KEY (user_id) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE teachers_2DDMK ADD CONSTRAINT fk_teachers_user FOREIGN KEY (user_id) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Teacher-Subject-Section Mapping FK
-ALTER TABLE teacher_subject_sections_BYJVWD ADD CONSTRAINT fk_teacher_subject_sections_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE teacher_subject_sections_BYJVWD ADD CONSTRAINT fk_teacher_subject_sections_section FOREIGN KEY (section_id) REFERENCES sections_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE teacher_subject_sections_BYJVWD ADD CONSTRAINT fk_teacher_subject_sections_subject FOREIGN KEY (subject_id) REFERENCES subjects_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE teacher_subject_sections_BYJVWD ADD CONSTRAINT fk_teacher_subject_sections_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_2DDMK ADD CONSTRAINT fk_teacher_subject_sections_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_2DDMK ADD CONSTRAINT fk_teacher_subject_sections_section FOREIGN KEY (section_id) REFERENCES sections_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_2DDMK ADD CONSTRAINT fk_teacher_subject_sections_subject FOREIGN KEY (subject_id) REFERENCES subjects_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_2DDMK ADD CONSTRAINT fk_teacher_subject_sections_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_2DDMK(id) ON DELETE CASCADE;
 
 -- Timetables FK
-ALTER TABLE timetables_BYJVWD ADD CONSTRAINT fk_timetables_section FOREIGN KEY (section_id) REFERENCES sections_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE timetables_BYJVWD ADD CONSTRAINT fk_timetables_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE timetables_BYJVWD ADD CONSTRAINT fk_timetables_period FOREIGN KEY (period_id) REFERENCES timetable_periods_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE timetables_BYJVWD ADD CONSTRAINT fk_timetables_subject FOREIGN KEY (subject_id) REFERENCES subjects_BYJVWD(id) ON DELETE SET NULL;
-ALTER TABLE timetables_BYJVWD ADD CONSTRAINT fk_timetables_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE timetables_2DDMK ADD CONSTRAINT fk_timetables_section FOREIGN KEY (section_id) REFERENCES sections_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE timetables_2DDMK ADD CONSTRAINT fk_timetables_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE timetables_2DDMK ADD CONSTRAINT fk_timetables_period FOREIGN KEY (period_id) REFERENCES timetable_periods_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE timetables_2DDMK ADD CONSTRAINT fk_timetables_subject FOREIGN KEY (subject_id) REFERENCES subjects_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE timetables_2DDMK ADD CONSTRAINT fk_timetables_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_2DDMK(id) ON DELETE SET NULL;
 
 -- Timetable Substitutions FK
-ALTER TABLE timetable_substitutions_BYJVWD ADD CONSTRAINT fk_timetable_subs_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE timetable_substitutions_BYJVWD ADD CONSTRAINT fk_timetable_subs_original FOREIGN KEY (original_teacher_id) REFERENCES teachers_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE timetable_substitutions_BYJVWD ADD CONSTRAINT fk_timetable_subs_substitute FOREIGN KEY (substitute_teacher_id) REFERENCES teachers_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE timetable_substitutions_BYJVWD ADD CONSTRAINT fk_timetable_subs_created_by FOREIGN KEY (created_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE timetable_substitutions_2DDMK ADD CONSTRAINT fk_timetable_subs_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_2DDMK ADD CONSTRAINT fk_timetable_subs_original FOREIGN KEY (original_teacher_id) REFERENCES teachers_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_2DDMK ADD CONSTRAINT fk_timetable_subs_substitute FOREIGN KEY (substitute_teacher_id) REFERENCES teachers_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_2DDMK ADD CONSTRAINT fk_timetable_subs_created_by FOREIGN KEY (created_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Lecture Templates FK
-ALTER TABLE lecture_templates_BYJVWD ADD CONSTRAINT fk_lecture_templates_subject FOREIGN KEY (subject_id) REFERENCES subjects_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE lecture_templates_BYJVWD ADD CONSTRAINT fk_lecture_templates_teacher FOREIGN KEY (default_teacher_id) REFERENCES teachers_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE lecture_templates_2DDMK ADD CONSTRAINT fk_lecture_templates_subject FOREIGN KEY (subject_id) REFERENCES subjects_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE lecture_templates_2DDMK ADD CONSTRAINT fk_lecture_templates_teacher FOREIGN KEY (default_teacher_id) REFERENCES teachers_2DDMK(id) ON DELETE SET NULL;
 
 -- Attendance FK
-ALTER TABLE attendance_BYJVWD ADD CONSTRAINT fk_attendance_student FOREIGN KEY (student_id) REFERENCES students_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE attendance_BYJVWD ADD CONSTRAINT fk_attendance_class FOREIGN KEY (class_id) REFERENCES classes_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE attendance_BYJVWD ADD CONSTRAINT fk_attendance_section FOREIGN KEY (section_id) REFERENCES sections_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE attendance_BYJVWD ADD CONSTRAINT fk_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE attendance_2DDMK ADD CONSTRAINT fk_attendance_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_2DDMK ADD CONSTRAINT fk_attendance_class FOREIGN KEY (class_id) REFERENCES classes_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_2DDMK ADD CONSTRAINT fk_attendance_section FOREIGN KEY (section_id) REFERENCES sections_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_2DDMK ADD CONSTRAINT fk_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Subject-wise Attendance FK
-ALTER TABLE attendance_subject_wise_BYJVWD ADD CONSTRAINT fk_attendance_subject_student FOREIGN KEY (student_id) REFERENCES students_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE attendance_subject_wise_BYJVWD ADD CONSTRAINT fk_attendance_subject_section FOREIGN KEY (section_id) REFERENCES sections_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE attendance_subject_wise_BYJVWD ADD CONSTRAINT fk_attendance_subject_subject FOREIGN KEY (subject_id) REFERENCES subjects_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE attendance_subject_wise_BYJVWD ADD CONSTRAINT fk_attendance_subject_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_BYJVWD(id) ON DELETE SET NULL;
-ALTER TABLE attendance_subject_wise_BYJVWD ADD CONSTRAINT fk_attendance_subject_period FOREIGN KEY (period_id) REFERENCES timetable_periods_BYJVWD(id) ON DELETE SET NULL;
-ALTER TABLE attendance_subject_wise_BYJVWD ADD CONSTRAINT fk_attendance_subject_marked_by FOREIGN KEY (marked_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_2DDMK ADD CONSTRAINT fk_attendance_subject_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_2DDMK ADD CONSTRAINT fk_attendance_subject_section FOREIGN KEY (section_id) REFERENCES sections_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_2DDMK ADD CONSTRAINT fk_attendance_subject_subject FOREIGN KEY (subject_id) REFERENCES subjects_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_2DDMK ADD CONSTRAINT fk_attendance_subject_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_2DDMK ADD CONSTRAINT fk_attendance_subject_period FOREIGN KEY (period_id) REFERENCES timetable_periods_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_2DDMK ADD CONSTRAINT fk_attendance_subject_marked_by FOREIGN KEY (marked_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Leave Applications FK
-ALTER TABLE leave_applications_BYJVWD ADD CONSTRAINT fk_leave_applications_student FOREIGN KEY (student_id) REFERENCES students_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE leave_applications_BYJVWD ADD CONSTRAINT fk_leave_applications_applied_by FOREIGN KEY (applied_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
-ALTER TABLE leave_applications_BYJVWD ADD CONSTRAINT fk_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE leave_applications_2DDMK ADD CONSTRAINT fk_leave_applications_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE leave_applications_2DDMK ADD CONSTRAINT fk_leave_applications_applied_by FOREIGN KEY (applied_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE leave_applications_2DDMK ADD CONSTRAINT fk_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Teacher Attendance FK
-ALTER TABLE teacher_attendance_BYJVWD ADD CONSTRAINT fk_teacher_attendance_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE teacher_attendance_BYJVWD ADD CONSTRAINT fk_teacher_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE teacher_attendance_2DDMK ADD CONSTRAINT fk_teacher_attendance_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE teacher_attendance_2DDMK ADD CONSTRAINT fk_teacher_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Exams FK
-ALTER TABLE exams_BYJVWD ADD CONSTRAINT fk_exams_type FOREIGN KEY (exam_type_id) REFERENCES exam_types_BYJVWD(id) ON DELETE RESTRICT;
-ALTER TABLE exams_BYJVWD ADD CONSTRAINT fk_exams_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE exams_2DDMK ADD CONSTRAINT fk_exams_type FOREIGN KEY (exam_type_id) REFERENCES exam_types_2DDMK(id) ON DELETE RESTRICT;
+ALTER TABLE exams_2DDMK ADD CONSTRAINT fk_exams_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_2DDMK(id) ON DELETE CASCADE;
 
 -- Exam Schedules FK
-ALTER TABLE exam_schedules_BYJVWD ADD CONSTRAINT fk_exam_schedules_exam FOREIGN KEY (exam_id) REFERENCES exams_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE exam_schedules_BYJVWD ADD CONSTRAINT fk_exam_schedules_class FOREIGN KEY (class_id) REFERENCES classes_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE exam_schedules_BYJVWD ADD CONSTRAINT fk_exam_schedules_section FOREIGN KEY (section_id) REFERENCES sections_BYJVWD(id) ON DELETE SET NULL;
-ALTER TABLE exam_schedules_BYJVWD ADD CONSTRAINT fk_exam_schedules_subject FOREIGN KEY (subject_id) REFERENCES subjects_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_2DDMK ADD CONSTRAINT fk_exam_schedules_exam FOREIGN KEY (exam_id) REFERENCES exams_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_2DDMK ADD CONSTRAINT fk_exam_schedules_class FOREIGN KEY (class_id) REFERENCES classes_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_2DDMK ADD CONSTRAINT fk_exam_schedules_section FOREIGN KEY (section_id) REFERENCES sections_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE exam_schedules_2DDMK ADD CONSTRAINT fk_exam_schedules_subject FOREIGN KEY (subject_id) REFERENCES subjects_2DDMK(id) ON DELETE CASCADE;
 
 -- Admit Cards FK
-ALTER TABLE admit_cards_BYJVWD ADD CONSTRAINT fk_admit_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE admit_cards_BYJVWD ADD CONSTRAINT fk_admit_cards_student FOREIGN KEY (student_id) REFERENCES students_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE admit_cards_2DDMK ADD CONSTRAINT fk_admit_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE admit_cards_2DDMK ADD CONSTRAINT fk_admit_cards_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
 
 -- Exam Marks FK
-ALTER TABLE exam_marks_BYJVWD ADD CONSTRAINT fk_exam_marks_schedule FOREIGN KEY (exam_schedule_id) REFERENCES exam_schedules_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE exam_marks_BYJVWD ADD CONSTRAINT fk_exam_marks_student FOREIGN KEY (student_id) REFERENCES students_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE exam_marks_BYJVWD ADD CONSTRAINT fk_exam_marks_entered_by FOREIGN KEY (entered_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
-ALTER TABLE exam_marks_BYJVWD ADD CONSTRAINT fk_exam_marks_verified_by FOREIGN KEY (verified_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE exam_marks_2DDMK ADD CONSTRAINT fk_exam_marks_schedule FOREIGN KEY (exam_schedule_id) REFERENCES exam_schedules_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_2DDMK ADD CONSTRAINT fk_exam_marks_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_2DDMK ADD CONSTRAINT fk_exam_marks_entered_by FOREIGN KEY (entered_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE exam_marks_2DDMK ADD CONSTRAINT fk_exam_marks_verified_by FOREIGN KEY (verified_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Report Cards FK
-ALTER TABLE report_cards_BYJVWD ADD CONSTRAINT fk_report_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE report_cards_BYJVWD ADD CONSTRAINT fk_report_cards_student FOREIGN KEY (student_id) REFERENCES students_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE report_cards_2DDMK ADD CONSTRAINT fk_report_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE report_cards_2DDMK ADD CONSTRAINT fk_report_cards_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
 
 -- Fee Structures FK
-ALTER TABLE fee_structures_BYJVWD ADD CONSTRAINT fk_fee_structures_class FOREIGN KEY (class_id) REFERENCES classes_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE fee_structures_BYJVWD ADD CONSTRAINT fk_fee_structures_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE fee_structures_2DDMK ADD CONSTRAINT fk_fee_structures_class FOREIGN KEY (class_id) REFERENCES classes_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE fee_structures_2DDMK ADD CONSTRAINT fk_fee_structures_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_2DDMK(id) ON DELETE CASCADE;
 
 -- Fee Structure Components FK
-ALTER TABLE fee_structure_components_BYJVWD ADD CONSTRAINT fk_fee_structure_components_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE fee_structure_components_BYJVWD ADD CONSTRAINT fk_fee_structure_components_component FOREIGN KEY (fee_component_id) REFERENCES fee_components_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE fee_structure_components_2DDMK ADD CONSTRAINT fk_fee_structure_components_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE fee_structure_components_2DDMK ADD CONSTRAINT fk_fee_structure_components_component FOREIGN KEY (fee_component_id) REFERENCES fee_components_2DDMK(id) ON DELETE CASCADE;
 
 -- Student Fees FK
-ALTER TABLE student_fees_BYJVWD ADD CONSTRAINT fk_student_fees_student FOREIGN KEY (student_id) REFERENCES students_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE student_fees_BYJVWD ADD CONSTRAINT fk_student_fees_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_BYJVWD(id) ON DELETE RESTRICT;
-ALTER TABLE student_fees_BYJVWD ADD CONSTRAINT fk_student_fees_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE student_fees_2DDMK ADD CONSTRAINT fk_student_fees_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE student_fees_2DDMK ADD CONSTRAINT fk_student_fees_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_2DDMK(id) ON DELETE RESTRICT;
+ALTER TABLE student_fees_2DDMK ADD CONSTRAINT fk_student_fees_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_2DDMK(id) ON DELETE CASCADE;
 
 -- Fee Payments FK
-ALTER TABLE fee_payments_BYJVWD ADD CONSTRAINT fk_fee_payments_student_fee FOREIGN KEY (student_fee_id) REFERENCES student_fees_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE fee_payments_BYJVWD ADD CONSTRAINT fk_fee_payments_student FOREIGN KEY (student_id) REFERENCES students_BYJVWD(id) ON DELETE CASCADE;
-ALTER TABLE fee_payments_BYJVWD ADD CONSTRAINT fk_fee_payments_collected_by FOREIGN KEY (collected_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE fee_payments_2DDMK ADD CONSTRAINT fk_fee_payments_student_fee FOREIGN KEY (student_fee_id) REFERENCES student_fees_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_2DDMK ADD CONSTRAINT fk_fee_payments_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_2DDMK ADD CONSTRAINT fk_fee_payments_collected_by FOREIGN KEY (collected_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Late Fee Config FK
-ALTER TABLE late_fee_config_BYJVWD ADD CONSTRAINT fk_late_fee_config_class FOREIGN KEY (class_id) REFERENCES classes_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE late_fee_config_2DDMK ADD CONSTRAINT fk_late_fee_config_class FOREIGN KEY (class_id) REFERENCES classes_2DDMK(id) ON DELETE CASCADE;
 
 -- Announcements FK
-ALTER TABLE announcements_BYJVWD ADD CONSTRAINT fk_announcements_class FOREIGN KEY (class_id) REFERENCES classes_BYJVWD(id) ON DELETE SET NULL;
-ALTER TABLE announcements_BYJVWD ADD CONSTRAINT fk_announcements_section FOREIGN KEY (section_id) REFERENCES sections_BYJVWD(id) ON DELETE SET NULL;
-ALTER TABLE announcements_BYJVWD ADD CONSTRAINT fk_announcements_created_by FOREIGN KEY (created_by) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE announcements_2DDMK ADD CONSTRAINT fk_announcements_class FOREIGN KEY (class_id) REFERENCES classes_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE announcements_2DDMK ADD CONSTRAINT fk_announcements_section FOREIGN KEY (section_id) REFERENCES sections_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE announcements_2DDMK ADD CONSTRAINT fk_announcements_created_by FOREIGN KEY (created_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Notifications FK
-ALTER TABLE notifications_BYJVWD ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE notifications_2DDMK ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users_2DDMK(id) ON DELETE CASCADE;
 
 -- SMS Logs FK
-ALTER TABLE sms_logs_BYJVWD ADD CONSTRAINT fk_sms_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE sms_logs_2DDMK ADD CONSTRAINT fk_sms_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- Email Logs FK
-ALTER TABLE email_logs_BYJVWD ADD CONSTRAINT fk_email_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_BYJVWD(id) ON DELETE SET NULL;
+ALTER TABLE email_logs_2DDMK ADD CONSTRAINT fk_email_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
 
 -- ID Cards FK
-ALTER TABLE id_cards_BYJVWD ADD CONSTRAINT fk_id_cards_user FOREIGN KEY (user_id) REFERENCES users_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE id_cards_2DDMK ADD CONSTRAINT fk_id_cards_user FOREIGN KEY (user_id) REFERENCES users_2DDMK(id) ON DELETE CASCADE;
 
 -- Activity Logs FK
-ALTER TABLE activity_logs_BYJVWD ADD CONSTRAINT fk_activity_logs_user FOREIGN KEY (user_id) REFERENCES users_BYJVWD(id) ON DELETE CASCADE;
+ALTER TABLE activity_logs_2DDMK ADD CONSTRAINT fk_activity_logs_user FOREIGN KEY (user_id) REFERENCES users_2DDMK(id) ON DELETE CASCADE;
 
 -- ============================================================================
--- END OF SCHEMA FOR SCHOOL 2 (BYJVWD)
+-- END OF SCHEMA FOR SCHOOL 2 (2DDMK)
 -- Total Tables: 42
 -- Total Foreign Keys: 86
 -- ============================================================================

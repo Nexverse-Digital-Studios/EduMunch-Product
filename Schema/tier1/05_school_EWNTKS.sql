@@ -1,18 +1,18 @@
 -- ============================================================================
--- EduMunch: School-Specific Tables for EWNTKS
+-- EduMunch: School-Specific Tables for 5HKSK
 -- ============================================================================
 -- This file creates 45 tables for School 5
--- INDEX_TOKEN: EWNTKS
+-- INDEX_TOKEN: 5HKSK
 -- ============================================================================
 
 -- 1. USER MANAGEMENT & AUTHENTICATION
 -- ============================================================================
 
 -- 1.1 Users & Authentication
-CREATE TABLE users_EWNTKS (
+CREATE TABLE users_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   auth_user_id UUID UNIQUE,
-  index_token VARCHAR(6) DEFAULT 'EWNTKS' NOT NULL,
+  index_token VARCHAR(6) DEFAULT '5HKSK' NOT NULL,
   email VARCHAR(255) NOT NULL,
   phone VARCHAR(15),
   full_name VARCHAR(255) NOT NULL,
@@ -35,21 +35,21 @@ CREATE TABLE users_EWNTKS (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_users_auth_user ON users_EWNTKS(auth_user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_email ON users_EWNTKS(email) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_phone ON users_EWNTKS(phone) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_role ON users_EWNTKS(role) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_active ON users_EWNTKS(is_active) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_index_token ON users_EWNTKS(index_token) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_auth_user ON users_5HKSK(auth_user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_email ON users_5HKSK(email) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_phone ON users_5HKSK(phone) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_role ON users_5HKSK(role) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_active ON users_5HKSK(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_index_token ON users_5HKSK(index_token) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE users_EWNTKS IS 'User management table linked to Supabase auth.users via auth_user_id';
+COMMENT ON TABLE users_5HKSK IS 'User management table linked to Supabase auth.users via auth_user_id';
 
 -- 1.2 Sessions
-CREATE TABLE sessions_EWNTKS (
+CREATE TABLE sessions_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   auth_user_id UUID,
-  index_token VARCHAR(6) DEFAULT 'EWNTKS' NOT NULL,
+  index_token VARCHAR(6) DEFAULT '5HKSK' NOT NULL,
   token TEXT UNIQUE NOT NULL,
   device_info JSONB,
   ip_address VARCHAR(45),
@@ -57,17 +57,17 @@ CREATE TABLE sessions_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_sessions_user ON sessions_EWNTKS(user_id);
-CREATE INDEX idx_sessions_auth_user ON sessions_EWNTKS(auth_user_id);
-CREATE INDEX idx_sessions_token ON sessions_EWNTKS(token);
-CREATE INDEX idx_sessions_expires ON sessions_EWNTKS(expires_at);
+CREATE INDEX idx_sessions_user ON sessions_5HKSK(user_id);
+CREATE INDEX idx_sessions_auth_user ON sessions_5HKSK(auth_user_id);
+CREATE INDEX idx_sessions_token ON sessions_5HKSK(token);
+CREATE INDEX idx_sessions_expires ON sessions_5HKSK(expires_at);
 
-COMMENT ON TABLE sessions_EWNTKS IS 'Session tracking - Frontend routing handled via INDEX_TOKEN from .env';
-COMMENT ON COLUMN sessions_EWNTKS.device_info IS 'JSON containing device_type, browser, os, etc.';
-COMMENT ON COLUMN sessions_EWNTKS.index_token IS 'Ensures session is bound to correct school';
+COMMENT ON TABLE sessions_5HKSK IS 'Session tracking - Frontend routing handled via INDEX_TOKEN from .env';
+COMMENT ON COLUMN sessions_5HKSK.device_info IS 'JSON containing device_type, browser, os, etc.';
+COMMENT ON COLUMN sessions_5HKSK.index_token IS 'Ensures session is bound to correct school';
 
 -- 1.3 Permissions
-CREATE TABLE permissions_EWNTKS (
+CREATE TABLE permissions_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   role VARCHAR(50) NOT NULL,
   module VARCHAR(100) NOT NULL,
@@ -80,17 +80,17 @@ CREATE TABLE permissions_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_EWNTKS(role, module);
+CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_5HKSK(role, module);
 
-COMMENT ON TABLE permissions_EWNTKS IS 'Granular permission management for role-based access control';
-COMMENT ON COLUMN permissions_EWNTKS.module IS 'Module name: attendance, fee, exam, student, teacher, etc.';
+COMMENT ON TABLE permissions_5HKSK IS 'Granular permission management for role-based access control';
+COMMENT ON COLUMN permissions_5HKSK.module IS 'Module name: attendance, fee, exam, student, teacher, etc.';
 
 -- ============================================================================
 -- 2. STUDENT MANAGEMENT
 -- ============================================================================
 
 -- 2.1 Students
-CREATE TABLE students_EWNTKS (
+CREATE TABLE students_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   admission_number VARCHAR(50) UNIQUE NOT NULL,
@@ -150,19 +150,19 @@ CREATE TABLE students_EWNTKS (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_students_user ON students_EWNTKS(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_admission ON students_EWNTKS(admission_number) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_class ON students_EWNTKS(class_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_section ON students_EWNTKS(section_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_academic_year ON students_EWNTKS(academic_year_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_status ON students_EWNTKS(status) WHERE deleted_at IS NULL;
-CREATE INDEX idx_students_name ON students_EWNTKS(first_name, last_name) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_user ON students_5HKSK(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_admission ON students_5HKSK(admission_number) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_class ON students_5HKSK(class_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_section ON students_5HKSK(section_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_academic_year ON students_5HKSK(academic_year_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_status ON students_5HKSK(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_name ON students_5HKSK(first_name, last_name) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE students_EWNTKS IS 'Core student information with personal, academic, and medical details';
-COMMENT ON COLUMN students_EWNTKS.medical_conditions IS 'JSON array of {condition, severity, medication}';
+COMMENT ON TABLE students_5HKSK IS 'Core student information with personal, academic, and medical details';
+COMMENT ON COLUMN students_5HKSK.medical_conditions IS 'JSON array of {condition, severity, medication}';
 
 -- 2.2 Parents/Guardians
-CREATE TABLE parents_EWNTKS (
+CREATE TABLE parents_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   
@@ -192,13 +192,13 @@ CREATE TABLE parents_EWNTKS (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_parents_user ON parents_EWNTKS(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_parents_phone ON parents_EWNTKS(phone) WHERE deleted_at IS NULL;
+CREATE INDEX idx_parents_user ON parents_5HKSK(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_parents_phone ON parents_5HKSK(phone) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE parents_EWNTKS IS 'Parent and guardian information';
+COMMENT ON TABLE parents_5HKSK IS 'Parent and guardian information';
 
 -- 2.3 Student-Parent Relations
-CREATE TABLE student_parent_relations_EWNTKS (
+CREATE TABLE student_parent_relations_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   parent_id UUID NOT NULL,
@@ -207,18 +207,18 @@ CREATE TABLE student_parent_relations_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_parent_student ON student_parent_relations_EWNTKS(student_id);
-CREATE INDEX idx_student_parent_parent ON student_parent_relations_EWNTKS(parent_id);
-CREATE UNIQUE INDEX idx_student_parent_unique ON student_parent_relations_EWNTKS(student_id, parent_id);
+CREATE INDEX idx_student_parent_student ON student_parent_relations_5HKSK(student_id);
+CREATE INDEX idx_student_parent_parent ON student_parent_relations_5HKSK(parent_id);
+CREATE UNIQUE INDEX idx_student_parent_unique ON student_parent_relations_5HKSK(student_id, parent_id);
 
-COMMENT ON TABLE student_parent_relations_EWNTKS IS 'Many-to-many relationship between students and parents';
+COMMENT ON TABLE student_parent_relations_5HKSK IS 'Many-to-many relationship between students and parents';
 
 -- ============================================================================
 -- 3. ACADEMIC MANAGEMENT
 -- ============================================================================
 
 -- 3.1 Academic Years
-CREATE TABLE academic_years_EWNTKS (
+CREATE TABLE academic_years_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   year_code VARCHAR(20) UNIQUE NOT NULL,
   year_name VARCHAR(50) NOT NULL,
@@ -229,12 +229,12 @@ CREATE TABLE academic_years_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_academic_years_current ON academic_years_EWNTKS(is_current);
+CREATE INDEX idx_academic_years_current ON academic_years_5HKSK(is_current);
 
-COMMENT ON TABLE academic_years_EWNTKS IS 'Academic year configuration (e.g., 2024-25)';
+COMMENT ON TABLE academic_years_5HKSK IS 'Academic year configuration (e.g., 2024-25)';
 
 -- 3.2 Classes
-CREATE TABLE classes_EWNTKS (
+CREATE TABLE classes_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_name VARCHAR(100) NOT NULL,
   class_code VARCHAR(20) UNIQUE NOT NULL,
@@ -246,14 +246,14 @@ CREATE TABLE classes_EWNTKS (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_classes_code ON classes_EWNTKS(class_code) WHERE deleted_at IS NULL;
-CREATE INDEX idx_classes_active ON classes_EWNTKS(is_active) WHERE deleted_at IS NULL;
-CREATE INDEX idx_classes_order ON classes_EWNTKS(class_order) WHERE deleted_at IS NULL;
+CREATE INDEX idx_classes_code ON classes_5HKSK(class_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_classes_active ON classes_5HKSK(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_classes_order ON classes_5HKSK(class_order) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE classes_EWNTKS IS 'Class master data (e.g., Class 1, Class 2, ..., Class 12)';
+COMMENT ON TABLE classes_5HKSK IS 'Class master data (e.g., Class 1, Class 2, ..., Class 12)';
 
 -- 3.3 Sections
-CREATE TABLE sections_EWNTKS (
+CREATE TABLE sections_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID NOT NULL,
   section_name VARCHAR(50) NOT NULL,
@@ -267,15 +267,15 @@ CREATE TABLE sections_EWNTKS (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_sections_class ON sections_EWNTKS(class_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_sections_teacher ON sections_EWNTKS(class_teacher_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_sections_active ON sections_EWNTKS(is_active) WHERE deleted_at IS NULL;
-CREATE UNIQUE INDEX idx_sections_class_code ON sections_EWNTKS(class_id, section_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_sections_class ON sections_5HKSK(class_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_sections_teacher ON sections_5HKSK(class_teacher_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_sections_active ON sections_5HKSK(is_active) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX idx_sections_class_code ON sections_5HKSK(class_id, section_code) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE sections_EWNTKS IS 'Section/Division within a class (e.g., Section A, B, C)';
+COMMENT ON TABLE sections_5HKSK IS 'Section/Division within a class (e.g., Section A, B, C)';
 
 -- 3.4 Subjects
-CREATE TABLE subjects_EWNTKS (
+CREATE TABLE subjects_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subject_name VARCHAR(100) NOT NULL,
   subject_code VARCHAR(20) UNIQUE NOT NULL,
@@ -287,13 +287,13 @@ CREATE TABLE subjects_EWNTKS (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_subjects_code ON subjects_EWNTKS(subject_code) WHERE deleted_at IS NULL;
-CREATE INDEX idx_subjects_active ON subjects_EWNTKS(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_subjects_code ON subjects_5HKSK(subject_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_subjects_active ON subjects_5HKSK(is_active) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE subjects_EWNTKS IS 'Subject master data (e.g., Mathematics, Physics, English)';
+COMMENT ON TABLE subjects_5HKSK IS 'Subject master data (e.g., Mathematics, Physics, English)';
 
 -- 3.5 Class-Subject Mapping
-CREATE TABLE class_subjects_EWNTKS (
+CREATE TABLE class_subjects_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID NOT NULL,
   subject_id UUID NOT NULL,
@@ -304,14 +304,14 @@ CREATE TABLE class_subjects_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_class_subjects_class ON class_subjects_EWNTKS(class_id);
-CREATE INDEX idx_class_subjects_subject ON class_subjects_EWNTKS(subject_id);
-CREATE UNIQUE INDEX idx_class_subjects_unique ON class_subjects_EWNTKS(class_id, subject_id);
+CREATE INDEX idx_class_subjects_class ON class_subjects_5HKSK(class_id);
+CREATE INDEX idx_class_subjects_subject ON class_subjects_5HKSK(subject_id);
+CREATE UNIQUE INDEX idx_class_subjects_unique ON class_subjects_5HKSK(class_id, subject_id);
 
-COMMENT ON TABLE class_subjects_EWNTKS IS 'Subject allocation to classes';
+COMMENT ON TABLE class_subjects_5HKSK IS 'Subject allocation to classes';
 
 -- 3.6 Topics (Chapters/Units within subjects)
-CREATE TABLE topics_EWNTKS (
+CREATE TABLE topics_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subject_id UUID NOT NULL,
   topic_name VARCHAR(255) NOT NULL,
@@ -325,15 +325,15 @@ CREATE TABLE topics_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_topics_subject ON topics_EWNTKS(subject_id);
-CREATE INDEX idx_topics_parent ON topics_EWNTKS(parent_topic_id);
-CREATE INDEX idx_topics_active ON topics_EWNTKS(is_active);
+CREATE INDEX idx_topics_subject ON topics_5HKSK(subject_id);
+CREATE INDEX idx_topics_parent ON topics_5HKSK(parent_topic_id);
+CREATE INDEX idx_topics_active ON topics_5HKSK(is_active);
 
-COMMENT ON TABLE topics_EWNTKS IS 'Topics/chapters within subjects with hierarchical structure';
-COMMENT ON COLUMN topics_EWNTKS.parent_topic_id IS 'For subtopics - references parent topic';
+COMMENT ON TABLE topics_5HKSK IS 'Topics/chapters within subjects with hierarchical structure';
+COMMENT ON COLUMN topics_5HKSK.parent_topic_id IS 'For subtopics - references parent topic';
 
 -- 3.7 Topic Content (Learning Materials)
-CREATE TABLE topic_content_EWNTKS (
+CREATE TABLE topic_content_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   topic_id UUID NOT NULL,
   content_type VARCHAR(50) NOT NULL CHECK (content_type IN ('PDF', 'Video', 'Link', 'Document', 'Image', 'Quiz')),
@@ -345,13 +345,13 @@ CREATE TABLE topic_content_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_topic_content_topic ON topic_content_EWNTKS(topic_id);
-CREATE INDEX idx_topic_content_type ON topic_content_EWNTKS(content_type);
+CREATE INDEX idx_topic_content_topic ON topic_content_5HKSK(topic_id);
+CREATE INDEX idx_topic_content_type ON topic_content_5HKSK(content_type);
 
-COMMENT ON TABLE topic_content_EWNTKS IS 'Learning materials attached to topics';
+COMMENT ON TABLE topic_content_5HKSK IS 'Learning materials attached to topics';
 
 -- 3.8 Teachers
-CREATE TABLE teachers_EWNTKS (
+CREATE TABLE teachers_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   employee_code VARCHAR(50) UNIQUE NOT NULL,
@@ -398,14 +398,14 @@ CREATE TABLE teachers_EWNTKS (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_teachers_user ON teachers_EWNTKS(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_teachers_code ON teachers_EWNTKS(employee_code) WHERE deleted_at IS NULL;
-CREATE INDEX idx_teachers_status ON teachers_EWNTKS(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_user ON teachers_5HKSK(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_code ON teachers_5HKSK(employee_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_status ON teachers_5HKSK(status) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE teachers_EWNTKS IS 'Teacher information with professional and personal details';
+COMMENT ON TABLE teachers_5HKSK IS 'Teacher information with professional and personal details';
 
 -- 3.9 Teacher-Subject-Section Mapping
-CREATE TABLE teacher_subject_sections_EWNTKS (
+CREATE TABLE teacher_subject_sections_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   section_id UUID NOT NULL,
@@ -414,15 +414,15 @@ CREATE TABLE teacher_subject_sections_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_teacher_subject_sections_teacher ON teacher_subject_sections_EWNTKS(teacher_id);
-CREATE INDEX idx_teacher_subject_sections_section ON teacher_subject_sections_EWNTKS(section_id);
-CREATE INDEX idx_teacher_subject_sections_subject ON teacher_subject_sections_EWNTKS(subject_id);
-CREATE UNIQUE INDEX idx_teacher_subject_sections_unique ON teacher_subject_sections_EWNTKS(section_id, subject_id, academic_year_id);
+CREATE INDEX idx_teacher_subject_sections_teacher ON teacher_subject_sections_5HKSK(teacher_id);
+CREATE INDEX idx_teacher_subject_sections_section ON teacher_subject_sections_5HKSK(section_id);
+CREATE INDEX idx_teacher_subject_sections_subject ON teacher_subject_sections_5HKSK(subject_id);
+CREATE UNIQUE INDEX idx_teacher_subject_sections_unique ON teacher_subject_sections_5HKSK(section_id, subject_id, academic_year_id);
 
-COMMENT ON TABLE teacher_subject_sections_EWNTKS IS 'Maps which teacher teaches which subject to which section';
+COMMENT ON TABLE teacher_subject_sections_5HKSK IS 'Maps which teacher teaches which subject to which section';
 
 -- 3.10 Timetable Periods Configuration
-CREATE TABLE timetable_periods_EWNTKS (
+CREATE TABLE timetable_periods_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   period_number INTEGER NOT NULL,
   period_name VARCHAR(50),
@@ -434,13 +434,13 @@ CREATE TABLE timetable_periods_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetable_periods_number ON timetable_periods_EWNTKS(period_number);
-CREATE UNIQUE INDEX idx_timetable_periods_order ON timetable_periods_EWNTKS(display_order);
+CREATE INDEX idx_timetable_periods_number ON timetable_periods_5HKSK(period_number);
+CREATE UNIQUE INDEX idx_timetable_periods_order ON timetable_periods_5HKSK(display_order);
 
-COMMENT ON TABLE timetable_periods_EWNTKS IS 'School period configuration (Period 1, Break, Period 2, etc.)';
+COMMENT ON TABLE timetable_periods_5HKSK IS 'School period configuration (Period 1, Break, Period 2, etc.)';
 
 -- 3.11 Timetables
-CREATE TABLE timetables_EWNTKS (
+CREATE TABLE timetables_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   section_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -454,16 +454,16 @@ CREATE TABLE timetables_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetables_section ON timetables_EWNTKS(section_id);
-CREATE INDEX idx_timetables_teacher ON timetables_EWNTKS(teacher_id);
-CREATE INDEX idx_timetables_subject ON timetables_EWNTKS(subject_id);
-CREATE INDEX idx_timetables_day ON timetables_EWNTKS(day_of_week);
-CREATE UNIQUE INDEX idx_timetables_unique ON timetables_EWNTKS(section_id, day_of_week, period_id, academic_year_id) WHERE is_active = true;
+CREATE INDEX idx_timetables_section ON timetables_5HKSK(section_id);
+CREATE INDEX idx_timetables_teacher ON timetables_5HKSK(teacher_id);
+CREATE INDEX idx_timetables_subject ON timetables_5HKSK(subject_id);
+CREATE INDEX idx_timetables_day ON timetables_5HKSK(day_of_week);
+CREATE UNIQUE INDEX idx_timetables_unique ON timetables_5HKSK(section_id, day_of_week, period_id, academic_year_id) WHERE is_active = true;
 
-COMMENT ON TABLE timetables_EWNTKS IS 'Weekly timetable for sections';
+COMMENT ON TABLE timetables_5HKSK IS 'Weekly timetable for sections';
 
 -- 3.12 Timetable Substitutions
-CREATE TABLE timetable_substitutions_EWNTKS (
+CREATE TABLE timetable_substitutions_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   timetable_id UUID NOT NULL,
   original_teacher_id UUID NOT NULL,
@@ -474,13 +474,13 @@ CREATE TABLE timetable_substitutions_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetable_substitutions_timetable ON timetable_substitutions_EWNTKS(timetable_id);
-CREATE INDEX idx_timetable_substitutions_date ON timetable_substitutions_EWNTKS(substitution_date);
+CREATE INDEX idx_timetable_substitutions_timetable ON timetable_substitutions_5HKSK(timetable_id);
+CREATE INDEX idx_timetable_substitutions_date ON timetable_substitutions_5HKSK(substitution_date);
 
-COMMENT ON TABLE timetable_substitutions_EWNTKS IS 'Substitute teacher assignments for specific dates';
+COMMENT ON TABLE timetable_substitutions_5HKSK IS 'Substitute teacher assignments for specific dates';
 
 -- 3.13 Lecture Templates
-CREATE TABLE lecture_templates_EWNTKS (
+CREATE TABLE lecture_templates_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   template_name VARCHAR(255) NOT NULL,
   subject_id UUID NOT NULL,
@@ -491,16 +491,16 @@ CREATE TABLE lecture_templates_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lecture_templates_subject ON lecture_templates_EWNTKS(subject_id);
+CREATE INDEX idx_lecture_templates_subject ON lecture_templates_5HKSK(subject_id);
 
-COMMENT ON TABLE lecture_templates_EWNTKS IS 'Reusable lecture templates for quick timetable creation';
+COMMENT ON TABLE lecture_templates_5HKSK IS 'Reusable lecture templates for quick timetable creation';
 
 -- ============================================================================
 -- 4. ATTENDANCE MANAGEMENT
 -- ============================================================================
 
 -- 4.1 Daily Attendance (Class-wise)
-CREATE TABLE attendance_EWNTKS (
+CREATE TABLE attendance_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   class_id UUID NOT NULL,
@@ -514,16 +514,16 @@ CREATE TABLE attendance_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_attendance_student ON attendance_EWNTKS(student_id);
-CREATE INDEX idx_attendance_date ON attendance_EWNTKS(attendance_date);
-CREATE INDEX idx_attendance_section ON attendance_EWNTKS(section_id);
-CREATE INDEX idx_attendance_status ON attendance_EWNTKS(status);
-CREATE UNIQUE INDEX idx_attendance_unique ON attendance_EWNTKS(student_id, attendance_date);
+CREATE INDEX idx_attendance_student ON attendance_5HKSK(student_id);
+CREATE INDEX idx_attendance_date ON attendance_5HKSK(attendance_date);
+CREATE INDEX idx_attendance_section ON attendance_5HKSK(section_id);
+CREATE INDEX idx_attendance_status ON attendance_5HKSK(status);
+CREATE UNIQUE INDEX idx_attendance_unique ON attendance_5HKSK(student_id, attendance_date);
 
-COMMENT ON TABLE attendance_EWNTKS IS 'Daily class-wise attendance for students';
+COMMENT ON TABLE attendance_5HKSK IS 'Daily class-wise attendance for students';
 
 -- 4.2 Subject-wise Attendance (for colleges/senior classes)
-CREATE TABLE attendance_subject_wise_EWNTKS (
+CREATE TABLE attendance_subject_wise_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   section_id UUID NOT NULL,
@@ -537,15 +537,15 @@ CREATE TABLE attendance_subject_wise_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_attendance_subject_student ON attendance_subject_wise_EWNTKS(student_id);
-CREATE INDEX idx_attendance_subject_date ON attendance_subject_wise_EWNTKS(attendance_date);
-CREATE INDEX idx_attendance_subject_subject ON attendance_subject_wise_EWNTKS(subject_id);
-CREATE UNIQUE INDEX idx_attendance_subject_unique ON attendance_subject_wise_EWNTKS(student_id, subject_id, attendance_date, period_id);
+CREATE INDEX idx_attendance_subject_student ON attendance_subject_wise_5HKSK(student_id);
+CREATE INDEX idx_attendance_subject_date ON attendance_subject_wise_5HKSK(attendance_date);
+CREATE INDEX idx_attendance_subject_subject ON attendance_subject_wise_5HKSK(subject_id);
+CREATE UNIQUE INDEX idx_attendance_subject_unique ON attendance_subject_wise_5HKSK(student_id, subject_id, attendance_date, period_id);
 
-COMMENT ON TABLE attendance_subject_wise_EWNTKS IS 'Subject and period-wise attendance tracking';
+COMMENT ON TABLE attendance_subject_wise_5HKSK IS 'Subject and period-wise attendance tracking';
 
 -- 4.3 Leave Applications
-CREATE TABLE leave_applications_EWNTKS (
+CREATE TABLE leave_applications_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   leave_type VARCHAR(50) NOT NULL CHECK (leave_type IN ('Sick', 'Medical', 'Casual', 'Emergency', 'Other')),
@@ -564,14 +564,14 @@ CREATE TABLE leave_applications_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_leave_applications_student ON leave_applications_EWNTKS(student_id);
-CREATE INDEX idx_leave_applications_status ON leave_applications_EWNTKS(status);
-CREATE INDEX idx_leave_applications_dates ON leave_applications_EWNTKS(from_date, to_date);
+CREATE INDEX idx_leave_applications_student ON leave_applications_5HKSK(student_id);
+CREATE INDEX idx_leave_applications_status ON leave_applications_5HKSK(status);
+CREATE INDEX idx_leave_applications_dates ON leave_applications_5HKSK(from_date, to_date);
 
-COMMENT ON TABLE leave_applications_EWNTKS IS 'Student leave application and approval system';
+COMMENT ON TABLE leave_applications_5HKSK IS 'Student leave application and approval system';
 
 -- 4.4 Teacher Attendance
-CREATE TABLE teacher_attendance_EWNTKS (
+CREATE TABLE teacher_attendance_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   attendance_date DATE NOT NULL,
@@ -583,18 +583,18 @@ CREATE TABLE teacher_attendance_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_teacher_attendance_teacher ON teacher_attendance_EWNTKS(teacher_id);
-CREATE INDEX idx_teacher_attendance_date ON teacher_attendance_EWNTKS(attendance_date);
-CREATE UNIQUE INDEX idx_teacher_attendance_unique ON teacher_attendance_EWNTKS(teacher_id, attendance_date);
+CREATE INDEX idx_teacher_attendance_teacher ON teacher_attendance_5HKSK(teacher_id);
+CREATE INDEX idx_teacher_attendance_date ON teacher_attendance_5HKSK(attendance_date);
+CREATE UNIQUE INDEX idx_teacher_attendance_unique ON teacher_attendance_5HKSK(teacher_id, attendance_date);
 
-COMMENT ON TABLE teacher_attendance_EWNTKS IS 'Daily attendance tracking for teachers';
+COMMENT ON TABLE teacher_attendance_5HKSK IS 'Daily attendance tracking for teachers';
 
 -- ============================================================================
 -- 5. EXAMINATION SYSTEM
 -- ============================================================================
 
 -- 5.1 Exam Types
-CREATE TABLE exam_types_EWNTKS (
+CREATE TABLE exam_types_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_type_name VARCHAR(100) NOT NULL,
   exam_type_code VARCHAR(20) UNIQUE NOT NULL,
@@ -604,12 +604,12 @@ CREATE TABLE exam_types_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_types_active ON exam_types_EWNTKS(is_active);
+CREATE INDEX idx_exam_types_active ON exam_types_5HKSK(is_active);
 
-COMMENT ON TABLE exam_types_EWNTKS IS 'Exam type definitions (Unit Test, Mid-term, Final, etc.)';
+COMMENT ON TABLE exam_types_5HKSK IS 'Exam type definitions (Unit Test, Mid-term, Final, etc.)';
 
 -- 5.2 Exams
-CREATE TABLE exams_EWNTKS (
+CREATE TABLE exams_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_name VARCHAR(255) NOT NULL,
   exam_code VARCHAR(50) UNIQUE NOT NULL,
@@ -624,14 +624,14 @@ CREATE TABLE exams_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exams_type ON exams_EWNTKS(exam_type_id);
-CREATE INDEX idx_exams_academic_year ON exams_EWNTKS(academic_year_id);
-CREATE INDEX idx_exams_active ON exams_EWNTKS(is_active);
+CREATE INDEX idx_exams_type ON exams_5HKSK(exam_type_id);
+CREATE INDEX idx_exams_academic_year ON exams_5HKSK(academic_year_id);
+CREATE INDEX idx_exams_active ON exams_5HKSK(is_active);
 
-COMMENT ON TABLE exams_EWNTKS IS 'Exam master data with schedules';
+COMMENT ON TABLE exams_5HKSK IS 'Exam master data with schedules';
 
 -- 5.3 Exam Schedules
-CREATE TABLE exam_schedules_EWNTKS (
+CREATE TABLE exam_schedules_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   class_id UUID NOT NULL,
@@ -649,15 +649,15 @@ CREATE TABLE exam_schedules_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_schedules_exam ON exam_schedules_EWNTKS(exam_id);
-CREATE INDEX idx_exam_schedules_class ON exam_schedules_EWNTKS(class_id);
-CREATE INDEX idx_exam_schedules_subject ON exam_schedules_EWNTKS(subject_id);
-CREATE INDEX idx_exam_schedules_date ON exam_schedules_EWNTKS(exam_date);
+CREATE INDEX idx_exam_schedules_exam ON exam_schedules_5HKSK(exam_id);
+CREATE INDEX idx_exam_schedules_class ON exam_schedules_5HKSK(class_id);
+CREATE INDEX idx_exam_schedules_subject ON exam_schedules_5HKSK(subject_id);
+CREATE INDEX idx_exam_schedules_date ON exam_schedules_5HKSK(exam_date);
 
-COMMENT ON TABLE exam_schedules_EWNTKS IS 'Detailed exam schedule for each subject';
+COMMENT ON TABLE exam_schedules_5HKSK IS 'Detailed exam schedule for each subject';
 
 -- 5.4 Admit Cards
-CREATE TABLE admit_cards_EWNTKS (
+CREATE TABLE admit_cards_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -670,14 +670,14 @@ CREATE TABLE admit_cards_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_admit_cards_exam ON admit_cards_EWNTKS(exam_id);
-CREATE INDEX idx_admit_cards_student ON admit_cards_EWNTKS(student_id);
-CREATE UNIQUE INDEX idx_admit_cards_unique ON admit_cards_EWNTKS(exam_id, student_id);
+CREATE INDEX idx_admit_cards_exam ON admit_cards_5HKSK(exam_id);
+CREATE INDEX idx_admit_cards_student ON admit_cards_5HKSK(student_id);
+CREATE UNIQUE INDEX idx_admit_cards_unique ON admit_cards_5HKSK(exam_id, student_id);
 
-COMMENT ON TABLE admit_cards_EWNTKS IS 'Admit card generation and tracking';
+COMMENT ON TABLE admit_cards_5HKSK IS 'Admit card generation and tracking';
 
 -- 5.5 Exam Marks
-CREATE TABLE exam_marks_EWNTKS (
+CREATE TABLE exam_marks_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_schedule_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -692,15 +692,15 @@ CREATE TABLE exam_marks_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_marks_schedule ON exam_marks_EWNTKS(exam_schedule_id);
-CREATE INDEX idx_exam_marks_student ON exam_marks_EWNTKS(student_id);
-CREATE INDEX idx_exam_marks_verified ON exam_marks_EWNTKS(verified_by, verified_at);
-CREATE UNIQUE INDEX idx_exam_marks_unique ON exam_marks_EWNTKS(exam_schedule_id, student_id);
+CREATE INDEX idx_exam_marks_schedule ON exam_marks_5HKSK(exam_schedule_id);
+CREATE INDEX idx_exam_marks_student ON exam_marks_5HKSK(student_id);
+CREATE INDEX idx_exam_marks_verified ON exam_marks_5HKSK(verified_by, verified_at);
+CREATE UNIQUE INDEX idx_exam_marks_unique ON exam_marks_5HKSK(exam_schedule_id, student_id);
 
-COMMENT ON TABLE exam_marks_EWNTKS IS 'Student marks for each exam subject';
+COMMENT ON TABLE exam_marks_5HKSK IS 'Student marks for each exam subject';
 
 -- 5.6 Report Cards
-CREATE TABLE report_cards_EWNTKS (
+CREATE TABLE report_cards_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -718,15 +718,15 @@ CREATE TABLE report_cards_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_report_cards_exam ON report_cards_EWNTKS(exam_id);
-CREATE INDEX idx_report_cards_student ON report_cards_EWNTKS(student_id);
-CREATE INDEX idx_report_cards_published ON report_cards_EWNTKS(is_published);
-CREATE UNIQUE INDEX idx_report_cards_unique ON report_cards_EWNTKS(exam_id, student_id);
+CREATE INDEX idx_report_cards_exam ON report_cards_5HKSK(exam_id);
+CREATE INDEX idx_report_cards_student ON report_cards_5HKSK(student_id);
+CREATE INDEX idx_report_cards_published ON report_cards_5HKSK(is_published);
+CREATE UNIQUE INDEX idx_report_cards_unique ON report_cards_5HKSK(exam_id, student_id);
 
-COMMENT ON TABLE report_cards_EWNTKS IS 'Consolidated report cards for students';
+COMMENT ON TABLE report_cards_5HKSK IS 'Consolidated report cards for students';
 
 -- 5.7 Grade Configuration
-CREATE TABLE grade_config_EWNTKS (
+CREATE TABLE grade_config_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   grade VARCHAR(5) NOT NULL,
   min_percentage DECIMAL(5,2) NOT NULL,
@@ -736,16 +736,16 @@ CREATE TABLE grade_config_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_grade_config_range ON grade_config_EWNTKS(min_percentage, max_percentage);
+CREATE INDEX idx_grade_config_range ON grade_config_5HKSK(min_percentage, max_percentage);
 
-COMMENT ON TABLE grade_config_EWNTKS IS 'Grade calculation configuration (A+, A, B+, etc.)';
+COMMENT ON TABLE grade_config_5HKSK IS 'Grade calculation configuration (A+, A, B+, etc.)';
 
 -- ============================================================================
 -- 6. FEE MANAGEMENT
 -- ============================================================================
 
 -- 6.1 Fee Components
-CREATE TABLE fee_components_EWNTKS (
+CREATE TABLE fee_components_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   component_name VARCHAR(100) NOT NULL,
   component_code VARCHAR(20) UNIQUE NOT NULL,
@@ -756,12 +756,12 @@ CREATE TABLE fee_components_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_components_active ON fee_components_EWNTKS(is_active);
+CREATE INDEX idx_fee_components_active ON fee_components_5HKSK(is_active);
 
-COMMENT ON TABLE fee_components_EWNTKS IS 'Fee component definitions (Tuition, Transport, Library, etc.)';
+COMMENT ON TABLE fee_components_5HKSK IS 'Fee component definitions (Tuition, Transport, Library, etc.)';
 
 -- 6.2 Fee Structures
-CREATE TABLE fee_structures_EWNTKS (
+CREATE TABLE fee_structures_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   structure_name VARCHAR(255) NOT NULL,
   class_id UUID NOT NULL,
@@ -773,14 +773,14 @@ CREATE TABLE fee_structures_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_structures_class ON fee_structures_EWNTKS(class_id);
-CREATE INDEX idx_fee_structures_year ON fee_structures_EWNTKS(academic_year_id);
-CREATE INDEX idx_fee_structures_active ON fee_structures_EWNTKS(is_active);
+CREATE INDEX idx_fee_structures_class ON fee_structures_5HKSK(class_id);
+CREATE INDEX idx_fee_structures_year ON fee_structures_5HKSK(academic_year_id);
+CREATE INDEX idx_fee_structures_active ON fee_structures_5HKSK(is_active);
 
-COMMENT ON TABLE fee_structures_EWNTKS IS 'Class-wise fee structure for academic year';
+COMMENT ON TABLE fee_structures_5HKSK IS 'Class-wise fee structure for academic year';
 
 -- 6.3 Fee Structure Components
-CREATE TABLE fee_structure_components_EWNTKS (
+CREATE TABLE fee_structure_components_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   fee_structure_id UUID NOT NULL,
   fee_component_id UUID NOT NULL,
@@ -788,13 +788,13 @@ CREATE TABLE fee_structure_components_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_structure_components_structure ON fee_structure_components_EWNTKS(fee_structure_id);
-CREATE INDEX idx_fee_structure_components_component ON fee_structure_components_EWNTKS(fee_component_id);
+CREATE INDEX idx_fee_structure_components_structure ON fee_structure_components_5HKSK(fee_structure_id);
+CREATE INDEX idx_fee_structure_components_component ON fee_structure_components_5HKSK(fee_component_id);
 
-COMMENT ON TABLE fee_structure_components_EWNTKS IS 'Component-wise breakdown of fee structure';
+COMMENT ON TABLE fee_structure_components_5HKSK IS 'Component-wise breakdown of fee structure';
 
 -- 6.4 Student Fees
-CREATE TABLE student_fees_EWNTKS (
+CREATE TABLE student_fees_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   fee_structure_id UUID NOT NULL,
@@ -810,15 +810,15 @@ CREATE TABLE student_fees_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_fees_student ON student_fees_EWNTKS(student_id);
-CREATE INDEX idx_student_fees_structure ON student_fees_EWNTKS(fee_structure_id);
-CREATE INDEX idx_student_fees_status ON student_fees_EWNTKS(status);
-CREATE UNIQUE INDEX idx_student_fees_unique ON student_fees_EWNTKS(student_id, academic_year_id);
+CREATE INDEX idx_student_fees_student ON student_fees_5HKSK(student_id);
+CREATE INDEX idx_student_fees_structure ON student_fees_5HKSK(fee_structure_id);
+CREATE INDEX idx_student_fees_status ON student_fees_5HKSK(status);
+CREATE UNIQUE INDEX idx_student_fees_unique ON student_fees_5HKSK(student_id, academic_year_id);
 
-COMMENT ON TABLE student_fees_EWNTKS IS 'Fee allocation to individual students with discounts';
+COMMENT ON TABLE student_fees_5HKSK IS 'Fee allocation to individual students with discounts';
 
 -- 6.5 Fee Payments
-CREATE TABLE fee_payments_EWNTKS (
+CREATE TABLE fee_payments_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_fee_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -836,15 +836,15 @@ CREATE TABLE fee_payments_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_payments_student_fee ON fee_payments_EWNTKS(student_fee_id);
-CREATE INDEX idx_fee_payments_student ON fee_payments_EWNTKS(student_id);
-CREATE INDEX idx_fee_payments_date ON fee_payments_EWNTKS(payment_date);
-CREATE INDEX idx_fee_payments_receipt ON fee_payments_EWNTKS(receipt_number);
+CREATE INDEX idx_fee_payments_student_fee ON fee_payments_5HKSK(student_fee_id);
+CREATE INDEX idx_fee_payments_student ON fee_payments_5HKSK(student_id);
+CREATE INDEX idx_fee_payments_date ON fee_payments_5HKSK(payment_date);
+CREATE INDEX idx_fee_payments_receipt ON fee_payments_5HKSK(receipt_number);
 
-COMMENT ON TABLE fee_payments_EWNTKS IS 'Individual fee payment transactions with receipt generation';
+COMMENT ON TABLE fee_payments_5HKSK IS 'Individual fee payment transactions with receipt generation';
 
 -- 6.6 Late Fee Configuration
-CREATE TABLE late_fee_config_EWNTKS (
+CREATE TABLE late_fee_config_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID NOT NULL,
   due_date INTEGER NOT NULL,
@@ -855,16 +855,16 @@ CREATE TABLE late_fee_config_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_late_fee_config_class ON late_fee_config_EWNTKS(class_id);
+CREATE INDEX idx_late_fee_config_class ON late_fee_config_5HKSK(class_id);
 
-COMMENT ON TABLE late_fee_config_EWNTKS IS 'Late fee configuration for classes';
+COMMENT ON TABLE late_fee_config_5HKSK IS 'Late fee configuration for classes';
 
 -- ============================================================================
 -- 7. COMMUNICATION SYSTEM
 -- ============================================================================
 
 -- 7.1 Announcements
-CREATE TABLE announcements_EWNTKS (
+CREATE TABLE announcements_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
@@ -882,16 +882,16 @@ CREATE TABLE announcements_EWNTKS (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_announcements_type ON announcements_EWNTKS(announcement_type);
-CREATE INDEX idx_announcements_audience ON announcements_EWNTKS(target_audience);
-CREATE INDEX idx_announcements_class ON announcements_EWNTKS(class_id);
-CREATE INDEX idx_announcements_active ON announcements_EWNTKS(is_active);
-CREATE INDEX idx_announcements_publish ON announcements_EWNTKS(publish_date);
+CREATE INDEX idx_announcements_type ON announcements_5HKSK(announcement_type);
+CREATE INDEX idx_announcements_audience ON announcements_5HKSK(target_audience);
+CREATE INDEX idx_announcements_class ON announcements_5HKSK(class_id);
+CREATE INDEX idx_announcements_active ON announcements_5HKSK(is_active);
+CREATE INDEX idx_announcements_publish ON announcements_5HKSK(publish_date);
 
-COMMENT ON TABLE announcements_EWNTKS IS 'School-wide and targeted announcements';
+COMMENT ON TABLE announcements_5HKSK IS 'School-wide and targeted announcements';
 
 -- 7.2 Notifications
-CREATE TABLE notifications_EWNTKS (
+CREATE TABLE notifications_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   title VARCHAR(255) NOT NULL,
@@ -904,15 +904,15 @@ CREATE TABLE notifications_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_notifications_user ON notifications_EWNTKS(user_id);
-CREATE INDEX idx_notifications_read ON notifications_EWNTKS(is_read);
-CREATE INDEX idx_notifications_type ON notifications_EWNTKS(notification_type);
-CREATE INDEX idx_notifications_created ON notifications_EWNTKS(created_at);
+CREATE INDEX idx_notifications_user ON notifications_5HKSK(user_id);
+CREATE INDEX idx_notifications_read ON notifications_5HKSK(is_read);
+CREATE INDEX idx_notifications_type ON notifications_5HKSK(notification_type);
+CREATE INDEX idx_notifications_created ON notifications_5HKSK(created_at);
 
-COMMENT ON TABLE notifications_EWNTKS IS 'In-app notification center for users';
+COMMENT ON TABLE notifications_5HKSK IS 'In-app notification center for users';
 
 -- 7.3 SMS Logs
-CREATE TABLE sms_logs_EWNTKS (
+CREATE TABLE sms_logs_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_phone VARCHAR(15) NOT NULL,
   recipient_user_id UUID,
@@ -925,15 +925,15 @@ CREATE TABLE sms_logs_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_sms_logs_phone ON sms_logs_EWNTKS(recipient_phone);
-CREATE INDEX idx_sms_logs_user ON sms_logs_EWNTKS(recipient_user_id);
-CREATE INDEX idx_sms_logs_status ON sms_logs_EWNTKS(status);
-CREATE INDEX idx_sms_logs_sent ON sms_logs_EWNTKS(sent_at);
+CREATE INDEX idx_sms_logs_phone ON sms_logs_5HKSK(recipient_phone);
+CREATE INDEX idx_sms_logs_user ON sms_logs_5HKSK(recipient_user_id);
+CREATE INDEX idx_sms_logs_status ON sms_logs_5HKSK(status);
+CREATE INDEX idx_sms_logs_sent ON sms_logs_5HKSK(sent_at);
 
-COMMENT ON TABLE sms_logs_EWNTKS IS 'SMS sending logs and delivery tracking';
+COMMENT ON TABLE sms_logs_5HKSK IS 'SMS sending logs and delivery tracking';
 
 -- 7.4 Email Logs
-CREATE TABLE email_logs_EWNTKS (
+CREATE TABLE email_logs_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_email VARCHAR(255) NOT NULL,
   recipient_user_id UUID,
@@ -946,19 +946,19 @@ CREATE TABLE email_logs_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_email_logs_email ON email_logs_EWNTKS(recipient_email);
-CREATE INDEX idx_email_logs_user ON email_logs_EWNTKS(recipient_user_id);
-CREATE INDEX idx_email_logs_status ON email_logs_EWNTKS(status);
-CREATE INDEX idx_email_logs_sent ON email_logs_EWNTKS(sent_at);
+CREATE INDEX idx_email_logs_email ON email_logs_5HKSK(recipient_email);
+CREATE INDEX idx_email_logs_user ON email_logs_5HKSK(recipient_user_id);
+CREATE INDEX idx_email_logs_status ON email_logs_5HKSK(status);
+CREATE INDEX idx_email_logs_sent ON email_logs_5HKSK(sent_at);
 
-COMMENT ON TABLE email_logs_EWNTKS IS 'Email sending logs and tracking';
+COMMENT ON TABLE email_logs_5HKSK IS 'Email sending logs and tracking';
 
 -- ============================================================================
 -- 8. ID CARD GENERATION
 -- ============================================================================
 
 -- 7.5 ID Cards
-CREATE TABLE id_cards_EWNTKS (
+CREATE TABLE id_cards_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_type VARCHAR(20) NOT NULL CHECK (user_type IN ('Student', 'Teacher', 'Staff')),
   user_id UUID NOT NULL,
@@ -973,18 +973,18 @@ CREATE TABLE id_cards_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_id_cards_user ON id_cards_EWNTKS(user_id, user_type);
-CREATE INDEX idx_id_cards_number ON id_cards_EWNTKS(card_number);
-CREATE INDEX idx_id_cards_active ON id_cards_EWNTKS(is_active);
+CREATE INDEX idx_id_cards_user ON id_cards_5HKSK(user_id, user_type);
+CREATE INDEX idx_id_cards_number ON id_cards_5HKSK(card_number);
+CREATE INDEX idx_id_cards_active ON id_cards_5HKSK(is_active);
 
-COMMENT ON TABLE id_cards_EWNTKS IS 'ID card generation and tracking with QR codes';
+COMMENT ON TABLE id_cards_5HKSK IS 'ID card generation and tracking with QR codes';
 
 -- ============================================================================
 -- 9. AUDIT & LOGS
 -- ============================================================================
 
 -- 9.1 Activity Logs
-CREATE TABLE activity_logs_EWNTKS (
+CREATE TABLE activity_logs_5HKSK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   action VARCHAR(100) NOT NULL,
@@ -997,99 +997,99 @@ CREATE TABLE activity_logs_EWNTKS (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_activity_logs_user ON activity_logs_EWNTKS(user_id);
-CREATE INDEX idx_activity_logs_action ON activity_logs_EWNTKS(action);
-CREATE INDEX idx_activity_logs_module ON activity_logs_EWNTKS(module);
-CREATE INDEX idx_activity_logs_created ON activity_logs_EWNTKS(created_at);
+CREATE INDEX idx_activity_logs_user ON activity_logs_5HKSK(user_id);
+CREATE INDEX idx_activity_logs_action ON activity_logs_5HKSK(action);
+CREATE INDEX idx_activity_logs_module ON activity_logs_5HKSK(module);
+CREATE INDEX idx_activity_logs_created ON activity_logs_5HKSK(created_at);
 
-COMMENT ON TABLE activity_logs_EWNTKS IS 'Audit trail for all user actions in the system';
+COMMENT ON TABLE activity_logs_5HKSK IS 'Audit trail for all user actions in the system';
 
 -- ============================================================================
 -- 10. FOREIGN KEY CONSTRAINTS
 -- ============================================================================
 
-ALTER TABLE students_EWNTKS ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE students_EWNTKS ADD CONSTRAINT fk_students_class FOREIGN KEY (class_id) REFERENCES classes_EWNTKS(id) ON DELETE RESTRICT;
-ALTER TABLE students_EWNTKS ADD CONSTRAINT fk_students_section FOREIGN KEY (section_id) REFERENCES sections_EWNTKS(id) ON DELETE RESTRICT;
-ALTER TABLE students_EWNTKS ADD CONSTRAINT fk_students_academic_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_EWNTKS(id) ON DELETE RESTRICT;
-ALTER TABLE parents_EWNTKS ADD CONSTRAINT fk_parents_user FOREIGN KEY (user_id) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE student_parent_relations_EWNTKS ADD CONSTRAINT fk_student_parent_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE student_parent_relations_EWNTKS ADD CONSTRAINT fk_student_parent_parent FOREIGN KEY (parent_id) REFERENCES parents_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE sections_EWNTKS ADD CONSTRAINT fk_sections_class FOREIGN KEY (class_id) REFERENCES classes_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE sections_EWNTKS ADD CONSTRAINT fk_sections_teacher FOREIGN KEY (class_teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE class_subjects_EWNTKS ADD CONSTRAINT fk_class_subjects_class FOREIGN KEY (class_id) REFERENCES classes_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE class_subjects_EWNTKS ADD CONSTRAINT fk_class_subjects_subject FOREIGN KEY (subject_id) REFERENCES subjects_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE topics_EWNTKS ADD CONSTRAINT fk_topics_subject FOREIGN KEY (subject_id) REFERENCES subjects_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE topics_EWNTKS ADD CONSTRAINT fk_topics_parent FOREIGN KEY (parent_topic_id) REFERENCES topics_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE topic_content_EWNTKS ADD CONSTRAINT fk_topic_content_topic FOREIGN KEY (topic_id) REFERENCES topics_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE topic_content_EWNTKS ADD CONSTRAINT fk_topic_content_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE teachers_EWNTKS ADD CONSTRAINT fk_teachers_user FOREIGN KEY (user_id) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE teacher_subject_sections_EWNTKS ADD CONSTRAINT fk_teacher_subject_sections_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE teacher_subject_sections_EWNTKS ADD CONSTRAINT fk_teacher_subject_sections_section FOREIGN KEY (section_id) REFERENCES sections_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE teacher_subject_sections_EWNTKS ADD CONSTRAINT fk_teacher_subject_sections_subject FOREIGN KEY (subject_id) REFERENCES subjects_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE teacher_subject_sections_EWNTKS ADD CONSTRAINT fk_teacher_subject_sections_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE timetables_EWNTKS ADD CONSTRAINT fk_timetables_section FOREIGN KEY (section_id) REFERENCES sections_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE timetables_EWNTKS ADD CONSTRAINT fk_timetables_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE timetables_EWNTKS ADD CONSTRAINT fk_timetables_period FOREIGN KEY (period_id) REFERENCES timetable_periods_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE timetables_EWNTKS ADD CONSTRAINT fk_timetables_subject FOREIGN KEY (subject_id) REFERENCES subjects_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE timetables_EWNTKS ADD CONSTRAINT fk_timetables_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE timetable_substitutions_EWNTKS ADD CONSTRAINT fk_timetable_subs_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE timetable_substitutions_EWNTKS ADD CONSTRAINT fk_timetable_subs_original FOREIGN KEY (original_teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE timetable_substitutions_EWNTKS ADD CONSTRAINT fk_timetable_subs_substitute FOREIGN KEY (substitute_teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE timetable_substitutions_EWNTKS ADD CONSTRAINT fk_timetable_subs_created_by FOREIGN KEY (created_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE lecture_templates_EWNTKS ADD CONSTRAINT fk_lecture_templates_subject FOREIGN KEY (subject_id) REFERENCES subjects_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE lecture_templates_EWNTKS ADD CONSTRAINT fk_lecture_templates_teacher FOREIGN KEY (default_teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE attendance_EWNTKS ADD CONSTRAINT fk_attendance_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE attendance_EWNTKS ADD CONSTRAINT fk_attendance_class FOREIGN KEY (class_id) REFERENCES classes_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE attendance_EWNTKS ADD CONSTRAINT fk_attendance_section FOREIGN KEY (section_id) REFERENCES sections_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE attendance_EWNTKS ADD CONSTRAINT fk_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE attendance_subject_wise_EWNTKS ADD CONSTRAINT fk_attendance_subject_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE attendance_subject_wise_EWNTKS ADD CONSTRAINT fk_attendance_subject_section FOREIGN KEY (section_id) REFERENCES sections_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE attendance_subject_wise_EWNTKS ADD CONSTRAINT fk_attendance_subject_subject FOREIGN KEY (subject_id) REFERENCES subjects_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE attendance_subject_wise_EWNTKS ADD CONSTRAINT fk_attendance_subject_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE attendance_subject_wise_EWNTKS ADD CONSTRAINT fk_attendance_subject_period FOREIGN KEY (period_id) REFERENCES timetable_periods_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE attendance_subject_wise_EWNTKS ADD CONSTRAINT fk_attendance_subject_marked_by FOREIGN KEY (marked_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE leave_applications_EWNTKS ADD CONSTRAINT fk_leave_applications_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE leave_applications_EWNTKS ADD CONSTRAINT fk_leave_applications_applied_by FOREIGN KEY (applied_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE leave_applications_EWNTKS ADD CONSTRAINT fk_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE teacher_attendance_EWNTKS ADD CONSTRAINT fk_teacher_attendance_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE teacher_attendance_EWNTKS ADD CONSTRAINT fk_teacher_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE exams_EWNTKS ADD CONSTRAINT fk_exams_type FOREIGN KEY (exam_type_id) REFERENCES exam_types_EWNTKS(id) ON DELETE RESTRICT;
-ALTER TABLE exams_EWNTKS ADD CONSTRAINT fk_exams_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE exam_schedules_EWNTKS ADD CONSTRAINT fk_exam_schedules_exam FOREIGN KEY (exam_id) REFERENCES exams_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE exam_schedules_EWNTKS ADD CONSTRAINT fk_exam_schedules_class FOREIGN KEY (class_id) REFERENCES classes_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE exam_schedules_EWNTKS ADD CONSTRAINT fk_exam_schedules_section FOREIGN KEY (section_id) REFERENCES sections_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE exam_schedules_EWNTKS ADD CONSTRAINT fk_exam_schedules_subject FOREIGN KEY (subject_id) REFERENCES subjects_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE admit_cards_EWNTKS ADD CONSTRAINT fk_admit_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE admit_cards_EWNTKS ADD CONSTRAINT fk_admit_cards_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE exam_marks_EWNTKS ADD CONSTRAINT fk_exam_marks_schedule FOREIGN KEY (exam_schedule_id) REFERENCES exam_schedules_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE exam_marks_EWNTKS ADD CONSTRAINT fk_exam_marks_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE exam_marks_EWNTKS ADD CONSTRAINT fk_exam_marks_entered_by FOREIGN KEY (entered_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE exam_marks_EWNTKS ADD CONSTRAINT fk_exam_marks_verified_by FOREIGN KEY (verified_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE report_cards_EWNTKS ADD CONSTRAINT fk_report_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE report_cards_EWNTKS ADD CONSTRAINT fk_report_cards_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_structures_EWNTKS ADD CONSTRAINT fk_fee_structures_class FOREIGN KEY (class_id) REFERENCES classes_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_structures_EWNTKS ADD CONSTRAINT fk_fee_structures_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_structure_components_EWNTKS ADD CONSTRAINT fk_fee_structure_components_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_structure_components_EWNTKS ADD CONSTRAINT fk_fee_structure_components_component FOREIGN KEY (fee_component_id) REFERENCES fee_components_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE student_fees_EWNTKS ADD CONSTRAINT fk_student_fees_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE student_fees_EWNTKS ADD CONSTRAINT fk_student_fees_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_EWNTKS(id) ON DELETE RESTRICT;
-ALTER TABLE student_fees_EWNTKS ADD CONSTRAINT fk_student_fees_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_payments_EWNTKS ADD CONSTRAINT fk_fee_payments_student_fee FOREIGN KEY (student_fee_id) REFERENCES student_fees_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_payments_EWNTKS ADD CONSTRAINT fk_fee_payments_student FOREIGN KEY (student_id) REFERENCES students_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE fee_payments_EWNTKS ADD CONSTRAINT fk_fee_payments_collected_by FOREIGN KEY (collected_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE late_fee_config_EWNTKS ADD CONSTRAINT fk_late_fee_config_class FOREIGN KEY (class_id) REFERENCES classes_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE announcements_EWNTKS ADD CONSTRAINT fk_announcements_class FOREIGN KEY (class_id) REFERENCES classes_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE announcements_EWNTKS ADD CONSTRAINT fk_announcements_section FOREIGN KEY (section_id) REFERENCES sections_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE announcements_EWNTKS ADD CONSTRAINT fk_announcements_created_by FOREIGN KEY (created_by) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE notifications_EWNTKS ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE sms_logs_EWNTKS ADD CONSTRAINT fk_sms_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE email_logs_EWNTKS ADD CONSTRAINT fk_email_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_EWNTKS(id) ON DELETE SET NULL;
-ALTER TABLE id_cards_EWNTKS ADD CONSTRAINT fk_id_cards_user FOREIGN KEY (user_id) REFERENCES users_EWNTKS(id) ON DELETE CASCADE;
-ALTER TABLE activity_logs_EWNTKS ADD CONSTRAINT fk_activity_logs_user FOREIGN KEY (user_id) REFERENCES users_EWNTKS(id) ON DELETE CASCADE;
+ALTER TABLE students_5HKSK ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE students_5HKSK ADD CONSTRAINT fk_students_class FOREIGN KEY (class_id) REFERENCES classes_5HKSK(id) ON DELETE RESTRICT;
+ALTER TABLE students_5HKSK ADD CONSTRAINT fk_students_section FOREIGN KEY (section_id) REFERENCES sections_5HKSK(id) ON DELETE RESTRICT;
+ALTER TABLE students_5HKSK ADD CONSTRAINT fk_students_academic_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_5HKSK(id) ON DELETE RESTRICT;
+ALTER TABLE parents_5HKSK ADD CONSTRAINT fk_parents_user FOREIGN KEY (user_id) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE student_parent_relations_5HKSK ADD CONSTRAINT fk_student_parent_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE student_parent_relations_5HKSK ADD CONSTRAINT fk_student_parent_parent FOREIGN KEY (parent_id) REFERENCES parents_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE sections_5HKSK ADD CONSTRAINT fk_sections_class FOREIGN KEY (class_id) REFERENCES classes_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE sections_5HKSK ADD CONSTRAINT fk_sections_teacher FOREIGN KEY (class_teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE class_subjects_5HKSK ADD CONSTRAINT fk_class_subjects_class FOREIGN KEY (class_id) REFERENCES classes_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE class_subjects_5HKSK ADD CONSTRAINT fk_class_subjects_subject FOREIGN KEY (subject_id) REFERENCES subjects_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE topics_5HKSK ADD CONSTRAINT fk_topics_subject FOREIGN KEY (subject_id) REFERENCES subjects_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE topics_5HKSK ADD CONSTRAINT fk_topics_parent FOREIGN KEY (parent_topic_id) REFERENCES topics_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE topic_content_5HKSK ADD CONSTRAINT fk_topic_content_topic FOREIGN KEY (topic_id) REFERENCES topics_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE topic_content_5HKSK ADD CONSTRAINT fk_topic_content_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE teachers_5HKSK ADD CONSTRAINT fk_teachers_user FOREIGN KEY (user_id) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE teacher_subject_sections_5HKSK ADD CONSTRAINT fk_teacher_subject_sections_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_5HKSK ADD CONSTRAINT fk_teacher_subject_sections_section FOREIGN KEY (section_id) REFERENCES sections_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_5HKSK ADD CONSTRAINT fk_teacher_subject_sections_subject FOREIGN KEY (subject_id) REFERENCES subjects_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE teacher_subject_sections_5HKSK ADD CONSTRAINT fk_teacher_subject_sections_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE timetables_5HKSK ADD CONSTRAINT fk_timetables_section FOREIGN KEY (section_id) REFERENCES sections_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE timetables_5HKSK ADD CONSTRAINT fk_timetables_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE timetables_5HKSK ADD CONSTRAINT fk_timetables_period FOREIGN KEY (period_id) REFERENCES timetable_periods_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE timetables_5HKSK ADD CONSTRAINT fk_timetables_subject FOREIGN KEY (subject_id) REFERENCES subjects_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE timetables_5HKSK ADD CONSTRAINT fk_timetables_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE timetable_substitutions_5HKSK ADD CONSTRAINT fk_timetable_subs_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_5HKSK ADD CONSTRAINT fk_timetable_subs_original FOREIGN KEY (original_teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_5HKSK ADD CONSTRAINT fk_timetable_subs_substitute FOREIGN KEY (substitute_teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE timetable_substitutions_5HKSK ADD CONSTRAINT fk_timetable_subs_created_by FOREIGN KEY (created_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE lecture_templates_5HKSK ADD CONSTRAINT fk_lecture_templates_subject FOREIGN KEY (subject_id) REFERENCES subjects_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE lecture_templates_5HKSK ADD CONSTRAINT fk_lecture_templates_teacher FOREIGN KEY (default_teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE attendance_5HKSK ADD CONSTRAINT fk_attendance_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_5HKSK ADD CONSTRAINT fk_attendance_class FOREIGN KEY (class_id) REFERENCES classes_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_5HKSK ADD CONSTRAINT fk_attendance_section FOREIGN KEY (section_id) REFERENCES sections_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_5HKSK ADD CONSTRAINT fk_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_5HKSK ADD CONSTRAINT fk_attendance_subject_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_5HKSK ADD CONSTRAINT fk_attendance_subject_section FOREIGN KEY (section_id) REFERENCES sections_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_5HKSK ADD CONSTRAINT fk_attendance_subject_subject FOREIGN KEY (subject_id) REFERENCES subjects_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE attendance_subject_wise_5HKSK ADD CONSTRAINT fk_attendance_subject_timetable FOREIGN KEY (timetable_id) REFERENCES timetables_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_5HKSK ADD CONSTRAINT fk_attendance_subject_period FOREIGN KEY (period_id) REFERENCES timetable_periods_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE attendance_subject_wise_5HKSK ADD CONSTRAINT fk_attendance_subject_marked_by FOREIGN KEY (marked_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE leave_applications_5HKSK ADD CONSTRAINT fk_leave_applications_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE leave_applications_5HKSK ADD CONSTRAINT fk_leave_applications_applied_by FOREIGN KEY (applied_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE leave_applications_5HKSK ADD CONSTRAINT fk_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE teacher_attendance_5HKSK ADD CONSTRAINT fk_teacher_attendance_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE teacher_attendance_5HKSK ADD CONSTRAINT fk_teacher_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE exams_5HKSK ADD CONSTRAINT fk_exams_type FOREIGN KEY (exam_type_id) REFERENCES exam_types_5HKSK(id) ON DELETE RESTRICT;
+ALTER TABLE exams_5HKSK ADD CONSTRAINT fk_exams_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_5HKSK ADD CONSTRAINT fk_exam_schedules_exam FOREIGN KEY (exam_id) REFERENCES exams_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_5HKSK ADD CONSTRAINT fk_exam_schedules_class FOREIGN KEY (class_id) REFERENCES classes_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE exam_schedules_5HKSK ADD CONSTRAINT fk_exam_schedules_section FOREIGN KEY (section_id) REFERENCES sections_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE exam_schedules_5HKSK ADD CONSTRAINT fk_exam_schedules_subject FOREIGN KEY (subject_id) REFERENCES subjects_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE admit_cards_5HKSK ADD CONSTRAINT fk_admit_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE admit_cards_5HKSK ADD CONSTRAINT fk_admit_cards_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_5HKSK ADD CONSTRAINT fk_exam_marks_schedule FOREIGN KEY (exam_schedule_id) REFERENCES exam_schedules_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_5HKSK ADD CONSTRAINT fk_exam_marks_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE exam_marks_5HKSK ADD CONSTRAINT fk_exam_marks_entered_by FOREIGN KEY (entered_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE exam_marks_5HKSK ADD CONSTRAINT fk_exam_marks_verified_by FOREIGN KEY (verified_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE report_cards_5HKSK ADD CONSTRAINT fk_report_cards_exam FOREIGN KEY (exam_id) REFERENCES exams_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE report_cards_5HKSK ADD CONSTRAINT fk_report_cards_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_structures_5HKSK ADD CONSTRAINT fk_fee_structures_class FOREIGN KEY (class_id) REFERENCES classes_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_structures_5HKSK ADD CONSTRAINT fk_fee_structures_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_structure_components_5HKSK ADD CONSTRAINT fk_fee_structure_components_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_structure_components_5HKSK ADD CONSTRAINT fk_fee_structure_components_component FOREIGN KEY (fee_component_id) REFERENCES fee_components_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE student_fees_5HKSK ADD CONSTRAINT fk_student_fees_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE student_fees_5HKSK ADD CONSTRAINT fk_student_fees_structure FOREIGN KEY (fee_structure_id) REFERENCES fee_structures_5HKSK(id) ON DELETE RESTRICT;
+ALTER TABLE student_fees_5HKSK ADD CONSTRAINT fk_student_fees_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_5HKSK ADD CONSTRAINT fk_fee_payments_student_fee FOREIGN KEY (student_fee_id) REFERENCES student_fees_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_5HKSK ADD CONSTRAINT fk_fee_payments_student FOREIGN KEY (student_id) REFERENCES students_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE fee_payments_5HKSK ADD CONSTRAINT fk_fee_payments_collected_by FOREIGN KEY (collected_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE late_fee_config_5HKSK ADD CONSTRAINT fk_late_fee_config_class FOREIGN KEY (class_id) REFERENCES classes_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE announcements_5HKSK ADD CONSTRAINT fk_announcements_class FOREIGN KEY (class_id) REFERENCES classes_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE announcements_5HKSK ADD CONSTRAINT fk_announcements_section FOREIGN KEY (section_id) REFERENCES sections_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE announcements_5HKSK ADD CONSTRAINT fk_announcements_created_by FOREIGN KEY (created_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE notifications_5HKSK ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE sms_logs_5HKSK ADD CONSTRAINT fk_sms_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE email_logs_5HKSK ADD CONSTRAINT fk_email_logs_user FOREIGN KEY (recipient_user_id) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
+ALTER TABLE id_cards_5HKSK ADD CONSTRAINT fk_id_cards_user FOREIGN KEY (user_id) REFERENCES users_5HKSK(id) ON DELETE CASCADE;
+ALTER TABLE activity_logs_5HKSK ADD CONSTRAINT fk_activity_logs_user FOREIGN KEY (user_id) REFERENCES users_5HKSK(id) ON DELETE CASCADE;
 
 -- ============================================================================
--- END OF SCHEMA FOR SCHOOL 5 (EWNTKS)
+-- END OF SCHEMA FOR SCHOOL 5 (5HKSK)
 -- Total Tables: 42 | Total Foreign Keys: 86
 -- ============================================================================
 

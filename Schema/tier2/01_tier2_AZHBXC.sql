@@ -1,5 +1,5 @@
 -- ============================================================================
--- EduMunch: TIER 2 Schema - School 1 (AZHBXC)
+-- EduMunch: TIER 2 Schema - School 1 (1EMAET)
 -- ============================================================================
 -- TIER 2: STANDARD FEATURES (Competitive Edge)
 -- Requires TIER 1 to be deployed first
@@ -16,7 +16,7 @@
 -- ============================================================================
 
 -- 1.1 Assignments
-CREATE TABLE assignments_AZHBXC (
+CREATE TABLE assignments_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   description TEXT,
@@ -35,16 +35,16 @@ CREATE TABLE assignments_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_assignments_section ON assignments_AZHBXC(section_id);
-CREATE INDEX idx_assignments_subject ON assignments_AZHBXC(subject_id);
-CREATE INDEX idx_assignments_teacher ON assignments_AZHBXC(teacher_id);
-CREATE INDEX idx_assignments_deadline ON assignments_AZHBXC(deadline);
-CREATE INDEX idx_assignments_published ON assignments_AZHBXC(is_published);
+CREATE INDEX idx_assignments_section ON assignments_1EMAET(section_id);
+CREATE INDEX idx_assignments_subject ON assignments_1EMAET(subject_id);
+CREATE INDEX idx_assignments_teacher ON assignments_1EMAET(teacher_id);
+CREATE INDEX idx_assignments_deadline ON assignments_1EMAET(deadline);
+CREATE INDEX idx_assignments_published ON assignments_1EMAET(is_published);
 
-COMMENT ON TABLE assignments_AZHBXC IS 'Teacher-created assignments with deadlines';
+COMMENT ON TABLE assignments_1EMAET IS 'Teacher-created assignments with deadlines';
 
 -- 1.2 Assignment Submissions
-CREATE TABLE assignment_submissions_AZHBXC (
+CREATE TABLE assignment_submissions_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   assignment_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -60,15 +60,15 @@ CREATE TABLE assignment_submissions_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_assignment_submissions_assignment ON assignment_submissions_AZHBXC(assignment_id);
-CREATE INDEX idx_assignment_submissions_student ON assignment_submissions_AZHBXC(student_id);
-CREATE INDEX idx_assignment_submissions_status ON assignment_submissions_AZHBXC(status);
-CREATE UNIQUE INDEX idx_assignment_submissions_unique ON assignment_submissions_AZHBXC(assignment_id, student_id);
+CREATE INDEX idx_assignment_submissions_assignment ON assignment_submissions_1EMAET(assignment_id);
+CREATE INDEX idx_assignment_submissions_student ON assignment_submissions_1EMAET(student_id);
+CREATE INDEX idx_assignment_submissions_status ON assignment_submissions_1EMAET(status);
+CREATE UNIQUE INDEX idx_assignment_submissions_unique ON assignment_submissions_1EMAET(assignment_id, student_id);
 
-COMMENT ON TABLE assignment_submissions_AZHBXC IS 'Student assignment submissions and evaluations';
+COMMENT ON TABLE assignment_submissions_1EMAET IS 'Student assignment submissions and evaluations';
 
 -- 1.3 Study Materials
-CREATE TABLE study_materials_AZHBXC (
+CREATE TABLE study_materials_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   description TEXT,
@@ -87,16 +87,16 @@ CREATE TABLE study_materials_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_study_materials_class ON study_materials_AZHBXC(class_id);
-CREATE INDEX idx_study_materials_section ON study_materials_AZHBXC(section_id);
-CREATE INDEX idx_study_materials_subject ON study_materials_AZHBXC(subject_id);
-CREATE INDEX idx_study_materials_topic ON study_materials_AZHBXC(topic_id);
-CREATE INDEX idx_study_materials_type ON study_materials_AZHBXC(material_type);
+CREATE INDEX idx_study_materials_class ON study_materials_1EMAET(class_id);
+CREATE INDEX idx_study_materials_section ON study_materials_1EMAET(section_id);
+CREATE INDEX idx_study_materials_subject ON study_materials_1EMAET(subject_id);
+CREATE INDEX idx_study_materials_topic ON study_materials_1EMAET(topic_id);
+CREATE INDEX idx_study_materials_type ON study_materials_1EMAET(material_type);
 
-COMMENT ON TABLE study_materials_AZHBXC IS 'Subject-wise study materials repository';
+COMMENT ON TABLE study_materials_1EMAET IS 'Subject-wise study materials repository';
 
 -- 1.4 Online Class Sessions
-CREATE TABLE online_class_sessions_AZHBXC (
+CREATE TABLE online_class_sessions_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   session_title VARCHAR(255) NOT NULL,
   section_id UUID NOT NULL,
@@ -115,16 +115,16 @@ CREATE TABLE online_class_sessions_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_online_class_sessions_section ON online_class_sessions_AZHBXC(section_id);
-CREATE INDEX idx_online_class_sessions_subject ON online_class_sessions_AZHBXC(subject_id);
-CREATE INDEX idx_online_class_sessions_teacher ON online_class_sessions_AZHBXC(teacher_id);
-CREATE INDEX idx_online_class_sessions_date ON online_class_sessions_AZHBXC(session_date);
-CREATE INDEX idx_online_class_sessions_status ON online_class_sessions_AZHBXC(status);
+CREATE INDEX idx_online_class_sessions_section ON online_class_sessions_1EMAET(section_id);
+CREATE INDEX idx_online_class_sessions_subject ON online_class_sessions_1EMAET(subject_id);
+CREATE INDEX idx_online_class_sessions_teacher ON online_class_sessions_1EMAET(teacher_id);
+CREATE INDEX idx_online_class_sessions_date ON online_class_sessions_1EMAET(session_date);
+CREATE INDEX idx_online_class_sessions_status ON online_class_sessions_1EMAET(status);
 
-COMMENT ON TABLE online_class_sessions_AZHBXC IS 'Online class scheduling with meeting links';
+COMMENT ON TABLE online_class_sessions_1EMAET IS 'Online class scheduling with meeting links';
 
 -- 1.5 Class Recordings
-CREATE TABLE class_recordings_AZHBXC (
+CREATE TABLE class_recordings_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   session_id UUID NOT NULL,
   recording_title VARCHAR(255) NOT NULL,
@@ -137,13 +137,13 @@ CREATE TABLE class_recordings_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_class_recordings_session ON class_recordings_AZHBXC(session_id);
-CREATE INDEX idx_class_recordings_available ON class_recordings_AZHBXC(is_available);
+CREATE INDEX idx_class_recordings_session ON class_recordings_1EMAET(session_id);
+CREATE INDEX idx_class_recordings_available ON class_recordings_1EMAET(is_available);
 
-COMMENT ON TABLE class_recordings_AZHBXC IS 'Recorded online class videos';
+COMMENT ON TABLE class_recordings_1EMAET IS 'Recorded online class videos';
 
 -- 1.6 Material Access Logs
-CREATE TABLE material_access_logs_AZHBXC (
+CREATE TABLE material_access_logs_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   material_id UUID,
@@ -153,18 +153,18 @@ CREATE TABLE material_access_logs_AZHBXC (
   duration_seconds INTEGER
 );
 
-CREATE INDEX idx_material_access_logs_student ON material_access_logs_AZHBXC(student_id);
-CREATE INDEX idx_material_access_logs_material ON material_access_logs_AZHBXC(material_id);
-CREATE INDEX idx_material_access_logs_recording ON material_access_logs_AZHBXC(recording_id);
+CREATE INDEX idx_material_access_logs_student ON material_access_logs_1EMAET(student_id);
+CREATE INDEX idx_material_access_logs_material ON material_access_logs_1EMAET(material_id);
+CREATE INDEX idx_material_access_logs_recording ON material_access_logs_1EMAET(recording_id);
 
-COMMENT ON TABLE material_access_logs_AZHBXC IS 'Track student engagement with learning materials';
+COMMENT ON TABLE material_access_logs_1EMAET IS 'Track student engagement with learning materials';
 
 -- ============================================================================
 -- 2. TRANSPORT MANAGEMENT
 -- ============================================================================
 
 -- 2.1 Transport Routes
-CREATE TABLE transport_routes_AZHBXC (
+CREATE TABLE transport_routes_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   route_name VARCHAR(255) NOT NULL,
   route_code VARCHAR(50) UNIQUE NOT NULL,
@@ -179,13 +179,13 @@ CREATE TABLE transport_routes_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_transport_routes_code ON transport_routes_AZHBXC(route_code);
-CREATE INDEX idx_transport_routes_active ON transport_routes_AZHBXC(is_active);
+CREATE INDEX idx_transport_routes_code ON transport_routes_1EMAET(route_code);
+CREATE INDEX idx_transport_routes_active ON transport_routes_1EMAET(is_active);
 
-COMMENT ON TABLE transport_routes_AZHBXC IS 'Bus route master data';
+COMMENT ON TABLE transport_routes_1EMAET IS 'Bus route master data';
 
 -- 2.2 Transport Stops
-CREATE TABLE transport_stops_AZHBXC (
+CREATE TABLE transport_stops_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   route_id UUID NOT NULL,
   stop_name VARCHAR(255) NOT NULL,
@@ -197,13 +197,13 @@ CREATE TABLE transport_stops_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_transport_stops_route ON transport_stops_AZHBXC(route_id);
-CREATE INDEX idx_transport_stops_order ON transport_stops_AZHBXC(route_id, stop_order);
+CREATE INDEX idx_transport_stops_route ON transport_stops_1EMAET(route_id);
+CREATE INDEX idx_transport_stops_order ON transport_stops_1EMAET(route_id, stop_order);
 
-COMMENT ON TABLE transport_stops_AZHBXC IS 'Stops along each route';
+COMMENT ON TABLE transport_stops_1EMAET IS 'Stops along each route';
 
 -- 2.3 Transport Vehicles
-CREATE TABLE transport_vehicles_AZHBXC (
+CREATE TABLE transport_vehicles_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vehicle_number VARCHAR(50) UNIQUE NOT NULL,
   vehicle_type VARCHAR(50) CHECK (vehicle_type IN ('Bus', 'Van', 'Auto', 'Other')),
@@ -222,13 +222,13 @@ CREATE TABLE transport_vehicles_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_transport_vehicles_number ON transport_vehicles_AZHBXC(vehicle_number);
-CREATE INDEX idx_transport_vehicles_status ON transport_vehicles_AZHBXC(status);
+CREATE INDEX idx_transport_vehicles_number ON transport_vehicles_1EMAET(vehicle_number);
+CREATE INDEX idx_transport_vehicles_status ON transport_vehicles_1EMAET(status);
 
-COMMENT ON TABLE transport_vehicles_AZHBXC IS 'School vehicle master data';
+COMMENT ON TABLE transport_vehicles_1EMAET IS 'School vehicle master data';
 
 -- 2.4 Vehicle Drivers
-CREATE TABLE vehicle_drivers_AZHBXC (
+CREATE TABLE vehicle_drivers_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   full_name VARCHAR(255) NOT NULL,
   employee_code VARCHAR(50) UNIQUE NOT NULL,
@@ -245,13 +245,13 @@ CREATE TABLE vehicle_drivers_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_vehicle_drivers_code ON vehicle_drivers_AZHBXC(employee_code);
-CREATE INDEX idx_vehicle_drivers_status ON vehicle_drivers_AZHBXC(status);
+CREATE INDEX idx_vehicle_drivers_code ON vehicle_drivers_1EMAET(employee_code);
+CREATE INDEX idx_vehicle_drivers_status ON vehicle_drivers_1EMAET(status);
 
-COMMENT ON TABLE vehicle_drivers_AZHBXC IS 'Driver information and credentials';
+COMMENT ON TABLE vehicle_drivers_1EMAET IS 'Driver information and credentials';
 
 -- 2.5 Vehicle Route Assignments
-CREATE TABLE vehicle_route_assignments_AZHBXC (
+CREATE TABLE vehicle_route_assignments_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   route_id UUID NOT NULL,
   vehicle_id UUID NOT NULL,
@@ -263,15 +263,15 @@ CREATE TABLE vehicle_route_assignments_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_vehicle_route_assignments_route ON vehicle_route_assignments_AZHBXC(route_id);
-CREATE INDEX idx_vehicle_route_assignments_vehicle ON vehicle_route_assignments_AZHBXC(vehicle_id);
-CREATE INDEX idx_vehicle_route_assignments_driver ON vehicle_route_assignments_AZHBXC(driver_id);
-CREATE INDEX idx_vehicle_route_assignments_active ON vehicle_route_assignments_AZHBXC(is_active);
+CREATE INDEX idx_vehicle_route_assignments_route ON vehicle_route_assignments_1EMAET(route_id);
+CREATE INDEX idx_vehicle_route_assignments_vehicle ON vehicle_route_assignments_1EMAET(vehicle_id);
+CREATE INDEX idx_vehicle_route_assignments_driver ON vehicle_route_assignments_1EMAET(driver_id);
+CREATE INDEX idx_vehicle_route_assignments_active ON vehicle_route_assignments_1EMAET(is_active);
 
-COMMENT ON TABLE vehicle_route_assignments_AZHBXC IS 'Daily vehicle-route-driver assignments';
+COMMENT ON TABLE vehicle_route_assignments_1EMAET IS 'Daily vehicle-route-driver assignments';
 
 -- 2.6 Student Transport
-CREATE TABLE student_transport_AZHBXC (
+CREATE TABLE student_transport_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   route_id UUID NOT NULL,
@@ -285,15 +285,15 @@ CREATE TABLE student_transport_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_transport_student ON student_transport_AZHBXC(student_id);
-CREATE INDEX idx_student_transport_route ON student_transport_AZHBXC(route_id);
-CREATE INDEX idx_student_transport_stop ON student_transport_AZHBXC(stop_id);
-CREATE INDEX idx_student_transport_active ON student_transport_AZHBXC(is_active);
+CREATE INDEX idx_student_transport_student ON student_transport_1EMAET(student_id);
+CREATE INDEX idx_student_transport_route ON student_transport_1EMAET(route_id);
+CREATE INDEX idx_student_transport_stop ON student_transport_1EMAET(stop_id);
+CREATE INDEX idx_student_transport_active ON student_transport_1EMAET(is_active);
 
-COMMENT ON TABLE student_transport_AZHBXC IS 'Student transport allocation';
+COMMENT ON TABLE student_transport_1EMAET IS 'Student transport allocation';
 
 -- 2.7 Vehicle Maintenance
-CREATE TABLE vehicle_maintenance_AZHBXC (
+CREATE TABLE vehicle_maintenance_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vehicle_id UUID NOT NULL,
   maintenance_type VARCHAR(50) CHECK (maintenance_type IN ('Regular Service', 'Repair', 'Inspection', 'Emergency')),
@@ -307,17 +307,17 @@ CREATE TABLE vehicle_maintenance_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_vehicle_maintenance_vehicle ON vehicle_maintenance_AZHBXC(vehicle_id);
-CREATE INDEX idx_vehicle_maintenance_date ON vehicle_maintenance_AZHBXC(maintenance_date);
+CREATE INDEX idx_vehicle_maintenance_vehicle ON vehicle_maintenance_1EMAET(vehicle_id);
+CREATE INDEX idx_vehicle_maintenance_date ON vehicle_maintenance_1EMAET(maintenance_date);
 
-COMMENT ON TABLE vehicle_maintenance_AZHBXC IS 'Vehicle maintenance and service history';
+COMMENT ON TABLE vehicle_maintenance_1EMAET IS 'Vehicle maintenance and service history';
 
 -- ============================================================================
 -- 3. ADVANCED HR & PAYROLL
 -- ============================================================================
 
 -- 3.1 Employees (Non-Teaching Staff)
-CREATE TABLE employees_AZHBXC (
+CREATE TABLE employees_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   employee_code VARCHAR(50) UNIQUE NOT NULL,
@@ -359,13 +359,13 @@ CREATE TABLE employees_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_employees_code ON employees_AZHBXC(employee_code);
-CREATE INDEX idx_employees_status ON employees_AZHBXC(status);
+CREATE INDEX idx_employees_code ON employees_1EMAET(employee_code);
+CREATE INDEX idx_employees_status ON employees_1EMAET(status);
 
-COMMENT ON TABLE employees_AZHBXC IS 'Non-teaching staff records (admin, support staff, etc.)';
+COMMENT ON TABLE employees_1EMAET IS 'Non-teaching staff records (admin, support staff, etc.)';
 
 -- 3.2 Salary Structures
-CREATE TABLE salary_structures_AZHBXC (
+CREATE TABLE salary_structures_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   structure_name VARCHAR(255) NOT NULL,
   designation VARCHAR(100),
@@ -377,13 +377,13 @@ CREATE TABLE salary_structures_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_salary_structures_designation ON salary_structures_AZHBXC(designation);
-CREATE INDEX idx_salary_structures_active ON salary_structures_AZHBXC(is_active);
+CREATE INDEX idx_salary_structures_designation ON salary_structures_1EMAET(designation);
+CREATE INDEX idx_salary_structures_active ON salary_structures_1EMAET(is_active);
 
-COMMENT ON TABLE salary_structures_AZHBXC IS 'Salary structure templates by designation';
+COMMENT ON TABLE salary_structures_1EMAET IS 'Salary structure templates by designation';
 
 -- 3.3 Salary Components
-CREATE TABLE salary_components_AZHBXC (
+CREATE TABLE salary_components_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   salary_structure_id UUID NOT NULL,
   component_name VARCHAR(100) NOT NULL,
@@ -396,12 +396,12 @@ CREATE TABLE salary_components_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_salary_components_structure ON salary_components_AZHBXC(salary_structure_id);
+CREATE INDEX idx_salary_components_structure ON salary_components_1EMAET(salary_structure_id);
 
-COMMENT ON TABLE salary_components_AZHBXC IS 'Breakdown of salary components (HRA, DA, PF, etc.)';
+COMMENT ON TABLE salary_components_1EMAET IS 'Breakdown of salary components (HRA, DA, PF, etc.)';
 
 -- 3.4 Monthly Payroll
-CREATE TABLE monthly_payroll_AZHBXC (
+CREATE TABLE monthly_payroll_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   employee_id UUID,
   teacher_id UUID,
@@ -421,15 +421,15 @@ CREATE TABLE monthly_payroll_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_monthly_payroll_employee ON monthly_payroll_AZHBXC(employee_id);
-CREATE INDEX idx_monthly_payroll_teacher ON monthly_payroll_AZHBXC(teacher_id);
-CREATE INDEX idx_monthly_payroll_month ON monthly_payroll_AZHBXC(salary_month);
-CREATE INDEX idx_monthly_payroll_status ON monthly_payroll_AZHBXC(status);
+CREATE INDEX idx_monthly_payroll_employee ON monthly_payroll_1EMAET(employee_id);
+CREATE INDEX idx_monthly_payroll_teacher ON monthly_payroll_1EMAET(teacher_id);
+CREATE INDEX idx_monthly_payroll_month ON monthly_payroll_1EMAET(salary_month);
+CREATE INDEX idx_monthly_payroll_status ON monthly_payroll_1EMAET(status);
 
-COMMENT ON TABLE monthly_payroll_AZHBXC IS 'Monthly salary processing for all staff';
+COMMENT ON TABLE monthly_payroll_1EMAET IS 'Monthly salary processing for all staff';
 
 -- 3.5 PF/ESI Records
-CREATE TABLE pf_esi_records_AZHBXC (
+CREATE TABLE pf_esi_records_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   employee_id UUID,
   teacher_id UUID,
@@ -445,14 +445,14 @@ CREATE TABLE pf_esi_records_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_pf_esi_records_employee ON pf_esi_records_AZHBXC(employee_id);
-CREATE INDEX idx_pf_esi_records_teacher ON pf_esi_records_AZHBXC(teacher_id);
-CREATE INDEX idx_pf_esi_records_year ON pf_esi_records_AZHBXC(financial_year);
+CREATE INDEX idx_pf_esi_records_employee ON pf_esi_records_1EMAET(employee_id);
+CREATE INDEX idx_pf_esi_records_teacher ON pf_esi_records_1EMAET(teacher_id);
+CREATE INDEX idx_pf_esi_records_year ON pf_esi_records_1EMAET(financial_year);
 
-COMMENT ON TABLE pf_esi_records_AZHBXC IS 'PF and ESI statutory contribution records';
+COMMENT ON TABLE pf_esi_records_1EMAET IS 'PF and ESI statutory contribution records';
 
 -- 3.6 Performance Reviews
-CREATE TABLE performance_reviews_AZHBXC (
+CREATE TABLE performance_reviews_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   employee_id UUID,
   teacher_id UUID,
@@ -471,14 +471,14 @@ CREATE TABLE performance_reviews_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_performance_reviews_employee ON performance_reviews_AZHBXC(employee_id);
-CREATE INDEX idx_performance_reviews_teacher ON performance_reviews_AZHBXC(teacher_id);
-CREATE INDEX idx_performance_reviews_period ON performance_reviews_AZHBXC(review_period_start, review_period_end);
+CREATE INDEX idx_performance_reviews_employee ON performance_reviews_1EMAET(employee_id);
+CREATE INDEX idx_performance_reviews_teacher ON performance_reviews_1EMAET(teacher_id);
+CREATE INDEX idx_performance_reviews_period ON performance_reviews_1EMAET(review_period_start, review_period_end);
 
-COMMENT ON TABLE performance_reviews_AZHBXC IS 'Employee performance appraisal records';
+COMMENT ON TABLE performance_reviews_1EMAET IS 'Employee performance appraisal records';
 
 -- 3.7 Recruitment Applications
-CREATE TABLE recruitment_applications_AZHBXC (
+CREATE TABLE recruitment_applications_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   job_title VARCHAR(255) NOT NULL,
   department VARCHAR(100),
@@ -497,13 +497,13 @@ CREATE TABLE recruitment_applications_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_recruitment_applications_status ON recruitment_applications_AZHBXC(status);
-CREATE INDEX idx_recruitment_applications_date ON recruitment_applications_AZHBXC(application_date);
+CREATE INDEX idx_recruitment_applications_status ON recruitment_applications_1EMAET(status);
+CREATE INDEX idx_recruitment_applications_date ON recruitment_applications_1EMAET(application_date);
 
-COMMENT ON TABLE recruitment_applications_AZHBXC IS 'Job application tracking system';
+COMMENT ON TABLE recruitment_applications_1EMAET IS 'Job application tracking system';
 
 -- 3.8 Staff Leave Applications
-CREATE TABLE staff_leave_applications_AZHBXC (
+CREATE TABLE staff_leave_applications_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   employee_id UUID,
   teacher_id UUID,
@@ -522,19 +522,19 @@ CREATE TABLE staff_leave_applications_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_staff_leave_applications_employee ON staff_leave_applications_AZHBXC(employee_id);
-CREATE INDEX idx_staff_leave_applications_teacher ON staff_leave_applications_AZHBXC(teacher_id);
-CREATE INDEX idx_staff_leave_applications_status ON staff_leave_applications_AZHBXC(status);
-CREATE INDEX idx_staff_leave_applications_dates ON staff_leave_applications_AZHBXC(from_date, to_date);
+CREATE INDEX idx_staff_leave_applications_employee ON staff_leave_applications_1EMAET(employee_id);
+CREATE INDEX idx_staff_leave_applications_teacher ON staff_leave_applications_1EMAET(teacher_id);
+CREATE INDEX idx_staff_leave_applications_status ON staff_leave_applications_1EMAET(status);
+CREATE INDEX idx_staff_leave_applications_dates ON staff_leave_applications_1EMAET(from_date, to_date);
 
-COMMENT ON TABLE staff_leave_applications_AZHBXC IS 'Leave application system for all staff';
+COMMENT ON TABLE staff_leave_applications_1EMAET IS 'Leave application system for all staff';
 
 -- ============================================================================
 -- 4. HOMEWORK & DIARY
 -- ============================================================================
 
 -- 4.1 Homework
-CREATE TABLE homework_AZHBXC (
+CREATE TABLE homework_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
@@ -549,15 +549,15 @@ CREATE TABLE homework_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_homework_section ON homework_AZHBXC(section_id);
-CREATE INDEX idx_homework_subject ON homework_AZHBXC(subject_id);
-CREATE INDEX idx_homework_date ON homework_AZHBXC(homework_date);
-CREATE INDEX idx_homework_published ON homework_AZHBXC(is_published);
+CREATE INDEX idx_homework_section ON homework_1EMAET(section_id);
+CREATE INDEX idx_homework_subject ON homework_1EMAET(subject_id);
+CREATE INDEX idx_homework_date ON homework_1EMAET(homework_date);
+CREATE INDEX idx_homework_published ON homework_1EMAET(is_published);
 
-COMMENT ON TABLE homework_AZHBXC IS 'Daily homework diary by teachers';
+COMMENT ON TABLE homework_1EMAET IS 'Daily homework diary by teachers';
 
 -- 4.2 Homework Submissions
-CREATE TABLE homework_submissions_AZHBXC (
+CREATE TABLE homework_submissions_1EMAET (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   homework_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -571,73 +571,73 @@ CREATE TABLE homework_submissions_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_homework_submissions_homework ON homework_submissions_AZHBXC(homework_id);
-CREATE INDEX idx_homework_submissions_student ON homework_submissions_AZHBXC(student_id);
-CREATE INDEX idx_homework_submissions_status ON homework_submissions_AZHBXC(status);
-CREATE UNIQUE INDEX idx_homework_submissions_unique ON homework_submissions_AZHBXC(homework_id, student_id);
+CREATE INDEX idx_homework_submissions_homework ON homework_submissions_1EMAET(homework_id);
+CREATE INDEX idx_homework_submissions_student ON homework_submissions_1EMAET(student_id);
+CREATE INDEX idx_homework_submissions_status ON homework_submissions_1EMAET(status);
+CREATE UNIQUE INDEX idx_homework_submissions_unique ON homework_submissions_1EMAET(homework_id, student_id);
 
-COMMENT ON TABLE homework_submissions_AZHBXC IS 'Student homework submission and evaluation';
+COMMENT ON TABLE homework_submissions_1EMAET IS 'Student homework submission and evaluation';
 
 -- ============================================================================
 -- 5. FOREIGN KEY CONSTRAINTS
 -- ============================================================================
 
 -- LMS Module
-ALTER TABLE assignments_AZHBXC ADD CONSTRAINT fk_assignments_section FOREIGN KEY (section_id) REFERENCES sections_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE assignments_AZHBXC ADD CONSTRAINT fk_assignments_subject FOREIGN KEY (subject_id) REFERENCES subjects_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE assignments_AZHBXC ADD CONSTRAINT fk_assignments_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE assignments_AZHBXC ADD CONSTRAINT fk_assignments_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE assignment_submissions_AZHBXC ADD CONSTRAINT fk_assignment_submissions_assignment FOREIGN KEY (assignment_id) REFERENCES assignments_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE assignment_submissions_AZHBXC ADD CONSTRAINT fk_assignment_submissions_student FOREIGN KEY (student_id) REFERENCES students_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE assignment_submissions_AZHBXC ADD CONSTRAINT fk_assignment_submissions_evaluated_by FOREIGN KEY (evaluated_by) REFERENCES users_AZHBXC(id) ON DELETE SET NULL;
-ALTER TABLE study_materials_AZHBXC ADD CONSTRAINT fk_study_materials_class FOREIGN KEY (class_id) REFERENCES classes_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE study_materials_AZHBXC ADD CONSTRAINT fk_study_materials_section FOREIGN KEY (section_id) REFERENCES sections_AZHBXC(id) ON DELETE SET NULL;
-ALTER TABLE study_materials_AZHBXC ADD CONSTRAINT fk_study_materials_subject FOREIGN KEY (subject_id) REFERENCES subjects_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE study_materials_AZHBXC ADD CONSTRAINT fk_study_materials_topic FOREIGN KEY (topic_id) REFERENCES topics_AZHBXC(id) ON DELETE SET NULL;
-ALTER TABLE study_materials_AZHBXC ADD CONSTRAINT fk_study_materials_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE online_class_sessions_AZHBXC ADD CONSTRAINT fk_online_class_sessions_section FOREIGN KEY (section_id) REFERENCES sections_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE online_class_sessions_AZHBXC ADD CONSTRAINT fk_online_class_sessions_subject FOREIGN KEY (subject_id) REFERENCES subjects_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE online_class_sessions_AZHBXC ADD CONSTRAINT fk_online_class_sessions_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE class_recordings_AZHBXC ADD CONSTRAINT fk_class_recordings_session FOREIGN KEY (session_id) REFERENCES online_class_sessions_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE material_access_logs_AZHBXC ADD CONSTRAINT fk_material_access_logs_student FOREIGN KEY (student_id) REFERENCES students_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE material_access_logs_AZHBXC ADD CONSTRAINT fk_material_access_logs_material FOREIGN KEY (material_id) REFERENCES study_materials_AZHBXC(id) ON DELETE SET NULL;
-ALTER TABLE material_access_logs_AZHBXC ADD CONSTRAINT fk_material_access_logs_recording FOREIGN KEY (recording_id) REFERENCES class_recordings_AZHBXC(id) ON DELETE SET NULL;
+ALTER TABLE assignments_1EMAET ADD CONSTRAINT fk_assignments_section FOREIGN KEY (section_id) REFERENCES sections_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE assignments_1EMAET ADD CONSTRAINT fk_assignments_subject FOREIGN KEY (subject_id) REFERENCES subjects_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE assignments_1EMAET ADD CONSTRAINT fk_assignments_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE assignments_1EMAET ADD CONSTRAINT fk_assignments_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE assignment_submissions_1EMAET ADD CONSTRAINT fk_assignment_submissions_assignment FOREIGN KEY (assignment_id) REFERENCES assignments_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE assignment_submissions_1EMAET ADD CONSTRAINT fk_assignment_submissions_student FOREIGN KEY (student_id) REFERENCES students_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE assignment_submissions_1EMAET ADD CONSTRAINT fk_assignment_submissions_evaluated_by FOREIGN KEY (evaluated_by) REFERENCES users_1EMAET(id) ON DELETE SET NULL;
+ALTER TABLE study_materials_1EMAET ADD CONSTRAINT fk_study_materials_class FOREIGN KEY (class_id) REFERENCES classes_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE study_materials_1EMAET ADD CONSTRAINT fk_study_materials_section FOREIGN KEY (section_id) REFERENCES sections_1EMAET(id) ON DELETE SET NULL;
+ALTER TABLE study_materials_1EMAET ADD CONSTRAINT fk_study_materials_subject FOREIGN KEY (subject_id) REFERENCES subjects_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE study_materials_1EMAET ADD CONSTRAINT fk_study_materials_topic FOREIGN KEY (topic_id) REFERENCES topics_1EMAET(id) ON DELETE SET NULL;
+ALTER TABLE study_materials_1EMAET ADD CONSTRAINT fk_study_materials_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES users_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE online_class_sessions_1EMAET ADD CONSTRAINT fk_online_class_sessions_section FOREIGN KEY (section_id) REFERENCES sections_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE online_class_sessions_1EMAET ADD CONSTRAINT fk_online_class_sessions_subject FOREIGN KEY (subject_id) REFERENCES subjects_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE online_class_sessions_1EMAET ADD CONSTRAINT fk_online_class_sessions_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE class_recordings_1EMAET ADD CONSTRAINT fk_class_recordings_session FOREIGN KEY (session_id) REFERENCES online_class_sessions_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE material_access_logs_1EMAET ADD CONSTRAINT fk_material_access_logs_student FOREIGN KEY (student_id) REFERENCES students_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE material_access_logs_1EMAET ADD CONSTRAINT fk_material_access_logs_material FOREIGN KEY (material_id) REFERENCES study_materials_1EMAET(id) ON DELETE SET NULL;
+ALTER TABLE material_access_logs_1EMAET ADD CONSTRAINT fk_material_access_logs_recording FOREIGN KEY (recording_id) REFERENCES class_recordings_1EMAET(id) ON DELETE SET NULL;
 
 -- Transport Module
-ALTER TABLE transport_stops_AZHBXC ADD CONSTRAINT fk_transport_stops_route FOREIGN KEY (route_id) REFERENCES transport_routes_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE vehicle_route_assignments_AZHBXC ADD CONSTRAINT fk_vehicle_route_assignments_route FOREIGN KEY (route_id) REFERENCES transport_routes_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE vehicle_route_assignments_AZHBXC ADD CONSTRAINT fk_vehicle_route_assignments_vehicle FOREIGN KEY (vehicle_id) REFERENCES transport_vehicles_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE vehicle_route_assignments_AZHBXC ADD CONSTRAINT fk_vehicle_route_assignments_driver FOREIGN KEY (driver_id) REFERENCES vehicle_drivers_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE vehicle_route_assignments_AZHBXC ADD CONSTRAINT fk_vehicle_route_assignments_conductor FOREIGN KEY (conductor_id) REFERENCES vehicle_drivers_AZHBXC(id) ON DELETE SET NULL;
-ALTER TABLE student_transport_AZHBXC ADD CONSTRAINT fk_student_transport_student FOREIGN KEY (student_id) REFERENCES students_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE student_transport_AZHBXC ADD CONSTRAINT fk_student_transport_route FOREIGN KEY (route_id) REFERENCES transport_routes_AZHBXC(id) ON DELETE RESTRICT;
-ALTER TABLE student_transport_AZHBXC ADD CONSTRAINT fk_student_transport_stop FOREIGN KEY (stop_id) REFERENCES transport_stops_AZHBXC(id) ON DELETE RESTRICT;
-ALTER TABLE student_transport_AZHBXC ADD CONSTRAINT fk_student_transport_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE vehicle_maintenance_AZHBXC ADD CONSTRAINT fk_vehicle_maintenance_vehicle FOREIGN KEY (vehicle_id) REFERENCES transport_vehicles_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE vehicle_maintenance_AZHBXC ADD CONSTRAINT fk_vehicle_maintenance_created_by FOREIGN KEY (created_by) REFERENCES users_AZHBXC(id) ON DELETE SET NULL;
+ALTER TABLE transport_stops_1EMAET ADD CONSTRAINT fk_transport_stops_route FOREIGN KEY (route_id) REFERENCES transport_routes_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_route_assignments_1EMAET ADD CONSTRAINT fk_vehicle_route_assignments_route FOREIGN KEY (route_id) REFERENCES transport_routes_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_route_assignments_1EMAET ADD CONSTRAINT fk_vehicle_route_assignments_vehicle FOREIGN KEY (vehicle_id) REFERENCES transport_vehicles_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_route_assignments_1EMAET ADD CONSTRAINT fk_vehicle_route_assignments_driver FOREIGN KEY (driver_id) REFERENCES vehicle_drivers_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_route_assignments_1EMAET ADD CONSTRAINT fk_vehicle_route_assignments_conductor FOREIGN KEY (conductor_id) REFERENCES vehicle_drivers_1EMAET(id) ON DELETE SET NULL;
+ALTER TABLE student_transport_1EMAET ADD CONSTRAINT fk_student_transport_student FOREIGN KEY (student_id) REFERENCES students_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE student_transport_1EMAET ADD CONSTRAINT fk_student_transport_route FOREIGN KEY (route_id) REFERENCES transport_routes_1EMAET(id) ON DELETE RESTRICT;
+ALTER TABLE student_transport_1EMAET ADD CONSTRAINT fk_student_transport_stop FOREIGN KEY (stop_id) REFERENCES transport_stops_1EMAET(id) ON DELETE RESTRICT;
+ALTER TABLE student_transport_1EMAET ADD CONSTRAINT fk_student_transport_year FOREIGN KEY (academic_year_id) REFERENCES academic_years_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_maintenance_1EMAET ADD CONSTRAINT fk_vehicle_maintenance_vehicle FOREIGN KEY (vehicle_id) REFERENCES transport_vehicles_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE vehicle_maintenance_1EMAET ADD CONSTRAINT fk_vehicle_maintenance_created_by FOREIGN KEY (created_by) REFERENCES users_1EMAET(id) ON DELETE SET NULL;
 
 -- HR & Payroll Module
-ALTER TABLE employees_AZHBXC ADD CONSTRAINT fk_employees_user FOREIGN KEY (user_id) REFERENCES users_AZHBXC(id) ON DELETE SET NULL;
-ALTER TABLE salary_components_AZHBXC ADD CONSTRAINT fk_salary_components_structure FOREIGN KEY (salary_structure_id) REFERENCES salary_structures_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE monthly_payroll_AZHBXC ADD CONSTRAINT fk_monthly_payroll_employee FOREIGN KEY (employee_id) REFERENCES employees_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE monthly_payroll_AZHBXC ADD CONSTRAINT fk_monthly_payroll_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE monthly_payroll_AZHBXC ADD CONSTRAINT fk_monthly_payroll_created_by FOREIGN KEY (created_by) REFERENCES users_AZHBXC(id) ON DELETE SET NULL;
-ALTER TABLE pf_esi_records_AZHBXC ADD CONSTRAINT fk_pf_esi_records_employee FOREIGN KEY (employee_id) REFERENCES employees_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE pf_esi_records_AZHBXC ADD CONSTRAINT fk_pf_esi_records_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE performance_reviews_AZHBXC ADD CONSTRAINT fk_performance_reviews_employee FOREIGN KEY (employee_id) REFERENCES employees_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE performance_reviews_AZHBXC ADD CONSTRAINT fk_performance_reviews_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE performance_reviews_AZHBXC ADD CONSTRAINT fk_performance_reviews_reviewer FOREIGN KEY (reviewer_id) REFERENCES users_AZHBXC(id) ON DELETE SET NULL;
-ALTER TABLE staff_leave_applications_AZHBXC ADD CONSTRAINT fk_staff_leave_applications_employee FOREIGN KEY (employee_id) REFERENCES employees_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE staff_leave_applications_AZHBXC ADD CONSTRAINT fk_staff_leave_applications_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE staff_leave_applications_AZHBXC ADD CONSTRAINT fk_staff_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_AZHBXC(id) ON DELETE SET NULL;
+ALTER TABLE employees_1EMAET ADD CONSTRAINT fk_employees_user FOREIGN KEY (user_id) REFERENCES users_1EMAET(id) ON DELETE SET NULL;
+ALTER TABLE salary_components_1EMAET ADD CONSTRAINT fk_salary_components_structure FOREIGN KEY (salary_structure_id) REFERENCES salary_structures_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE monthly_payroll_1EMAET ADD CONSTRAINT fk_monthly_payroll_employee FOREIGN KEY (employee_id) REFERENCES employees_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE monthly_payroll_1EMAET ADD CONSTRAINT fk_monthly_payroll_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE monthly_payroll_1EMAET ADD CONSTRAINT fk_monthly_payroll_created_by FOREIGN KEY (created_by) REFERENCES users_1EMAET(id) ON DELETE SET NULL;
+ALTER TABLE pf_esi_records_1EMAET ADD CONSTRAINT fk_pf_esi_records_employee FOREIGN KEY (employee_id) REFERENCES employees_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE pf_esi_records_1EMAET ADD CONSTRAINT fk_pf_esi_records_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE performance_reviews_1EMAET ADD CONSTRAINT fk_performance_reviews_employee FOREIGN KEY (employee_id) REFERENCES employees_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE performance_reviews_1EMAET ADD CONSTRAINT fk_performance_reviews_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE performance_reviews_1EMAET ADD CONSTRAINT fk_performance_reviews_reviewer FOREIGN KEY (reviewer_id) REFERENCES users_1EMAET(id) ON DELETE SET NULL;
+ALTER TABLE staff_leave_applications_1EMAET ADD CONSTRAINT fk_staff_leave_applications_employee FOREIGN KEY (employee_id) REFERENCES employees_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE staff_leave_applications_1EMAET ADD CONSTRAINT fk_staff_leave_applications_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE staff_leave_applications_1EMAET ADD CONSTRAINT fk_staff_leave_applications_approved_by FOREIGN KEY (approved_by) REFERENCES users_1EMAET(id) ON DELETE SET NULL;
 
 -- Homework Module
-ALTER TABLE homework_AZHBXC ADD CONSTRAINT fk_homework_section FOREIGN KEY (section_id) REFERENCES sections_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE homework_AZHBXC ADD CONSTRAINT fk_homework_subject FOREIGN KEY (subject_id) REFERENCES subjects_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE homework_AZHBXC ADD CONSTRAINT fk_homework_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE homework_submissions_AZHBXC ADD CONSTRAINT fk_homework_submissions_homework FOREIGN KEY (homework_id) REFERENCES homework_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE homework_submissions_AZHBXC ADD CONSTRAINT fk_homework_submissions_student FOREIGN KEY (student_id) REFERENCES students_AZHBXC(id) ON DELETE CASCADE;
-ALTER TABLE homework_submissions_AZHBXC ADD CONSTRAINT fk_homework_submissions_evaluated_by FOREIGN KEY (evaluated_by) REFERENCES users_AZHBXC(id) ON DELETE SET NULL;
+ALTER TABLE homework_1EMAET ADD CONSTRAINT fk_homework_section FOREIGN KEY (section_id) REFERENCES sections_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE homework_1EMAET ADD CONSTRAINT fk_homework_subject FOREIGN KEY (subject_id) REFERENCES subjects_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE homework_1EMAET ADD CONSTRAINT fk_homework_teacher FOREIGN KEY (teacher_id) REFERENCES teachers_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE homework_submissions_1EMAET ADD CONSTRAINT fk_homework_submissions_homework FOREIGN KEY (homework_id) REFERENCES homework_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE homework_submissions_1EMAET ADD CONSTRAINT fk_homework_submissions_student FOREIGN KEY (student_id) REFERENCES students_1EMAET(id) ON DELETE CASCADE;
+ALTER TABLE homework_submissions_1EMAET ADD CONSTRAINT fk_homework_submissions_evaluated_by FOREIGN KEY (evaluated_by) REFERENCES users_1EMAET(id) ON DELETE SET NULL;
 
 -- ============================================================================
 -- END OF TIER 2 SCHEMA FOR SCHOOL 1
