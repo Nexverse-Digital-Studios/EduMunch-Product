@@ -5,6 +5,7 @@
 ---
 
 ## Feature Toggle System
+
 Each school can enable/disable features through code-based configuration embedded in their white-labeled deployment, avoiding database queries on every app load.
 
 ---
@@ -12,6 +13,7 @@ Each school can enable/disable features through code-based configuration embedde
 ## TIER 1: BASIC FEATURES (Essential for Launch)
 
 ### 1.1 User Management & Authentication
+
 - **Multi-role Login System**
   - Student Portal
   - Teacher Portal
@@ -27,6 +29,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Custom role creation by Super Admin
 
 ### 1.2 Student Management
+
 - **Student Registration & Enrollment**
   - Admission form with document uploads
   - Batch/Class/Section assignment
@@ -44,6 +47,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Bulk transfer between sections
 
 ### 1.3 Attendance Management
+
 - **Daily Attendance**
   - Class-wise attendance marking
   - Subject-wise attendance (for colleges)
@@ -61,6 +65,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Medical leave with certificate upload
 
 ### 1.4 Academic Management
+
 - **Course Management**
   - Course creation (Class 1-12, Standard streams: Science, Commerce, Arts)
   - Course code assignment
@@ -98,6 +103,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Standardized lecture formats
 
 ### 1.5 Examination System
+
 - **Exam Management**
   - Exam schedule creation
   - Exam type definition (Unit, Mid-term, Final)
@@ -115,6 +121,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Parent access via portal
 
 ### 1.6 Fee Management
+
 - **Fee Structure Setup**
   - Class-wise fee definition
   - Component-wise breakdown (Tuition, Transport, Library, etc.)
@@ -132,6 +139,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Class-wise collection summary
 
 ### 1.7 Communication System
+
 - **Announcements**
   - School-wide announcements
   - Class-specific notices
@@ -151,6 +159,7 @@ Each school can enable/disable features through code-based configuration embedde
 ## TIER 2: STANDARD FEATURES (Competitive Edge)
 
 ### 2.1 Advanced Payroll & HR
+
 - **PF/ESI Management**
   - Statutory deduction calculation
   - Compliance reports
@@ -164,8 +173,8 @@ Each school can enable/disable features through code-based configuration embedde
   - Application tracking
   - Interview scheduling
 
-
 ### 2.2 Online Learning Management (LMS)
+
 - **Assignment Management**
   - Assignment creation with deadlines
   - File attachment support
@@ -182,8 +191,8 @@ Each school can enable/disable features through code-based configuration embedde
   - Class recording repository
   - Attendance tracking for online classes
 
-
 ### 2.4 Transport Management
+
 - **Route Management**
   - Route planning with stops
   - Distance calculation
@@ -198,8 +207,8 @@ Each school can enable/disable features through code-based configuration embedde
   - Stop-wise pickup/drop lists
   - Parent notifications for delays
 
-
 ### 2.7 Staff Management
+
 - **Employee Database**
   - Teacher and non-teaching staff records
   - Qualification and experience tracking
@@ -215,6 +224,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Bank transfer details
 
 ### 2.8 Homework & Diary
+
 - **Digital Homework Diary**
   - Daily homework posting by teachers
   - Subject-wise homework
@@ -229,6 +239,7 @@ Each school can enable/disable features through code-based configuration embedde
 ## TIER 3: ADVANCED FEATURES (Premium Offerings)
 
 ### 3.1 AI-Powered Analytics
+
 - **Student Performance Analytics**
   - Subject-wise strength/weakness analysis
   - Predictive performance modeling
@@ -242,6 +253,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Comparative analysis
 
 ### 3.2 Parent-Teacher Meeting (PTM)
+
 - **Meeting Scheduler**
   - Slot booking by parents
   - Teacher availability management
@@ -252,6 +264,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Follow-up reminders
 
 ### 3.5 Alumni Management
+
 - **Alumni Directory**
   - Alumni registration
   - Batch-wise organization
@@ -265,6 +278,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Session scheduling
 
 ### 3.6 Admission Management
+
 - **Online Application Portal**
   - Public admission form
   - Document upload
@@ -280,6 +294,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Rank generation
 
 ### 3.7 Inventory & Asset Management
+
 - **Asset Tracking**
   - Furniture, equipment, IT assets
   - Assignment to departments/labs
@@ -295,6 +310,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Reorder alerts
 
 ### 3.8 Certificate & Document Generation
+
 - **Auto-Generated Certificates**
   - Transfer Certificate (TC)
   - Bonafide Certificate
@@ -310,6 +326,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Digital delivery
 
 ### 3.9 Advanced Fee Management
+
 - **Online Payment Gateway**
   - Razorpay/Paytm/PhonePe integration
   - Auto-reconciliation
@@ -320,6 +337,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Account adjustment
 
 ### 3.10 Survey & Feedback
+
 - **Custom Survey Builder**
   - Drag-and-drop form builder
   - Multiple question types
@@ -341,6 +359,7 @@ Each school can enable/disable features through code-based configuration embedde
 > **Note:** TIER 4 is planned for future development. Current implementation focuses on TIER 1, TIER 2, and TIER 3 only.
 
 ### 4.1 Multi-Campus Management (Planned)
+
 - **Campus Master**
   - Multiple branch/campus management
   - Campus-wise data isolation
@@ -351,6 +370,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Consolidated analytics
 
 ### 4.2 AI Proctored Exams (Planned)
+
 - **Online Exam Platform**
   - Question bank management
   - Random question generation
@@ -365,6 +385,7 @@ Each school can enable/disable features through code-based configuration embedde
   - Descriptive answer AI evaluation (experimental)
 
 ### 4.3 Custom Integrations (Planned)
+
 - **ERP Integration**
   - Integration with existing school ERPs
   - Data sync APIs
@@ -379,6 +400,7 @@ Each school can enable/disable features through code-based configuration embedde
   - WhatsApp Business API
 
 ### 4.4 Advanced Security & Compliance (Planned)
+
 - **Data Backup & Recovery**
   - Automated daily backups
   - Point-in-time recovery
@@ -397,6 +419,7 @@ Each school can enable/disable features through code-based configuration embedde
 ## Feature Toggle Implementation Strategy
 
 ### Code-Based Feature Configuration
+
 Each white-labeled deployment will have a `features.config.ts` file:
 
 ```typescript
@@ -406,27 +429,26 @@ export const SCHOOL_FEATURES = {
   ATTENDANCE: true,
   FEE_MANAGEMENT: true,
   EXAM_MANAGEMENT: true,
-  
+
   // Standard Tier
   LMS: false,
-  LIBRARY: true,
   TRANSPORT: false,
-  HOSTEL: false,
-  
+
   // Advanced Tier
   AI_ANALYTICS: false,
   ONLINE_PAYMENTS: true,
   ALUMNI: false,
   ADMISSION_PORTAL: true,
-  
+
   // Enterprise/Custom (XTRA)
   MULTI_BRANCH: false, // For schools with multiple branches (custom feature)
   AI_PROCTORING: false,
-  ACCOUNTING: false
+  ACCOUNTING: false,
 };
 ```
 
 ### Benefits
+
 - Zero database queries for feature checks
 - Compile-time optimization (tree-shaking removes unused code)
 - Faster app load times
@@ -449,38 +471,40 @@ EduMunch is designed as a **single-branch platform**. Each school deployment is 
 
 ## Platform Distribution
 
-| Feature | Dev Panel | Admin Dashboard | Web App (Student/Teacher/Parent) |
-|---------|-----------|-----------------|----------------------------------|
-| User Management | Configure | Manage | View/Edit Profile |
-| Attendance | Schema Sync | Mark/Report | View Only |
-| Fee Management | Configure | Full Access | View/Pay |
-| Exam Management | Configure | Full Access | View Results |
-| LMS | Configure | Manage | Full Access |
-| Reports | System Reports | Operational Reports | Personal Reports |
-| Communication | - | Send | Receive |
-| Analytics | System Health | Academic/Operational | Personal Performance |
+| Feature         | Dev Panel      | Admin Dashboard      | Web App (Student/Teacher/Parent) |
+| --------------- | -------------- | -------------------- | -------------------------------- |
+| User Management | Configure      | Manage               | View/Edit Profile                |
+| Attendance      | Schema Sync    | Mark/Report          | View Only                        |
+| Fee Management  | Configure      | Full Access          | View/Pay                         |
+| Exam Management | Configure      | Full Access          | View Results                     |
+| LMS             | Configure      | Manage               | Full Access                      |
+| Reports         | System Reports | Operational Reports  | Personal Reports                 |
+| Communication   | -              | Send                 | Receive                          |
+| Analytics       | System Health  | Academic/Operational | Personal Performance             |
 
 ---
 
 ## Pricing Tier Recommendation
 
-| Tier | Price/School/Year | Features Included | Status |
-|------|-------------------|-------------------|--------|
-| **Basic** | ₹6,800 | Tier 1 Features (42 tables/school) | ✅ Schema Ready |
-| **Standard** | ₹12,000 | Tier 1 + Tier 2 (67 tables/school) | ✅ Schema Ready |
-| **Advanced** | ₹20,000 | Tier 1 + Tier 2 + Tier 3 (104 tables/school) | ✅ Schema Ready |
-| **Enterprise** | Custom | All + Tier 4 + Custom Development | 🔮 Future |
+| Tier           | Price/School/Year | Features Included                            | Status          |
+| -------------- | ----------------- | -------------------------------------------- | --------------- |
+| **Basic**      | ₹6,800            | Tier 1 Features (42 tables/school)           | ✅ Schema Ready |
+| **Standard**   | ₹12,000           | Tier 1 + Tier 2 (67 tables/school)           | ✅ Schema Ready |
+| **Advanced**   | ₹20,000           | Tier 1 + Tier 2 + Tier 3 (104 tables/school) | ✅ Schema Ready |
+| **Enterprise** | Custom            | All + Tier 4 + Custom Development            | 🔮 Future       |
 
 ---
 
 ## Current Implementation Status
 
 ### ✅ Completed (Ready for Development)
+
 - **TIER 1**: 42 tables per school - Basic features (User Management, Students, Attendance, Exams, Fees, Communication)
 - **TIER 2**: 25 tables per school - Standard features (LMS, Transport, HR/Payroll, Homework)
 - **TIER 3**: 37 tables per school - Advanced features (AI Analytics, PTM, Alumni, Admissions, Assets, Certificates, Online Payments, Surveys)
 
 ### 🔮 Future Roadmap
+
 - **TIER 4**: Enterprise features (AI Proctored Exams, Multi-Campus, Government Integrations, GDPR Compliance)
 
 ---
