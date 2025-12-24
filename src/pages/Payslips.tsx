@@ -36,7 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSupabaseQuery, useSupabaseInsert, useSupabaseDelete } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
 import { format, parse } from "date-fns";
@@ -45,7 +45,7 @@ interface Teacher {
   id: string;
   first_name: string;
   last_name: string;
-  teacher_code: string;
+  employee_code: string;
   email: string;
 }
 
@@ -75,7 +75,7 @@ interface MonthlyPayroll {
   employees_1EMAET?: Employee;
 }
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 const months = [
   "January", "February", "March", "April", "May", "June",
@@ -91,26 +91,26 @@ const Payslips = () => {
   const [selectAllTeachers, setSelectAllTeachers] = useState(false);
   const [selectAllStaff, setSelectAllStaff] = useState(false);
 
-  const { canRead, canCreate, canUpdate, canDelete } = useModulePermissions('HR');
+  const { canView, canCreate, canUpdate, canDelete } = useModulePermissions('HR');
   const { toast } = useToast();
 
   // Fetch teachers
-  const { data: teachers = [], isLoading: loadingTeachers } = useSupabaseQuery<Teacher>(
+  const { data: teachers = [], isLoading: loadingTeachers } = useSupabaseTable<Teacher>(
     `teachers_${INDEX_TOKEN}`,
-    { select: 'id, first_name, last_name, teacher_code, email', orderBy: { column: 'first_name', ascending: true } }
+    { select: 'id, first_name, last_name, employee_code, email', orderBy: { column: 'first_name', ascending: true } }
   );
 
   // Fetch employees (staff)
-  const { data: employees = [], isLoading: loadingEmployees } = useSupabaseQuery<Employee>(
+  const { data: employees = [], isLoading: loadingEmployees } = useSupabaseTable<Employee>(
     `employees_${INDEX_TOKEN}`,
     { select: 'id, first_name, last_name, employee_code, email', orderBy: { column: 'first_name', ascending: true } }
   );
 
   // Fetch payroll records with joins
-  const { data: payrollRecords = [], isLoading: loadingPayroll, refetch } = useSupabaseQuery<MonthlyPayroll>(
+  const { data: payrollRecords = [], isLoading: loadingPayroll, refetch } = useSupabaseTable<MonthlyPayroll>(
     `monthly_payroll_${INDEX_TOKEN}`,
     { 
-      select: `*, teachers_${INDEX_TOKEN}(id, first_name, last_name, teacher_code), employees_${INDEX_TOKEN}(id, first_name, last_name, employee_code)`,
+      select: `*, teachers_${INDEX_TOKEN}(id, first_name, last_name, employee_code), employees_${INDEX_TOKEN}(id, first_name, last_name, employee_code)`,
       orderBy: { column: 'created_at', ascending: false }
     }
   );
@@ -124,34 +124,10 @@ const Payslips = () => {
     });
   }, [payrollRecords, selectedMonth, year]);
 
-  // Insert mutation for generating payslips
-  const insertMutation = useSupabaseInsert<Partial<MonthlyPayroll>>(
+  // Get mutations from useSupabaseTable
+  const { createMutation, deleteMutation } = useSupabaseTable<Partial<MonthlyPayroll>>(
     `monthly_payroll_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Payslips generated successfully" });
-        setSelectedTeachers([]);
-        setSelectedStaff([]);
-        refetch();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
-    }
-  );
-
-  // Delete mutation
-  const deleteMutation = useSupabaseDelete(
-    `monthly_payroll_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Payslip deleted successfully" });
-        refetch();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
-    }
+    {}
   );
 
   const toggleTeacher = (id: string) => {
@@ -184,7 +160,7 @@ const Payslips = () => {
     setSelectAllStaff(!selectAllStaff);
   };
 
-  const handleGeneratePayslips = () => {
+  const handleGeneratePayslips = async () => {
     if (selectedTeachers.length === 0 && selectedStaff.length === 0) {
       toast({ title: "Error", description: "Please select at least one employee", variant: "destructive" });
       return;
@@ -193,40 +169,55 @@ const Payslips = () => {
     const monthIndex = months.indexOf(selectedMonth) + 1;
     const salaryMonth = `${year}-${monthIndex.toString().padStart(2, '0')}-01`;
 
-    // Generate for teachers
-    selectedTeachers.forEach(teacherId => {
-      insertMutation.mutate({
-        teacher_id: teacherId,
-        employee_id: null,
-        employee_type: 'Teacher',
-        salary_month: salaryMonth,
-        basic_salary: 0, // Would be fetched from salary structure in production
-        total_earnings: 0,
-        total_deductions: 0,
-        net_salary: 0,
-        status: 'Pending'
-      });
-    });
+    try {
+      // Generate for teachers
+      for (const teacherId of selectedTeachers) {
+        await createMutation.mutateAsync({
+          teacher_id: teacherId,
+          employee_id: null,
+          employee_type: 'Teacher',
+          salary_month: salaryMonth,
+          basic_salary: 0, // Would be fetched from salary structure in production
+          total_earnings: 0,
+          total_deductions: 0,
+          net_salary: 0,
+          status: 'Pending'
+        });
+      }
 
-    // Generate for staff
-    selectedStaff.forEach(employeeId => {
-      insertMutation.mutate({
-        teacher_id: null,
-        employee_id: employeeId,
-        employee_type: 'Staff',
-        salary_month: salaryMonth,
-        basic_salary: 0,
-        total_earnings: 0,
-        total_deductions: 0,
-        net_salary: 0,
-        status: 'Pending'
-      });
-    });
+      // Generate for staff
+      for (const employeeId of selectedStaff) {
+        await createMutation.mutateAsync({
+          teacher_id: null,
+          employee_id: employeeId,
+          employee_type: 'Staff',
+          salary_month: salaryMonth,
+          basic_salary: 0,
+          total_earnings: 0,
+          total_deductions: 0,
+          net_salary: 0,
+          status: 'Pending'
+        });
+      }
+
+      toast({ title: "Success", description: "Payslips generated successfully" });
+      setSelectedTeachers([]);
+      setSelectedStaff([]);
+      refetch();
+    } catch (error) {
+      toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this payslip?')) {
-      deleteMutation.mutate(id);
+      try {
+        await deleteMutation.mutateAsync(id);
+        toast({ title: "Success", description: "Payslip deleted successfully" });
+        refetch();
+      } catch (error) {
+        toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+      }
     }
   };
 
@@ -326,7 +317,7 @@ const Payslips = () => {
                         />
                         <div>
                           <span className="font-medium text-foreground">{teacher.first_name} {teacher.last_name}</span>
-                          <p className="text-sm text-muted-foreground">Code: {teacher.teacher_code}</p>
+                          <p className="text-sm text-muted-foreground">Code: {teacher.employee_code}</p>
                         </div>
                       </div>
                     ))}
@@ -373,10 +364,10 @@ const Payslips = () => {
               <div className="flex justify-end mt-6">
                 <Button 
                   onClick={handleGeneratePayslips}
-                  disabled={insertMutation.isPending || (selectedTeachers.length === 0 && selectedStaff.length === 0)}
+                  disabled={createMutation.isPending || (selectedTeachers.length === 0 && selectedStaff.length === 0)}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {insertMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   Generate Payslips ({selectedTeachers.length + selectedStaff.length} selected)
                 </Button>
               </div>

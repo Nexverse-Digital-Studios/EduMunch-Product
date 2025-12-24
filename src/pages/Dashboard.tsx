@@ -39,10 +39,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 interface Student {
   id: string;
@@ -78,29 +78,30 @@ const Dashboard = () => {
   const thirtyDaysAgo = format(subDays(new Date(), 30), 'yyyy-MM-dd');
 
   // Fetch students
-  const { data: students = [], isLoading: loadingStudents } = useSupabaseQuery<Student>(
+  const { data: students = [], isLoading: loadingStudents } = useSupabaseTable<Student>(
     `students_${INDEX_TOKEN}`,
-    { select: 'id, is_active, created_at' }
+    { select: 'id, is_active, created_at', enabled: false }
   );
 
   // Fetch batches
-  const { data: batches = [], isLoading: loadingBatches } = useSupabaseQuery<Batch>(
+  const { data: batches = [], isLoading: loadingBatches } = useSupabaseTable<Batch>(
     `batches_${INDEX_TOKEN}`,
-    { select: 'id' }
+    { select: 'id', enabled: false }
   );
 
   // Fetch teachers
-  const { data: teachers = [], isLoading: loadingTeachers } = useSupabaseQuery<Teacher>(
+  const { data: teachers = [], isLoading: loadingTeachers } = useSupabaseTable<Teacher>(
     `teachers_${INDEX_TOKEN}`,
-    { select: 'id, is_active' }
+    { select: 'id, is_active', enabled: false }
   );
 
   // Fetch announcements
-  const { data: announcements = [], isLoading: loadingAnnouncements } = useSupabaseQuery<Announcement>(
+  const { data: announcements = [], isLoading: loadingAnnouncements } = useSupabaseTable<Announcement>(
     `announcements_${INDEX_TOKEN}`,
     { 
       select: 'id, title, content, publish_date, created_by',
-      orderBy: { column: 'publish_date', ascending: false }
+      orderBy: { column: 'publish_date', ascending: false },
+      enabled: false
     }
   );
 

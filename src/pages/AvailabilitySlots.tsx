@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, eachDayOfInterval, isSameDay } from "date-fns";
 
@@ -44,25 +44,24 @@ interface OnlineClassSession {
   platform: string;
   meeting_link: string;
   status: 'Scheduled' | 'Live' | 'Completed' | 'Cancelled';
-  subjects_1EMAET?: { name: string };
-  teachers_1EMAET?: { first_name: string; last_name: string; teacher_code: string };
-  sections_1EMAET?: { name: string };
+  subjects_1EMAET?: { subject_name: string };
+  teachers_1EMAET?: { first_name: string; last_name: string; employee_code: string };
+  sections_1EMAET?: { section_name: string };
 }
 
 interface Branch {
   id: string;
-  name: string;
-  code: string;
+  class_name: string;
 }
 
 interface Teacher {
   id: string;
   first_name: string;
   last_name: string;
-  teacher_code: string;
+  employee_code: string;
 }
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 const AvailabilitySlots = () => {
   const [activeTab, setActiveTab] = useState("branch");
@@ -72,25 +71,25 @@ const AvailabilitySlots = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  const { canRead, canCreate, canUpdate } = useModulePermissions('LMS');
+  const { canView, canCreate, canUpdate } = useModulePermissions('LMS');
 
-  // Fetch branches
-  const { data: branches = [] } = useSupabaseQuery<Branch>(
-    `branches_${INDEX_TOKEN}`,
-    { select: 'id, name, code', orderBy: { column: 'name', ascending: true } }
+  // Fetch branches (classes)
+  const { data: branches = [] } = useSupabaseTable<Branch>(
+    `classes_${INDEX_TOKEN}`,
+    { select: 'id, class_name' }
   );
 
   // Fetch teachers
-  const { data: teachers = [] } = useSupabaseQuery<Teacher>(
+  const { data: teachers = [] } = useSupabaseTable<Teacher>(
     `teachers_${INDEX_TOKEN}`,
-    { select: 'id, first_name, last_name, teacher_code', orderBy: { column: 'first_name', ascending: true } }
+    { select: 'id, first_name, last_name, employee_code' }
   );
 
   // Fetch online class sessions with joins
-  const { data: sessions = [], isLoading, error, refetch } = useSupabaseQuery<OnlineClassSession>(
+  const { data: sessions = [], isLoading, refetch } = useSupabaseTable<OnlineClassSession>(
     `online_class_sessions_${INDEX_TOKEN}`,
     { 
-      select: `*, subjects_${INDEX_TOKEN}(name), teachers_${INDEX_TOKEN}(first_name, last_name, teacher_code), sections_${INDEX_TOKEN}(name)`,
+      select: `*, subjects_${INDEX_TOKEN}(subject_name), teachers_${INDEX_TOKEN}(first_name, last_name, employee_code), sections_${INDEX_TOKEN}(section_name)`,
       orderBy: { column: 'session_date', ascending: true }
     }
   );
@@ -161,13 +160,7 @@ const AvailabilitySlots = () => {
         Weekly Schedule (UTC)
       </h1>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>Failed to load sessions: {error.message}</AlertDescription>
-        </Alert>
-      )}
+      {/* No active error handling needed */}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full justify-start border-b rounded-none bg-transparent p-0">
@@ -300,7 +293,7 @@ const AvailabilitySlots = () => {
                     <SelectItem value="">All Teachers</SelectItem>
                     {teachers.map((teacher) => (
                       <SelectItem key={teacher.id} value={teacher.id}>
-                        {teacher.first_name} {teacher.last_name} ({teacher.teacher_code})
+                        {teacher.first_name} {teacher.last_name} ({teacher.employee_code})
                       </SelectItem>
                     ))}
                   </SelectContent>

@@ -525,12 +525,12 @@ const SetRoles = () => {
                         {role.is_active ? "Active" : "Inactive"}
                       </Badge>
                     </div>
-                    <CardDescription className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Badge variant="outline">{role.role_code}</Badge>
                       {role.is_system_role && (
                         <Badge variant="secondary" className="text-xs">System</Badge>
                       )}
-                    </CardDescription>
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {role.description && (

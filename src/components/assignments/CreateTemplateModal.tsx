@@ -18,21 +18,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSupabaseQuery, useSupabaseInsert } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { toast } from "@/hooks/use-toast";
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 interface Subject {
   id: string;
-  name: string;
+  subject_name: string;
 }
 
 interface Section {
   id: string;
-  name: string;
+  section_name: string;
   class_id: string;
-  classes?: { id: string; name: string } | null;
+  classes?: { id: string; class_name: string } | null;
 }
 
 interface CreateTemplateModalProps {
@@ -54,24 +54,22 @@ export const CreateTemplateModal = ({ open, onOpenChange, onSuccess }: CreateTem
   });
 
   // Fetch subjects
-  const { data: subjects } = useSupabaseQuery<Subject>(
+  const { data: subjects } = useSupabaseTable<Subject>(
     `subjects_${INDEX_TOKEN}`,
-    ['subjects', INDEX_TOKEN],
-    { select: 'id, name', orderBy: { column: 'name', ascending: true } }
+    { select: 'id, subject_name', orderBy: { column: 'subject_name', ascending: true } }
   );
 
   // Fetch sections with class info
-  const { data: sections } = useSupabaseQuery<Section>(
+  const { data: sections } = useSupabaseTable<Section>(
     `sections_${INDEX_TOKEN}`,
-    ['sections', INDEX_TOKEN],
     { 
-      select: 'id, name, class_id, classes:class_id(id, name)', 
-      orderBy: { column: 'name', ascending: true } 
+      select: 'id, section_name, class_id, classes:class_id(id, class_name)', 
+      orderBy: { column: 'section_name', ascending: true } 
     }
   );
 
   // Insert mutation
-  const insertMutation = useSupabaseInsert(`assignments_${INDEX_TOKEN}`, ['assignments', INDEX_TOKEN]);
+  const { createMutation } = useSupabaseTable(`assignments_${INDEX_TOKEN}`);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +80,7 @@ export const CreateTemplateModal = ({ open, onOpenChange, onSuccess }: CreateTem
     }
 
     try {
-      await insertMutation.mutateAsync({
+      await createMutation.mutateAsync({
         title: formData.title.trim(),
         description: formData.description.trim() || null,
         subject_id: formData.subject_id || null,
@@ -242,8 +240,8 @@ export const CreateTemplateModal = ({ open, onOpenChange, onSuccess }: CreateTem
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={insertMutation.isPending} className="gap-2">
-              {insertMutation.isPending ? (
+            <Button type="submit" disabled={createMutation.isPending} className="gap-2">
+              {createMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Plus className="h-4 w-4" />

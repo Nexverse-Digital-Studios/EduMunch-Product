@@ -44,11 +44,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useSupabaseQuery, useSupabaseInsert } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 // Types for Tier 3 assets (when available)
 interface Asset {
@@ -66,7 +66,7 @@ interface Asset {
 
 interface Branch {
   id: string;
-  name: string;
+  class_name: string;
 }
 
 // Mock data for demo (until Tier 3 is deployed)
@@ -101,17 +101,17 @@ const Inventory = () => {
   const [isAddEntryModalOpen, setIsAddEntryModalOpen] = useState(false);
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
 
-  const { canRead, canCreate, canUpdate, canDelete } = useModulePermissions('INVENTORY');
+  const { canView, canCreate, canUpdate, canDelete } = useModulePermissions('INVENTORY');
   const { toast } = useToast();
 
-  // Try to fetch branches from Tier 1 (always available)
-  const { data: branches = [] } = useSupabaseQuery<Branch>(
-    `branches_${INDEX_TOKEN}`,
-    { select: 'id, name' }
+  // Try to fetch branches (classes) from Tier 1
+  const { data: branches = [] } = useSupabaseTable<Branch>(
+    `classes_${INDEX_TOKEN}`,
+    { select: 'id, class_name' }
   );
 
   // Try to fetch assets from Tier 3 (may not be available)
-  const { data: assets = [], isLoading: assetsLoading, error: assetsError } = useSupabaseQuery<Asset>(
+  const { data: assets = [], isLoading: assetsLoading } = useSupabaseTable<Asset>(
     `assets_${INDEX_TOKEN}`,
     { 
       select: '*',
@@ -119,9 +119,8 @@ const Inventory = () => {
     }
   );
 
-  // Check if Tier 3 is available
-  const isTier3Available = !assetsError && assets.length >= 0;
-  const tier3Error = assetsError?.message?.includes('does not exist') || assetsError?.message?.includes('relation');
+  // For tier 3 availability, just check if assets loaded
+  const isTier3Available = assets.length >= 0;
 
   const currentBalance = 100000;
 
@@ -148,7 +147,7 @@ const Inventory = () => {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Inventory & Cash Management</h1>
 
-      {tier3Error && (
+      {!isTier3Available && (
         <Alert variant="default" className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
           <AlertTitle className="text-yellow-800 dark:text-yellow-200">Tier 3 Schema Required</AlertTitle>
@@ -207,7 +206,7 @@ const Inventory = () => {
                     <SelectItem value="all">All Branches</SelectItem>
                     {branches.map((branch) => (
                       <SelectItem key={branch.id} value={branch.id}>
-                        {branch.name}
+                        {branch.class_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -331,7 +330,7 @@ const Inventory = () => {
                 <SelectItem value="all">All Branches</SelectItem>
                 {branches.map((branch) => (
                   <SelectItem key={branch.id} value={branch.id}>
-                    {branch.name}
+                    {branch.class_name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -382,7 +381,7 @@ const Inventory = () => {
                   <SelectItem value="all">All Branches</SelectItem>
                   {branches.map((branch) => (
                     <SelectItem key={branch.id} value={branch.id}>
-                      {branch.name}
+                      {branch.class_name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -479,10 +478,6 @@ const Inventory = () => {
           </div>
         </TabsContent>
       </Tabs>
-            </Table>
-          </div>
-        </TabsContent>
-      </Tabs>
 
       {/* Adjust Stock Modal */}
       <Dialog open={isAdjustModalOpen} onOpenChange={setIsAdjustModalOpen}>
@@ -537,20 +532,20 @@ const Inventory = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {branches.map((branch) => (
-                    <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
+                    <SelectItem key={branch.id} value={branch.id}>{branch.class_name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>To Branch</Label>
+              <Label>To</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select branch" />
+                  <SelectValue placeholder="Select destination" />
                 </SelectTrigger>
                 <SelectContent>
                   {branches.map((branch) => (
-                    <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
+                    <SelectItem key={branch.id} value={branch.id}>{branch.class_name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -562,7 +557,7 @@ const Inventory = () => {
                   <SelectValue placeholder="Select item" />
                 </SelectTrigger>
                 <SelectContent>
-                  {masterItems.map((item) => (
+                  {mockMasterItems.map((item) => (
                     <SelectItem key={item.id} value={item.name}>{item.name}</SelectItem>
                   ))}
                 </SelectContent>

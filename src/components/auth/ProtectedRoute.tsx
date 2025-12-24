@@ -46,8 +46,18 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { hasPermission, isAdmin, isLoading: permLoading } = usePermissions();
   const location = useLocation();
 
+  console.log('[ProtectedRoute] Evaluating route:', {
+    path: location.pathname,
+    authLoading,
+    permLoading,
+    user: user?.id,
+    requiredModule,
+    adminOnly,
+  });
+
   // Show loading state
   if (authLoading || permLoading) {
+    console.log('[ProtectedRoute] Still loading:', { authLoading, permLoading });
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -60,11 +70,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check authentication
   if (!user) {
+    console.log('[ProtectedRoute] No user, redirecting to auth');
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   // Check admin-only routes
   if (adminOnly && !isAdmin()) {
+    console.log('[ProtectedRoute] Admin required but user is not admin');
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4 text-center max-w-md p-8">
@@ -85,6 +97,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check feature toggle
   if (requiredFeature && !isFeatureEnabled(requiredFeature)) {
+    console.log('[ProtectedRoute] Feature not enabled:', requiredFeature);
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4 text-center max-w-md p-8">
@@ -105,6 +118,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check module permission
   if (requiredModule && !hasPermission(requiredModule, requiredAction)) {
+    console.log('[ProtectedRoute] Permission denied:', { requiredModule, requiredAction });
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4 text-center max-w-md p-8">
@@ -124,6 +138,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
+  console.log('[ProtectedRoute] Access allowed for route:', location.pathname);
   return <>{children}</>;
 };
 

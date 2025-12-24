@@ -65,7 +65,7 @@ interface AssignmentSubmission {
   created_at: string;
 }
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 const Assignments = () => {
   const [activeTab, setActiveTab] = useState("assignments");

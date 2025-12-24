@@ -492,10 +492,6 @@ const BatchDetailsTab = ({ batches, classes, isLoading, createClass, createSecti
     </div>
   );
 };
-      </Card>
-    </div>
-  );
-};
 
 interface ManageSubjectsTabProps {
   sections: SectionDB[];

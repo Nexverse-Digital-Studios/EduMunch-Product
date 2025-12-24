@@ -56,9 +56,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * Fetch user profile with primary role from database
    */
   const fetchUserProfile = useCallback(async (authUserId: string): Promise<UserProfile | null> => {
+    console.log('[AuthContext] fetchUserProfile called for:', authUserId);
     if (!supabase) return null;
 
     try {
+      console.log('[AuthContext] Fetching user profile from:', TABLES.USERS);
       const { data, error } = await supabase
         .from(TABLES.USERS)
         .select(`
@@ -67,7 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email,
           full_name,
           phone,
-          avatar_url,
           is_active,
           primary_role_id,
           index_token,
@@ -78,13 +79,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('[AuthContext] Error fetching user profile:', error);
         return null;
       }
+
+      console.log('[AuthContext] User profile fetched:', {
+        id: data?.id,
+        email: data?.email,
+        primaryRoleId: data?.primary_role_id,
+      });
 
       // Fetch primary role if exists
       let primaryRole: UserRole | null = null;
       if (data?.primary_role_id) {
+        console.log('[AuthContext] Fetching primary role:', data.primary_role_id);
         const { data: roleData } = await supabase
           .from(TABLES.ROLES)
           .select('id, role_code, role_name, description, is_system_role')
@@ -92,6 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .single();
         
         primaryRole = roleData;
+        console.log('[AuthContext] Primary role fetched:', roleData?.role_code);
       }
 
       return {
@@ -99,7 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         primary_role: primaryRole,
       } as UserProfile;
     } catch (err) {
-      console.error('Error in fetchUserProfile:', err);
+      console.error('[AuthContext] Error in fetchUserProfile:', err);
       return null;
     }
   }, []);

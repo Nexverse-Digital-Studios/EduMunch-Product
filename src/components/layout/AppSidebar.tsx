@@ -204,6 +204,7 @@ const navigationItems: NavItemConfig[] = [
     ],
   },
   { to: "/profile", icon: User, label: "Profile", isCollapsed: false },
+  { to: "/set-roles", icon: Shield, label: "Configure Roles", isCollapsed: false, feature: 'setRoles', adminOnly: true },
 ];
 
 interface AppSidebarProps {
@@ -221,30 +222,43 @@ const useFilteredNavigation = () => {
   const { userProfile } = useAuth();
   
   return useMemo(() => {
+    console.log('[AppSidebar] Filtering navigation items:', {
+      isAdmin: isAdmin(),
+      userId: userProfile?.id,
+    });
+
     const filterItems = (items: NavItemConfig[]): NavItemConfig[] => {
       return items
         .filter(item => {
           // Check admin-only
           if (item.adminOnly && !isAdmin()) {
+            console.log(`[AppSidebar] Filtering out admin-only item: ${item.label}`);
             return false;
           }
           
           // Check feature toggle
           if (item.feature && !FEATURES[item.feature]) {
+            console.log(`[AppSidebar] Filtering out disabled feature: ${item.label} (${item.feature})`);
             return false;
           }
           
           // If has children, check if any children are visible
           if (item.children) {
             const visibleChildren = filterItems(item.children);
+            if (visibleChildren.length === 0) {
+              console.log(`[AppSidebar] Filtering out parent with no visible children: ${item.label}`);
+            }
             return visibleChildren.length > 0;
           }
           
           // Check module permission (Admin bypasses this)
           if (item.moduleCode && !isAdmin()) {
-            return hasModuleAccess(item.moduleCode);
+            const hasAccess = hasModuleAccess(item.moduleCode);
+            console.log(`[AppSidebar] Module permission check: ${item.label} (${item.moduleCode}) = ${hasAccess}`);
+            return hasAccess;
           }
-          
+
+          console.log(`[AppSidebar] Item passed filter: ${item.label}`);
           return true;
         })
         .map(item => {
@@ -258,7 +272,9 @@ const useFilteredNavigation = () => {
         });
     };
     
-    return filterItems(navigationItems);
+    const filtered = filterItems(navigationItems);
+    console.log('[AppSidebar] Final visible items count:', filtered.length);
+    return filtered;
   }, [hasModuleAccess, isAdmin, userProfile]);
 };
 

@@ -29,7 +29,7 @@ interface AttendanceDB {
   student_id: string;
   class_id: string;
   section_id: string;
-  date: string;
+  attendance_date: string;
   status: 'present' | 'absent' | 'late' | 'half_day' | 'on_leave';
   marked_by?: string;
   marked_at?: string;
@@ -96,7 +96,7 @@ const Attendance = () => {
   
   const { data: attendance, isLoading: loadingAttendance } = useSupabaseTable<AttendanceDB>(
     TABLES.ATTENDANCE,
-    { orderBy: { column: 'date', ascending: false } }
+    { orderBy: { column: 'attendance_date', ascending: false } }
   );
   
   const isLoading = loadingSections || loadingStudents || loadingTeachers || loadingTimetables || loadingAttendance;

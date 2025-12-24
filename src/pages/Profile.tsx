@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { 
   User, 
   Mail, 
@@ -40,7 +40,7 @@ import {
   EyeOff
 } from "lucide-react";
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 interface UserProfile {
   id: string;
@@ -58,17 +58,29 @@ const Profile = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // TRACE: Profile component mounted
+  useEffect(() => {
+    console.log('[Profile] Component mounted, auth user:', user?.id);
+  }, []);
+
   // Fetch user profile from database
-  const { data: userProfiles = [], isLoading: profileLoading } = useSupabaseQuery<UserProfile>(
+  console.log('[Profile] Rendering with user:', user?.id, 'enabled:', !!user?.id);
+  const { data: userProfiles = [], isLoading: profileLoading } = useSupabaseTable<UserProfile>(
     `users_${INDEX_TOKEN}`,
     {
       select: '*',
-      filters: user?.id ? [{ column: 'id', value: user.id }] : undefined,
+      filters: user?.id ? { id: user.id } : {},
       enabled: !!user?.id
     }
   );
 
   const userProfile = userProfiles[0];
+
+  console.log('[Profile] Profile data loaded:', {
+    isLoading: profileLoading,
+    dataLength: userProfiles.length,
+    hasProfile: !!userProfile,
+  });
 
   // Profile form state
   const [profileData, setProfileData] = useState({

@@ -25,12 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSupabaseQuery, useSupabaseInsert } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 interface Announcement {
   id: string;
@@ -47,12 +47,12 @@ interface Announcement {
 
 interface Branch {
   id: string;
-  name: string;
+  class_name: string;
 }
 
 interface Batch {
   id: string;
-  name: string;
+  section_name: string;
 }
 
 const Notifications = () => {
@@ -67,11 +67,11 @@ const Notifications = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   const [branchFilter, setBranchFilter] = useState("all");
 
-  const { canRead, canCreate } = useModulePermissions('COMMUNICATION');
+  const { canView, canCreate } = useModulePermissions('COMMUNICATION');
   const { toast } = useToast();
 
   // Fetch announcements (as notification history)
-  const { data: announcements = [], isLoading, error, refetch } = useSupabaseQuery<Announcement>(
+  const { data: announcements = [], isLoading, refetch, createMutation } = useSupabaseTable<Announcement>(
     `announcements_${INDEX_TOKEN}`,
     { 
       select: '*',
@@ -79,50 +79,41 @@ const Notifications = () => {
     }
   );
 
-  // Fetch branches for filter
-  const { data: branches = [] } = useSupabaseQuery<Branch>(
-    `branches_${INDEX_TOKEN}`,
-    { select: 'id, name' }
+  // Fetch branches (classes) for filter
+  const { data: branches = [] } = useSupabaseTable<Branch>(
+    `classes_${INDEX_TOKEN}`,
+    { select: 'id, class_name' }
   );
 
-  // Fetch batches for filter
-  const { data: batches = [] } = useSupabaseQuery<Batch>(
-    `batches_${INDEX_TOKEN}`,
-    { select: 'id, name' }
+  // Fetch sections as additional grouping (batches alternative)
+  const { data: batches = [] } = useSupabaseTable<Batch>(
+    `sections_${INDEX_TOKEN}`,
+    { select: 'id, section_name' }
   );
 
-  // Insert mutation for announcements
-  const insertMutation = useSupabaseInsert<Partial<Announcement>>(
-    `announcements_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Notification sent successfully" });
-        setTitle("");
-        setMessageText("");
-        setLink("");
-        setTargetAudience("All");
-        refetch();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
-    }
-  );
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!title.trim()) {
       toast({ title: "Error", description: "Title is required", variant: "destructive" });
       return;
     }
 
-    insertMutation.mutate({
-      title: title.trim(),
-      content: messageText.trim(),
-      announcement_type: 'Notification',
-      target_audience: targetAudience,
-      publish_date: new Date().toISOString(),
-      is_active: true
-    });
+    try {
+      await createMutation.mutateAsync({
+        title: title.trim(),
+        content: messageText.trim(),
+        announcement_type: 'Notification',
+        target_audience: targetAudience,
+        publish_date: new Date().toISOString(),
+        is_active: true
+      } as Partial<Announcement>);
+      toast({ title: "Success", description: "Notification sent successfully" });
+      setTitle("");
+      setMessageText("");
+      setTargetAudience("All");
+      await refetch();
+    } catch (error) {
+      toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+    }
   };
 
   const filteredAnnouncements = useMemo(() => {
@@ -222,7 +213,7 @@ const Notifications = () => {
                     <SelectContent>
                       <SelectItem value="all">All Branches</SelectItem>
                       {branches.map((branch) => (
-                        <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
+                        <SelectItem key={branch.id} value={branch.id}>{branch.class_name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -234,10 +225,10 @@ const Notifications = () => {
               <div className="flex justify-end pt-4">
                 <Button 
                   onClick={handleSend} 
-                  disabled={insertMutation.isPending}
+                  disabled={createMutation.isPending}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {insertMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   <Send className="h-4 w-4 mr-2" />
                   Send Notification
                 </Button>
@@ -248,14 +239,6 @@ const Notifications = () => {
 
         {/* History Tab */}
         <TabsContent value="history" className="mt-6 space-y-6">
-          {error && (
-            <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>Failed to load notifications: {error.message}</AlertDescription>
-            </Alert>
-          )}
-
           {/* Filters */}
           <div className="bg-card border border-border rounded-lg p-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

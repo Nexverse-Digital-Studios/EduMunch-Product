@@ -26,18 +26,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSupabaseQuery, useSupabaseUpdate } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 interface Teacher {
   id: string;
   first_name: string;
   last_name: string;
-  teacher_code: string;
+  employee_code: string;
 }
 
 interface Employee {
@@ -88,38 +88,36 @@ const LeaveManagement = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  const { canRead, canUpdate } = useModulePermissions('HR');
+  const { canView, canUpdate } = useModulePermissions('HR');
   const { toast } = useToast();
 
   // Fetch leave applications with joins
-  const { data: applications = [], isLoading, error, refetch } = useSupabaseQuery<LeaveApplication>(
+  const { data: applications = [], isLoading, refetch, updateMutation } = useSupabaseTable<LeaveApplication>(
     `staff_leave_applications_${INDEX_TOKEN}`,
     { 
-      select: `*, teachers_${INDEX_TOKEN}(id, first_name, last_name, teacher_code), employees_${INDEX_TOKEN}(id, first_name, last_name, employee_code, designation)`,
+      select: `*, teachers_${INDEX_TOKEN}(id, first_name, last_name, employee_code), employees_${INDEX_TOKEN}(id, first_name, last_name, employee_code, designation)`,
       orderBy: { column: 'created_at', ascending: false }
     }
   );
 
-  // Update mutation
-  const updateMutation = useSupabaseUpdate<Partial<LeaveApplication>>(
-    `staff_leave_applications_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Leave application updated successfully" });
-        refetch();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
+  const handleApprove = async (id: string) => {
+    try {
+      await updateMutation.mutateAsync({ id, updates: { status: 'Approved', approved_at: new Date().toISOString() } });
+      toast({ title: "Success", description: "Leave application approved successfully" });
+      refetch();
+    } catch (error) {
+      toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
     }
-  );
-
-  const handleApprove = (id: string) => {
-    updateMutation.mutate({ id, data: { status: 'Approved', approved_at: new Date().toISOString() } });
   };
 
-  const handleReject = (id: string) => {
-    updateMutation.mutate({ id, data: { status: 'Rejected' } });
+  const handleReject = async (id: string) => {
+    try {
+      await updateMutation.mutateAsync({ id, updates: { status: 'Rejected' } });
+      toast({ title: "Success", description: "Leave application rejected successfully" });
+      refetch();
+    } catch (error) {
+      toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+    }
   };
 
   const getEmployeeName = (app: LeaveApplication) => {
@@ -173,14 +171,6 @@ const LeaveManagement = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Leave Applications</h1>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>Failed to load leave applications: {error.message}</AlertDescription>
-        </Alert>
-      )}
 
       {/* Filters */}
       <div className="bg-card border border-border rounded-lg p-4">

@@ -212,10 +212,26 @@ function saveCacheToStorage(cache: UserPermissionCache): void {
 export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   children 
 }) => {
-  const [permissions, setPermissionsState] = useState<UserPermissionCache | null>(() => 
-    loadCacheFromStorage()
-  );
+  console.log('[PermissionProvider] Initializing...');
+  
+  const [permissions, setPermissionsState] = useState<UserPermissionCache | null>(() => {
+    const cached = loadCacheFromStorage();
+    console.log('[PermissionProvider] Loading from cache:', {
+      cached: !!cached,
+      userId: cached?.userId,
+      modules: cached ? Object.keys(cached.permissions).length : 0,
+    });
+    return cached;
+  });
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    console.log('[PermissionProvider] Permissions state changed:', {
+      hasPermissions: !!permissions,
+      userId: permissions?.userId,
+      timestamp: permissions?.timestamp,
+    });
+  }, [permissions]);
 
   /**
    * Set permissions and persist to localStorage
@@ -275,56 +291,80 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
     action: 'view' | 'create' | 'update' | 'delete' | 'approve' | 'export'
   ): boolean => {
     // No permissions = no access
-    if (!permissions) return false;
+    if (!permissions) {
+      console.log(`[hasPermission] No permissions cached for ${module}:${action}`);
+      return false;
+    }
 
     // ADMIN bypass - full access during development and production
     if (permissions.primaryRole?.code === 'ADMIN') {
+      console.log(`[hasPermission] ADMIN bypass - allowing ${module}:${action}`);
       return true;
     }
 
     // Check if feature is enabled first
     if (!isModuleAvailable(module)) {
+      console.log(`[hasPermission] Module ${module} not available`);
       return false;
     }
 
     // Check module permissions
     const modulePerms = permissions.permissions[module];
-    if (!modulePerms) return false;
-
-    switch (action) {
-      case 'view': return modulePerms.canView;
-      case 'create': return modulePerms.canCreate;
-      case 'update': return modulePerms.canUpdate;
-      case 'delete': return modulePerms.canDelete;
-      case 'approve': return modulePerms.canApprove;
-      case 'export': return modulePerms.canExport;
-      default: return false;
+    if (!modulePerms) {
+      console.log(`[hasPermission] No permissions record for module ${module}`);
+      return false;
     }
+
+    const result = (() => {
+      switch (action) {
+        case 'view': return modulePerms.canView;
+        case 'create': return modulePerms.canCreate;
+        case 'update': return modulePerms.canUpdate;
+        case 'delete': return modulePerms.canDelete;
+        case 'approve': return modulePerms.canApprove;
+        case 'export': return modulePerms.canExport;
+        default: return false;
+      }
+    })();
+    
+    console.log(`[hasPermission] ${module}:${action} = ${result}`);
+    return result;
   }, [permissions]);
 
   /**
    * Check if user has any access to a module
    */
   const hasModuleAccess = useCallback((moduleCode: string): boolean => {
-    if (!permissions) return false;
+    if (!permissions) {
+      console.log(`[hasModuleAccess] No permissions cached for module ${moduleCode}`);
+      return false;
+    }
     
     // ADMIN bypass
     if (permissions.primaryRole?.code === 'ADMIN') {
+      console.log(`[hasModuleAccess] ADMIN bypass - allowing module ${moduleCode}`);
       return isModuleAvailable(moduleCode);
     }
 
     // Check if feature is enabled
     if (!isModuleAvailable(moduleCode)) {
+      console.log(`[hasModuleAccess] Module ${moduleCode} feature not enabled`);
       return false;
     }
 
     // Check if user has any permission on this module
     const modulePerms = permissions.permissions[moduleCode];
-    if (!modulePerms) return false;
+    if (!modulePerms) {
+      console.log(`[hasModuleAccess] No permission record for module ${moduleCode}`);
+      return false;
+    }
 
-    return modulePerms.canView || modulePerms.canCreate || 
+    const hasAccess = modulePerms.canView || modulePerms.canCreate || 
            modulePerms.canUpdate || modulePerms.canDelete ||
            modulePerms.canApprove || modulePerms.canExport;
+    
+    console.log(`[hasModuleAccess] Module ${moduleCode} access = ${hasAccess}`);
+    return hasAccess;
   }, [permissions]);
 
   /**

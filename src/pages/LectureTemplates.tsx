@@ -22,16 +22,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useSupabaseQuery, useSupabaseInsert } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 // Database types
 interface Branch {
   id: string;
-  name: string;
+  class_name: string;
 }
 
 interface LectureTemplate {
@@ -97,20 +97,20 @@ const LectureTemplates = () => {
   const [selectedBranch, setSelectedBranch] = useState("");
   const [schedule, setSchedule] = useState<DaySchedule[]>(initialSchedule);
   
-  const { canRead, canCreate, canUpdate } = useModulePermissions('TIMETABLE');
+  const { canView, canCreate, canUpdate } = useModulePermissions('TIMETABLE');
   const { toast } = useToast();
 
-  // Fetch branches from Supabase
-  const { data: branches = [], isLoading: loadingBranches, error: branchesError } = useSupabaseQuery<Branch>(
-    `branches_${INDEX_TOKEN}`,
+  // Fetch classes as branches (school organization units)
+  const { data: branches = [], isLoading: loadingBranches } = useSupabaseTable<Branch>(
+    `classes_${INDEX_TOKEN}`,
     { 
-      select: 'id, name',
-      orderBy: { column: 'name', ascending: true }
+      select: 'id, class_name',
+      orderBy: { column: 'class_name', ascending: true }
     }
   );
 
   // Fetch lecture templates from Supabase
-  const { data: templates = [], isLoading: loadingTemplates, error: templatesError, refetch } = useSupabaseQuery<LectureTemplate>(
+  const { data: templates = [], isLoading: loadingTemplates, refetch } = useSupabaseTable<LectureTemplate>(
     `lecture_templates_${INDEX_TOKEN}`,
     { 
       select: '*',
@@ -119,7 +119,6 @@ const LectureTemplates = () => {
   );
   
   const isLoading = loadingBranches || loadingTemplates;
-  const error = branchesError || templatesError;
 
   const addSlot = (dayIndex: number) => {
     const newSchedule = [...schedule];
@@ -169,31 +168,24 @@ const LectureTemplates = () => {
         )}
       </div>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>Failed to load data: {error.message}</AlertDescription>
-        </Alert>
-      )}
 
       {/* Branch Selection */}
       <div className="bg-card border border-border rounded-lg p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           <div className="space-y-2 flex-1">
-            <Label className="text-muted-foreground">Select a Branch to Configure</Label>
+            <Label className="text-muted-foreground">Select a Class to Configure</Label>
             <Select value={selectedBranch} onValueChange={setSelectedBranch}>
               <SelectTrigger className="w-full sm:w-64">
-                <SelectValue placeholder="Select a branch" />
+                <SelectValue placeholder="Select a class" />
               </SelectTrigger>
               <SelectContent>
                 {branches.map((branch) => (
                   <SelectItem key={branch.id} value={branch.id}>
-                    {branch.name}
+                    {branch.class_name}
                   </SelectItem>
                 ))}
                 {branches.length === 0 && !isLoading && (
-                  <SelectItem value="none" disabled>No branches found</SelectItem>
+                  <SelectItem value="none" disabled>No classes found</SelectItem>
                 )}
               </SelectContent>
             </Select>
@@ -291,7 +283,7 @@ const LectureTemplates = () => {
       {/* Empty state when no branch selected */}
       {!selectedBranch && !isLoading && (
         <div className="text-center py-12 text-muted-foreground">
-          Please select a branch to configure lecture timings.
+          Please select a class to configure lecture timings.
         </div>
       )}
     </div>

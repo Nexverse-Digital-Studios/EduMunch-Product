@@ -9,6 +9,18 @@ import { supabase, TABLES, getTable } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 
 // ============================================================================
+// Tables that support soft deletes (have deleted_at column)
+// ============================================================================
+const TABLES_WITH_SOFT_DELETE = [
+  'classes_1emaet',
+  'employees_1emaet',
+  'students_1emaet',
+  'sections_1emaet',
+  'teachers_1emaet',
+  'admission_applications_1emaet',
+];
+
+// ============================================================================
 // Generic CRUD Hooks
 // ============================================================================
 
@@ -30,22 +42,39 @@ export function useTableQuery<T>(
 ) {
   const { enabled = true, select = '*', filters = {}, orderBy, limit } = options;
 
+  console.log('[useTableQuery] Hook initialized:', {
+    tableName,
+    enabled,
+    select,
+    filters,
+    queryKey,
+  });
+
   return useQuery({
     queryKey,
     queryFn: async () => {
+      console.log('[useTableQuery] Executing query:', {
+        tableName,
+        filters,
+        select,
+      });
+
       if (!supabase) throw new Error('Supabase not configured');
 
       let query = supabase.from(tableName).select(select);
 
       // Apply filters
       Object.entries(filters).forEach(([key, value]) => {
+        console.log('[useTableQuery] Applying filter:', { key, value, valueType: typeof value });
         if (value !== undefined && value !== null) {
           query = query.eq(key, value);
         }
       });
 
-      // Apply soft delete filter by default
-      query = query.is('deleted_at', null);
+      // Apply soft delete filter only to tables that support it
+      if (TABLES_WITH_SOFT_DELETE.includes(tableName)) {
+        query = query.is('deleted_at', null);
+      }
 
       // Apply ordering
       if (orderBy) {
@@ -59,7 +88,12 @@ export function useTableQuery<T>(
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error('[useTableQuery] Query error:', { tableName, error });
+        throw error;
+      }
+
+      console.log('[useTableQuery] Query succeeded:', { tableName, count: data?.length || 0 });
       return data as T[];
     },
     enabled: enabled && !!supabase,
@@ -620,3 +654,4 @@ export const useUpdateAnnouncement = () =>
 
 export const useDeleteAnnouncement = () =>
   useDeleteMutation(TABLES.ANNOUNCEMENTS, ['announcements'], { successMessage: 'Announcement deleted successfully' });
+

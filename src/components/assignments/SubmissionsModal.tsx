@@ -26,10 +26,10 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { format } from "date-fns";
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 interface Assignment {
   id: string;
@@ -67,15 +67,14 @@ export const SubmissionsModal = ({ open, onOpenChange, assignment }: Submissions
   const [statusFilter, setStatusFilter] = useState("all");
 
   // Fetch submissions for this assignment
-  const { data: submissions, isLoading } = useSupabaseQuery<Submission>(
+  const { data: submissions, isLoading } = useSupabaseTable<Submission>(
     `assignment_submissions_${INDEX_TOKEN}`,
-    ['assignment_submissions', INDEX_TOKEN, assignment?.id],
     {
       select: `
         *,
         students:student_id(first_name, last_name, admission_number)
       `,
-      filter: assignment?.id ? { column: 'assignment_id', value: assignment.id } : undefined,
+      filters: assignment?.id ? { assignment_id: assignment.id } : {},
       orderBy: { column: 'created_at', ascending: false },
       enabled: !!assignment?.id && open,
     }

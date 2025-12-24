@@ -37,7 +37,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useSupabaseQuery, useSupabaseInsert, useSupabaseDelete } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -65,7 +65,7 @@ interface SalaryComponent {
   display_order: number;
 }
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const SalaryStructures = () => {
@@ -78,11 +78,11 @@ const SalaryStructures = () => {
     effective_from: "",
   });
 
-  const { canRead, canCreate, canUpdate, canDelete } = useModulePermissions('HR');
+  const { canView, canCreate, canUpdate, canDelete } = useModulePermissions('HR');
   const { toast } = useToast();
 
   // Fetch salary structures with components
-  const { data: structures = [], isLoading, error, refetch } = useSupabaseQuery<SalaryStructure>(
+  const { data: structures = [], isLoading, refetch, createMutation, deleteMutation } = useSupabaseTable<SalaryStructure>(
     `salary_structures_${INDEX_TOKEN}`,
     { 
       select: `*, salary_components_${INDEX_TOKEN}(*)`,
@@ -125,55 +125,39 @@ const SalaryStructures = () => {
     });
   }, [structures]);
 
-  // Insert mutation
-  const insertMutation = useSupabaseInsert<Partial<SalaryStructure>>(
-    `salary_structures_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Salary structure created successfully" });
-        setIsCreateModalOpen(false);
-        setFormData({ structure_name: "", designation: "", employment_type: "", basic_salary: "", effective_from: "" });
-        refetch();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
-    }
-  );
-
-  // Delete mutation
-  const deleteMutation = useSupabaseDelete(
-    `salary_structures_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Salary structure deleted successfully" });
-        refetch();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
-    }
-  );
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.structure_name || !formData.basic_salary) {
       toast({ title: "Error", description: "Please fill required fields", variant: "destructive" });
       return;
     }
 
-    insertMutation.mutate({
-      structure_name: formData.structure_name,
-      designation: formData.designation || null,
-      employment_type: formData.employment_type || null,
-      basic_salary: parseFloat(formData.basic_salary),
-      effective_from: formData.effective_from || new Date().toISOString().split('T')[0],
-      is_active: true
-    });
+    try {
+      await createMutation.mutateAsync({
+        structure_name: formData.structure_name,
+        designation: formData.designation || null,
+        employment_type: formData.employment_type || null,
+        basic_salary: parseFloat(formData.basic_salary),
+        effective_from: formData.effective_from || new Date().toISOString().split('T')[0],
+        is_active: true
+      } as Partial<SalaryStructure>);
+      toast({ title: "Success", description: "Salary structure created successfully" });
+      setIsCreateModalOpen(false);
+      setFormData({ structure_name: "", designation: "", employment_type: "", basic_salary: "", effective_from: "" });
+      await refetch();
+    } catch (error) {
+      toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this salary structure?')) {
-      deleteMutation.mutate(id);
+      try {
+        await deleteMutation.mutateAsync(id);
+        toast({ title: "Success", description: "Salary structure deleted successfully" });
+        await refetch();
+      } catch (error) {
+        toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+      }
     }
   };
 
@@ -203,13 +187,6 @@ const SalaryStructures = () => {
         )}
       </div>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>Failed to load salary structures: {error.message}</AlertDescription>
-        </Alert>
-      )}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -444,10 +421,10 @@ const SalaryStructures = () => {
               <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
               <Button 
                 onClick={handleSubmit}
-                disabled={insertMutation.isPending}
+                disabled={createMutation.isPending}
                 className="bg-primary hover:bg-primary/90"
               >
-                {insertMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Create Structure
               </Button>
             </div>

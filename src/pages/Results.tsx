@@ -42,12 +42,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useSupabaseQuery, useSupabaseInsert, useSupabaseDelete } from "@/hooks/useSupabaseQuery";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 // Database types
 interface ExamType {
@@ -138,11 +138,11 @@ const Results = () => {
   const [selectedBatch, setSelectedBatch] = useState("all");
   const [selectedExamId, setSelectedExamId] = useState("");
 
-  const { canRead, canCreate, canUpdate, canDelete } = useModulePermissions('EXAMINATION');
+  const { canView, canCreate, canUpdate, canDelete } = useModulePermissions('EXAMINATION');
   const { toast } = useToast();
 
   // Fetch exam types (templates)
-  const { data: examTypes = [], isLoading: loadingTypes, error: typesError, refetch: refetchTypes } = useSupabaseQuery<ExamType>(
+  const { data: examTypes = [], isLoading: loadingTypes, createMutation: createTypesMutation, deleteMutation: deleteTypesMutation, refetch: refetchTypes } = useSupabaseTable<ExamType>(
     `exam_types_${INDEX_TOKEN}`,
     {
       select: '*',
@@ -151,7 +151,7 @@ const Results = () => {
   );
 
   // Fetch exams (tests)
-  const { data: exams = [], isLoading: loadingExams, error: examsError, refetch: refetchExams } = useSupabaseQuery<Exam>(
+  const { data: exams = [], isLoading: loadingExams, createMutation: createExamMutation, deleteMutation: deleteExamsMutation, refetch: refetchExams } = useSupabaseTable<Exam>(
     `exams_${INDEX_TOKEN}`,
     {
       select: '*',
@@ -160,80 +160,21 @@ const Results = () => {
   );
 
   // Fetch branches
-  const { data: branches = [] } = useSupabaseQuery<Branch>(
+  const { data: branches = [] } = useSupabaseTable<Branch>(
     `branches_${INDEX_TOKEN}`,
     { select: 'id, name' }
   );
 
   // Fetch batches
-  const { data: batches = [] } = useSupabaseQuery<Batch>(
+  const { data: batches = [] } = useSupabaseTable<Batch>(
     `batches_${INDEX_TOKEN}`,
     { select: 'id, name' }
   );
 
   // Fetch students for marks entry
-  const { data: students = [] } = useSupabaseQuery<Student>(
+  const { data: students = [] } = useSupabaseTable<Student>(
     `students_${INDEX_TOKEN}`,
     { select: 'id, first_name, last_name, roll_number' }
-  );
-
-  // Insert mutation for exam types
-  const insertTypeMutation = useSupabaseInsert<Partial<ExamType>>(
-    `exam_types_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Template created successfully" });
-        setIsAddTemplateOpen(false);
-        resetTemplateForm();
-        refetchTypes();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
-    }
-  );
-
-  // Insert mutation for exams
-  const insertExamMutation = useSupabaseInsert<Partial<Exam>>(
-    `exams_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Exam created successfully" });
-        setIsAddTestOpen(false);
-        resetTestForm();
-        refetchExams();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
-    }
-  );
-
-  // Delete mutations
-  const deleteTypeMutation = useSupabaseDelete(
-    `exam_types_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Template deleted" });
-        refetchTypes();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
-    }
-  );
-
-  const deleteExamMutation = useSupabaseDelete(
-    `exams_${INDEX_TOKEN}`,
-    {
-      onSuccess: () => {
-        toast({ title: "Success", description: "Exam deleted" });
-        refetchExams();
-      },
-      onError: (error) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
-    }
   );
 
   const resetTemplateForm = () => {
@@ -250,45 +191,73 @@ const Results = () => {
     setNewTestEndDate("");
   };
 
-  const handleAddTemplate = () => {
+  const handleAddTemplate = async () => {
     if (!newTemplateName.trim() || !newTemplateCode.trim()) {
       toast({ title: "Error", description: "Name and code are required", variant: "destructive" });
       return;
     }
 
-    insertTypeMutation.mutate({
-      exam_type_name: newTemplateName.trim(),
-      exam_type_code: newTemplateCode.trim().toUpperCase(),
-      description: newTemplateType,
-      is_active: true
-    });
+    try {
+      await createTypesMutation.mutateAsync({
+        exam_type_name: newTemplateName.trim(),
+        exam_type_code: newTemplateCode.trim().toUpperCase(),
+        description: newTemplateType,
+        is_active: true
+      } as Partial<ExamType>);
+      toast({ title: "Success", description: "Template created successfully" });
+      setIsAddTemplateOpen(false);
+      resetTemplateForm();
+      await refetchTypes();
+    } catch (error) {
+      toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+    }
   };
 
-  const handleAddTest = () => {
+  const handleAddTest = async () => {
     if (!newTestName.trim() || !newTestCode.trim() || !selectedTemplateId || !newTestStartDate) {
       toast({ title: "Error", description: "All fields are required", variant: "destructive" });
       return;
     }
 
-    insertExamMutation.mutate({
-      exam_name: newTestName.trim(),
-      exam_code: newTestCode.trim().toUpperCase(),
-      exam_type_id: selectedTemplateId,
-      start_date: newTestStartDate,
-      end_date: newTestEndDate || newTestStartDate,
-      is_active: true
-    });
-  };
-
-  const handleDeleteTemplate = (id: string) => {
-    if (confirm("Are you sure you want to delete this template?")) {
-      deleteTypeMutation.mutate({ id });
+    try {
+      await createExamMutation.mutateAsync({
+        exam_name: newTestName.trim(),
+        exam_code: newTestCode.trim().toUpperCase(),
+        exam_type_id: selectedTemplateId,
+        start_date: newTestStartDate,
+        end_date: newTestEndDate || newTestStartDate,
+        is_active: true
+      } as Partial<Exam>);
+      toast({ title: "Success", description: "Exam created successfully" });
+      setIsAddTestOpen(false);
+      resetTestForm();
+      await refetchExams();
+    } catch (error) {
+      toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
     }
   };
 
-  const handleDeleteExam = (id: string) => {
+  const handleDeleteTemplate = async (id: string) => {
+    if (confirm("Are you sure you want to delete this template?")) {
+      try {
+        await deleteTypesMutation.mutateAsync(id);
+        toast({ title: "Success", description: "Template deleted" });
+        await refetchTypes();
+      } catch (error) {
+        toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+      }
+    }
+  };
+
+  const handleDeleteExam = async (id: string) => {
     if (confirm("Are you sure you want to delete this exam?")) {
-      deleteExamMutation.mutate({ id });
+      try {
+        await deleteExamsMutation.mutateAsync(id);
+        toast({ title: "Success", description: "Exam deleted" });
+        await refetchExams();
+      } catch (error) {
+        toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+      }
     }
   };
 
@@ -308,7 +277,6 @@ const Results = () => {
   };
 
   const isLoading = loadingTypes || loadingExams;
-  const error = typesError || examsError;
 
   return (
     <div className="space-y-6">
@@ -337,14 +305,6 @@ const Results = () => {
           </button>
         </div>
       </div>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>Failed to load data: {error.message}</AlertDescription>
-        </Alert>
-      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0">
@@ -434,7 +394,7 @@ const Results = () => {
                           size="sm" 
                           variant="outline"
                           onClick={() => handleDeleteTemplate(template.id)}
-                          disabled={deleteTypeMutation.isPending}
+                          disabled={deleteTypesMutation.isPending}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -500,7 +460,7 @@ const Results = () => {
                           size="sm" 
                           variant="outline"
                           onClick={() => handleDeleteExam(exam.id)}
-                          disabled={deleteExamMutation.isPending}
+                          disabled={deleteExamsMutation.isPending}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -674,9 +634,9 @@ const Results = () => {
               <Button 
                 className="bg-primary hover:bg-primary/90"
                 onClick={handleAddTemplate}
-                disabled={insertTypeMutation.isPending}
+                disabled={createTypesMutation.isPending}
               >
-                {insertTypeMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {createTypesMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Add Template
               </Button>
             </div>
@@ -745,9 +705,9 @@ const Results = () => {
               <Button 
                 className="bg-primary hover:bg-primary/90"
                 onClick={handleAddTest}
-                disabled={insertExamMutation.isPending}
+                disabled={createExamMutation.isPending}
               >
-                {insertExamMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {createExamMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Add Test
               </Button>
             </div>

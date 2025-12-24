@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -33,10 +33,20 @@ const Auth = () => {
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
-  // Redirect if already logged in
+  // Redirect if already logged in (use useEffect to avoid render-time navigation)
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
+
+  // Don't render auth page if user is logged in (show loading state)
   if (user) {
-    navigate(from, { replace: true });
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   const validateForm = (isSignUp: boolean) => {
