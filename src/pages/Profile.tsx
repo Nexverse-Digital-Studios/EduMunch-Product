@@ -1,5 +1,18 @@
-import { useState } from "react";
+/**
+ * Profile.tsx - User Profile Management
+ * 
+ * Features:
+ * - Profile information display (from Supabase Auth + users table)
+ * - Password change (Supabase Auth)
+ * - Notification preferences
+ * 
+ * Supabase Tables:
+ * - users_1EMAET: User profile data
+ * - user_role_mappings_1EMAET: User role assignments
+ */
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
 import { 
   User, 
   Mail, 
@@ -26,6 +40,16 @@ import {
   EyeOff
 } from "lucide-react";
 
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+
+interface UserProfile {
+  id: string;
+  full_name: string;
+  email: string;
+  phone_number: string | null;
+  created_at: string;
+}
+
 const Profile = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -34,16 +58,47 @@ const Profile = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Fetch user profile from database
+  const { data: userProfiles = [], isLoading: profileLoading } = useSupabaseQuery<UserProfile>(
+    `users_${INDEX_TOKEN}`,
+    {
+      select: '*',
+      filters: user?.id ? [{ column: 'id', value: user.id }] : undefined,
+      enabled: !!user?.id
+    }
+  );
+
+  const userProfile = userProfiles[0];
+
   // Profile form state
   const [profileData, setProfileData] = useState({
-    fullName: "Super Admin",
-    email: user?.email || "admin@eduadmin.com",
-    phone: "+91 9876543210",
+    fullName: "",
+    email: "",
+    phone: "",
     department: "Administration",
     designation: "System Administrator",
-    joinDate: "2023-01-15",
+    joinDate: "",
     branch: "Head Office",
   });
+
+  // Update form when profile loads
+  useEffect(() => {
+    if (userProfile) {
+      setProfileData(prev => ({
+        ...prev,
+        fullName: userProfile.full_name || "",
+        email: userProfile.email || user?.email || "",
+        phone: userProfile.phone_number || "",
+        joinDate: userProfile.created_at?.split('T')[0] || "",
+      }));
+    } else if (user) {
+      setProfileData(prev => ({
+        ...prev,
+        email: user.email || "",
+        fullName: user.user_metadata?.full_name || "User",
+      }));
+    }
+  }, [userProfile, user]);
 
   // Password form state
   const [passwordData, setPasswordData] = useState({
@@ -67,14 +122,31 @@ const Profile = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been saved successfully.",
-    });
-    setIsLoading(false);
+    try {
+      // Update user profile in database
+      const { error } = await supabase
+        .from(`users_${INDEX_TOKEN}`)
+        .update({
+          full_name: profileData.fullName,
+          phone_number: profileData.phone,
+        })
+        .eq('id', user?.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been saved successfully.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -100,15 +172,27 @@ const Profile = () => {
 
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Password changed",
-      description: "Your password has been updated successfully.",
-    });
-    setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    setIsLoading(false);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwordData.newPassword
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Password changed",
+        description: "Your password has been updated successfully.",
+      });
+      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to change password",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleNotificationToggle = (key: keyof typeof notifications) => {
@@ -118,6 +202,18 @@ const Profile = () => {
       description: "Your notification preferences have been saved.",
     });
   };
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
+  };
+
+  if (profileLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -146,7 +242,7 @@ const Profile = () => {
                     <Avatar className="h-24 w-24">
                       <AvatarImage src="" />
                       <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
-                        {profileData.fullName.split(' ').map(n => n[0]).join('')}
+                        {getInitials(profileData.fullName)}
                       </AvatarFallback>
                     </Avatar>
                     <Button 
@@ -158,22 +254,22 @@ const Profile = () => {
                     </Button>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground text-lg">{profileData.fullName}</h3>
+                    <h3 className="font-semibold text-foreground text-lg">{profileData.fullName || 'User'}</h3>
                     <p className="text-sm text-muted-foreground">{profileData.designation}</p>
                   </div>
                   <Badge variant="secondary" className="bg-primary/10 text-primary">
                     <Shield className="h-3 w-3 mr-1" />
-                    Super Admin
+                    Admin
                   </Badge>
                   <Separator />
                   <div className="w-full space-y-3 text-left">
                     <div className="flex items-center gap-3 text-sm">
                       <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-foreground truncate">{profileData.email}</span>
+                      <span className="text-foreground truncate">{profileData.email || 'Not set'}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                       <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-foreground">{profileData.phone}</span>
+                      <span className="text-foreground">{profileData.phone || 'Not set'}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                       <Building className="h-4 w-4 text-muted-foreground" />
@@ -181,7 +277,9 @@ const Profile = () => {
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-foreground">Joined {new Date(profileData.joinDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                      <span className="text-foreground">
+                        {profileData.joinDate ? `Joined ${new Date(profileData.joinDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : 'Join date unknown'}
+                      </span>
                     </div>
                   </div>
                 </div>

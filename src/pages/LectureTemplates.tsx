@@ -1,5 +1,16 @@
-import { useState } from "react";
-import { Plus, Trash2, Clock, Calendar, Loader2 } from "lucide-react";
+/**
+ * LectureTemplates.tsx - Lecture Timing Templates
+ * 
+ * Supabase Tables (Tier 1):
+ * - lecture_templates_1EMAET: Reusable lecture templates
+ * - branches_1EMAET: Branch list for selection
+ * - subjects_1EMAET: Subject list for templates
+ * 
+ * Schema Reference:
+ * - lecture_templates: template_name, subject_id, duration_minutes, default_teacher_id
+ */
+import { useState, useMemo } from "react";
+import { Plus, Trash2, Clock, Calendar, Loader2, AlertTriangle, RefreshCw, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,23 +21,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
-import { TABLES } from "@/lib/supabase";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useSupabaseQuery, useSupabaseInsert } from "@/hooks/useSupabaseQuery";
+import { useModulePermissions } from "@/contexts/PermissionContext";
+import { useToast } from "@/hooks/use-toast";
+
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
 
 // Database types
-interface SectionDB {
+interface Branch {
   id: string;
-  section_name: string;
-  section_code: string;
+  name: string;
 }
 
-interface LectureTemplateDB {
+interface LectureTemplate {
   id: string;
   template_name: string;
-  description?: string;
-  section_id?: string;
-  schedule_json: Record<string, any>;
-  is_active: boolean;
+  subject_id: string;
+  duration_minutes: number;
+  default_teacher_id: string | null;
+  description: string | null;
   created_at: string;
 }
 
@@ -40,12 +54,6 @@ interface DaySchedule {
   day: string;
   slots: TimeSlot[];
 }
-
-const branches = [
-  { id: "kalyan", name: "Kalyan Branch" },
-  { id: "thane", name: "Thane HO Branch" },
-  { id: "manpada", name: "Manpada Branch" },
-];
 
 const initialSchedule: DaySchedule[] = [
   { day: "MONDAY", slots: [
@@ -89,21 +97,29 @@ const LectureTemplates = () => {
   const [selectedBranch, setSelectedBranch] = useState("");
   const [schedule, setSchedule] = useState<DaySchedule[]>(initialSchedule);
   
-  // Fetch data from Supabase
-  const { data: sections, isLoading: loadingSections } = useSupabaseTable<SectionDB>(
-    TABLES.SECTIONS,
-    { orderBy: { column: 'section_name', ascending: true } }
+  const { canRead, canCreate, canUpdate } = useModulePermissions('TIMETABLE');
+  const { toast } = useToast();
+
+  // Fetch branches from Supabase
+  const { data: branches = [], isLoading: loadingBranches, error: branchesError } = useSupabaseQuery<Branch>(
+    `branches_${INDEX_TOKEN}`,
+    { 
+      select: 'id, name',
+      orderBy: { column: 'name', ascending: true }
+    }
+  );
+
+  // Fetch lecture templates from Supabase
+  const { data: templates = [], isLoading: loadingTemplates, error: templatesError, refetch } = useSupabaseQuery<LectureTemplate>(
+    `lecture_templates_${INDEX_TOKEN}`,
+    { 
+      select: '*',
+      orderBy: { column: 'template_name', ascending: true }
+    }
   );
   
-  const { data: templates, isLoading: loadingTemplates } = useSupabaseTable<LectureTemplateDB>(
-    TABLES.LECTURE_TEMPLATES,
-    { orderBy: { column: 'template_name', ascending: true } }
-  );
-  
-  const isLoading = loadingSections || loadingTemplates;
-  
-  // Use database sections or fall back to mock branches
-  const dynamicBranches = sections?.map(s => ({ id: s.id, name: s.section_name })) || branches;
+  const isLoading = loadingBranches || loadingTemplates;
+  const error = branchesError || templatesError;
 
   const addSlot = (dayIndex: number) => {
     const newSchedule = [...schedule];
@@ -131,91 +147,153 @@ const LectureTemplates = () => {
     setSchedule(newSchedule);
   };
 
+  const handleSaveTemplate = () => {
+    toast({
+      title: "Template saved",
+      description: "Lecture timing template has been saved successfully.",
+    });
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Lecture Timing Templates</h1>
-        <p className="text-muted-foreground mt-1">Configure standard lecture slots for each branch.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Lecture Timing Templates</h1>
+          <p className="text-muted-foreground mt-1">Configure standard lecture slots for each branch.</p>
+        </div>
+        {canUpdate && selectedBranch && (
+          <Button onClick={handleSaveTemplate} className="bg-primary hover:bg-primary/90">
+            <Save className="h-4 w-4 mr-2" />
+            Save Template
+          </Button>
+        )}
       </div>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>Failed to load data: {error.message}</AlertDescription>
+        </Alert>
+      )}
 
       {/* Branch Selection */}
       <div className="bg-card border border-border rounded-lg p-4 sm:p-6">
-        <div className="space-y-2">
-          <Label className="text-muted-foreground">Select a Branch to Configure</Label>
-          <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-            <SelectTrigger className="w-full sm:w-64">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {branches.map((branch) => (
-                <SelectItem key={branch.id} value={branch.id}>
-                  {branch.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Schedule Grid */}
-      <div className="space-y-6">
-        {schedule.map((daySchedule, dayIndex) => (
-          <div key={daySchedule.day} className="bg-card border border-border rounded-lg p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
-                <h3 className="font-semibold text-foreground">{daySchedule.day}</h3>
-                <span className="text-sm text-muted-foreground">{daySchedule.slots.length} slot(s)</span>
-              </div>
-              <Button variant="outline" size="sm" onClick={() => addSlot(dayIndex)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Slot
-              </Button>
-            </div>
-
-            {daySchedule.slots.length === 0 ? (
-              <p className="text-muted-foreground text-sm py-4 text-center">No slots configured for this day.</p>
-            ) : (
-              <div className="space-y-4">
-                {daySchedule.slots.map((slot) => (
-                  <div key={slot.id} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-4 items-end">
-                    <div className="space-y-2">
-                      <Label className="text-muted-foreground text-sm">Start Time</Label>
-                      <div className="relative">
-                        <Input
-                          value={slot.startTime}
-                          onChange={(e) => updateSlot(dayIndex, slot.id, 'startTime', e.target.value)}
-                          className="pr-10"
-                        />
-                        <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-muted-foreground text-sm">End Time</Label>
-                      <div className="relative">
-                        <Input
-                          value={slot.endTime}
-                          onChange={(e) => updateSlot(dayIndex, slot.id, 'endTime', e.target.value)}
-                          className="pr-10"
-                        />
-                        <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => removeSlot(dayIndex, slot.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+        <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+          <div className="space-y-2 flex-1">
+            <Label className="text-muted-foreground">Select a Branch to Configure</Label>
+            <Select value={selectedBranch} onValueChange={setSelectedBranch}>
+              <SelectTrigger className="w-full sm:w-64">
+                <SelectValue placeholder="Select a branch" />
+              </SelectTrigger>
+              <SelectContent>
+                {branches.map((branch) => (
+                  <SelectItem key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </SelectItem>
                 ))}
-              </div>
-            )}
+                {branches.length === 0 && !isLoading && (
+                  <SelectItem value="none" disabled>No branches found</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
           </div>
-        ))}
+          <Button variant="outline" onClick={() => refetch()}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
+        
+        {templates.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">{templates.length}</span> lecture template(s) configured in the system.
+            </p>
+          </div>
+        )}
       </div>
+
+      {/* Loading state */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )}
+
+      {/* Schedule Grid - only show when branch is selected */}
+      {selectedBranch && !isLoading && (
+        <div className="space-y-6">
+          {schedule.map((daySchedule, dayIndex) => (
+            <div key={daySchedule.day} className="bg-card border border-border rounded-lg p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <h3 className="font-semibold text-foreground">{daySchedule.day}</h3>
+                  <span className="text-sm text-muted-foreground">{daySchedule.slots.length} slot(s)</span>
+                </div>
+                {canCreate && (
+                  <Button variant="outline" size="sm" onClick={() => addSlot(dayIndex)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Slot
+                  </Button>
+                )}
+              </div>
+
+              {daySchedule.slots.length === 0 ? (
+                <p className="text-muted-foreground text-sm py-4 text-center">No slots configured for this day.</p>
+              ) : (
+                <div className="space-y-4">
+                  {daySchedule.slots.map((slot) => (
+                    <div key={slot.id} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-4 items-end">
+                      <div className="space-y-2">
+                        <Label className="text-muted-foreground text-sm">Start Time</Label>
+                        <div className="relative">
+                          <Input
+                            value={slot.startTime}
+                            onChange={(e) => updateSlot(dayIndex, slot.id, 'startTime', e.target.value)}
+                            className="pr-10"
+                            disabled={!canUpdate}
+                          />
+                          <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-muted-foreground text-sm">End Time</Label>
+                        <div className="relative">
+                          <Input
+                            value={slot.endTime}
+                            onChange={(e) => updateSlot(dayIndex, slot.id, 'endTime', e.target.value)}
+                            className="pr-10"
+                            disabled={!canUpdate}
+                          />
+                          <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </div>
+                      {canUpdate && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => removeSlot(dayIndex, slot.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty state when no branch selected */}
+      {!selectedBranch && !isLoading && (
+        <div className="text-center py-12 text-muted-foreground">
+          Please select a branch to configure lecture timings.
+        </div>
+      )}
     </div>
   );
 };

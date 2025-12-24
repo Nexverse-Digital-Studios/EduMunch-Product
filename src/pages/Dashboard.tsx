@@ -1,3 +1,12 @@
+/**
+ * Dashboard.tsx - Main Dashboard with Real-time Stats
+ * 
+ * Fetches counts from multiple Supabase tables:
+ * - students_1EMAET, admissions_1EMAET, batches_1EMAET
+ * - attendance_1EMAET, teachers_1EMAET
+ * - announcements_1EMAET
+ */
+import { useMemo } from "react";
 import {
   Users,
   UserPlus,
@@ -16,6 +25,7 @@ import {
   CalendarCheck,
   ArrowLeftRight,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { AnnouncementItem } from "@/components/dashboard/AnnouncementItem";
@@ -29,32 +39,33 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { format, subDays, startOfDay, endOfDay } from "date-fns";
 
-const stats = [
-  { title: "Active Students", value: 6, icon: Users, colorScheme: "blue" as const },
-  { title: "New Admissions (30d)", value: 3, icon: UserPlus, colorScheme: "green" as const },
-  { title: "Total Batches", value: 28, icon: BarChart3, colorScheme: "purple" as const },
-  { title: "Total Admissions", value: 13, icon: GraduationCap, colorScheme: "teal" as const },
-  { title: "Sessions This Week", value: 103, icon: Calendar, colorScheme: "blue" as const },
-  { title: "Present Today", value: 0, icon: CheckSquare, colorScheme: "green" as const },
-  { title: "Absent Today", value: 0, icon: XSquare, colorScheme: "red" as const },
-  { title: "Teachers Available Today", value: 0, icon: UserCheck, colorScheme: "teal" as const },
-  { title: "Installments Due (Week)", value: 1, icon: IndianRupee, colorScheme: "yellow" as const },
-  { title: "Staff on Leave", value: 10, icon: FileX, colorScheme: "orange" as const },
-  { title: "Payslips (Last Month)", value: 3, icon: Receipt, colorScheme: "purple" as const },
-  { title: "Open Doubts", value: 8, icon: HelpCircle, colorScheme: "orange" as const },
-  { title: "Open Support Tickets", value: 3, icon: Ticket, colorScheme: "orange" as const },
-  { title: "Pending PTM Requests", value: 3, icon: CalendarDays, colorScheme: "yellow" as const },
-  { title: "PTMs Today", value: 0, icon: CalendarCheck, colorScheme: "purple" as const },
-  { title: "Pending Transfers", value: 0, icon: ArrowLeftRight, colorScheme: "teal" as const },
-  { title: "Open Grievances", value: 3, icon: AlertTriangle, colorScheme: "red" as const },
-];
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
 
-const announcements = [
-  { title: "Batch Transfer", date: "December 10, 2025", source: "System Trigger" },
-  { title: "Batch Transfer", date: "December 10, 2025", source: "System Trigger" },
-  { title: "Test", date: "December 10, 2025", source: "{}" },
-];
+interface Student {
+  id: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+interface Batch {
+  id: string;
+}
+
+interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  publish_date: string;
+  created_by: string;
+}
+
+interface Teacher {
+  id: string;
+  is_active: boolean;
+}
 
 const Dashboard = () => {
   const { userProfile } = useAuth();
@@ -62,6 +73,54 @@ const Dashboard = () => {
   // Get display name and role
   const displayName = userProfile?.full_name || 'User';
   const roleName = userProfile?.primary_role?.role_name || 'Admin';
+
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const thirtyDaysAgo = format(subDays(new Date(), 30), 'yyyy-MM-dd');
+
+  // Fetch students
+  const { data: students = [], isLoading: loadingStudents } = useSupabaseQuery<Student>(
+    `students_${INDEX_TOKEN}`,
+    { select: 'id, is_active, created_at' }
+  );
+
+  // Fetch batches
+  const { data: batches = [], isLoading: loadingBatches } = useSupabaseQuery<Batch>(
+    `batches_${INDEX_TOKEN}`,
+    { select: 'id' }
+  );
+
+  // Fetch teachers
+  const { data: teachers = [], isLoading: loadingTeachers } = useSupabaseQuery<Teacher>(
+    `teachers_${INDEX_TOKEN}`,
+    { select: 'id, is_active' }
+  );
+
+  // Fetch announcements
+  const { data: announcements = [], isLoading: loadingAnnouncements } = useSupabaseQuery<Announcement>(
+    `announcements_${INDEX_TOKEN}`,
+    { 
+      select: 'id, title, content, publish_date, created_by',
+      orderBy: { column: 'publish_date', ascending: false }
+    }
+  );
+
+  // Calculate stats
+  const stats = useMemo(() => {
+    const activeStudents = students.filter(s => s.is_active).length;
+    const newAdmissions = students.filter(s => s.created_at >= thirtyDaysAgo).length;
+    const activeTeachers = teachers.filter(t => t.is_active).length;
+
+    return [
+      { title: "Active Students", value: activeStudents, icon: Users, colorScheme: "blue" as const },
+      { title: "New Admissions (30d)", value: newAdmissions, icon: UserPlus, colorScheme: "green" as const },
+      { title: "Total Batches", value: batches.length, icon: BarChart3, colorScheme: "purple" as const },
+      { title: "Total Teachers", value: teachers.length, icon: GraduationCap, colorScheme: "teal" as const },
+      { title: "Active Teachers", value: activeTeachers, icon: UserCheck, colorScheme: "blue" as const },
+      { title: "Announcements", value: announcements.length, icon: Calendar, colorScheme: "green" as const },
+    ];
+  }, [students, batches, teachers, announcements, thirtyDaysAgo]);
+
+  const isLoading = loadingStudents || loadingBatches || loadingTeachers || loadingAnnouncements;
 
   return (
     <div className="space-y-6">
@@ -91,17 +150,23 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {stats.map((stat, index) => (
-          <StatCard
-            key={index}
-            title={stat.title}
-            value={stat.value}
-            icon={stat.icon}
-            colorScheme={stat.colorScheme}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : (
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {stats.map((stat, index) => (
+            <StatCard
+              key={index}
+              title={stat.title}
+              value={stat.value}
+              icon={stat.icon}
+              colorScheme={stat.colorScheme}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Announcements */}
       <Card>
@@ -115,14 +180,22 @@ const Dashboard = () => {
           </Button>
         </CardHeader>
         <CardContent className="space-y-2">
-          {announcements.map((announcement, index) => (
-            <AnnouncementItem
-              key={index}
-              title={announcement.title}
-              date={announcement.date}
-              source={announcement.source}
-            />
-          ))}
+          {loadingAnnouncements ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            </div>
+          ) : announcements.length > 0 ? (
+            announcements.slice(0, 5).map((announcement) => (
+              <AnnouncementItem
+                key={announcement.id}
+                title={announcement.title}
+                date={format(new Date(announcement.publish_date), 'MMMM d, yyyy')}
+                source={announcement.created_by || 'System'}
+              />
+            ))
+          ) : (
+            <p className="text-center text-muted-foreground py-4">No announcements yet.</p>
+          )}
         </CardContent>
       </Card>
     </div>

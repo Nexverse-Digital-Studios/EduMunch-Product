@@ -1,5 +1,21 @@
-import { useState } from "react";
-import { Plus, Edit, Trash2, Clock } from "lucide-react";
+/**
+ * Inventory.tsx - Inventory & Cash Management
+ * 
+ * NOTE: This feature requires Tier 3 schema to be deployed.
+ * 
+ * Supabase Tables (Tier 3):
+ * - assets_1EMAET: School assets (furniture, equipment, IT assets)
+ * - asset_maintenance_1EMAET: Asset maintenance schedule/history
+ * - lab_equipment_1EMAET: Lab-specific equipment
+ * 
+ * Schema Reference:
+ * - assets: asset_code, asset_name, asset_category, status, condition_status, purchase_cost
+ * - asset_maintenance: asset_id, maintenance_type, maintenance_date, status
+ * 
+ * Currently using mock data until Tier 3 is deployed.
+ */
+import { useState, useMemo } from "react";
+import { Plus, Edit, Trash2, Clock, AlertTriangle, Loader2, RefreshCw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -27,55 +43,121 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useSupabaseQuery, useSupabaseInsert } from "@/hooks/useSupabaseQuery";
+import { useModulePermissions } from "@/contexts/PermissionContext";
+import { useToast } from "@/hooks/use-toast";
 
-const branches = [
-  { id: "kalyan", name: "Kalyan Branch" },
-  { id: "thane", name: "Thane HO Branch" },
-  { id: "manpada", name: "Manpada Branch" },
-  { id: "mumbai", name: "Mumbai Branch" },
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+
+// Types for Tier 3 assets (when available)
+interface Asset {
+  id: string;
+  asset_code: string;
+  asset_name: string;
+  asset_category: string;
+  asset_type: string | null;
+  description: string | null;
+  status: string;
+  condition_status: string;
+  purchase_cost: number | null;
+  created_at: string;
+}
+
+interface Branch {
+  id: string;
+  name: string;
+}
+
+// Mock data for demo (until Tier 3 is deployed)
+const mockInventoryItems = [
+  { id: "1", name: "Advertising Papers", type: "ASSET", quantity: 10 },
+  { id: "2", name: "Markers", type: "CONSUMABLE", quantity: 50 },
+  { id: "3", name: "Projector", type: "ASSET", quantity: 2 },
 ];
 
-const inventoryItems = [
-  { id: 1, name: "Advertising Papers", type: "ASSET", quantity: 10 },
-  { id: 2, name: "Markers", type: "CONSUMABLE", quantity: 50 },
-  { id: 3, name: "Projector", type: "ASSET", quantity: 2 },
+const mockTransfers = [
+  { id: "1", fromBranch: "Thane HO Branch", toBranch: "Kalyan Branch", item: "Cash", quantity: 2000, status: "CANCELLED", initiatedAt: "11/15/2025, 2:35:26 PM" },
+  { id: "2", fromBranch: "Thane HO Branch", toBranch: "Manpada Branch", item: "Cash", quantity: 100000, status: "COMPLETED", initiatedAt: "10/17/2025, 4:10:59 PM" },
 ];
 
-const transfers = [
-  { id: 1, fromBranch: "Thane HO Branch", toBranch: "Kalyan Branch", item: "Cash", quantity: 2000, status: "CANCELLED", initiatedAt: "11/15/2025, 2:35:26 PM" },
-  { id: 2, fromBranch: "Thane HO Branch", toBranch: "Manpada Branch", item: "Cash", quantity: 100000, status: "COMPLETED", initiatedAt: "10/17/2025, 4:10:59 PM" },
-  { id: 3, fromBranch: "Thane HO Branch", toBranch: "Kalyan Branch", item: "Advertising Papers", quantity: 20, status: "COMPLETED", initiatedAt: "10/17/2025, 4:09:56 PM" },
+const mockPettyCashLedger = [
+  { id: "1", date: "10/17/2025, 4:11:05 PM", description: "From Branch ID 1", type: "TRANSFER_IN", recordedBy: "Super Admin", amount: 100000 },
+  { id: "2", date: "10/15/2025, 2:00:00 PM", description: "Stationary Purchase", type: "EXPENSE", recordedBy: "Branch Manager", amount: -500 },
 ];
 
-const inventoryLedger = [
-  { id: 1, date: "11/15/2025, 2:07:41 PM", item: "Advertising Papers", quantityChange: -10, reason: "Distributed", recordedBy: "Thane Branch manager" },
-  { id: 2, date: "10/20/2025, 10:30:00 AM", item: "Markers", quantityChange: 25, reason: "Restocked", recordedBy: "Super Admin" },
-];
-
-const pettyCashLedger = [
-  { id: 1, date: "10/17/2025, 4:11:05 PM", description: "From Branch ID 1", type: "TRANSFER_IN", recordedBy: "Super Admin", amount: 100000 },
-  { id: 2, date: "10/15/2025, 2:00:00 PM", description: "Stationary Purchase", type: "EXPENSE", recordedBy: "Branch Manager", amount: -500 },
-];
-
-const masterItems = [
-  { id: 1, name: "Advertising Papers", description: "For distribution", type: "ASSET" },
-  { id: 2, name: "Cash", description: "For Spending", type: "CASH" },
-  { id: 3, name: "Maths Books", description: "For student distribution", type: "CONSUMABLE" },
+const mockMasterItems = [
+  { id: "1", name: "Advertising Papers", description: "For distribution", type: "ASSET" },
+  { id: "2", name: "Cash", description: "For Spending", type: "CASH" },
+  { id: "3", name: "Maths Books", description: "For student distribution", type: "CONSUMABLE" },
 ];
 
 const Inventory = () => {
   const [activeTab, setActiveTab] = useState("branch");
-  const [selectedBranch, setSelectedBranch] = useState("kalyan");
+  const [selectedBranch, setSelectedBranch] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [isAddEntryModalOpen, setIsAddEntryModalOpen] = useState(false);
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
 
+  const { canRead, canCreate, canUpdate, canDelete } = useModulePermissions('INVENTORY');
+  const { toast } = useToast();
+
+  // Try to fetch branches from Tier 1 (always available)
+  const { data: branches = [] } = useSupabaseQuery<Branch>(
+    `branches_${INDEX_TOKEN}`,
+    { select: 'id, name' }
+  );
+
+  // Try to fetch assets from Tier 3 (may not be available)
+  const { data: assets = [], isLoading: assetsLoading, error: assetsError } = useSupabaseQuery<Asset>(
+    `assets_${INDEX_TOKEN}`,
+    { 
+      select: '*',
+      orderBy: { column: 'created_at', ascending: false }
+    }
+  );
+
+  // Check if Tier 3 is available
+  const isTier3Available = !assetsError && assets.length >= 0;
+  const tier3Error = assetsError?.message?.includes('does not exist') || assetsError?.message?.includes('relation');
+
   const currentBalance = 100000;
+
+  // Use real assets if available, otherwise mock data
+  const inventoryItems = useMemo(() => {
+    if (isTier3Available && assets.length > 0) {
+      return assets.map(a => ({
+        id: a.id,
+        name: a.asset_name,
+        type: a.asset_category || 'Unknown',
+        quantity: 1 // Assets are typically single items
+      }));
+    }
+    return mockInventoryItems;
+  }, [assets, isTier3Available]);
+
+  const filteredItems = useMemo(() => {
+    return inventoryItems.filter(item =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [inventoryItems, searchQuery]);
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Inventory & Cash Management</h1>
+
+      {tier3Error && (
+        <Alert variant="default" className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20">
+          <AlertTriangle className="h-4 w-4 text-yellow-600" />
+          <AlertTitle className="text-yellow-800 dark:text-yellow-200">Tier 3 Schema Required</AlertTitle>
+          <AlertDescription className="text-yellow-700 dark:text-yellow-300">
+            This feature requires Tier 3 schema (assets, asset_maintenance, lab_equipment tables) to be deployed.
+            Currently showing demo data. Deploy Tier 3 schema for full functionality.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0 flex-wrap">
@@ -114,56 +196,88 @@ const Inventory = () => {
         {/* Branch Inventory Tab */}
         <TabsContent value="branch" className="mt-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 justify-between">
-            <div className="space-y-2">
-              <Label className="text-muted-foreground">Select Branch</Label>
-              <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-                <SelectTrigger className="w-full sm:w-64">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {branches.map((branch) => (
-                    <SelectItem key={branch.id} value={branch.id}>
-                      {branch.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Select Branch</Label>
+                <Select value={selectedBranch} onValueChange={setSelectedBranch}>
+                  <SelectTrigger className="w-full sm:w-64">
+                    <SelectValue placeholder="Select Branch" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Branches</SelectItem>
+                    {branches.map((branch) => (
+                      <SelectItem key={branch.id} value={branch.id}>
+                        {branch.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Search</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search items..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 w-full sm:w-64"
+                  />
+                </div>
+              </div>
             </div>
-            <Button onClick={() => setIsAdjustModalOpen(true)} className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Adjust Stock
-            </Button>
+            {canCreate && (
+              <Button onClick={() => setIsAdjustModalOpen(true)} className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Adjust Stock
+              </Button>
+            )}
           </div>
 
-          <div className="border border-border rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/30">
-                  <TableHead>Item Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Quantity</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {inventoryItems.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-muted/20">
-                    <TableCell className="font-medium text-foreground">{item.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{item.type}</TableCell>
-                    <TableCell className="text-right font-medium text-foreground">{item.quantity}</TableCell>
+          {assetsLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="border border-border rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/30">
+                    <TableHead>Item Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead className="text-right">Quantity</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {filteredItems.map((item) => (
+                    <TableRow key={item.id} className="hover:bg-muted/20">
+                      <TableCell className="font-medium text-foreground">{item.name}</TableCell>
+                      <TableCell className="text-muted-foreground">{item.type}</TableCell>
+                      <TableCell className="text-right font-medium text-foreground">{item.quantity}</TableCell>
+                    </TableRow>
+                  ))}
+                  {filteredItems.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
+                        No items found
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </TabsContent>
 
         {/* Transfers Tab */}
         <TabsContent value="transfers" className="mt-6 space-y-6">
           <div className="flex justify-end">
-            <Button onClick={() => setIsTransferModalOpen(true)} className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Initiate Transfer
-            </Button>
+            {canCreate && (
+              <Button onClick={() => setIsTransferModalOpen(true)} className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Initiate Transfer
+              </Button>
+            )}
           </div>
 
           <div className="border border-border rounded-lg overflow-hidden">
@@ -180,7 +294,7 @@ const Inventory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transfers.map((transfer) => (
+                {mockTransfers.map((transfer) => (
                   <TableRow key={transfer.id} className="hover:bg-muted/20">
                     <TableCell className="text-foreground">{transfer.fromBranch}</TableCell>
                     <TableCell className="text-foreground">{transfer.toBranch}</TableCell>
@@ -211,9 +325,10 @@ const Inventory = () => {
             <Label className="text-muted-foreground">Select Branch</Label>
             <Select value={selectedBranch} onValueChange={setSelectedBranch}>
               <SelectTrigger className="w-full sm:w-64">
-                <SelectValue />
+                <SelectValue placeholder="Select Branch" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">All Branches</SelectItem>
                 {branches.map((branch) => (
                   <SelectItem key={branch.id} value={branch.id}>
                     {branch.name}
@@ -235,17 +350,20 @@ const Inventory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {inventoryLedger.map((entry) => (
-                  <TableRow key={entry.id} className="hover:bg-muted/20">
-                    <TableCell className="text-muted-foreground">{entry.date}</TableCell>
-                    <TableCell className="text-foreground">{entry.item}</TableCell>
-                    <TableCell className={`text-right font-medium ${entry.quantityChange < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                      {entry.quantityChange > 0 ? `+${entry.quantityChange}` : entry.quantityChange}
-                    </TableCell>
-                    <TableCell className="text-foreground">{entry.reason}</TableCell>
-                    <TableCell className="text-muted-foreground">{entry.recordedBy}</TableCell>
-                  </TableRow>
-                ))}
+                <TableRow className="hover:bg-muted/20">
+                  <TableCell className="text-muted-foreground">11/15/2025, 2:07:41 PM</TableCell>
+                  <TableCell className="text-foreground">Advertising Papers</TableCell>
+                  <TableCell className="text-right font-medium text-red-600">-10</TableCell>
+                  <TableCell className="text-foreground">Distributed</TableCell>
+                  <TableCell className="text-muted-foreground">Thane Branch manager</TableCell>
+                </TableRow>
+                <TableRow className="hover:bg-muted/20">
+                  <TableCell className="text-muted-foreground">10/20/2025, 10:30:00 AM</TableCell>
+                  <TableCell className="text-foreground">Markers</TableCell>
+                  <TableCell className="text-right font-medium text-green-600">+25</TableCell>
+                  <TableCell className="text-foreground">Restocked</TableCell>
+                  <TableCell className="text-muted-foreground">Super Admin</TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </div>
@@ -256,11 +374,12 @@ const Inventory = () => {
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 justify-between">
             <div className="space-y-2">
               <Label className="text-muted-foreground">Select Branch</Label>
-              <Select value="manpada" onValueChange={() => {}}>
+              <Select value={selectedBranch} onValueChange={setSelectedBranch}>
                 <SelectTrigger className="w-full sm:w-64">
-                  <SelectValue />
+                  <SelectValue placeholder="Select Branch" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">All Branches</SelectItem>
                   {branches.map((branch) => (
                     <SelectItem key={branch.id} value={branch.id}>
                       {branch.name}
@@ -269,10 +388,12 @@ const Inventory = () => {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={() => setIsAddEntryModalOpen(true)} className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Entry
-            </Button>
+            {canCreate && (
+              <Button onClick={() => setIsAddEntryModalOpen(true)} className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Entry
+              </Button>
+            )}
           </div>
 
           <div className="bg-card border border-border rounded-lg p-4">
@@ -293,7 +414,7 @@ const Inventory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {pettyCashLedger.map((entry) => (
+                {mockPettyCashLedger.map((entry) => (
                   <TableRow key={entry.id} className="hover:bg-muted/20">
                     <TableCell className="text-muted-foreground">{entry.date}</TableCell>
                     <TableCell className="text-foreground">{entry.description}</TableCell>
@@ -313,10 +434,12 @@ const Inventory = () => {
         {/* Master Item List Tab */}
         <TabsContent value="master" className="mt-6 space-y-6">
           <div className="flex justify-end">
-            <Button onClick={() => setIsAddItemModalOpen(true)} className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Add New Item
-            </Button>
+            {canCreate && (
+              <Button onClick={() => setIsAddItemModalOpen(true)} className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add New Item
+              </Button>
+            )}
           </div>
 
           <div className="border border-border rounded-lg overflow-hidden">
@@ -330,24 +453,32 @@ const Inventory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {masterItems.map((item) => (
+                {mockMasterItems.map((item) => (
                   <TableRow key={item.id} className="hover:bg-muted/20">
                     <TableCell className="font-medium text-foreground">{item.name}</TableCell>
                     <TableCell className="text-muted-foreground">{item.description}</TableCell>
                     <TableCell className="text-foreground">{item.type}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {canUpdate && (
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {canDelete && (
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+      </Tabs>
             </Table>
           </div>
         </TabsContent>

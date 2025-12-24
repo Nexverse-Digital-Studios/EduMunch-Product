@@ -1,11 +1,23 @@
-import { useState } from "react";
-import { Send, Clock, Search, RefreshCw, Users } from "lucide-react";
+/**
+ * Notifications.tsx - Send and View Notifications
+ * 
+ * Supabase Tables (Tier 1):
+ * - notifications_1EMAET: User notifications
+ * - announcements_1EMAET: System announcements
+ * 
+ * Schema Reference:
+ * - notifications: user_id, title, message, notification_type, is_read, link
+ * - announcements: title, content, target_audience, publish_date
+ */
+import { useState, useMemo } from "react";
+import { Send, Clock, Search, RefreshCw, Users, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -13,25 +25,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSupabaseQuery, useSupabaseInsert } from "@/hooks/useSupabaseQuery";
+import { useModulePermissions } from "@/contexts/PermissionContext";
+import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
-interface NotificationHistory {
-  id: number;
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+
+interface Announcement {
+  id: string;
   title: string;
-  message: string;
-  date: string;
-  time: string;
-  sentBy: string;
-  target: string;
-  recipientCount: number;
+  content: string;
+  announcement_type: string;
+  target_audience: string;
+  publish_date: string;
+  expiry_date: string | null;
+  created_by: string;
+  is_active: boolean;
+  created_at: string;
 }
 
-const notificationHistory: NotificationHistory[] = [
-  { id: 1, title: "Batch Transfer", message: "Student test 1 has been transferred from CET Palava 25 to JEE Advance Batch 2026.", date: "12/10/2025", time: "12:56:48 PM", sentBy: "Super Admin", target: "Invalid Target", recipientCount: 0 },
-  { id: 2, title: "Batch Transfer", message: "Student test 1 has been transferred from JEE Advance Batch 2026 to CET Palava 25.", date: "12/10/2025", time: "12:56:33 PM", sentBy: "Super Admin", target: "Invalid Target", recipientCount: 0 },
-  { id: 3, title: "Test", message: "Hello", date: "12/10/2025", time: "3:40:58 AM", sentBy: "Super Admin", target: "All Users", recipientCount: 34 },
-  { id: 4, title: "Parent Replied", message: "New message on ticket #8: \"hello...\"", date: "12/10/2025", time: "2:49:46 AM", sentBy: "Soham Kalani", target: "Invalid Target", recipientCount: 2 },
-  { id: 5, title: "New Doubt Message", message: "New message from Kumar Kalani regarding: \"I didn't understand the initial part\"", date: "12/10/2025", time: "2:48:37 AM", sentBy: "Kumar Kalani", target: "Teachers", recipientCount: 5 },
-];
+interface Branch {
+  id: string;
+  name: string;
+}
+
+interface Batch {
+  id: string;
+  name: string;
+}
 
 const Notifications = () => {
   const [activeTab, setActiveTab] = useState("send");
@@ -39,18 +61,78 @@ const Notifications = () => {
   const [messageText, setMessageText] = useState("");
   const [link, setLink] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [targetAudience, setTargetAudience] = useState("All");
 
   // Target audience filters
   const [roleFilter, setRoleFilter] = useState("all");
   const [branchFilter, setBranchFilter] = useState("all");
-  const [courseFilter, setCourseFilter] = useState("all");
-  const [batchFilter, setBatchFilter] = useState("all");
-  const [tieUpFilter, setTieUpFilter] = useState("all");
+
+  const { canRead, canCreate } = useModulePermissions('COMMUNICATION');
+  const { toast } = useToast();
+
+  // Fetch announcements (as notification history)
+  const { data: announcements = [], isLoading, error, refetch } = useSupabaseQuery<Announcement>(
+    `announcements_${INDEX_TOKEN}`,
+    { 
+      select: '*',
+      orderBy: { column: 'created_at', ascending: false }
+    }
+  );
+
+  // Fetch branches for filter
+  const { data: branches = [] } = useSupabaseQuery<Branch>(
+    `branches_${INDEX_TOKEN}`,
+    { select: 'id, name' }
+  );
+
+  // Fetch batches for filter
+  const { data: batches = [] } = useSupabaseQuery<Batch>(
+    `batches_${INDEX_TOKEN}`,
+    { select: 'id, name' }
+  );
+
+  // Insert mutation for announcements
+  const insertMutation = useSupabaseInsert<Partial<Announcement>>(
+    `announcements_${INDEX_TOKEN}`,
+    {
+      onSuccess: () => {
+        toast({ title: "Success", description: "Notification sent successfully" });
+        setTitle("");
+        setMessageText("");
+        setLink("");
+        setTargetAudience("All");
+        refetch();
+      },
+      onError: (error) => {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      }
+    }
+  );
 
   const handleSend = () => {
-    // Handle send notification
-    console.log({ title, messageText, link });
+    if (!title.trim()) {
+      toast({ title: "Error", description: "Title is required", variant: "destructive" });
+      return;
+    }
+
+    insertMutation.mutate({
+      title: title.trim(),
+      content: messageText.trim(),
+      announcement_type: 'Notification',
+      target_audience: targetAudience,
+      publish_date: new Date().toISOString(),
+      is_active: true
+    });
   };
+
+  const filteredAnnouncements = useMemo(() => {
+    return announcements.filter(a => {
+      const matchesSearch = searchQuery === "" || 
+        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.content?.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesSearch;
+    });
+  }, [announcements, searchQuery]);
 
   return (
     <div className="space-y-6">
@@ -70,7 +152,7 @@ const Notifications = () => {
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 flex items-center gap-2"
           >
             <Clock className="h-4 w-4" />
-            History
+            History ({announcements.length})
           </TabsTrigger>
         </TabsList>
 
@@ -116,93 +198,67 @@ const Notifications = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-muted-foreground">Role(s)</Label>
-                  <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <Label className="text-muted-foreground">Audience</Label>
+                  <Select value={targetAudience} onValueChange={setTargetAudience}>
                     <SelectTrigger>
-                      <SelectValue placeholder="All Roles" />
+                      <SelectValue placeholder="Select audience" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Roles</SelectItem>
-                      <SelectItem value="student">Students</SelectItem>
-                      <SelectItem value="teacher">Teachers</SelectItem>
-                      <SelectItem value="parent">Parents</SelectItem>
+                      <SelectItem value="All">All Users</SelectItem>
+                      <SelectItem value="Students">Students Only</SelectItem>
+                      <SelectItem value="Teachers">Teachers Only</SelectItem>
+                      <SelectItem value="Parents">Parents Only</SelectItem>
+                      <SelectItem value="Staff">Staff Only</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-muted-foreground">Branch(es)</Label>
+                  <Label className="text-muted-foreground">Branch (Optional)</Label>
                   <Select value={branchFilter} onValueChange={setBranchFilter}>
                     <SelectTrigger>
                       <SelectValue placeholder="All Branches" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Branches</SelectItem>
-                      <SelectItem value="kalyan">Kalyan Branch</SelectItem>
-                      <SelectItem value="thane">Thane HO Branch</SelectItem>
-                      <SelectItem value="manpada">Manpada Branch</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-muted-foreground">Course(s)</Label>
-                  <Select value={courseFilter} onValueChange={setCourseFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Courses" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Courses</SelectItem>
-                      <SelectItem value="jee">JEE Foundation</SelectItem>
-                      <SelectItem value="neet">NEET Prep</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-muted-foreground">Batch(es)</Label>
-                  <Select value={batchFilter} onValueChange={setBatchFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Batches" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Batches</SelectItem>
-                      <SelectItem value="jee2026">JEE Advance Batch 2026</SelectItem>
-                      <SelectItem value="neet2026">NEET Batch 2026</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2 sm:col-span-2">
-                  <Label className="text-muted-foreground">Tie-up School(s)</Label>
-                  <Select value={tieUpFilter} onValueChange={setTieUpFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Tie-Up Schools" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Tie-Up Schools</SelectItem>
-                      <SelectItem value="school1">ABC School</SelectItem>
-                      <SelectItem value="school2">XYZ School</SelectItem>
+                      {branches.map((branch) => (
+                        <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end pt-4">
-              <Button onClick={handleSend} className="bg-primary hover:bg-primary/90">
-                <Send className="h-4 w-4 mr-2" />
-                Send Notification
-              </Button>
-            </div>
+            {canCreate && (
+              <div className="flex justify-end pt-4">
+                <Button 
+                  onClick={handleSend} 
+                  disabled={insertMutation.isPending}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  {insertMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  <Send className="h-4 w-4 mr-2" />
+                  Send Notification
+                </Button>
+              </div>
+            )}
           </div>
         </TabsContent>
 
         {/* History Tab */}
         <TabsContent value="history" className="mt-6 space-y-6">
+          {error && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>Failed to load notifications: {error.message}</AlertDescription>
+            </Alert>
+          )}
+
           {/* Filters */}
           <div className="bg-card border border-border rounded-lg p-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="lg:col-span-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -217,90 +273,67 @@ const Notifications = () => {
 
               <Select defaultValue="all">
                 <SelectTrigger>
-                  <SelectValue placeholder="All Tie-Ups" />
+                  <SelectValue placeholder="All Audiences" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Tie-Ups</SelectItem>
+                  <SelectItem value="all">All Audiences</SelectItem>
+                  <SelectItem value="Students">Students</SelectItem>
+                  <SelectItem value="Teachers">Teachers</SelectItem>
+                  <SelectItem value="Parents">Parents</SelectItem>
                 </SelectContent>
               </Select>
 
-              <Select defaultValue="all">
-                <SelectTrigger>
-                  <SelectValue placeholder="All Branches" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Branches</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select defaultValue="all">
-                <SelectTrigger>
-                  <SelectValue placeholder="All Roles" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => refetch()}>
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              <Select defaultValue="all">
-                <SelectTrigger>
-                  <SelectValue placeholder="All Courses" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Courses</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select defaultValue="all">
-                <SelectTrigger>
-                  <SelectValue placeholder="All Batches" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Batches</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             <div className="flex justify-end mt-4">
               <p className="text-sm text-muted-foreground">
-                Showing <span className="font-medium text-foreground">50</span> / 50 (max 50)
+                Showing <span className="font-medium text-foreground">{filteredAnnouncements.length}</span> notifications
               </p>
             </div>
           </div>
 
           {/* Notifications List */}
-          <div className="space-y-4">
-            {notificationHistory.map((notification) => (
-              <div key={notification.id} className="bg-card border border-border rounded-lg p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                  <div className="space-y-2 flex-1">
-                    <h3 className="font-semibold text-foreground">{notification.title}</h3>
-                    <p className="text-muted-foreground text-sm">{notification.message}</p>
-                    <div className="flex flex-wrap items-center gap-3 pt-2">
-                      <Badge variant="outline" className="text-xs">
-                        To: {notification.target}
-                      </Badge>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Users className="h-3 w-3" />
-                        {notification.recipientCount}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredAnnouncements.map((notification) => (
+                <div key={notification.id} className="bg-card border border-border rounded-lg p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div className="space-y-2 flex-1">
+                      <h3 className="font-semibold text-foreground">{notification.title}</h3>
+                      <p className="text-muted-foreground text-sm">{notification.content || 'No message'}</p>
+                      <div className="flex flex-wrap items-center gap-3 pt-2">
+                        <Badge variant="outline" className="text-xs">
+                          To: {notification.target_audience || 'All'}
+                        </Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          {notification.announcement_type || 'Notification'}
+                        </Badge>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-right text-sm space-y-1">
-                    <p className="text-muted-foreground">{notification.date}, {notification.time}</p>
-                    <p className="text-muted-foreground">by <span className="text-foreground">{notification.sentBy}</span></p>
+                    <div className="text-right text-sm space-y-1">
+                      <p className="text-muted-foreground">
+                        {format(new Date(notification.created_at), 'MMM dd, yyyy h:mm a')}
+                      </p>
+                      <p className="text-muted-foreground">
+                        by <span className="text-foreground">{notification.created_by || 'System'}</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+              {filteredAnnouncements.length === 0 && (
+                <p className="text-center text-muted-foreground py-8">No notifications found.</p>
+              )}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

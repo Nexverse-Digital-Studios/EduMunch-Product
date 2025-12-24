@@ -1,9 +1,24 @@
-import { useState } from "react";
-import { Search, X, Check, Ban, Calendar } from "lucide-react";
+/**
+ * LeaveManagement.tsx - Staff Leave Applications
+ * 
+ * Supabase Tables (Tier 2):
+ * - staff_leave_applications_1EMAET: Leave requests
+ * - teachers_1EMAET: Teacher info
+ * - employees_1EMAET: Staff info
+ * 
+ * Schema Reference:
+ * - employee_id, teacher_id, employee_type
+ * - leave_type (Casual/Sick/Earned/Maternity/Paternity/LOP)
+ * - from_date, to_date, total_days, reason
+ * - status (Pending/Approved/Rejected)
+ */
+import { useState, useMemo } from "react";
+import { Search, X, Check, Ban, Calendar, Loader2, AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -11,38 +26,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSupabaseQuery, useSupabaseUpdate } from "@/hooks/useSupabaseQuery";
+import { useModulePermissions } from "@/contexts/PermissionContext";
+import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
-type LeaveStatus = "PENDING" | "APPROVED" | "REJECTED";
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
 
-interface LeaveApplication {
-  id: number;
-  employeeName: string;
-  designation: string;
-  leaveType: string;
-  days: number;
-  startDate: string;
-  endDate: string;
-  reason: string;
-  status: LeaveStatus;
-  deductedAs?: string;
+interface Teacher {
+  id: string;
+  first_name: string;
+  last_name: string;
+  teacher_code: string;
 }
 
-const leaveApplications: LeaveApplication[] = [
-  { id: 1, employeeName: "Ramswaroop Chaudhary", designation: "Maths Faculty", leaveType: "CASUAL", days: 4, startDate: "12/30/2025", endDate: "1/2/2026", reason: "Going out", status: "PENDING" },
-  { id: 2, employeeName: "Ramswaroop Chaudhary", designation: "Maths Faculty", leaveType: "CASUAL", days: 2, startDate: "11/30/2025", endDate: "12/1/2025", reason: "Not available", status: "APPROVED", deductedAs: "UNPAID" },
-  { id: 3, employeeName: "Ramswaroop Chaudhary", designation: "Maths Faculty", leaveType: "CASUAL", days: 3, startDate: "11/28/2025", endDate: "11/30/2025", reason: "Trip", status: "PENDING" },
-  { id: 4, employeeName: "Ramswaroop Chaudhary", designation: "Maths Faculty", leaveType: "CASUAL", days: 2, startDate: "11/25/2025", endDate: "11/26/2025", reason: "Personal work", status: "APPROVED", deductedAs: "CASUAL" },
-  { id: 5, employeeName: "Aniket Singh", designation: "Biology Faculty", leaveType: "SICK", days: 3, startDate: "11/20/2025", endDate: "11/22/2025", reason: "Medical appointment", status: "APPROVED" },
-  { id: 6, employeeName: "Kumar Ahire", designation: "Physics Faculty", leaveType: "CASUAL", days: 1, startDate: "11/18/2025", endDate: "11/18/2025", reason: "Family function", status: "REJECTED" },
-];
+interface Employee {
+  id: string;
+  first_name: string;
+  last_name: string;
+  employee_code: string;
+  designation: string;
+}
 
-const getStatusColor = (status: LeaveStatus) => {
+interface LeaveApplication {
+  id: string;
+  employee_id: string | null;
+  teacher_id: string | null;
+  employee_type: 'Teacher' | 'Staff';
+  leave_type: string;
+  from_date: string;
+  to_date: string;
+  total_days: number;
+  reason: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  approved_by: string | null;
+  approved_at: string | null;
+  rejection_reason: string | null;
+  created_at: string;
+  teachers_1EMAET?: Teacher;
+  employees_1EMAET?: Employee;
+}
+
+const getStatusColor = (status: string) => {
   switch (status) {
-    case "PENDING":
+    case "Pending":
       return "bg-yellow-100 text-yellow-800 border-yellow-300";
-    case "APPROVED":
+    case "Approved":
       return "bg-green-100 text-green-800 border-green-300";
-    case "REJECTED":
+    case "Rejected":
       return "bg-red-100 text-red-800 border-red-300";
     default:
       return "bg-gray-100 text-gray-800 border-gray-300";
@@ -57,12 +88,70 @@ const LeaveManagement = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  const filteredApplications = leaveApplications.filter((app) => {
-    const matchesSearch = app.employeeName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
-    const matchesType = leaveTypeFilter === "all" || app.leaveType === leaveTypeFilter;
-    return matchesSearch && matchesStatus && matchesType;
-  });
+  const { canRead, canUpdate } = useModulePermissions('HR');
+  const { toast } = useToast();
+
+  // Fetch leave applications with joins
+  const { data: applications = [], isLoading, error, refetch } = useSupabaseQuery<LeaveApplication>(
+    `staff_leave_applications_${INDEX_TOKEN}`,
+    { 
+      select: `*, teachers_${INDEX_TOKEN}(id, first_name, last_name, teacher_code), employees_${INDEX_TOKEN}(id, first_name, last_name, employee_code, designation)`,
+      orderBy: { column: 'created_at', ascending: false }
+    }
+  );
+
+  // Update mutation
+  const updateMutation = useSupabaseUpdate<Partial<LeaveApplication>>(
+    `staff_leave_applications_${INDEX_TOKEN}`,
+    {
+      onSuccess: () => {
+        toast({ title: "Success", description: "Leave application updated successfully" });
+        refetch();
+      },
+      onError: (error) => {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      }
+    }
+  );
+
+  const handleApprove = (id: string) => {
+    updateMutation.mutate({ id, data: { status: 'Approved', approved_at: new Date().toISOString() } });
+  };
+
+  const handleReject = (id: string) => {
+    updateMutation.mutate({ id, data: { status: 'Rejected' } });
+  };
+
+  const getEmployeeName = (app: LeaveApplication) => {
+    if (app.employee_type === 'Teacher' && app[`teachers_${INDEX_TOKEN}`]) {
+      const teacher = app[`teachers_${INDEX_TOKEN}`] as Teacher;
+      return `${teacher.first_name} ${teacher.last_name}`;
+    } else if (app[`employees_${INDEX_TOKEN}`]) {
+      const employee = app[`employees_${INDEX_TOKEN}`] as Employee;
+      return `${employee.first_name} ${employee.last_name}`;
+    }
+    return 'Unknown';
+  };
+
+  const getDesignation = (app: LeaveApplication) => {
+    if (app.employee_type === 'Teacher') {
+      return 'Teacher';
+    } else if (app[`employees_${INDEX_TOKEN}`]) {
+      const employee = app[`employees_${INDEX_TOKEN}`] as Employee;
+      return employee.designation || 'Staff';
+    }
+    return 'Staff';
+  };
+
+  const filteredApplications = useMemo(() => {
+    return applications.filter((app) => {
+      const name = getEmployeeName(app).toLowerCase();
+      const matchesSearch = name.includes(searchQuery.toLowerCase());
+      const matchesStatus = statusFilter === "all" || app.status === statusFilter;
+      const matchesType = leaveTypeFilter === "all" || app.leave_type === leaveTypeFilter;
+      return matchesSearch && matchesStatus && matchesType;
+    });
+  }, [applications, searchQuery, statusFilter, leaveTypeFilter]);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -73,9 +162,25 @@ const LeaveManagement = () => {
     setSortBy("start-new");
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Leave Applications</h1>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>Failed to load leave applications: {error.message}</AlertDescription>
+        </Alert>
+      )}
 
       {/* Filters */}
       <div className="bg-card border border-border rounded-lg p-4">
@@ -101,9 +206,9 @@ const LeaveManagement = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All</SelectItem>
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="APPROVED">Approved</SelectItem>
-                <SelectItem value="REJECTED">Rejected</SelectItem>
+                <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Approved">Approved</SelectItem>
+                <SelectItem value="Rejected">Rejected</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -116,9 +221,12 @@ const LeaveManagement = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All</SelectItem>
-                <SelectItem value="CASUAL">Casual</SelectItem>
-                <SelectItem value="SICK">Sick</SelectItem>
-                <SelectItem value="UNPAID">Unpaid</SelectItem>
+                <SelectItem value="Casual">Casual</SelectItem>
+                <SelectItem value="Sick">Sick</SelectItem>
+                <SelectItem value="Earned">Earned</SelectItem>
+                <SelectItem value="Maternity">Maternity</SelectItem>
+                <SelectItem value="Paternity">Paternity</SelectItem>
+                <SelectItem value="LOP">LOP</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -169,7 +277,7 @@ const LeaveManagement = () => {
             </Button>
           </div>
           <p className="text-sm text-muted-foreground">
-            Showing <span className="font-medium text-foreground">{filteredApplications.length}</span> of <span className="font-medium text-foreground">{leaveApplications.length}</span>
+            Showing <span className="font-medium text-foreground">{filteredApplications.length}</span> of <span className="font-medium text-foreground">{applications.length}</span>
           </p>
         </div>
       </div>
@@ -181,24 +289,19 @@ const LeaveManagement = () => {
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-2 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <h3 className="text-lg font-semibold text-foreground">{application.employeeName}</h3>
+                  <h3 className="text-lg font-semibold text-foreground">{getEmployeeName(application)}</h3>
                   <Badge variant="outline" className={getStatusColor(application.status)}>
                     {application.status}
                   </Badge>
                 </div>
-                <p className="text-muted-foreground">{application.designation}</p>
+                <p className="text-muted-foreground">{getDesignation(application)}</p>
 
                 <div className="pt-2 space-y-1">
                   <p className="text-sm text-foreground">
-                    Type: <span className="font-medium">{application.leaveType}</span> ({application.days} days)
+                    Type: <span className="font-medium">{application.leave_type}</span> ({application.total_days} days)
                   </p>
-                  {application.deductedAs && (
-                    <p className="text-sm text-foreground">
-                      Deducted as: <span className="font-medium">{application.deductedAs}</span>
-                    </p>
-                  )}
                   <p className="text-sm text-muted-foreground">
-                    Dates: {application.startDate} to {application.endDate}
+                    Dates: {format(new Date(application.from_date), 'MMM dd, yyyy')} to {format(new Date(application.to_date), 'MMM dd, yyyy')}
                   </p>
                   <p className="text-sm text-foreground">
                     Reason: {application.reason}
@@ -206,12 +309,22 @@ const LeaveManagement = () => {
                 </div>
               </div>
 
-              {application.status === "PENDING" && (
+              {application.status === "Pending" && canUpdate && (
                 <div className="flex gap-2 self-start">
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                  <Button 
+                    size="sm" 
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => handleApprove(application.id)}
+                    disabled={updateMutation.isPending}
+                  >
                     <Check className="h-4 w-4" />
                   </Button>
-                  <Button size="sm" variant="destructive">
+                  <Button 
+                    size="sm" 
+                    variant="destructive"
+                    onClick={() => handleReject(application.id)}
+                    disabled={updateMutation.isPending}
+                  >
                     <Ban className="h-4 w-4" />
                   </Button>
                 </div>
@@ -219,6 +332,9 @@ const LeaveManagement = () => {
             </div>
           </div>
         ))}
+        {filteredApplications.length === 0 && (
+          <p className="text-center text-muted-foreground py-8">No leave applications found.</p>
+        )}
       </div>
     </div>
   );
