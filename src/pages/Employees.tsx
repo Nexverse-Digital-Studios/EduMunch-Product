@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, Calendar, Edit, Trash2 } from "lucide-react";
+import { Search, Plus, Calendar, Edit, Trash2, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,16 +24,32 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
+import { TABLES } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
-const employees = [
+// Database types
+interface TeacherDB {
+  id: string;
+  user_id?: string;
+  employee_code: string;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  email?: string;
+  phone: string;
+  designation?: string;
+  department?: string;
+  status: string;
+  created_at: string;
+}
+
+// Mock data fallback
+const mockEmployees = [
   { id: "41236", name: "Akshay Pandey", code: "APCH", role: "teacher", designation: "Chemistry Faculty", avatar: "AP", color: "bg-blue-500" },
   { id: "52684", name: "Aniket Singh", code: "ASB", role: "teacher", designation: "Biology Faculty", avatar: "AS", color: "bg-yellow-500" },
   { id: "3", name: "Anup Singh", code: "ASM", role: "teacher", designation: "Maths faculty", avatar: "AS", color: "bg-teal-500" },
-  { id: "324653", name: "Jayesh Yadav", code: "JYCH", role: "teacher", designation: "Chemistry Faculty", avatar: "JY", color: "bg-indigo-500" },
   { id: "74268", name: "Kumar Ahire", code: "KAP", role: "teacher", designation: "Physics Faculty", avatar: "KA", color: "bg-purple-500" },
-  { id: "45677", name: "Mukesh Kumar", code: "MKP", role: "teacher", designation: "Physics Faculty", avatar: "MK", color: "bg-pink-500" },
-  { id: "8699", name: "Manish Nihar", code: "MNCH", role: "teacher", designation: "Chemistry Faculty", avatar: "MN", color: "bg-orange-500" },
-  { id: "4845", name: "Mayank Nayak", code: "MNP", role: "teacher", designation: "Physics Faculty", avatar: "MN", color: "bg-cyan-500" },
 ];
 
 const Employees = () => {
@@ -41,12 +57,46 @@ const Employees = () => {
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [designationFilter, setDesignationFilter] = useState("all");
   const [isOnboardModalOpen, setIsOnboardModalOpen] = useState(false);
+  const { toast } = useToast();
+  
+  // Fetch teachers from Supabase
+  const { data: teachers, isLoading, createMutation, deleteMutation } = useSupabaseTable<TeacherDB>(
+    TABLES.TEACHERS,
+    { orderBy: { column: 'first_name', ascending: true } }
+  );
+  
+  // Generate avatar color based on name
+  const getAvatarColor = (name: string) => {
+    const colors = ['bg-blue-500', 'bg-yellow-500', 'bg-teal-500', 'bg-indigo-500', 'bg-purple-500', 'bg-pink-500', 'bg-orange-500', 'bg-cyan-500'];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+  };
+  
+  // Map database teachers to display format
+  const employees = teachers?.map(t => ({
+    id: t.id,
+    name: `${t.first_name} ${t.last_name}`,
+    code: t.employee_code,
+    role: 'teacher',
+    designation: t.designation || 'Faculty',
+    avatar: `${t.first_name[0]}${t.last_name[0]}`,
+    color: getAvatarColor(t.first_name)
+  })) || mockEmployees;
 
   const filteredEmployees = employees.filter((employee) => {
     const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       employee.code.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Loading employees...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

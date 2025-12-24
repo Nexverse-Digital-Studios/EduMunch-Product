@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, CheckSquare, Edit, FileText, User } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckSquare, Edit, FileText, User, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,68 +20,86 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
+import { TABLES } from "@/lib/supabase";
 
-interface Session {
+// Database types based on schema
+interface AttendanceDB {
   id: string;
-  code: string;
-  subject: string;
-  teacher: string;
-  time: string;
-  classroom: string;
-}
-
-interface AttendanceRecord {
+  student_id: string;
+  class_id: string;
+  section_id: string;
   date: string;
-  subject: string;
-  batch: string;
-  teacher: string;
-  time: string;
-  status: "PRESENT" | "ABSENT" | "LATE" | "NOT_MARKED";
+  status: 'present' | 'absent' | 'late' | 'half_day' | 'on_leave';
+  marked_by?: string;
+  marked_at?: string;
+  remarks?: string;
+  created_at: string;
 }
 
-interface TeacherActivity {
+interface TimetableDB {
   id: string;
-  topic: string;
-  subject: string;
-  batch: string;
-  date: string;
-  status: "IN_PROGRESS" | "COMPLETED";
-  description: string;
+  section_id: string;
+  subject_id: string;
+  teacher_id: string;
+  period_id: string;
+  day_of_week: number;
+  room_number?: string;
+  is_active: boolean;
 }
 
-const sessionsData: Record<string, Session[]> = {
-  "Monday, December 8, 2025": [
-    { id: "1", code: "27KJ1", subject: "Phy", teacher: "MNP", time: "02:00 PM - 04:00 PM", classroom: "No classroom" },
-    { id: "2", code: "27KJ1", subject: "Chemistry", teacher: "APCH", time: "04:30 PM - 06:30 PM", classroom: "No classroom" },
-    { id: "3", code: "27KJ2", subject: "Math", teacher: "ASM", time: "04:30 PM - 06:30 PM", classroom: "No classroom" },
-    { id: "4", code: "27KJ2", subject: "Biology", teacher: "ASB", time: "07:00 PM - 09:00 PM", classroom: "No classroom" },
-    { id: "5", code: "27KN1", subject: "Math", teacher: "VSM", time: "07:00 PM - 09:00 PM", classroom: "No classroom" },
-  ],
-  "Tuesday, December 9, 2025": [
-    { id: "6", code: "27KJ1", subject: "Chemistry", teacher: "JYCH", time: "02:00 PM - 04:00 PM", classroom: "" },
-    { id: "7", code: "27KJ2", subject: "Math", teacher: "ASM", time: "04:30 PM - 06:30 PM", classroom: "" },
-    { id: "8", code: "27KN1", subject: "Phy", teacher: "ZAP", time: "04:30 PM - 06:30 PM", classroom: "" },
-  ],
-};
+interface SectionDB {
+  id: string;
+  class_id: string;
+  section_name: string;
+  section_code: string;
+}
 
-const attendanceRecords: AttendanceRecord[] = [
-  { date: "Mon, Dec 1", subject: "Math", batch: "26TJMA1", teacher: "ASM", time: "01:31 PM -03:30 PM", status: "NOT_MARKED" },
-  { date: "Mon, Dec 8", subject: "Math", batch: "26TJMA1", teacher: "RCM", time: "01:30 PM -03:30 PM", status: "NOT_MARKED" },
-  { date: "Wed, Dec 10", subject: "Math", batch: "26TJMA1", teacher: "RCM", time: "01:30 PM -03:30 PM", status: "LATE" },
-  { date: "Mon, Dec 15", subject: "Math", batch: "26TJMA1", teacher: "RCM", time: "01:30 PM -03:30 PM", status: "NOT_MARKED" },
-  { date: "Mon, Dec 15", subject: "Phy", batch: "26TJMA1", teacher: "ZAP", time: "03:45 PM -05:45 PM", status: "NOT_MARKED" },
-  { date: "Mon, Dec 15", subject: "Biology", batch: "26TJMA1", teacher: "ASB", time: "06:30 PM -08:30 PM", status: "NOT_MARKED" },
-];
+interface StudentDB {
+  id: string;
+  first_name: string;
+  last_name: string;
+  admission_number: string;
+  section_id: string;
+}
 
-const teacherActivities: TeacherActivity[] = [
-  { id: "1", topic: "Calculus", subject: "Math", batch: "26TJMA1", date: "12/10/2025, 1:30:00 PM", status: "IN_PROGRESS", description: "Sub-Topic: LPP Details: started test the one with no real sub topic" },
-  { id: "2", topic: "Continuity", subject: "Math", batch: "27KJ1", date: "12/2/2025, 4:30:00 PM", status: "COMPLETED", description: "xyz" },
-  { id: "3", topic: "Quadratic Equations", subject: "Math", batch: "27KJ1", date: "12/2/2025, 4:30:00 PM", status: "IN_PROGRESS", description: "abcd" },
-  { id: "4", topic: "Applications of Derivatives", subject: "Math", batch: "26TJMA1", date: "11/10/2025, 1:30:00 PM", status: "COMPLETED", description: "is not completely completed" },
-];
+interface TeacherDB {
+  id: string;
+  first_name: string;
+  last_name: string;
+  employee_code: string;
+}
 
 const Attendance = () => {
   const [activeTab, setActiveTab] = useState("schedule");
+  
+  // Fetch data from Supabase
+  const { data: sections, isLoading: loadingSections } = useSupabaseTable<SectionDB>(
+    TABLES.SECTIONS,
+    { orderBy: { column: 'section_name', ascending: true } }
+  );
+  
+  const { data: students, isLoading: loadingStudents } = useSupabaseTable<StudentDB>(
+    TABLES.STUDENTS,
+    { orderBy: { column: 'first_name', ascending: true } }
+  );
+  
+  const { data: teachers, isLoading: loadingTeachers } = useSupabaseTable<TeacherDB>(
+    TABLES.TEACHERS,
+    { orderBy: { column: 'first_name', ascending: true } }
+  );
+  
+  const { data: timetables, isLoading: loadingTimetables } = useSupabaseTable<TimetableDB>(
+    TABLES.TIMETABLES,
+    {}
+  );
+  
+  const { data: attendance, isLoading: loadingAttendance } = useSupabaseTable<AttendanceDB>(
+    TABLES.ATTENDANCE,
+    { orderBy: { column: 'date', ascending: false } }
+  );
+  
+  const isLoading = loadingSections || loadingStudents || loadingTeachers || loadingTimetables || loadingAttendance;
 
   return (
     <div className="space-y-6">
@@ -100,52 +118,72 @@ const Attendance = () => {
         </div>
       </div>
 
-      {activeTab === "schedule" && <ScheduleTab />}
-      {activeTab === "reports" && <ReportsTab activities={teacherActivities} />}
-      {activeTab === "student-report" && <StudentReportTab records={attendanceRecords} />}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2">Loading attendance data...</span>
+        </div>
+      ) : (
+        <>
+          {activeTab === "schedule" && <ScheduleTab sections={sections || []} timetables={timetables || []} />}
+          {activeTab === "reports" && <ReportsTab teachers={teachers || []} />}
+          {activeTab === "student-report" && <StudentReportTab students={students || []} attendance={attendance || []} sections={sections || []} />}
+        </>
+      )}
     </div>
   );
 };
 
-const ScheduleTab = () => {
+interface ScheduleTabProps {
+  sections: SectionDB[];
+  timetables: TimetableDB[];
+}
+
+const ScheduleTab = ({ sections, timetables }: ScheduleTabProps) => {
+  const [selectedSection, setSelectedSection] = useState<string>("all");
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  
+  // For now, show empty state since timetable data needs to be populated
+  const hasSchedule = timetables.length > 0;
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 flex-1">
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Select Branch</label>
-            <Select defaultValue="kalyan">
+            <label className="mb-1.5 block text-sm font-medium">Filter by Section (Optional)</label>
+            <Select value={selectedSection} onValueChange={setSelectedSection}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="kalyan">Kalyan Branch</SelectItem>
-                <SelectItem value="thane">Thane HO Branch</SelectItem>
-                <SelectItem value="palava">Palava Branch</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium">Filter by Batch (Optional)</label>
-            <Select defaultValue="all">
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Batches in Branch</SelectItem>
-                <SelectItem value="27kj1">27KJ1</SelectItem>
-                <SelectItem value="27kj2">27KJ2</SelectItem>
+                <SelectItem value="all">All Sections</SelectItem>
+                {sections.map(s => (
+                  <SelectItem key={s.id} value={s.id}>{s.section_name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Select a day in week</label>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" onClick={() => {
+                const date = new Date(selectedDate);
+                date.setDate(date.getDate() - 1);
+                setSelectedDate(date.toISOString().split('T')[0]);
+              }}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Input type="date" defaultValue="2025-12-12" className="flex-1" />
-              <Button variant="outline" size="icon">
+              <Input 
+                type="date" 
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="flex-1" 
+              />
+              <Button variant="outline" size="icon" onClick={() => {
+                const date = new Date(selectedDate);
+                date.setDate(date.getDate() + 1);
+                setSelectedDate(date.toISOString().split('T')[0]);
+              }}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -153,44 +191,28 @@ const ScheduleTab = () => {
         </div>
       </div>
 
-      {Object.entries(sessionsData).map(([date, sessions]) => (
-        <div key={date} className="space-y-4">
-          <h2 className="text-lg font-semibold">{date}</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {sessions.map((session) => (
-              <Card key={session.id}>
-                <CardContent className="p-4">
-                  <div className="space-y-3">
-                    <div>
-                      <h3 className="font-semibold text-primary">
-                        {session.code} - {session.subject}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">By {session.teacher}</p>
-                      <p className="text-sm text-muted-foreground">{session.time}</p>
-                      <p className="text-sm text-muted-foreground">{session.classroom || "No classroom"}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" className="flex-1 gap-2">
-                        <CheckSquare className="h-4 w-4" />
-                        Attendance
-                      </Button>
-                      <Button variant="outline" size="sm" className="flex-1 gap-2">
-                        <Edit className="h-4 w-4" />
-                        Remarks
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      {!hasSchedule ? (
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            <p>No timetable data found. Create timetables first to view schedule.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Schedule cards would be rendered here based on timetable data */}
         </div>
-      ))}
+      )}
     </div>
   );
 };
 
-const ReportsTab = ({ activities }: { activities: TeacherActivity[] }) => {
+interface ReportsTabProps {
+  teachers: TeacherDB[];
+}
+
+const ReportsTab = ({ teachers }: ReportsTabProps) => {
+  const [selectedTeacher, setSelectedTeacher] = useState<string>("");
+  
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
@@ -217,38 +239,30 @@ const ReportsTab = ({ activities }: { activities: TeacherActivity[] }) => {
         <CardContent className="space-y-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium">Select Teacher</label>
-            <Select defaultValue="rcm">
+            <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Select a teacher" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="rcm">RCM</SelectItem>
-                <SelectItem value="asm">ASM</SelectItem>
-                <SelectItem value="zap">ZAP</SelectItem>
+                {teachers.map(t => (
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.first_name} {t.last_name} ({t.employee_code})
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-3 max-h-[400px] overflow-auto">
-            {activities.map((activity) => (
-              <div key={activity.id} className="border-b border-border pb-3 last:border-0">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium">{activity.topic}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {activity.subject} • {activity.batch}
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground">{activity.date}</p>
-                    <Badge variant={activity.status === "COMPLETED" ? "default" : "secondary"} className="mt-1">
-                      {activity.status}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {selectedTeacher ? (
+              <p className="text-center text-muted-foreground py-4">
+                No activity logs found for this teacher.
+              </p>
+            ) : (
+              <p className="text-center text-muted-foreground py-4">
+                Select a teacher to view their activity log.
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -256,7 +270,21 @@ const ReportsTab = ({ activities }: { activities: TeacherActivity[] }) => {
   );
 };
 
-const StudentReportTab = ({ records }: { records: AttendanceRecord[] }) => {
+interface StudentReportTabProps {
+  students: StudentDB[];
+  attendance: AttendanceDB[];
+  sections: SectionDB[];
+}
+
+const StudentReportTab = ({ students, attendance, sections }: StudentReportTabProps) => {
+  const [selectedStudent, setSelectedStudent] = useState<string>("");
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  
+  const filteredRecords = selectedStudent 
+    ? attendance.filter(a => a.student_id === selectedStudent) 
+    : [];
+    
   return (
     <div className="space-y-6">
       <Card>
@@ -269,33 +297,48 @@ const StudentReportTab = ({ records }: { records: AttendanceRecord[] }) => {
         <CardContent>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
             <div className="flex-1">
-              <label className="mb-1.5 block text-sm font-medium">Select Student Admission</label>
-              <Select defaultValue="student2">
+              <label className="mb-1.5 block text-sm font-medium">Select Student</label>
+              <Select value={selectedStudent} onValueChange={setSelectedStudent}>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Select a student" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="student2">Student 2 (JEE Foundation)</SelectItem>
-                  <SelectItem value="student1">Student test 1 (NEET Foundation)</SelectItem>
+                  {students.map(s => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.first_name} {s.last_name} ({s.admission_number})
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="w-full lg:w-32">
               <label className="mb-1.5 block text-sm font-medium">Month</label>
-              <Select defaultValue="dec">
+              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="dec">Dec</SelectItem>
-                  <SelectItem value="nov">Nov</SelectItem>
-                  <SelectItem value="oct">Oct</SelectItem>
+                  <SelectItem value="0">January</SelectItem>
+                  <SelectItem value="1">February</SelectItem>
+                  <SelectItem value="2">March</SelectItem>
+                  <SelectItem value="3">April</SelectItem>
+                  <SelectItem value="4">May</SelectItem>
+                  <SelectItem value="5">June</SelectItem>
+                  <SelectItem value="6">July</SelectItem>
+                  <SelectItem value="7">August</SelectItem>
+                  <SelectItem value="8">September</SelectItem>
+                  <SelectItem value="9">October</SelectItem>
+                  <SelectItem value="10">November</SelectItem>
+                  <SelectItem value="11">December</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="w-full lg:w-32">
               <label className="mb-1.5 block text-sm font-medium">Year</label>
-              <Input defaultValue="2025" />
+              <Input 
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+              />
             </div>
             <Button className="gap-2">
               <FileText className="h-4 w-4" />
@@ -308,37 +351,37 @@ const StudentReportTab = ({ records }: { records: AttendanceRecord[] }) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">Attendance Records</CardTitle>
-          <span className="text-sm text-muted-foreground">{records.length} records found</span>
+          <span className="text-sm text-muted-foreground">{filteredRecords.length} records found</span>
         </CardHeader>
         <CardContent>
+          {filteredRecords.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              {selectedStudent ? "No attendance records found for this student." : "Select a student to view their attendance."}
+            </div>
+          ) : (
+          <>
           {/* Desktop Table */}
           <div className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>DATE</TableHead>
-                  <TableHead>SUBJECT</TableHead>
-                  <TableHead>BATCH</TableHead>
-                  <TableHead>TEACHER</TableHead>
-                  <TableHead>TIME</TableHead>
-                  <TableHead className="text-right">STATUS</TableHead>
+                  <TableHead>STATUS</TableHead>
+                  <TableHead>REMARKS</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {records.map((record, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{record.date}</TableCell>
-                    <TableCell>{record.subject}</TableCell>
-                    <TableCell>{record.batch}</TableCell>
-                    <TableCell>{record.teacher}</TableCell>
-                    <TableCell className="text-primary">{record.time}</TableCell>
-                    <TableCell className="text-right">
+                {filteredRecords.map((record) => (
+                  <TableRow key={record.id}>
+                    <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
+                    <TableCell>
                       <Badge 
-                        variant={record.status === "LATE" ? "destructive" : "secondary"}
+                        variant={record.status === "present" ? "default" : record.status === "absent" ? "destructive" : "secondary"}
                       >
-                        {record.status}
+                        {record.status.toUpperCase()}
                       </Badge>
                     </TableCell>
+                    <TableCell>{record.remarks || '-'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -347,31 +390,22 @@ const StudentReportTab = ({ records }: { records: AttendanceRecord[] }) => {
 
           {/* Mobile Cards */}
           <div className="md:hidden space-y-3">
-            {records.map((record, index) => (
-              <div key={index} className="border border-border rounded-lg p-3 space-y-2">
+            {filteredRecords.map((record) => (
+              <div key={record.id} className="border border-border rounded-lg p-3 space-y-2">
                 <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium">{record.subject}</p>
-                    <p className="text-sm text-muted-foreground">{record.date}</p>
-                  </div>
-                  <Badge variant={record.status === "LATE" ? "destructive" : "secondary"}>
-                    {record.status}
+                  <p className="font-medium">{new Date(record.date).toLocaleDateString()}</p>
+                  <Badge variant={record.status === "present" ? "default" : record.status === "absent" ? "destructive" : "secondary"}>
+                    {record.status.toUpperCase()}
                   </Badge>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Batch: </span>
-                    {record.batch}
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Teacher: </span>
-                    {record.teacher}
-                  </div>
-                </div>
-                <p className="text-sm text-primary">{record.time}</p>
+                {record.remarks && (
+                  <p className="text-sm text-muted-foreground">{record.remarks}</p>
+                )}
               </div>
             ))}
           </div>
+          </>
+          )}
         </CardContent>
       </Card>
     </div>

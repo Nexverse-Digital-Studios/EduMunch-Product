@@ -107,6 +107,7 @@ CREATE TABLE users_1EMAET (
   phone VARCHAR(15),
   full_name VARCHAR(255) NOT NULL,
   profile_photo_url TEXT,
+  primary_role_id UUID REFERENCES roles_1EMAET(id) ON DELETE SET NULL,
   is_active BOOLEAN DEFAULT true,
   is_email_verified BOOLEAN DEFAULT false,
   is_phone_verified BOOLEAN DEFAULT false,
@@ -121,9 +122,11 @@ CREATE INDEX idx_users_email ON users_1EMAET(email) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_phone ON users_1EMAET(phone) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_active ON users_1EMAET(is_active) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_index_token ON users_1EMAET(index_token) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_primary_role ON users_1EMAET(primary_role_id) WHERE deleted_at IS NULL;
 
-COMMENT ON TABLE users_1EMAET IS 'User management table - roles assigned via user_roles_1EMAET';
+COMMENT ON TABLE users_1EMAET IS 'User management table - primary_role_id for quick access, additional roles via user_roles_1EMAET';
 COMMENT ON COLUMN users_1EMAET.auth_user_id IS 'Links to Supabase auth.users table';
+COMMENT ON COLUMN users_1EMAET.primary_role_id IS 'Primary role for quick access during login - synced with user_roles_1EMAET';
 
 -- 1.6 User-Role Assignment
 CREATE TABLE user_roles_1EMAET (

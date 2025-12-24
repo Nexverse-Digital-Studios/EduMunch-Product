@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2, Clock, Calendar } from "lucide-react";
+import { Plus, Trash2, Clock, Calendar, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
+import { TABLES } from "@/lib/supabase";
+
+// Database types
+interface SectionDB {
+  id: string;
+  section_name: string;
+  section_code: string;
+}
+
+interface LectureTemplateDB {
+  id: string;
+  template_name: string;
+  description?: string;
+  section_id?: string;
+  schedule_json: Record<string, any>;
+  is_active: boolean;
+  created_at: string;
+}
 
 interface TimeSlot {
   id: number;
@@ -67,8 +86,24 @@ const initialSchedule: DaySchedule[] = [
 ];
 
 const LectureTemplates = () => {
-  const [selectedBranch, setSelectedBranch] = useState("kalyan");
+  const [selectedBranch, setSelectedBranch] = useState("");
   const [schedule, setSchedule] = useState<DaySchedule[]>(initialSchedule);
+  
+  // Fetch data from Supabase
+  const { data: sections, isLoading: loadingSections } = useSupabaseTable<SectionDB>(
+    TABLES.SECTIONS,
+    { orderBy: { column: 'section_name', ascending: true } }
+  );
+  
+  const { data: templates, isLoading: loadingTemplates } = useSupabaseTable<LectureTemplateDB>(
+    TABLES.LECTURE_TEMPLATES,
+    { orderBy: { column: 'template_name', ascending: true } }
+  );
+  
+  const isLoading = loadingSections || loadingTemplates;
+  
+  // Use database sections or fall back to mock branches
+  const dynamicBranches = sections?.map(s => ({ id: s.id, name: s.section_name })) || branches;
 
   const addSlot = (dayIndex: number) => {
     const newSchedule = [...schedule];

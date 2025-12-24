@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const stats = [
   { title: "Active Students", value: 6, icon: Users, colorScheme: "blue" as const },
@@ -56,26 +57,34 @@ const announcements = [
 ];
 
 const Dashboard = () => {
+  const { userProfile } = useAuth();
+  
+  // Get display name and role
+  const displayName = userProfile?.full_name || 'User';
+  const roleName = userProfile?.primary_role?.role_name || 'Admin';
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h1 className="text-xl font-bold text-foreground sm:text-2xl md:text-3xl">
-            Welcome back, Super Admin!
+            Welcome back, {displayName}!
           </h1>
-          <p className="text-sm text-muted-foreground sm:text-base">Here's a quick overview of your portal.</p>
+          <p className="text-sm text-muted-foreground sm:text-base">
+            Logged in as <span className="font-medium text-primary">{roleName}</span> • Here's a quick overview of your portal.
+          </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <span className="text-sm text-muted-foreground">Viewing Stats For</span>
-          <Select defaultValue="global">
+          <span className="text-sm text-muted-foreground">Academic Year</span>
+          <Select defaultValue="2024-25">
             <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Select branch" />
+              <SelectValue placeholder="Select year" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="global">Global (All Branches)</SelectItem>
-              <SelectItem value="branch1">Branch 1</SelectItem>
-              <SelectItem value="branch2">Branch 2</SelectItem>
+              <SelectItem value="2024-25">2024-25</SelectItem>
+              <SelectItem value="2023-24">2023-24</SelectItem>
+              <SelectItem value="2022-23">2022-23</SelectItem>
             </SelectContent>
           </Select>
         </div>

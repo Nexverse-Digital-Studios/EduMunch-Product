@@ -20,9 +20,14 @@ interface HeaderProps {
 
 export const Header = ({ onMenuClick }: HeaderProps) => {
   const { theme, toggleTheme } = useTheme();
-  const { user, signOut } = useAuth();
+  const { user, userProfile, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Get display name and initials
+  const displayName = userProfile?.full_name || user?.email?.split('@')[0] || 'User';
+  const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const roleName = userProfile?.primary_role?.role_name;
 
   const handleSignOut = async () => {
     await signOut();
@@ -72,21 +77,27 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-muted">
-                <User className="h-4 w-4 text-muted-foreground" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-primary text-primary-foreground font-medium text-sm">
+                {initials}
               </div>
-              <span className="hidden text-sm font-medium md:block">
-                {user?.email?.split('@')[0] || 'User'}
-              </span>
+              <div className="hidden md:flex flex-col items-start">
+                <span className="text-sm font-medium">{displayName}</span>
+                {roleName && (
+                  <span className="text-xs text-muted-foreground">{roleName}</span>
+                )}
+              </div>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
               <div className="flex flex-col">
-                <span>My Account</span>
+                <span>{displayName}</span>
                 <span className="text-xs font-normal text-muted-foreground truncate">
                   {user?.email}
                 </span>
+                {roleName && (
+                  <span className="text-xs font-medium text-primary mt-1">{roleName}</span>
+                )}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

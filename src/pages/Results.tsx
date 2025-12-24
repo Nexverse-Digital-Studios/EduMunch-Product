@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +26,32 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
+import { TABLES } from "@/lib/supabase";
+
+// Database types
+interface ExamDB {
+  id: string;
+  exam_type_id: string;
+  exam_name: string;
+  academic_year_id: string;
+  start_date?: string;
+  end_date?: string;
+  total_marks?: number;
+  passing_marks?: number;
+  is_published: boolean;
+  created_at: string;
+}
+
+interface ExamMarksDB {
+  id: string;
+  exam_id: string;
+  student_id: string;
+  subject_id: string;
+  marks_obtained?: number;
+  grade?: string;
+  remarks?: string;
+}
 
 interface BoardTemplate {
   id: string;

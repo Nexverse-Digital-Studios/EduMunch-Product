@@ -579,7 +579,7 @@ export function buildPermissionCache(
 
 ---
 
-### Step 2: Login Flow with Permission Fetching
+### Step 2: Login Flow with Permission Fetching (Optimized)
 
 ```typescript
 // src/lib/auth.ts
@@ -602,35 +602,30 @@ export async function loginAndCachePermissions(
 
   if (authError) throw authError;
 
-  // 2. Get user record from users table
+  // 2. Get user record WITH primary role in single query (OPTIMIZED)
+  // Using primary_role_id in users table for efficient lookup
   const { data: user, error: userError } = await supabase
     .from(`users_${INDEX_TOKEN}`)
-    .select("id, email, full_name, index_token")
-    .eq("auth_user_id", authData.user.id)
-    .single();
-
-  if (userError) throw userError;
-
-  // 3. Get primary role
-  const { data: userRoles, error: roleError } = await supabase
-    .from(`user_roles_${INDEX_TOKEN}`)
     .select(
       `
-      role_id,
-      roles:role_id (
+      id, 
+      email, 
+      full_name, 
+      index_token,
+      primary_role_id,
+      primary_role:primary_role_id (
         id,
         role_code,
         role_name
       )
     `
     )
-    .eq("user_id", user.id)
-    .eq("is_primary", true)
+    .eq("auth_user_id", authData.user.id)
     .single();
 
-  if (roleError) throw roleError;
+  if (userError) throw userError;
 
-  // 4. Call permission function (ONLY DB CALL FOR PERMISSIONS)
+  // 3. Call permission function (ONLY DB CALL FOR PERMISSIONS)
   const { data: rawPermissions, error: permError } = await supabase.rpc(
     `get_user_permissions_${INDEX_TOKEN}`,
     {
@@ -640,18 +635,18 @@ export async function loginAndCachePermissions(
 
   if (permError) throw permError;
 
-  // 5. Build permission cache structure
+  // 4. Build permission cache structure
   const permissionCache = buildPermissionCache(rawPermissions);
 
-  // Add user details
+  // Add user details (primary_role already fetched with user query)
   permissionCache.userId = user.id;
   permissionCache.primaryRole = {
-    id: userRoles.roles.id,
-    code: userRoles.roles.role_code,
-    name: userRoles.roles.role_name,
+    id: user.primary_role?.id || "",
+    code: user.primary_role?.role_code || "",
+    name: user.primary_role?.role_name || "",
   };
 
-  // 6. Store in localStorage for persistence across page reloads
+  // 5. Store in localStorage for persistence across page reloads
   localStorage.setItem("user_permissions", JSON.stringify(permissionCache));
   localStorage.setItem(
     "user_info",
@@ -659,7 +654,7 @@ export async function loginAndCachePermissions(
       id: user.id,
       email: user.email,
       fullName: user.full_name,
-      role: userRoles.roles.role_name,
+      role: user.primary_role?.role_name || "No Role",
     })
   );
 
@@ -678,6 +673,18 @@ export async function logout() {
   await supabase.auth.signOut();
 }
 ```
+
+**Login Flow Optimization:**
+
+| Step | Before (3 Queries)              | After (2 Queries)                                          |
+| ---- | ------------------------------- | ---------------------------------------------------------- |
+| 1    | Supabase Auth login             | Supabase Auth login                                        |
+| 2    | Query `users` table             | Query `users` with JOIN to `roles` (via `primary_role_id`) |
+| 3    | Query `user_roles` table        | ~~Eliminated~~                                             |
+| 4    | Query `roles` table             | ~~Eliminated~~                                             |
+| 5    | Call `get_user_permissions` RPC | Call `get_user_permissions` RPC                            |
+
+**Result**: 33% reduction in login queries (3 → 2 DB calls)
 
 ---
 

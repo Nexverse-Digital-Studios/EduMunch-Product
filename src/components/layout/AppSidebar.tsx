@@ -1,4 +1,14 @@
-import { useState, useEffect } from "react";
+/**
+ * App Sidebar - EduMunch
+ * =======================
+ * 
+ * Dynamic navigation based on:
+ * 1. Feature toggles (from config)
+ * 2. User permissions (from PermissionContext)
+ * 3. Admin-only routes
+ */
+
+import { useState, useEffect, useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -32,21 +42,29 @@ import {
   ChevronDown,
   User,
   X,
+  Shield,
+  AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FEATURES, FeatureConfig } from "@/config/features.config";
+import { usePermissions } from "@/contexts/PermissionContext";
+import { useAuth } from "@/contexts/AuthContext";
 
-interface NavItemProps {
+interface NavItemConfig {
   to?: string;
   icon: React.ElementType;
   label: string;
   isCollapsed: boolean;
-  children?: NavItemProps[];
+  children?: NavItemConfig[];
   isActive?: boolean;
   onNavigate?: () => void;
+  feature?: keyof FeatureConfig;  // Feature toggle key
+  moduleCode?: string;             // Permission module code
+  adminOnly?: boolean;             // Requires admin role
 }
 
-const NavItem = ({ to, icon: Icon, label, isCollapsed, children, isActive, onNavigate }: NavItemProps) => {
+const NavItem = ({ to, icon: Icon, label, isCollapsed, children, isActive, onNavigate }: NavItemConfig) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   
@@ -116,16 +134,17 @@ const NavItem = ({ to, icon: Icon, label, isCollapsed, children, isActive, onNav
   );
 };
 
-const navigationItems: NavItemProps[] = [
+const navigationItems: NavItemConfig[] = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard", isCollapsed: false },
   {
     icon: GraduationCap,
     label: "Admissions",
     isCollapsed: false,
+    feature: 'admissions',
     children: [
-      { to: "/admissions", icon: GraduationCap, label: "Admissions", isCollapsed: false },
-      { to: "/enrollments", icon: Users, label: "Enrollments", isCollapsed: false },
-      { to: "/payments", icon: IndianRupee, label: "Payments", isCollapsed: false },
+      { to: "/admissions", icon: GraduationCap, label: "Admissions", isCollapsed: false, feature: 'admissions', moduleCode: 'admissions' },
+      { to: "/enrollments", icon: Users, label: "Enrollments", isCollapsed: false, feature: 'payments', moduleCode: 'payments' },
+      { to: "/payments", icon: IndianRupee, label: "Payments", isCollapsed: false, feature: 'payments', moduleCode: 'payments' },
     ],
   },
   {
@@ -133,15 +152,15 @@ const navigationItems: NavItemProps[] = [
     label: "Academics",
     isCollapsed: false,
     children: [
-      { to: "/courses", icon: BookOpen, label: "Courses", isCollapsed: false },
-      { to: "/subjects", icon: BookText, label: "Subjects", isCollapsed: false },
-      { to: "/topics", icon: ListTree, label: "Topics & Content", isCollapsed: false },
-      { to: "/batches", icon: Calendar, label: "Batches", isCollapsed: false },
-      { to: "/timetables", icon: Clock, label: "Timetables", isCollapsed: false },
-      { to: "/attendance", icon: CheckSquare, label: "Attendance", isCollapsed: false },
-      { to: "/assignments", icon: ClipboardList, label: "Assignments", isCollapsed: false },
-      { to: "/results", icon: Award, label: "Results", isCollapsed: false },
-      { to: "/lecture-templates", icon: Presentation, label: "Lecture Templates", isCollapsed: false },
+      { to: "/classes", icon: BookOpen, label: "Classes", isCollapsed: false, feature: 'classes', moduleCode: 'classes' },
+      { to: "/subjects", icon: BookText, label: "Subjects", isCollapsed: false, feature: 'subjects', moduleCode: 'subjects' },
+      { to: "/topics", icon: ListTree, label: "Topics & Content", isCollapsed: false, feature: 'topics', moduleCode: 'topics' },
+      { to: "/batches", icon: Calendar, label: "Sections", isCollapsed: false, feature: 'sections', moduleCode: 'sections' },
+      { to: "/timetables", icon: Clock, label: "Timetables", isCollapsed: false, feature: 'timetables', moduleCode: 'timetable' },
+      { to: "/attendance", icon: CheckSquare, label: "Attendance", isCollapsed: false, feature: 'attendance', moduleCode: 'attendance' },
+      { to: "/assignments", icon: ClipboardList, label: "Assignments", isCollapsed: false, feature: 'assignments', moduleCode: 'assignments' },
+      { to: "/results", icon: Award, label: "Results", isCollapsed: false, feature: 'results', moduleCode: 'marks' },
+      { to: "/lecture-templates", icon: Presentation, label: "Lecture Templates", isCollapsed: false, feature: 'lectureTemplates', moduleCode: 'lecture_templates' },
     ],
   },
   {
@@ -149,11 +168,12 @@ const navigationItems: NavItemProps[] = [
     label: "Administration",
     isCollapsed: false,
     children: [
-      { to: "/users", icon: Users, label: "Users", isCollapsed: false },
-      { to: "/roles", icon: UserCog, label: "Roles & Permissions", isCollapsed: false },
-      { to: "/branches", icon: Building2, label: "Branches", isCollapsed: false },
-      { to: "/inventory", icon: Warehouse, label: "Inventory", isCollapsed: false },
-      { to: "/tie-up-schools", icon: School, label: "Tie-Up Schools", isCollapsed: false },
+      { to: "/users", icon: Users, label: "Users", isCollapsed: false, feature: 'users', moduleCode: 'users' },
+      { to: "/roles", icon: UserCog, label: "Roles", isCollapsed: false, feature: 'roles', moduleCode: 'roles' },
+      { to: "/set-roles", icon: Shield, label: "Configure Roles", isCollapsed: false, feature: 'setRoles', adminOnly: true },
+      { to: "/branches", icon: Building2, label: "Branches", isCollapsed: false, feature: 'branches', moduleCode: 'branches' },
+      { to: "/inventory", icon: Warehouse, label: "Inventory", isCollapsed: false, feature: 'inventory', moduleCode: 'inventory' },
+      { to: "/tie-up-schools", icon: School, label: "Tie-Up Schools", isCollapsed: false, feature: 'tieUpSchools', moduleCode: 'tie_up_schools' },
     ],
   },
   {
@@ -161,12 +181,12 @@ const navigationItems: NavItemProps[] = [
     label: "Human Resources",
     isCollapsed: false,
     children: [
-      { to: "/employees", icon: Users, label: "Employees", isCollapsed: false },
-      { to: "/salary-structures", icon: Receipt, label: "Salary Structures", isCollapsed: false },
-      { to: "/payslips", icon: Receipt, label: "Payslips", isCollapsed: false },
-      { to: "/leave-management", icon: CalendarDays, label: "Leave Management", isCollapsed: false },
-      { to: "/working-hours", icon: Timer, label: "Working Hours", isCollapsed: false },
-      { to: "/availability-slots", icon: UserCheck, label: "Availability Slots", isCollapsed: false },
+      { to: "/employees", icon: Users, label: "Employees", isCollapsed: false, feature: 'employees', moduleCode: 'employees' },
+      { to: "/salary-structures", icon: Receipt, label: "Salary Structures", isCollapsed: false, feature: 'salaryStructures', moduleCode: 'salary_structures' },
+      { to: "/payslips", icon: Receipt, label: "Payslips", isCollapsed: false, feature: 'payslips', moduleCode: 'payslips' },
+      { to: "/leave-management", icon: CalendarDays, label: "Leave Management", isCollapsed: false, feature: 'leaveManagement', moduleCode: 'leave' },
+      { to: "/working-hours", icon: Timer, label: "Working Hours", isCollapsed: false, feature: 'workingHours', moduleCode: 'working_hours' },
+      { to: "/availability-slots", icon: UserCheck, label: "Availability Slots", isCollapsed: false, feature: 'availabilitySlots', moduleCode: 'availability_slots' },
     ],
   },
   {
@@ -174,9 +194,13 @@ const navigationItems: NavItemProps[] = [
     label: "Communication",
     isCollapsed: false,
     children: [
-      { to: "/announcements", icon: Bell, label: "Announcements", isCollapsed: false },
-      { to: "/doubts", icon: HelpCircle, label: "Doubts", isCollapsed: false },
-      { to: "/support-tickets", icon: Ticket, label: "Support Tickets", isCollapsed: false },
+      { to: "/announcements", icon: Bell, label: "Announcements", isCollapsed: false, feature: 'announcements', moduleCode: 'announcements' },
+      { to: "/doubts", icon: HelpCircle, label: "Doubts", isCollapsed: false, feature: 'doubts', moduleCode: 'doubts' },
+      { to: "/notifications", icon: Bell, label: "Notifications", isCollapsed: false, feature: 'notifications', moduleCode: 'notifications' },
+      { to: "/feedback", icon: MessageSquare, label: "Feedback", isCollapsed: false, feature: 'feedback', moduleCode: 'feedback' },
+      { to: "/grievances", icon: AlertCircle, label: "Grievances", isCollapsed: false, feature: 'grievances', moduleCode: 'grievances' },
+      { to: "/ptm-requests", icon: Users, label: "PTM Requests", isCollapsed: false, feature: 'ptmRequests', moduleCode: 'ptm_requests' },
+      { to: "/support-tickets", icon: Ticket, label: "Support Tickets", isCollapsed: false, feature: 'supportTickets', moduleCode: 'support_tickets' },
     ],
   },
   { to: "/profile", icon: User, label: "Profile", isCollapsed: false },
@@ -189,7 +213,59 @@ interface AppSidebarProps {
   onMobileClose: () => void;
 }
 
+/**
+ * Filter navigation items based on features and permissions
+ */
+const useFilteredNavigation = () => {
+  const { hasModuleAccess, isAdmin } = usePermissions();
+  const { userProfile } = useAuth();
+  
+  return useMemo(() => {
+    const filterItems = (items: NavItemConfig[]): NavItemConfig[] => {
+      return items
+        .filter(item => {
+          // Check admin-only
+          if (item.adminOnly && !isAdmin()) {
+            return false;
+          }
+          
+          // Check feature toggle
+          if (item.feature && !FEATURES[item.feature]) {
+            return false;
+          }
+          
+          // If has children, check if any children are visible
+          if (item.children) {
+            const visibleChildren = filterItems(item.children);
+            return visibleChildren.length > 0;
+          }
+          
+          // Check module permission (Admin bypasses this)
+          if (item.moduleCode && !isAdmin()) {
+            return hasModuleAccess(item.moduleCode);
+          }
+          
+          return true;
+        })
+        .map(item => {
+          if (item.children) {
+            return {
+              ...item,
+              children: filterItems(item.children),
+            };
+          }
+          return item;
+        });
+    };
+    
+    return filterItems(navigationItems);
+  }, [hasModuleAccess, isAdmin, userProfile]);
+};
+
 export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose }: AppSidebarProps) => {
+  const filteredNavItems = useFilteredNavigation();
+  const { userProfile } = useAuth();
+  
   return (
     <>
       {/* Mobile Overlay */}
@@ -247,7 +323,7 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
         {/* Navigation */}
         <ScrollArea className="flex-1 px-3 py-4">
           <nav className="space-y-1">
-            {navigationItems.map((item, index) => (
+            {filteredNavItems.map((item, index) => (
               <NavItem
                 key={item.to || item.label + index}
                 {...item}
@@ -266,8 +342,12 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
             </div>
             {(!isCollapsed || isMobileOpen) && (
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium text-foreground">Super Admin</p>
-                <p className="truncate text-xs text-muted-foreground">super@admin.com</p>
+                <p className="truncate text-sm font-medium text-foreground">
+                  {userProfile?.full_name || 'User'}
+                </p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {userProfile?.primary_role?.role_name || userProfile?.email || ''}
+                </p>
               </div>
             )}
           </div>

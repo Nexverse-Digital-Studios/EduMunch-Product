@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, X, Link2, Send, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Link2, Send, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +31,40 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
+import { TABLES } from "@/lib/supabase";
+
+// Database types
+interface SectionDB {
+  id: string;
+  class_id: string;
+  section_name: string;
+  section_code: string;
+}
+
+interface SubjectDB {
+  id: string;
+  subject_name: string;
+  subject_code: string;
+}
+
+interface TeacherDB {
+  id: string;
+  first_name: string;
+  last_name: string;
+  employee_code: string;
+}
+
+interface TimetableDB {
+  id: string;
+  section_id: string;
+  subject_id: string;
+  teacher_id: string;
+  period_id: string;
+  day_of_week: number;
+  room_number?: string;
+  is_active: boolean;
+}
 
 interface ClassInfo {
   id: string;
@@ -136,6 +170,37 @@ const Timetables = () => {
   const { toast } = useToast();
   const [selectedWeek, setSelectedWeek] = useState("2025-12-08");
   const [schedule, setSchedule] = useState<ScheduleSlot[]>(initialSchedule);
+  
+  // Fetch data from Supabase for dropdowns
+  const { data: sectionsData, isLoading: loadingSections } = useSupabaseTable<SectionDB>(
+    TABLES.SECTIONS,
+    { orderBy: { column: 'section_name', ascending: true } }
+  );
+  
+  const { data: subjectsData, isLoading: loadingSubjects } = useSupabaseTable<SubjectDB>(
+    TABLES.SUBJECTS,
+    { orderBy: { column: 'subject_name', ascending: true } }
+  );
+  
+  const { data: teachersData, isLoading: loadingTeachers } = useSupabaseTable<TeacherDB>(
+    TABLES.TEACHERS,
+    { orderBy: { column: 'first_name', ascending: true } }
+  );
+  
+  const { data: timetablesData, isLoading: loadingTimetables } = useSupabaseTable<TimetableDB>(
+    TABLES.TIMETABLES,
+    {}
+  );
+  
+  const isLoading = loadingSections || loadingSubjects || loadingTeachers || loadingTimetables;
+  
+  // Use database data if available, otherwise fall back to mock data
+  const dynamicSubjects = subjectsData?.map(s => s.subject_name) || subjects;
+  const dynamicTeachers = teachersData?.map(t => ({ 
+    id: t.employee_code, 
+    name: `${t.employee_code} - ${t.first_name} ${t.last_name}` 
+  })) || teachers;
+  const dynamicBranches = sectionsData?.map(s => s.section_name) || branches;
   
   // Modal states
   const [isBulkScheduleOpen, setIsBulkScheduleOpen] = useState(false);

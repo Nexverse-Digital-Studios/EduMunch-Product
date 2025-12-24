@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Clock, Users as UsersIcon, Filter, RotateCcw } from "lucide-react";
+import { Plus, Pencil, Trash2, Users as UsersIcon, Filter, RotateCcw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -25,45 +26,157 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-interface User {
-  id: string;
-  name: string;
-  initials: string;
-  email: string;
-  phone: string;
-  role: string;
-  avatarColor: string;
-}
-
-const usersData: User[] = [
-  { id: "1", name: "APCH", initials: "AP", email: "apch@vraz.com", phone: "9658741256", role: "Teacher", avatarColor: "bg-primary" },
-  { id: "2", name: "ASB", initials: "AS", email: "asb@vraz.com", phone: "8596325769", role: "Teacher", avatarColor: "bg-purple-500" },
-  { id: "3", name: "ASM", initials: "AS", email: "anup@vraz.com", phone: "8596745220", role: "Teacher", avatarColor: "bg-purple-500" },
-  { id: "4", name: "Aarav Sharma", initials: "AS", email: "aarav.sharma25@email.com", phone: "9820012345", role: "Student", avatarColor: "bg-green-500" },
-  { id: "5", name: "Anand Gupta", initials: "AG", email: "", phone: "9685658986", role: "Parent", avatarColor: "bg-yellow-500" },
-  { id: "6", name: "Anand Singh", initials: "AS", email: "", phone: "9685658987", role: "Parent", avatarColor: "bg-yellow-400" },
-  { id: "7", name: "Ananya Iyer", initials: "AI", email: "ananyai@email.com", phone: "9819812345", role: "Student", avatarColor: "bg-gray-400" },
-];
-
-const roles = [
-  "super_admin", "branch_admin", "front_desk", "teacher", 
-  "employee", "Branch Management", "Branch Inventory management", "Support Role"
-];
-
-const branches = [
-  { id: "1", name: "Palava Branch" },
-  { id: "2", name: "Thane HO Branch" },
-  { id: "3", name: "Kalyan Branch" },
-];
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useUsers, useRoles, useCreateUser, useDeleteUser, User, Role } from "@/hooks/useSupabaseQuery";
+import { supabase, TABLES, INDEX_TOKEN } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
 const Users = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [filterRole, setFilterRole] = useState("all");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
+  // Form state
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    password: '',
+    role_id: '',
+  });
+
+  // Fetch data from Supabase
+  const { data: users, isLoading: usersLoading, error: usersError, refetch } = useUsers();
+  const { data: roles, isLoading: rolesLoading } = useRoles();
+  const deleteUserMutation = useDeleteUser();
+
+  // Filter users by role
   const filteredUsers = filterRole === "all" 
-    ? usersData 
-    : usersData.filter(u => u.role.toLowerCase() === filterRole.toLowerCase());
+    ? users 
+    : users?.filter(u => u.primary_role_id === filterRole);
+
+  // Get initials from name
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  // Get role name from ID
+  const getRoleName = (roleId: string | undefined) => {
+    if (!roleId || !roles) return 'No Role';
+    const role = roles.find(r => r.id === roleId);
+    return role?.role_name || 'No Role';
+  };
+
+  // Handle form input change
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Handle create user
+  const handleCreateUser = async () => {
+    if (!formData.full_name || !formData.email || !formData.password) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please fill in all required fields',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!supabase) {
+      toast({
+        title: 'Error',
+        description: 'Database not configured',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // 1. Create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: { full_name: formData.full_name },
+        },
+      });
+
+      if (authError) throw authError;
+      if (!authData.user) throw new Error('Failed to create user');
+
+      // 2. Get admin role if no role selected
+      let roleId = formData.role_id;
+      if (!roleId && roles && roles.length > 0) {
+        const adminRole = roles.find(r => r.role_code === 'ADMIN');
+        roleId = adminRole?.id || roles[0].id;
+      }
+
+      // 3. Create user profile
+      const { error: profileError } = await supabase
+        .from(TABLES.USERS)
+        .insert({
+          auth_user_id: authData.user.id,
+          email: formData.email,
+          full_name: formData.full_name,
+          phone: formData.phone || null,
+          primary_role_id: roleId || null,
+          index_token: INDEX_TOKEN,
+          is_active: true,
+        });
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: 'Success',
+        description: 'User created successfully',
+      });
+
+      setIsCreateModalOpen(false);
+      setFormData({ full_name: '', email: '', phone: '', password: '', role_id: '' });
+      refetch();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to create user',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle delete user
+  const handleDeleteUser = async () => {
+    if (!deleteUserId) return;
+    
+    await deleteUserMutation.mutateAsync(deleteUserId);
+    setDeleteUserId(null);
+  };
+
+  if (usersError) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-destructive mb-2">Error loading users</p>
+          <Button onClick={() => refetch()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -89,10 +202,9 @@ const Users = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="teacher">Teacher</SelectItem>
-                <SelectItem value="student">Student</SelectItem>
-                <SelectItem value="parent">Parent</SelectItem>
-                <SelectItem value="employee">Employee</SelectItem>
+                {roles?.map((role) => (
+                  <SelectItem key={role.id} value={role.id}>{role.role_name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -109,83 +221,122 @@ const Users = () => {
         </div>
       </div>
 
+      {/* Loading State */}
+      {usersLoading && (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!usersLoading && (!users || users.length === 0) && (
+        <div className="flex flex-col items-center justify-center h-64 text-center">
+          <UsersIcon className="h-16 w-16 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Users Found</h3>
+          <p className="text-muted-foreground mb-4">Get started by creating your first user.</p>
+          <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add User
+          </Button>
+        </div>
+      )}
+
       {/* Desktop Table */}
-      <div className="hidden md:block border border-border rounded-lg overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/30">
-              <TableHead>User</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone Number</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUsers.map((user) => (
-              <TableRow key={user.id} className="hover:bg-muted/20">
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar className={user.avatarColor}>
-                      <AvatarFallback className="text-white font-medium">
-                        {user.initials}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium text-foreground">{user.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-primary">{user.email || "-"}</TableCell>
-                <TableCell className="text-foreground">{user.phone}</TableCell>
-                <TableCell className="text-foreground">{user.role}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline">
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <Clock className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" variant="outline" className="text-destructive hover:bg-destructive/10">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+      {!usersLoading && users && users.length > 0 && (
+        <div className="hidden md:block border border-border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/30">
+                <TableHead>User</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone Number</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {filteredUsers?.map((user) => (
+                <TableRow key={user.id} className="hover:bg-muted/20">
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="bg-primary">
+                        <AvatarFallback className="text-primary-foreground font-medium">
+                          {getInitials(user.full_name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium text-foreground">{user.full_name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-primary">{user.email || "-"}</TableCell>
+                  <TableCell className="text-foreground">{user.phone || "-"}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{getRoleName(user.primary_role_id)}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={user.is_active ? "default" : "destructive"}>
+                      {user.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button size="sm" variant="outline">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-destructive hover:bg-destructive/10"
+                        onClick={() => setDeleteUserId(user.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
-        {filteredUsers.map((user) => (
-          <div key={user.id} className="bg-card border border-border rounded-lg p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <Avatar className={user.avatarColor}>
-                  <AvatarFallback className="text-white font-medium">
-                    {user.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-semibold text-foreground">{user.name}</p>
-                  <p className="text-sm text-primary">{user.email || "-"}</p>
-                  <p className="text-sm text-muted-foreground">{user.phone}</p>
-                  <p className="text-sm text-muted-foreground">{user.role}</p>
+      {!usersLoading && users && users.length > 0 && (
+        <div className="md:hidden space-y-4">
+          {filteredUsers?.map((user) => (
+            <div key={user.id} className="bg-card border border-border rounded-lg p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <Avatar className="bg-primary">
+                    <AvatarFallback className="text-primary-foreground font-medium">
+                      {getInitials(user.full_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold text-foreground">{user.full_name}</p>
+                    <p className="text-sm text-primary">{user.email || "-"}</p>
+                    <p className="text-sm text-muted-foreground">{user.phone || "-"}</p>
+                    <Badge variant="secondary" className="mt-1">{getRoleName(user.primary_role_id)}</Badge>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => setDeleteUserId(user.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline">
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button size="sm" variant="outline" className="text-destructive hover:bg-destructive/10">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Create User Modal */}
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
@@ -195,70 +346,107 @@ const Users = () => {
           </DialogHeader>
           <div className="space-y-6 pt-4">
             <div className="flex flex-col items-center gap-4">
-              <Avatar className="h-24 w-24 bg-teal-600">
-                <AvatarFallback className="text-white text-2xl font-medium">
-                  NA
+              <Avatar className="h-24 w-24 bg-primary">
+                <AvatarFallback className="text-primary-foreground text-2xl font-medium">
+                  {formData.full_name ? getInitials(formData.full_name) : 'NA'}
                 </AvatarFallback>
               </Avatar>
-              <Button variant="link" className="text-primary">Upload Photo</Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Full Name <span className="text-destructive">*</span></Label>
-                <Input placeholder="Enter full name" />
+                <Input 
+                  placeholder="Enter full name" 
+                  value={formData.full_name}
+                  onChange={(e) => handleInputChange('full_name', e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Email <span className="text-destructive">*</span></Label>
-                <Input type="email" placeholder="super@admin.com" />
+                <Input 
+                  type="email" 
+                  placeholder="user@example.com" 
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                />
               </div>
               <div className="space-y-2">
-                <Label>Phone Number <span className="text-destructive">*</span></Label>
-                <Input placeholder="Enter phone number" />
+                <Label>Phone Number</Label>
+                <Input 
+                  placeholder="Enter phone number" 
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Password <span className="text-destructive">*</span></Label>
-                <Input type="password" placeholder="••••••••••" />
+                <Input 
+                  type="password" 
+                  placeholder="••••••••••" 
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 md:col-span-2">
                 <Label>Role <span className="text-destructive">*</span></Label>
-                <Select>
+                <Select value={formData.role_id} onValueChange={(v) => handleInputChange('role_id', v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Role" />
                   </SelectTrigger>
                   <SelectContent>
-                    {roles.map((role) => (
-                      <SelectItem key={role} value={role}>{role}</SelectItem>
+                    {roles?.map((role) => (
+                      <SelectItem key={role.id} value={role.id}>{role.role_name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Branch (for staff)</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Branch" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {branches.map((branch) => (
-                      <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Joining Date</Label>
-                <Input type="date" />
               </div>
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
-              <Button className="bg-primary hover:bg-primary/90">Create User</Button>
+              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)} disabled={isSubmitting}>
+                Cancel
+              </Button>
+              <Button 
+                className="bg-primary hover:bg-primary/90" 
+                onClick={handleCreateUser}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  'Create User'
+                )}
+              </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteUserId} onOpenChange={() => setDeleteUserId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the user
+              and remove their data from the system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteUser}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

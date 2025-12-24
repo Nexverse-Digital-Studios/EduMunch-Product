@@ -1937,7 +1937,9 @@ CREATE TABLE public.users_1emaet (
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
   deleted_at timestamp without time zone,
-  CONSTRAINT users_1emaet_pkey PRIMARY KEY (id)
+  primary_role_id uuid,
+  CONSTRAINT users_1emaet_pkey PRIMARY KEY (id),
+  CONSTRAINT users_1emaet_primary_role_id_fkey FOREIGN KEY (primary_role_id) REFERENCES public.roles_1emaet(id)
 );
 CREATE TABLE public.vehicle_drivers_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
