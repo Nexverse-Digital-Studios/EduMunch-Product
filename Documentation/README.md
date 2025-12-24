@@ -28,7 +28,7 @@ This folder contains the complete technical specification for the EduMunch multi
 
 **Architecture:** Multi-tenant with DB Hub sharding (5 schools per Supabase Pro instance)
 
-**Table Structure:** `[table_name]_[INDEX_TOKEN]` (e.g., `students_AZHBXC`)
+**Table Structure:** `[table_name]_[INDEX_TOKEN]` (e.g., `students_1EMAET`)
 
 **Storage:** 
 - Database: Textual data only (8GB limit per Hub)
@@ -227,7 +227,7 @@ WebSocket-based live updates:
 
 1. **School Onboarding** (Dev Panel)
    - Create school entry in Dev Master DB
-   - Assign Index Token (e.g., `AZHBXC`)
+   - Assign Index Token (e.g., `1EMAET`)
    - Allocate DB Hub
    - Configure subscription tier
 

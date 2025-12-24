@@ -36,15 +36,15 @@ Every table in a Hub follows this syntax:
 ```
 
 - **Prefix:** The functional name of the entity (e.g., `students`, `attendance`, `exams`)
-- **Suffix (Index Token):** A secure, randomized 6-character string assigned to a specific school (e.g., `AZHBXC`, `BYJVWD`)
+- **Suffix (Index Token):** A secure, randomized 6-character string assigned to a specific school (e.g., `1EMAET`, `2DDMK`)
 
 ### **Example: A Hub with 3 Schools**
 
-| Table Prefix | School A (Token: AZHBXC) | School B (Token: BYJVWD) | School C (Token: CXKQLA) |
+| Table Prefix | School A (Token: 1EMAET) | School B (Token: 2DDMK) | School C (Token: 3AAA) |
 | :--- | :--- | :--- | :--- |
-| Students | `students_AZHBXC` | `students_BYJVWD` | `students_CXKQLA` |
-| Attendance | `attendance_AZHBXC` | `attendance_BYJVWD` | `attendance_CXKQLA` |
-| Finance | `finance_AZHBXC` | `finance_BYJVWD` | `finance_CXKQLA` |
+| Students | `students_1EMAET` | `students_2DDMK` | `students_3AAA` |
+| Attendance | `attendance_1EMAET` | `attendance_2DDMK` | `attendance_3AAA` |
+| Finance | `finance_1EMAET` | `finance_2DDMK` | `finance_3AAA` |
 
 ---
 
@@ -83,7 +83,7 @@ If a table shares a common prefix (e.g., all `students_` tables), the Dev Panel 
 
 If a specific school requires custom features or unique data fields not shared by the SaaS template:
 
-- **Identifier:** The table must start with the `XTRA_` prefix (e.g., `XTRA_special_events_AZHBXC`)
+- **Identifier:** The table must start with the `XTRA_` prefix (e.g., `XTRA_special_events_1EMAET`)
 - **Behavior:** The automatic sync engine ignores these tables. Changes to `XTRA_` tables are handled manually and are not replicated to other schools or Hubs.
 
 ---

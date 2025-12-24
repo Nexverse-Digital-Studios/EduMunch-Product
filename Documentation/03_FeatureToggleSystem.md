@@ -370,7 +370,7 @@ Each school also has environment variables for runtime configuration:
 
 ```bash
 # School Identity
-VITE_INDEX_TOKEN=1ENTK
+VITE_INDEX_TOKEN=1EMAET
 VITE_SCHOOL_NAME=Delhi Public School
 VITE_SCHOOL_CODE=DPS001
 
