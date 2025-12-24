@@ -1,10 +1,22 @@
+/**
+ * PTM Requests Page - Parent-Teacher Meeting Management
+ * 
+ * This feature uses Tier 3 schema tables:
+ * - ptm_slots_1EMAET
+ * - ptm_bookings_1EMAET
+ * - ptm_meeting_notes_1EMAET
+ * 
+ * Currently showing demo data. Full Supabase integration requires Tier 3 deployment.
+ */
+
 import { useState } from "react";
-import { Plus, Search, Check, Ban } from "lucide-react";
+import { Plus, Search, Check, Ban, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -18,6 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useModulePermissions } from "@/contexts/PermissionContext";
 
 interface PTMRequest {
   id: string;
@@ -60,6 +73,9 @@ const PTMRequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  // Permission check
+  const { canRead, canCreate, canUpdate } = useModulePermissions('PTM');
+
   const getRequestsByStatus = (status: string) => {
     return ptmRequests.filter(req => {
       const matchesStatus = 
@@ -93,7 +109,7 @@ const PTMRequests = () => {
               <p className="text-sm text-muted-foreground">Reason: {request.reason}</p>
               <p className="text-sm text-muted-foreground">Preferred Times: {request.preferredTime}</p>
             </div>
-            {showActions && request.status === "PENDING" && (
+            {showActions && request.status === "PENDING" && canUpdate && (
               <div className="flex gap-2">
                 <Button size="sm" className="bg-primary hover:bg-primary/90">
                   <Check className="h-4 w-4" />
@@ -116,11 +132,22 @@ const PTMRequests = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-foreground">PTM Requests</h1>
-        <Button onClick={() => setIsCreateModalOpen(true)} className="bg-primary hover:bg-primary/90">
-          <Plus className="h-4 w-4 mr-2" />
-          Create PTM
-        </Button>
+        {canCreate && (
+          <Button onClick={() => setIsCreateModalOpen(true)} className="bg-primary hover:bg-primary/90">
+            <Plus className="h-4 w-4 mr-2" />
+            Create PTM
+          </Button>
+        )}
       </div>
+
+      {/* Tier 3 Notice */}
+      <Alert>
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Tier 3 Feature</AlertTitle>
+        <AlertDescription>
+          The PTM system requires Tier 3 schema tables (ptm_slots, ptm_bookings). Currently showing demo data.
+        </AlertDescription>
+      </Alert>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0">

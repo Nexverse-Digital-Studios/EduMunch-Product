@@ -1,4 +1,5 @@
-import { X, Upload } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Upload, Loader2, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,6 +9,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -15,99 +18,240 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSupabaseQuery, useSupabaseInsert } from "@/hooks/useSupabaseQuery";
+import { toast } from "@/hooks/use-toast";
+
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1EMAET';
+
+interface Subject {
+  id: string;
+  name: string;
+}
+
+interface Section {
+  id: string;
+  name: string;
+  class_id: string;
+  classes?: { id: string; name: string } | null;
+}
 
 interface CreateTemplateModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
-export const CreateTemplateModal = ({ open, onOpenChange }: CreateTemplateModalProps) => {
+export const CreateTemplateModal = ({ open, onOpenChange, onSuccess }: CreateTemplateModalProps) => {
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    subject_id: "",
+    section_id: "",
+    assignment_type: "Homework" as 'Homework' | 'Project' | 'Practice' | 'Lab Work',
+    deadline: "",
+    max_marks: "",
+    is_published: false,
+  });
+
+  // Fetch subjects
+  const { data: subjects } = useSupabaseQuery<Subject>(
+    `subjects_${INDEX_TOKEN}`,
+    ['subjects', INDEX_TOKEN],
+    { select: 'id, name', orderBy: { column: 'name', ascending: true } }
+  );
+
+  // Fetch sections with class info
+  const { data: sections } = useSupabaseQuery<Section>(
+    `sections_${INDEX_TOKEN}`,
+    ['sections', INDEX_TOKEN],
+    { 
+      select: 'id, name, class_id, classes:class_id(id, name)', 
+      orderBy: { column: 'name', ascending: true } 
+    }
+  );
+
+  // Insert mutation
+  const insertMutation = useSupabaseInsert(`assignments_${INDEX_TOKEN}`, ['assignments', INDEX_TOKEN]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.title.trim()) {
+      toast({ title: "Error", description: "Title is required", variant: "destructive" });
+      return;
+    }
+
+    try {
+      await insertMutation.mutateAsync({
+        title: formData.title.trim(),
+        description: formData.description.trim() || null,
+        subject_id: formData.subject_id || null,
+        section_id: formData.section_id || null,
+        assignment_type: formData.assignment_type,
+        deadline: formData.deadline || null,
+        max_marks: formData.max_marks ? parseInt(formData.max_marks) : null,
+        is_published: formData.is_published,
+      });
+
+      toast({ title: "Success", description: "Assignment created successfully" });
+      onOpenChange(false);
+      onSuccess?.();
+      
+      // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        subject_id: "",
+        section_id: "",
+        assignment_type: "Homework",
+        deadline: "",
+        max_marks: "",
+        is_published: false,
+      });
+    } catch (err) {
+      toast({ title: "Error", description: "Failed to create assignment", variant: "destructive" });
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle>Edit Assignment Template</DialogTitle>
-            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle>Create New Assignment</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-sm font-medium">Title</label>
-              <Input placeholder="Theory Exam" defaultValue="Theory Exam" />
+              <Label htmlFor="title">Title *</Label>
+              <Input 
+                id="title"
+                placeholder="Enter assignment title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium">Subject</label>
-              <Select defaultValue="biology">
+              <Label htmlFor="subject">Subject</Label>
+              <Select 
+                value={formData.subject_id} 
+                onValueChange={(value) => setFormData({ ...formData, subject_id: value })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Subject" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="biology">Biology</SelectItem>
-                  <SelectItem value="physics">Physics</SelectItem>
-                  <SelectItem value="chemistry">Chemistry</SelectItem>
-                  <SelectItem value="maths">Mathematics</SelectItem>
+                  {subjects?.map((subject) => (
+                    <SelectItem key={subject.id} value={subject.id}>
+                      {subject.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Label htmlFor="section">Class / Section</Label>
+              <Select 
+                value={formData.section_id} 
+                onValueChange={(value) => setFormData({ ...formData, section_id: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Section" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sections?.map((section) => (
+                    <SelectItem key={section.id} value={section.id}>
+                      {section.classes?.name || ''} - {section.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="type">Assignment Type</Label>
+              <Select 
+                value={formData.assignment_type} 
+                onValueChange={(value: 'Homework' | 'Project' | 'Practice' | 'Lab Work') => 
+                  setFormData({ ...formData, assignment_type: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Homework">Homework</SelectItem>
+                  <SelectItem value="Project">Project</SelectItem>
+                  <SelectItem value="Practice">Practice</SelectItem>
+                  <SelectItem value="Lab Work">Lab Work</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Description</label>
+            <Label htmlFor="description">Description</Label>
             <Textarea 
-              placeholder="Enter assignment description..." 
+              id="description"
+              placeholder="Enter assignment description and instructions..." 
               rows={4}
-              defaultValue="Answer the below questions
-1. Explain the anatomy of the frog.
-2. Explain DNA Formation."
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </div>
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium">Attachments</label>
-            <div className="flex items-center gap-3 mb-3">
-              <Button variant="outline" className="gap-2">
-                <Upload className="h-4 w-4" />
-                Upload File
-              </Button>
-              <span className="text-sm text-muted-foreground">Supported: Images, PDF, Docs (Max 15MB)</span>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Label htmlFor="deadline">Deadline</Label>
+              <Input 
+                id="deadline"
+                type="datetime-local"
+                value={formData.deadline}
+                onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+              />
             </div>
-            <div className="flex gap-3 flex-wrap">
-              <div className="w-32 h-24 rounded-lg border border-border bg-muted flex items-center justify-center">
-                <span className="text-xs text-muted-foreground">Diagram.png</span>
-              </div>
-              <div className="w-32 h-24 rounded-lg border border-border bg-muted flex flex-col items-center justify-center">
-                <Upload className="h-6 w-6 text-muted-foreground mb-1" />
-                <span className="text-xs text-muted-foreground text-center px-2 truncate w-full">file-17651809...pdf</span>
-              </div>
+            <div>
+              <Label htmlFor="maxMarks">Maximum Marks</Label>
+              <Input 
+                id="maxMarks"
+                type="number"
+                placeholder="e.g., 100"
+                value={formData.max_marks}
+                onChange={(e) => setFormData({ ...formData, max_marks: e.target.value })}
+              />
             </div>
           </div>
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium">Assignment Type</label>
-            <Select defaultValue="theory">
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="theory">Theory</SelectItem>
-                <SelectItem value="mcq">MCQ</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="publish">Publish Immediately</Label>
+              <p className="text-sm text-muted-foreground">
+                Make this assignment visible to students right away
+              </p>
+            </div>
+            <Switch
+              id="publish"
+              checked={formData.is_published}
+              onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
+            />
           </div>
-        </div>
 
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button className="gap-2">
-            <Upload className="h-4 w-4" />
-            Update Template
-          </Button>
-        </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={insertMutation.isPending} className="gap-2">
+              {insertMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+              Create Assignment
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

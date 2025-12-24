@@ -1,8 +1,21 @@
+/**
+ * Feedback Page - Survey & Feedback System
+ * 
+ * This feature uses Tier 3 schema tables:
+ * - surveys_1EMAET
+ * - survey_questions_1EMAET
+ * - survey_responses_1EMAET
+ * - feedback_analytics_1EMAET
+ * 
+ * Currently showing demo data. Full Supabase integration requires Tier 3 deployment.
+ */
+
 import { useState } from "react";
-import { Plus, Edit, Trash2, Settings } from "lucide-react";
+import { Plus, Edit, Trash2, Settings, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -20,6 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useModulePermissions } from "@/contexts/PermissionContext";
 
 const templates = [
   { id: 1, title: "Quarterly review", type: "FACULTY_REVIEW", description: "Faculty review", qualities: 2 },
@@ -56,6 +70,9 @@ const Feedback = () => {
   const [selectedForm, setSelectedForm] = useState("dec-teacher");
   const [selectedQualities, setSelectedQualities] = useState<string[]>(["efficiency", "quality"]);
 
+  // Permission check
+  const { canRead, canCreate, canUpdate, canDelete } = useModulePermissions('FEEDBACK');
+
   const toggleQuality = (id: string) => {
     setSelectedQualities(prev => 
       prev.includes(id) ? prev.filter(q => q !== id) : [...prev, id]
@@ -64,6 +81,15 @@ const Feedback = () => {
 
   return (
     <div className="space-y-6">
+      {/* Tier 3 Notice */}
+      <Alert>
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Tier 3 Feature</AlertTitle>
+        <AlertDescription>
+          The Feedback/Survey system requires Tier 3 schema tables. Currently showing demo data.
+        </AlertDescription>
+      </Alert>
+
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0">
           <TabsTrigger

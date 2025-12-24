@@ -1,5 +1,36 @@
+/**
+ * Doubts Page - Student Question & Answer System
+ * 
+ * TODO: This feature requires a doubts table to be added to the Tier 2 schema.
+ * Suggested schema:
+ * 
+ * CREATE TABLE doubts_1EMAET (
+ *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ *   title VARCHAR(255) NOT NULL,
+ *   description TEXT,
+ *   student_id UUID NOT NULL REFERENCES students_1EMAET(id),
+ *   subject_id UUID REFERENCES subjects_1EMAET(id),
+ *   topic_id UUID REFERENCES topics_1EMAET(id),
+ *   assigned_teacher_id UUID REFERENCES teachers_1EMAET(id),
+ *   status VARCHAR(20) DEFAULT 'Open' CHECK (status IN ('Open', 'In Progress', 'Resolved', 'Closed')),
+ *   created_at TIMESTAMP DEFAULT NOW(),
+ *   resolved_at TIMESTAMP,
+ *   updated_at TIMESTAMP DEFAULT NOW()
+ * );
+ * 
+ * CREATE TABLE doubt_messages_1EMAET (
+ *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ *   doubt_id UUID NOT NULL REFERENCES doubts_1EMAET(id) ON DELETE CASCADE,
+ *   sender_id UUID NOT NULL REFERENCES users_1EMAET(id),
+ *   message_type VARCHAR(20) CHECK (message_type IN ('text', 'image', 'file')),
+ *   content TEXT,
+ *   attachment_url TEXT,
+ *   created_at TIMESTAMP DEFAULT NOW()
+ * );
+ */
+
 import { useState } from "react";
-import { RefreshCw, Search, X, Camera, Paperclip, Mic, Send, CheckCircle } from "lucide-react";
+import { RefreshCw, Search, X, Camera, Paperclip, Mic, Send, CheckCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,6 +49,8 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useModulePermissions } from "@/contexts/PermissionContext";
 
 interface Doubt {
   id: string;
@@ -54,6 +87,9 @@ const Doubts = () => {
   const [selectedDoubt, setSelectedDoubt] = useState<Doubt | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Permission check
+  const { canRead } = useModulePermissions('DOUBTS');
+
   const handleDoubtClick = (doubt: Doubt) => {
     setSelectedDoubt(doubt);
     setShowConversation(true);
@@ -70,6 +106,16 @@ const Doubts = () => {
           Refresh
         </Button>
       </div>
+
+      {/* Schema Notice */}
+      <Alert>
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Schema Extension Required</AlertTitle>
+        <AlertDescription>
+          The Doubts feature requires additional database tables (doubts and doubt_messages) 
+          to be added to the Tier 2 schema. Currently showing demo data.
+        </AlertDescription>
+      </Alert>
 
       <Card>
         <CardContent className="p-4 space-y-4">

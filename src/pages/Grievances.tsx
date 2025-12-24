@@ -1,8 +1,34 @@
+/**
+ * Grievances Page - Parent Grievance Management
+ * 
+ * TODO: This feature requires a grievances table to be added to the Tier 2 schema.
+ * Suggested schema:
+ * 
+ * CREATE TABLE grievances_1EMAET (
+ *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ *   grievance_number VARCHAR(50) UNIQUE NOT NULL,
+ *   parent_id UUID NOT NULL REFERENCES parents_1EMAET(id),
+ *   student_id UUID REFERENCES students_1EMAET(id),
+ *   subject VARCHAR(255) NOT NULL,
+ *   description TEXT NOT NULL,
+ *   category VARCHAR(50) CHECK (category IN ('Academic', 'Administrative', 'Transport', 'Fee', 'Other')),
+ *   priority VARCHAR(20) DEFAULT 'Normal' CHECK (priority IN ('Low', 'Normal', 'High', 'Urgent')),
+ *   status VARCHAR(20) DEFAULT 'Pending' CHECK (status IN ('Pending', 'In Progress', 'Resolved', 'Closed')),
+ *   assigned_to UUID REFERENCES users_1EMAET(id),
+ *   attachment_url TEXT,
+ *   resolution_notes TEXT,
+ *   resolved_at TIMESTAMP,
+ *   created_at TIMESTAMP DEFAULT NOW(),
+ *   updated_at TIMESTAMP DEFAULT NOW()
+ * );
+ */
+
 import { useState } from "react";
-import { Search, RefreshCw, User, Phone, Users, MapPin, Paperclip, Clock, X } from "lucide-react";
+import { Search, RefreshCw, User, Phone, Users, MapPin, Paperclip, Clock, X, AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -25,6 +51,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useModulePermissions } from "@/contexts/PermissionContext";
 
 type GrievanceStatus = "Pending" | "In Progress" | "Closed" | "Resolved";
 
@@ -72,6 +99,9 @@ const Grievances = () => {
   const [selectedGrievance, setSelectedGrievance] = useState<Grievance | null>(null);
   const [newStatus, setNewStatus] = useState<GrievanceStatus>("Pending");
 
+  // Permission check
+  const { canRead, canUpdate } = useModulePermissions('GRIEVANCES');
+
   const filteredGrievances = grievances.filter((g) => {
     const matchesSearch = g.parent.toLowerCase().includes(searchQuery.toLowerCase()) ||
       g.subject.toLowerCase().includes(searchQuery.toLowerCase());
@@ -92,6 +122,15 @@ const Grievances = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Grievance Management</h1>
+
+      {/* Schema Notice */}
+      <Alert>
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Schema Extension Required</AlertTitle>
+        <AlertDescription>
+          The Grievances feature requires a grievances table to be added to the schema. Currently showing demo data.
+        </AlertDescription>
+      </Alert>
 
       {/* Filters */}
       <div className="bg-card border border-border rounded-lg p-4">

@@ -1,8 +1,32 @@
+/**
+ * Support Tickets Page - Support Ticket Management
+ * 
+ * TODO: This feature requires a support_tickets table to be added to the Tier 2 schema.
+ * Suggested schema:
+ * 
+ * CREATE TABLE support_tickets_1EMAET (
+ *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ *   ticket_number VARCHAR(50) UNIQUE NOT NULL,
+ *   created_by UUID NOT NULL REFERENCES users_1EMAET(id),
+ *   title VARCHAR(255) NOT NULL,
+ *   description TEXT NOT NULL,
+ *   category VARCHAR(50) CHECK (category IN ('Technical', 'Billing', 'Academic', 'General', 'Other')),
+ *   priority VARCHAR(20) DEFAULT 'Normal' CHECK (priority IN ('Low', 'Normal', 'High', 'Urgent')),
+ *   status VARCHAR(20) DEFAULT 'Open' CHECK (status IN ('Open', 'In Progress', 'Resolved', 'Closed')),
+ *   assigned_to UUID REFERENCES users_1EMAET(id),
+ *   resolution_notes TEXT,
+ *   created_at TIMESTAMP DEFAULT NOW(),
+ *   resolved_at TIMESTAMP,
+ *   updated_at TIMESTAMP DEFAULT NOW()
+ * );
+ */
+
 import { useState } from "react";
-import { Search, AlertCircle, RefreshCw, CheckCircle, X, User, Users, ArrowUpDown } from "lucide-react";
+import { Search, AlertCircle, RefreshCw, CheckCircle, X, User, Users, ArrowUpDown, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -10,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useModulePermissions } from "@/contexts/PermissionContext";
 
 interface SupportTicket {
   id: string;
@@ -35,6 +60,9 @@ const SupportTickets = () => {
   const [filter, setFilter] = useState<"all" | "me" | "unassigned">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("title");
+
+  // Permission check
+  const { canRead, canUpdate } = useModulePermissions('SUPPORT_TICKETS');
 
   const getTicketsByStatus = (status: string) => {
     return ticketsData.filter(ticket => {
@@ -92,6 +120,15 @@ const SupportTickets = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Support Tickets</h1>
+
+      {/* Schema Notice */}
+      <Alert>
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Schema Extension Required</AlertTitle>
+        <AlertDescription>
+          The Support Tickets feature requires a support_tickets table to be added to the schema. Currently showing demo data.
+        </AlertDescription>
+      </Alert>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0">
