@@ -1,18 +1,32 @@
-# EduMunch: Complete Database Schema Design
+﻿# EduMunch: Complete Database Schema Design
 
 > Multi-tenant architecture using table prefixing with Index Tokens. All tables follow `[table_name]_[INDEX_TOKEN]` convention.
+> Single-branch architecture: Each school is treated as a single branch entity.
+
+---
+
+## Index Token Suffixes
+
+| School # | Suffix  | Mnemonic |
+|---------|---------|----------|
+| 1 | 1ENTK | Ek Number Tuzhi Kambar |
+| 2 | 2DDMRH | Do Dil Mil Rahe Hai |
+| 3 | 3TTKB | Teen Tigada Kaam Bigada |
+| 4 | 4CBW | Char Bottle Vodka |
+| 5 | 5HKSK | Hai Katha Sangram Ki |
 
 ---
 
 ## Schema Design Principles
 
 1. **No Foreign Keys Across Tenants**: Each school's tables are isolated
-2. **Strict Naming Convention**: `tablename_AZHBXC` format
-3. **UUID Primary Keys**: For global uniqueness and security
-4. **Timestamps**: All tables include `created_at`, `updated_at`
-5. **Soft Deletes**: `deleted_at` for data recovery
-6. **JSONB for Flexibility**: Use JSONB for dynamic/optional fields
-7. **RLS Enabled**: Row Level Security on all tables
+2. **Strict Naming Convention**: `tablename_[INDEX_TOKEN]` format (e.g., `users_1ENTK`, `students_2DDMRH`)
+3. **Single Branch Architecture**: No multi-branch support; each school is one branch
+4. **UUID Primary Keys**: For global uniqueness and security
+5. **Timestamps**: All tables include `created_at`, `updated_at`
+6. **Soft Deletes**: `deleted_at` for data recovery
+7. **JSONB for Flexibility**: Use JSONB for dynamic/optional fields
+8. **RLS Enabled**: Row Level Security on all tables
 
 ---
 
@@ -24,7 +38,7 @@
 Primary user authentication and profile table.
 
 ```sql
-CREATE TABLE users_AZHBXC (
+CREATE TABLE users_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) UNIQUE NOT NULL,
   phone VARCHAR(15),
@@ -41,16 +55,16 @@ CREATE TABLE users_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_users_email ON users_AZHBXC(email);
-CREATE INDEX idx_users_role ON users_AZHBXC(role);
-CREATE INDEX idx_users_active ON users_AZHBXC(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_email ON users_1ENTK(email);
+CREATE INDEX idx_users_role ON users_1ENTK(role);
+CREATE INDEX idx_users_active ON users_1ENTK(is_active) WHERE deleted_at IS NULL;
 ```
 
 #### `sessions_{INDEX_TOKEN}`
 User session management for security.
 
 ```sql
-CREATE TABLE sessions_AZHBXC (
+CREATE TABLE sessions_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   token TEXT UNIQUE NOT NULL,
@@ -59,15 +73,15 @@ CREATE TABLE sessions_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_sessions_user ON sessions_AZHBXC(user_id);
-CREATE INDEX idx_sessions_token ON sessions_AZHBXC(token);
+CREATE INDEX idx_sessions_user ON sessions_1ENTK(user_id);
+CREATE INDEX idx_sessions_token ON sessions_1ENTK(token);
 ```
 
 #### `permissions_{INDEX_TOKEN}`
 Granular permission management.
 
 ```sql
-CREATE TABLE permissions_AZHBXC (
+CREATE TABLE permissions_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   role VARCHAR(50) NOT NULL,
   module VARCHAR(100) NOT NULL, -- 'attendance', 'fee', 'exam', etc.
@@ -80,7 +94,7 @@ CREATE TABLE permissions_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_AZHBXC(role, module);
+CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_1ENTK(role, module);
 ```
 
 ---
@@ -91,13 +105,12 @@ CREATE UNIQUE INDEX idx_permissions_role_module ON permissions_AZHBXC(role, modu
 Core student information.
 
 ```sql
-CREATE TABLE students_AZHBXC (
+CREATE TABLE students_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE, -- Links to users table
   admission_number VARCHAR(50) UNIQUE NOT NULL,
   roll_number VARCHAR(50),
   course_id UUID NOT NULL,
-  branch_id UUID,
   batch_year VARCHAR(10) NOT NULL, -- '2024-2025'
   
   -- Personal Info
@@ -148,18 +161,17 @@ CREATE TABLE students_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_students_user ON students_AZHBXC(user_id);
-CREATE INDEX idx_students_admission ON students_AZHBXC(admission_number);
-CREATE INDEX idx_students_course ON students_AZHBXC(course_id);
-CREATE INDEX idx_students_branch ON students_AZHBXC(branch_id);
-CREATE INDEX idx_students_status ON students_AZHBXC(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_students_user ON students_1ENTK(user_id);
+CREATE INDEX idx_students_admission ON students_1ENTK(admission_number);
+CREATE INDEX idx_students_course ON students_1ENTK(course_id);
+CREATE INDEX idx_students_status ON students_1ENTK(status) WHERE deleted_at IS NULL;
 ```
 
 #### `parents_{INDEX_TOKEN}`
 Parent/Guardian information.
 
 ```sql
-CREATE TABLE parents_AZHBXC (
+CREATE TABLE parents_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   
@@ -188,15 +200,15 @@ CREATE TABLE parents_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_parents_user ON parents_AZHBXC(user_id);
-CREATE INDEX idx_parents_phone ON parents_AZHBXC(phone);
+CREATE INDEX idx_parents_user ON parents_1ENTK(user_id);
+CREATE INDEX idx_parents_phone ON parents_1ENTK(phone);
 ```
 
 #### `student_parent_relations_{INDEX_TOKEN}`
 Many-to-many relationship between students and parents.
 
 ```sql
-CREATE TABLE student_parent_relations_AZHBXC (
+CREATE TABLE student_parent_relations_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   parent_id UUID NOT NULL,
@@ -205,9 +217,9 @@ CREATE TABLE student_parent_relations_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_parent_student ON student_parent_relations_AZHBXC(student_id);
-CREATE INDEX idx_student_parent_parent ON student_parent_relations_AZHBXC(parent_id);
-CREATE UNIQUE INDEX idx_student_parent_unique ON student_parent_relations_AZHBXC(student_id, parent_id);
+CREATE INDEX idx_student_parent_student ON student_parent_relations_1ENTK(student_id);
+CREATE INDEX idx_student_parent_parent ON student_parent_relations_1ENTK(parent_id);
+CREATE UNIQUE INDEX idx_student_parent_unique ON student_parent_relations_1ENTK(student_id, parent_id);
 ```
 
 ---
@@ -218,7 +230,7 @@ CREATE UNIQUE INDEX idx_student_parent_unique ON student_parent_relations_AZHBXC
 Academic year configuration.
 
 ```sql
-CREATE TABLE academic_years_AZHBXC (
+CREATE TABLE academic_years_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   year_code VARCHAR(20) UNIQUE NOT NULL, -- '2024-25'
   start_date DATE NOT NULL,
@@ -233,69 +245,29 @@ CREATE TABLE academic_years_AZHBXC (
 Course/Class master (e.g., Class 11th, JEE, NEET, CET).
 
 ```sql
-CREATE TABLE courses_AZHBXC (
+CREATE TABLE courses_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   course_name VARCHAR(100) NOT NULL, -- '11th', 'JEE Foundation', 'NEET 2 years'
   course_code VARCHAR(20) UNIQUE NOT NULL, -- '11', 'JEE', 'NEET'
   course_order INTEGER, -- For sorting
   description TEXT,
   duration_months INTEGER, -- Course duration
+  fees_amount DECIMAL(10,2) NOT NULL, -- Single fee structure for school
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_courses_code ON courses_AZHBXC(course_code);
-CREATE INDEX idx_courses_active ON courses_AZHBXC(is_active) WHERE deleted_at IS NULL;
-```
-
-#### `branches_{INDEX_TOKEN}`
-Institution branches (for multi-branch schools).
-
-```sql
-CREATE TABLE branches_AZHBXC (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  branch_name VARCHAR(100) NOT NULL, -- 'Kalyan Branch', 'Thane HO Branch'
-  branch_code VARCHAR(20) UNIQUE NOT NULL,
-  address_line1 TEXT,
-  address_line2 TEXT,
-  city VARCHAR(100),
-  state VARCHAR(100),
-  pincode VARCHAR(10),
-  contact_phone VARCHAR(15),
-  contact_email VARCHAR(255),
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX idx_branches_code ON branches_AZHBXC(branch_code);
-```
-
-#### `course_branch_pricing_{INDEX_TOKEN}`
-Branch-specific pricing for courses.
-
-```sql
-CREATE TABLE course_branch_pricing_AZHBXC (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  course_id UUID NOT NULL,
-  branch_id UUID NOT NULL,
-  fees_amount DECIMAL(10,2) NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX idx_course_branch_pricing_course ON course_branch_pricing_AZHBXC(course_id);
-CREATE INDEX idx_course_branch_pricing_branch ON course_branch_pricing_AZHBXC(branch_id);
-CREATE UNIQUE INDEX idx_course_branch_pricing_unique ON course_branch_pricing_AZHBXC(course_id, branch_id);
+CREATE INDEX idx_courses_code ON courses_1ENTK(course_code);
+CREATE INDEX idx_courses_active ON courses_1ENTK(is_active) WHERE deleted_at IS NULL;
 ```
 
 #### `subjects_{INDEX_TOKEN}`
 Subject master data.
 
 ```sql
-CREATE TABLE subjects_AZHBXC (
+CREATE TABLE subjects_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subject_name VARCHAR(100) NOT NULL, -- 'Mathematics', 'Physics', 'Biology'
   subject_code VARCHAR(20) UNIQUE NOT NULL, -- 'MATH', 'PHY', 'BIO'
@@ -307,15 +279,15 @@ CREATE TABLE subjects_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_subjects_code ON subjects_AZHBXC(subject_code);
-CREATE INDEX idx_subjects_active ON subjects_AZHBXC(is_active) WHERE deleted_at IS NULL;
+CREATE INDEX idx_subjects_code ON subjects_1ENTK(subject_code);
+CREATE INDEX idx_subjects_active ON subjects_1ENTK(is_active) WHERE deleted_at IS NULL;
 ```
 
 #### `course_subjects_{INDEX_TOKEN}`
 Subject allocation to courses.
 
 ```sql
-CREATE TABLE course_subjects_AZHBXC (
+CREATE TABLE course_subjects_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   course_id UUID NOT NULL,
   subject_id UUID NOT NULL,
@@ -324,16 +296,16 @@ CREATE TABLE course_subjects_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_course_subjects_course ON course_subjects_AZHBXC(course_id);
-CREATE INDEX idx_course_subjects_subject ON course_subjects_AZHBXC(subject_id);
-CREATE UNIQUE INDEX idx_course_subjects_unique ON course_subjects_AZHBXC(course_id, subject_id);
+CREATE INDEX idx_course_subjects_course ON course_subjects_1ENTK(course_id);
+CREATE INDEX idx_course_subjects_subject ON course_subjects_1ENTK(subject_id);
+CREATE UNIQUE INDEX idx_course_subjects_unique ON course_subjects_1ENTK(course_id, subject_id);
 ```
 
 #### `topics_{INDEX_TOKEN}`
 Topics/chapters within subjects.
 
 ```sql
-CREATE TABLE topics_AZHBXC (
+CREATE TABLE topics_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subject_id UUID NOT NULL,
   topic_name VARCHAR(255) NOT NULL,
@@ -347,15 +319,15 @@ CREATE TABLE topics_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_topics_subject ON topics_AZHBXC(subject_id);
-CREATE INDEX idx_topics_parent ON topics_AZHBXC(parent_topic_id);
+CREATE INDEX idx_topics_subject ON topics_1ENTK(subject_id);
+CREATE INDEX idx_topics_parent ON topics_1ENTK(parent_topic_id);
 ```
 
 #### `topic_content_{INDEX_TOKEN}`
 Learning materials for topics.
 
 ```sql
-CREATE TABLE topic_content_AZHBXC (
+CREATE TABLE topic_content_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   topic_id UUID NOT NULL,
   content_type VARCHAR(50) NOT NULL, -- 'PDF', 'Video', 'Link', 'Document', 'Quiz'
@@ -367,19 +339,18 @@ CREATE TABLE topic_content_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_topic_content_topic ON topic_content_AZHBXC(topic_id);
+CREATE INDEX idx_topic_content_topic ON topic_content_1ENTK(topic_id);
 ```
 
 #### `batches_{INDEX_TOKEN}`
 Class batches/sections (replaces old sections table).
 
 ```sql
-CREATE TABLE batches_AZHBXC (
+CREATE TABLE batches_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   course_id UUID NOT NULL,
-  branch_id UUID,
   academic_year_id UUID NOT NULL,
-  batch_name VARCHAR(100) NOT NULL, -- 'Kalyan Branch - 27KJ1', 'Morning Batch A'
+  batch_name VARCHAR(100) NOT NULL, -- '27KJ1', 'Morning Batch A'
   batch_code VARCHAR(50) UNIQUE NOT NULL,
   capacity INTEGER DEFAULT 40,
   start_time TIME,
@@ -393,17 +364,16 @@ CREATE TABLE batches_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_batches_course ON batches_AZHBXC(course_id);
-CREATE INDEX idx_batches_branch ON batches_AZHBXC(branch_id);
-CREATE INDEX idx_batches_teacher ON batches_AZHBXC(batch_teacher_id);
-CREATE INDEX idx_batches_code ON batches_AZHBXC(batch_code);
+CREATE INDEX idx_batches_course ON batches_1ENTK(course_id);
+CREATE INDEX idx_batches_teacher ON batches_1ENTK(batch_teacher_id);
+CREATE INDEX idx_batches_code ON batches_1ENTK(batch_code);
 ```
 
 #### `batch_students_{INDEX_TOKEN}`
 Student enrollment in batches.
 
 ```sql
-CREATE TABLE batch_students_AZHBXC (
+CREATE TABLE batch_students_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   batch_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -413,16 +383,16 @@ CREATE TABLE batch_students_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_batch_students_batch ON batch_students_AZHBXC(batch_id);
-CREATE INDEX idx_batch_students_student ON batch_students_AZHBXC(student_id);
-CREATE UNIQUE INDEX idx_batch_students_unique ON batch_students_AZHBXC(batch_id, student_id);
+CREATE INDEX idx_batch_students_batch ON batch_students_1ENTK(batch_id);
+CREATE INDEX idx_batch_students_student ON batch_students_1ENTK(student_id);
+CREATE UNIQUE INDEX idx_batch_students_unique ON batch_students_1ENTK(batch_id, student_id);
 ```
 
 #### `teachers_{INDEX_TOKEN}`
 Teacher information.
 
 ```sql
-CREATE TABLE teachers_AZHBXC (
+CREATE TABLE teachers_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID UNIQUE,
   employee_code VARCHAR(50) UNIQUE NOT NULL,
@@ -468,16 +438,16 @@ CREATE TABLE teachers_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_teachers_user ON teachers_AZHBXC(user_id);
-CREATE INDEX idx_teachers_code ON teachers_AZHBXC(employee_code);
-CREATE INDEX idx_teachers_status ON teachers_AZHBXC(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_teachers_user ON teachers_1ENTK(user_id);
+CREATE INDEX idx_teachers_code ON teachers_1ENTK(employee_code);
+CREATE INDEX idx_teachers_status ON teachers_1ENTK(status) WHERE deleted_at IS NULL;
 ```
 
 #### `teacher_subjects_{INDEX_TOKEN}`
 Subject allocation to teachers for specific batches.
 
 ```sql
-CREATE TABLE teacher_subjects_AZHBXC (
+CREATE TABLE teacher_subjects_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   batch_id UUID NOT NULL,
@@ -486,16 +456,16 @@ CREATE TABLE teacher_subjects_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_teacher_subjects_teacher ON teacher_subjects_AZHBXC(teacher_id);
-CREATE INDEX idx_teacher_subjects_batch ON teacher_subjects_AZHBXC(batch_id);
-CREATE INDEX idx_teacher_subjects_subject ON teacher_subjects_AZHBXC(subject_id);
+CREATE INDEX idx_teacher_subjects_teacher ON teacher_subjects_1ENTK(teacher_id);
+CREATE INDEX idx_teacher_subjects_batch ON teacher_subjects_1ENTK(batch_id);
+CREATE INDEX idx_teacher_subjects_subject ON teacher_subjects_1ENTK(subject_id);
 ```
 
 #### `lecture_templates_{INDEX_TOKEN}`
 Reusable lecture templates for scheduling.
 
 ```sql
-CREATE TABLE lecture_templates_AZHBXC (
+CREATE TABLE lecture_templates_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   template_name VARCHAR(255) NOT NULL,
   subject_id UUID NOT NULL,
@@ -507,7 +477,7 @@ CREATE TABLE lecture_templates_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lecture_templates_subject ON lecture_templates_AZHBXC(subject_id);
+CREATE INDEX idx_lecture_templates_subject ON lecture_templates_1ENTK(subject_id);
 ```
 
 ---
@@ -518,7 +488,7 @@ CREATE INDEX idx_lecture_templates_subject ON lecture_templates_AZHBXC(subject_i
 Daily attendance records (batch-wise).
 
 ```sql
-CREATE TABLE attendance_AZHBXC (
+CREATE TABLE attendance_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   batch_id UUID NOT NULL,
@@ -531,17 +501,17 @@ CREATE TABLE attendance_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_attendance_student ON attendance_AZHBXC(student_id);
-CREATE INDEX idx_attendance_date ON attendance_AZHBXC(date);
-CREATE INDEX idx_attendance_batch ON attendance_AZHBXC(batch_id);
-CREATE UNIQUE INDEX idx_attendance_unique ON attendance_AZHBXC(student_id, date);
+CREATE INDEX idx_attendance_student ON attendance_1ENTK(student_id);
+CREATE INDEX idx_attendance_date ON attendance_1ENTK(date);
+CREATE INDEX idx_attendance_batch ON attendance_1ENTK(batch_id);
+CREATE UNIQUE INDEX idx_attendance_unique ON attendance_1ENTK(student_id, date);
 ```
 
 #### `attendance_subject_wise_{INDEX_TOKEN}`
 Subject-wise attendance (for detailed tracking).
 
 ```sql
-CREATE TABLE attendance_subject_wise_AZHBXC (
+CREATE TABLE attendance_subject_wise_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   batch_id UUID NOT NULL,
@@ -554,17 +524,17 @@ CREATE TABLE attendance_subject_wise_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_attendance_sw_student ON attendance_subject_wise_AZHBXC(student_id);
-CREATE INDEX idx_attendance_sw_batch ON attendance_subject_wise_AZHBXC(batch_id);
-CREATE INDEX idx_attendance_sw_subject ON attendance_subject_wise_AZHBXC(subject_id);
-CREATE INDEX idx_attendance_sw_date ON attendance_subject_wise_AZHBXC(date);
+CREATE INDEX idx_attendance_sw_student ON attendance_subject_wise_1ENTK(student_id);
+CREATE INDEX idx_attendance_sw_batch ON attendance_subject_wise_1ENTK(batch_id);
+CREATE INDEX idx_attendance_sw_subject ON attendance_subject_wise_1ENTK(subject_id);
+CREATE INDEX idx_attendance_sw_date ON attendance_subject_wise_1ENTK(date);
 ```
 
 #### `leave_applications_{INDEX_TOKEN}`
 Student leave requests.
 
 ```sql
-CREATE TABLE leave_applications_AZHBXC (
+CREATE TABLE leave_applications_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   leave_type VARCHAR(50) NOT NULL, -- 'sick', 'casual', 'emergency', 'other'
@@ -583,9 +553,9 @@ CREATE TABLE leave_applications_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_leave_student ON leave_applications_AZHBXC(student_id);
-CREATE INDEX idx_leave_status ON leave_applications_AZHBXC(status);
-CREATE INDEX idx_leave_dates ON leave_applications_AZHBXC(from_date, to_date);
+CREATE INDEX idx_leave_student ON leave_applications_1ENTK(student_id);
+CREATE INDEX idx_leave_status ON leave_applications_1ENTK(status);
+CREATE INDEX idx_leave_dates ON leave_applications_1ENTK(from_date, to_date);
 ```
 
 ---
@@ -596,7 +566,7 @@ CREATE INDEX idx_leave_dates ON leave_applications_AZHBXC(from_date, to_date);
 Exam categories.
 
 ```sql
-CREATE TABLE exam_types_AZHBXC (
+CREATE TABLE exam_types_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_name VARCHAR(100) NOT NULL, -- 'Unit Test 1', 'Mid-Term', 'Final'
   exam_code VARCHAR(20) UNIQUE NOT NULL,
@@ -611,7 +581,7 @@ CREATE TABLE exam_types_AZHBXC (
 Exam schedule master.
 
 ```sql
-CREATE TABLE exams_AZHBXC (
+CREATE TABLE exams_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_type_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -625,15 +595,15 @@ CREATE TABLE exams_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_exams_type ON exams_AZHBXC(exam_type_id);
-CREATE INDEX idx_exams_dates ON exams_AZHBXC(start_date, end_date);
+CREATE INDEX idx_exams_type ON exams_1ENTK(exam_type_id);
+CREATE INDEX idx_exams_dates ON exams_1ENTK(start_date, end_date);
 ```
 
 #### `exam_schedules_{INDEX_TOKEN}`
 Subject-wise exam timetable (batch/course-wise).
 
 ```sql
-CREATE TABLE exam_schedules_AZHBXC (
+CREATE TABLE exam_schedules_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_id UUID NOT NULL,
   batch_id UUID, -- Specific batch (optional, can be course-wide)
@@ -649,17 +619,17 @@ CREATE TABLE exam_schedules_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_schedule_exam ON exam_schedules_AZHBXC(exam_id);
-CREATE INDEX idx_exam_schedule_batch ON exam_schedules_AZHBXC(batch_id);
-CREATE INDEX idx_exam_schedule_course ON exam_schedules_AZHBXC(course_id);
-CREATE INDEX idx_exam_schedule_date ON exam_schedules_AZHBXC(exam_date);
+CREATE INDEX idx_exam_schedule_exam ON exam_schedules_1ENTK(exam_id);
+CREATE INDEX idx_exam_schedule_batch ON exam_schedules_1ENTK(batch_id);
+CREATE INDEX idx_exam_schedule_course ON exam_schedules_1ENTK(course_id);
+CREATE INDEX idx_exam_schedule_date ON exam_schedules_1ENTK(exam_date);
 ```
 
 #### `exam_marks_{INDEX_TOKEN}`
 Student marks entry.
 
 ```sql
-CREATE TABLE exam_marks_AZHBXC (
+CREATE TABLE exam_marks_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   exam_schedule_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -675,16 +645,16 @@ CREATE TABLE exam_marks_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_exam_marks_schedule ON exam_marks_AZHBXC(exam_schedule_id);
-CREATE INDEX idx_exam_marks_student ON exam_marks_AZHBXC(student_id);
-CREATE UNIQUE INDEX idx_exam_marks_unique ON exam_marks_AZHBXC(exam_schedule_id, student_id);
+CREATE INDEX idx_exam_marks_schedule ON exam_marks_1ENTK(exam_schedule_id);
+CREATE INDEX idx_exam_marks_student ON exam_marks_1ENTK(student_id);
+CREATE UNIQUE INDEX idx_exam_marks_unique ON exam_marks_1ENTK(exam_schedule_id, student_id);
 ```
 
 #### `grade_scales_{INDEX_TOKEN}`
 Grading system configuration.
 
 ```sql
-CREATE TABLE grade_scales_AZHBXC (
+CREATE TABLE grade_scales_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   grade_name VARCHAR(5) NOT NULL, -- 'A+', 'A', 'B', etc.
   min_percentage DECIMAL(5,2) NOT NULL,
@@ -704,7 +674,7 @@ CREATE TABLE grade_scales_AZHBXC (
 Fee definition for classes.
 
 ```sql
-CREATE TABLE fee_structures_AZHBXC (
+CREATE TABLE fee_structures_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   academic_year_id UUID NOT NULL,
   class_id UUID NOT NULL,
@@ -718,15 +688,15 @@ CREATE TABLE fee_structures_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_structure_class ON fee_structures_AZHBXC(class_id);
-CREATE INDEX idx_fee_structure_year ON fee_structures_AZHBXC(academic_year_id);
+CREATE INDEX idx_fee_structure_class ON fee_structures_1ENTK(class_id);
+CREATE INDEX idx_fee_structure_year ON fee_structures_1ENTK(academic_year_id);
 ```
 
 #### `student_fees_{INDEX_TOKEN}`
 Student-specific fee allocation.
 
 ```sql
-CREATE TABLE student_fees_AZHBXC (
+CREATE TABLE student_fees_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   academic_year_id UUID NOT NULL,
@@ -743,16 +713,16 @@ CREATE TABLE student_fees_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_fees_student ON student_fees_AZHBXC(student_id);
-CREATE INDEX idx_student_fees_status ON student_fees_AZHBXC(status);
-CREATE INDEX idx_student_fees_due ON student_fees_AZHBXC(due_date);
+CREATE INDEX idx_student_fees_student ON student_fees_1ENTK(student_id);
+CREATE INDEX idx_student_fees_status ON student_fees_1ENTK(status);
+CREATE INDEX idx_student_fees_due ON student_fees_1ENTK(due_date);
 ```
 
 #### `fee_payments_{INDEX_TOKEN}`
 Fee payment transactions.
 
 ```sql
-CREATE TABLE fee_payments_AZHBXC (
+CREATE TABLE fee_payments_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_fee_id UUID NOT NULL,
   receipt_number VARCHAR(50) UNIQUE NOT NULL,
@@ -769,16 +739,16 @@ CREATE TABLE fee_payments_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_payments_student_fee ON fee_payments_AZHBXC(student_fee_id);
-CREATE INDEX idx_fee_payments_receipt ON fee_payments_AZHBXC(receipt_number);
-CREATE INDEX idx_fee_payments_date ON fee_payments_AZHBXC(payment_date);
+CREATE INDEX idx_fee_payments_student_fee ON fee_payments_1ENTK(student_fee_id);
+CREATE INDEX idx_fee_payments_receipt ON fee_payments_1ENTK(receipt_number);
+CREATE INDEX idx_fee_payments_date ON fee_payments_1ENTK(payment_date);
 ```
 
 #### `fee_concessions_{INDEX_TOKEN}`
 Scholarships and discounts.
 
 ```sql
-CREATE TABLE fee_concessions_AZHBXC (
+CREATE TABLE fee_concessions_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   concession_type VARCHAR(100) NOT NULL, -- 'Merit', 'Sports', 'Financial Aid', 'Staff Ward'
@@ -794,7 +764,7 @@ CREATE TABLE fee_concessions_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_fee_concessions_student ON fee_concessions_AZHBXC(student_id);
+CREATE INDEX idx_fee_concessions_student ON fee_concessions_1ENTK(student_id);
 ```
 
 ---
@@ -805,7 +775,7 @@ CREATE INDEX idx_fee_concessions_student ON fee_concessions_AZHBXC(student_id);
 School-wide and targeted announcements.
 
 ```sql
-CREATE TABLE announcements_AZHBXC (
+CREATE TABLE announcements_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
@@ -822,15 +792,15 @@ CREATE TABLE announcements_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_announcements_published ON announcements_AZHBXC(is_published, published_at);
-CREATE INDEX idx_announcements_audience ON announcements_AZHBXC(target_audience);
+CREATE INDEX idx_announcements_published ON announcements_1ENTK(is_published, published_at);
+CREATE INDEX idx_announcements_audience ON announcements_1ENTK(target_audience);
 ```
 
 #### `notifications_{INDEX_TOKEN}`
 Individual user notifications.
 
 ```sql
-CREATE TABLE notifications_AZHBXC (
+CREATE TABLE notifications_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   notification_type VARCHAR(100) NOT NULL, -- 'attendance', 'fee', 'exam', 'announcement', etc.
@@ -842,15 +812,15 @@ CREATE TABLE notifications_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_notifications_user ON notifications_AZHBXC(user_id, is_read);
-CREATE INDEX idx_notifications_created ON notifications_AZHBXC(created_at DESC);
+CREATE INDEX idx_notifications_user ON notifications_1ENTK(user_id, is_read);
+CREATE INDEX idx_notifications_created ON notifications_1ENTK(created_at DESC);
 ```
 
 #### `sms_logs_{INDEX_TOKEN}`
 SMS sending history.
 
 ```sql
-CREATE TABLE sms_logs_AZHBXC (
+CREATE TABLE sms_logs_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   phone_number VARCHAR(15) NOT NULL,
   message TEXT NOT NULL,
@@ -865,16 +835,16 @@ CREATE TABLE sms_logs_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_sms_logs_phone ON sms_logs_AZHBXC(phone_number);
-CREATE INDEX idx_sms_logs_status ON sms_logs_AZHBXC(status);
-CREATE INDEX idx_sms_logs_type ON sms_logs_AZHBXC(sms_type);
+CREATE INDEX idx_sms_logs_phone ON sms_logs_1ENTK(phone_number);
+CREATE INDEX idx_sms_logs_status ON sms_logs_1ENTK(status);
+CREATE INDEX idx_sms_logs_type ON sms_logs_1ENTK(sms_type);
 ```
 
 #### `email_logs_{INDEX_TOKEN}`
 Email sending history.
 
 ```sql
-CREATE TABLE email_logs_AZHBXC (
+CREATE TABLE email_logs_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) NOT NULL,
   subject VARCHAR(500) NOT NULL,
@@ -891,8 +861,8 @@ CREATE TABLE email_logs_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_email_logs_email ON email_logs_AZHBXC(email);
-CREATE INDEX idx_email_logs_status ON email_logs_AZHBXC(status);
+CREATE INDEX idx_email_logs_email ON email_logs_1ENTK(email);
+CREATE INDEX idx_email_logs_status ON email_logs_1ENTK(status);
 ```
 
 ---
@@ -903,7 +873,7 @@ CREATE INDEX idx_email_logs_status ON email_logs_AZHBXC(status);
 Period/time slot configuration.
 
 ```sql
-CREATE TABLE timetable_periods_AZHBXC (
+CREATE TABLE timetable_periods_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   period_number INTEGER NOT NULL,
   period_name VARCHAR(50) NOT NULL, -- 'Period 1', 'Break', 'Period 2'
@@ -914,17 +884,16 @@ CREATE TABLE timetable_periods_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetable_periods_number ON timetable_periods_AZHBXC(period_number);
+CREATE INDEX idx_timetable_periods_number ON timetable_periods_1ENTK(period_number);
 ```
 
 #### `timetables_{INDEX_TOKEN}`
 Weekly timetable entries (batch-wise scheduling).
 
 ```sql
-CREATE TABLE timetables_AZHBXC (
+CREATE TABLE timetables_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   batch_id UUID NOT NULL,
-  branch_id UUID,
   academic_year_id UUID NOT NULL,
   week_start_date DATE NOT NULL, -- Monday of the week
   day_of_week INTEGER NOT NULL, -- 1=Monday, 7=Sunday
@@ -943,19 +912,18 @@ CREATE TABLE timetables_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetables_batch ON timetables_AZHBXC(batch_id);
-CREATE INDEX idx_timetables_branch ON timetables_AZHBXC(branch_id);
-CREATE INDEX idx_timetables_teacher ON timetables_AZHBXC(teacher_id);
-CREATE INDEX idx_timetables_subject ON timetables_AZHBXC(subject_id);
-CREATE INDEX idx_timetables_week ON timetables_AZHBXC(week_start_date);
-CREATE INDEX idx_timetables_day ON timetables_AZHBXC(day_of_week);
+CREATE INDEX idx_timetables_batch ON timetables_1ENTK(batch_id);
+CREATE INDEX idx_timetables_teacher ON timetables_1ENTK(teacher_id);
+CREATE INDEX idx_timetables_subject ON timetables_1ENTK(subject_id);
+CREATE INDEX idx_timetables_week ON timetables_1ENTK(week_start_date);
+CREATE INDEX idx_timetables_day ON timetables_1ENTK(day_of_week);
 ```
 
 #### `timetable_substitutions_{INDEX_TOKEN}`
 Substitute teacher assignments.
 
 ```sql
-CREATE TABLE timetable_substitutions_AZHBXC (
+CREATE TABLE timetable_substitutions_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   timetable_id UUID NOT NULL,
   original_teacher_id UUID NOT NULL,
@@ -966,8 +934,8 @@ CREATE TABLE timetable_substitutions_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_timetable_substitutions_timetable ON timetable_substitutions_AZHBXC(timetable_id);
-CREATE INDEX idx_timetable_substitutions_date ON timetable_substitutions_AZHBXC(substitution_date);
+CREATE INDEX idx_timetable_substitutions_timetable ON timetable_substitutions_1ENTK(timetable_id);
+CREATE INDEX idx_timetable_substitutions_date ON timetable_substitutions_1ENTK(substitution_date);
 ```
 
 ---
@@ -979,7 +947,7 @@ CREATE INDEX idx_timetable_substitutions_date ON timetable_substitutions_AZHBXC(
 #### `library_books_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE library_books_AZHBXC (
+CREATE TABLE library_books_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   isbn VARCHAR(20) UNIQUE,
   book_title VARCHAR(500) NOT NULL,
@@ -999,14 +967,14 @@ CREATE TABLE library_books_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_library_books_isbn ON library_books_AZHBXC(isbn);
-CREATE INDEX idx_library_books_category ON library_books_AZHBXC(category);
+CREATE INDEX idx_library_books_isbn ON library_books_1ENTK(isbn);
+CREATE INDEX idx_library_books_category ON library_books_1ENTK(category);
 ```
 
 #### `library_issues_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE library_issues_AZHBXC (
+CREATE TABLE library_issues_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   book_id UUID NOT NULL,
   issued_to_id UUID NOT NULL, -- student_id or teacher_id
@@ -1024,9 +992,9 @@ CREATE TABLE library_issues_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_library_issues_book ON library_issues_AZHBXC(book_id);
-CREATE INDEX idx_library_issues_user ON library_issues_AZHBXC(issued_to_id);
-CREATE INDEX idx_library_issues_status ON library_issues_AZHBXC(status);
+CREATE INDEX idx_library_issues_book ON library_issues_1ENTK(book_id);
+CREATE INDEX idx_library_issues_user ON library_issues_1ENTK(issued_to_id);
+CREATE INDEX idx_library_issues_status ON library_issues_1ENTK(status);
 ```
 
 ---
@@ -1036,7 +1004,7 @@ CREATE INDEX idx_library_issues_status ON library_issues_AZHBXC(status);
 #### `transport_routes_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE transport_routes_AZHBXC (
+CREATE TABLE transport_routes_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   route_name VARCHAR(255) NOT NULL,
   route_code VARCHAR(20) UNIQUE NOT NULL,
@@ -1053,7 +1021,7 @@ CREATE TABLE transport_routes_AZHBXC (
 #### `transport_vehicles_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE transport_vehicles_AZHBXC (
+CREATE TABLE transport_vehicles_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vehicle_number VARCHAR(50) UNIQUE NOT NULL,
   vehicle_type VARCHAR(50) NOT NULL, -- 'Bus', 'Van', 'Auto'
@@ -1072,13 +1040,13 @@ CREATE TABLE transport_vehicles_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_transport_vehicles_route ON transport_vehicles_AZHBXC(route_id);
+CREATE INDEX idx_transport_vehicles_route ON transport_vehicles_1ENTK(route_id);
 ```
 
 #### `student_transport_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE student_transport_AZHBXC (
+CREATE TABLE student_transport_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   route_id UUID NOT NULL,
@@ -1091,8 +1059,8 @@ CREATE TABLE student_transport_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_student_transport_student ON student_transport_AZHBXC(student_id);
-CREATE INDEX idx_student_transport_route ON student_transport_AZHBXC(route_id);
+CREATE INDEX idx_student_transport_student ON student_transport_1ENTK(student_id);
+CREATE INDEX idx_student_transport_route ON student_transport_1ENTK(route_id);
 ```
 
 ---
@@ -1102,7 +1070,7 @@ CREATE INDEX idx_student_transport_route ON student_transport_AZHBXC(route_id);
 #### `hostel_buildings_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE hostel_buildings_AZHBXC (
+CREATE TABLE hostel_buildings_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   building_name VARCHAR(255) NOT NULL,
   building_code VARCHAR(20) UNIQUE NOT NULL,
@@ -1118,7 +1086,7 @@ CREATE TABLE hostel_buildings_AZHBXC (
 #### `hostel_rooms_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE hostel_rooms_AZHBXC (
+CREATE TABLE hostel_rooms_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   building_id UUID NOT NULL,
   room_number VARCHAR(50) NOT NULL,
@@ -1133,13 +1101,13 @@ CREATE TABLE hostel_rooms_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_hostel_rooms_building ON hostel_rooms_AZHBXC(building_id);
+CREATE INDEX idx_hostel_rooms_building ON hostel_rooms_1ENTK(building_id);
 ```
 
 #### `hostel_allocations_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE hostel_allocations_AZHBXC (
+CREATE TABLE hostel_allocations_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
   room_id UUID NOT NULL,
@@ -1153,8 +1121,8 @@ CREATE TABLE hostel_allocations_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_hostel_allocations_student ON hostel_allocations_AZHBXC(student_id);
-CREATE INDEX idx_hostel_allocations_room ON hostel_allocations_AZHBXC(room_id);
+CREATE INDEX idx_hostel_allocations_student ON hostel_allocations_1ENTK(student_id);
+CREATE INDEX idx_hostel_allocations_room ON hostel_allocations_1ENTK(room_id);
 ```
 
 ---
@@ -1164,7 +1132,7 @@ CREATE INDEX idx_hostel_allocations_room ON hostel_allocations_AZHBXC(room_id);
 #### `assignments_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE assignments_AZHBXC (
+CREATE TABLE assignments_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   batch_id UUID NOT NULL,
   subject_id UUID NOT NULL,
@@ -1181,15 +1149,15 @@ CREATE TABLE assignments_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_assignments_batch ON assignments_AZHBXC(batch_id);
-CREATE INDEX idx_assignments_subject ON assignments_AZHBXC(subject_id);
-CREATE INDEX idx_assignments_teacher ON assignments_AZHBXC(teacher_id);
+CREATE INDEX idx_assignments_batch ON assignments_1ENTK(batch_id);
+CREATE INDEX idx_assignments_subject ON assignments_1ENTK(subject_id);
+CREATE INDEX idx_assignments_teacher ON assignments_1ENTK(teacher_id);
 ```
 
 #### `assignment_submissions_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE assignment_submissions_AZHBXC (
+CREATE TABLE assignment_submissions_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   assignment_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -1205,15 +1173,15 @@ CREATE TABLE assignment_submissions_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_assignment_submissions_assignment ON assignment_submissions_AZHBXC(assignment_id);
-CREATE INDEX idx_assignment_submissions_student ON assignment_submissions_AZHBXC(student_id);
-CREATE UNIQUE INDEX idx_assignment_submissions_unique ON assignment_submissions_AZHBXC(assignment_id, student_id);
+CREATE INDEX idx_assignment_submissions_assignment ON assignment_submissions_1ENTK(assignment_id);
+CREATE INDEX idx_assignment_submissions_student ON assignment_submissions_1ENTK(student_id);
+CREATE UNIQUE INDEX idx_assignment_submissions_unique ON assignment_submissions_1ENTK(assignment_id, student_id);
 ```
 
 #### `study_materials_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE study_materials_AZHBXC (
+CREATE TABLE study_materials_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   course_id UUID,
   batch_id UUID,
@@ -1231,10 +1199,10 @@ CREATE TABLE study_materials_AZHBXC (
   deleted_at TIMESTAMP
 );
 
-CREATE INDEX idx_study_materials_course ON study_materials_AZHBXC(course_id);
-CREATE INDEX idx_study_materials_batch ON study_materials_AZHBXC(batch_id);
-CREATE INDEX idx_study_materials_subject ON study_materials_AZHBXC(subject_id);
-CREATE INDEX idx_study_materials_topic ON study_materials_AZHBXC(topic_id);
+CREATE INDEX idx_study_materials_course ON study_materials_1ENTK(course_id);
+CREATE INDEX idx_study_materials_batch ON study_materials_1ENTK(batch_id);
+CREATE INDEX idx_study_materials_subject ON study_materials_1ENTK(subject_id);
+CREATE INDEX idx_study_materials_topic ON study_materials_1ENTK(topic_id);
 ```
 
 ---
@@ -1244,7 +1212,7 @@ CREATE INDEX idx_study_materials_topic ON study_materials_AZHBXC(topic_id);
 #### `staff_attendance_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE staff_attendance_AZHBXC (
+CREATE TABLE staff_attendance_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   date DATE NOT NULL,
@@ -1257,15 +1225,15 @@ CREATE TABLE staff_attendance_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_staff_attendance_teacher ON staff_attendance_AZHBXC(teacher_id);
-CREATE INDEX idx_staff_attendance_date ON staff_attendance_AZHBXC(date);
-CREATE UNIQUE INDEX idx_staff_attendance_unique ON staff_attendance_AZHBXC(teacher_id, date);
+CREATE INDEX idx_staff_attendance_teacher ON staff_attendance_1ENTK(teacher_id);
+CREATE INDEX idx_staff_attendance_date ON staff_attendance_1ENTK(date);
+CREATE UNIQUE INDEX idx_staff_attendance_unique ON staff_attendance_1ENTK(teacher_id, date);
 ```
 
 #### `staff_leave_applications_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE staff_leave_applications_AZHBXC (
+CREATE TABLE staff_leave_applications_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL,
   leave_type VARCHAR(50) NOT NULL, -- 'Casual', 'Sick', 'Earned', 'Maternity', 'Unpaid'
@@ -1283,8 +1251,8 @@ CREATE TABLE staff_leave_applications_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_staff_leave_teacher ON staff_leave_applications_AZHBXC(teacher_id);
-CREATE INDEX idx_staff_leave_status ON staff_leave_applications_AZHBXC(status);
+CREATE INDEX idx_staff_leave_teacher ON staff_leave_applications_1ENTK(teacher_id);
+CREATE INDEX idx_staff_leave_status ON staff_leave_applications_1ENTK(status);
 ```
 
 ---
@@ -1296,7 +1264,7 @@ CREATE INDEX idx_staff_leave_status ON staff_leave_applications_AZHBXC(status);
 #### `events_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE events_AZHBXC (
+CREATE TABLE events_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_name VARCHAR(255) NOT NULL,
   event_type VARCHAR(100) NOT NULL, -- 'Sports Day', 'Annual Function', 'Workshop', etc.
@@ -1315,14 +1283,14 @@ CREATE TABLE events_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_events_date ON events_AZHBXC(event_date);
-CREATE INDEX idx_events_type ON events_AZHBXC(event_type);
+CREATE INDEX idx_events_date ON events_1ENTK(event_date);
+CREATE INDEX idx_events_type ON events_1ENTK(event_type);
 ```
 
 #### `event_registrations_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE event_registrations_AZHBXC (
+CREATE TABLE event_registrations_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_id UUID NOT NULL,
   student_id UUID NOT NULL,
@@ -1332,9 +1300,9 @@ CREATE TABLE event_registrations_AZHBXC (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_event_registrations_event ON event_registrations_AZHBXC(event_id);
-CREATE INDEX idx_event_registrations_student ON event_registrations_AZHBXC(student_id);
-CREATE UNIQUE INDEX idx_event_registrations_unique ON event_registrations_AZHBXC(event_id, student_id);
+CREATE INDEX idx_event_registrations_event ON event_registrations_1ENTK(event_id);
+CREATE INDEX idx_event_registrations_student ON event_registrations_1ENTK(student_id);
+CREATE UNIQUE INDEX idx_event_registrations_unique ON event_registrations_1ENTK(event_id, student_id);
 ```
 
 ---
@@ -1344,7 +1312,7 @@ CREATE UNIQUE INDEX idx_event_registrations_unique ON event_registrations_AZHBXC
 #### `alumni_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE alumni_AZHBXC (
+CREATE TABLE alumni_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID, -- Reference to original student record
   full_name VARCHAR(255) NOT NULL,
@@ -1361,8 +1329,8 @@ CREATE TABLE alumni_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_alumni_batch ON alumni_AZHBXC(batch_year);
-CREATE INDEX idx_alumni_year ON alumni_AZHBXC(graduation_year);
+CREATE INDEX idx_alumni_batch ON alumni_1ENTK(batch_year);
+CREATE INDEX idx_alumni_year ON alumni_1ENTK(graduation_year);
 ```
 
 ---
@@ -1372,7 +1340,7 @@ CREATE INDEX idx_alumni_year ON alumni_AZHBXC(graduation_year);
 #### `assets_{INDEX_TOKEN}`
 
 ```sql
-CREATE TABLE assets_AZHBXC (
+CREATE TABLE assets_1ENTK (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   asset_name VARCHAR(255) NOT NULL,
   asset_code VARCHAR(50) UNIQUE NOT NULL,
@@ -1389,8 +1357,8 @@ CREATE TABLE assets_AZHBXC (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_assets_type ON assets_AZHBXC(asset_type);
-CREATE INDEX idx_assets_code ON assets_AZHBXC(asset_code);
+CREATE INDEX idx_assets_type ON assets_1ENTK(asset_type);
+CREATE INDEX idx_assets_code ON assets_1ENTK(asset_code);
 ```
 
 ---
@@ -1407,7 +1375,7 @@ CREATE TABLE school_registry (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   school_name VARCHAR(255) NOT NULL,
   school_code VARCHAR(50) UNIQUE NOT NULL,
-  index_token VARCHAR(6) UNIQUE NOT NULL, -- e.g., 'AZHBXC'
+  index_token VARCHAR(6) UNIQUE NOT NULL, -- e.g., '1ENTK', '2DDMRH'
   db_hub_id UUID NOT NULL,
   supabase_project_url TEXT NOT NULL,
   supabase_anon_key TEXT NOT NULL,
@@ -1478,3 +1446,4 @@ Let me know which you need first!
 ---
 
 **Status:** Schema design complete. Ready for SQL file generation.
+

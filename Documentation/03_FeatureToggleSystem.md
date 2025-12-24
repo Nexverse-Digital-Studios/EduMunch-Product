@@ -4,6 +4,22 @@
 
 ---
 
+## Index Token Assignment
+
+Each school is assigned a unique Index Token used as suffix for all database tables:
+
+| School # | Index Token | Mnemonic |
+|---------|-----------|----------|
+| 1 | 1ENTK | Ek Number Tuzhi Kambar |
+| 2 | 2DDMRH | Do Dil Mil Rahe Hai |
+| 3 | 3TTKB | Teen Tigada Kaam Bigada |
+| 4 | 4CBW | Char Bottle Vodka |
+| 5 | 5HKSK | Hai Katha Sangram Ki |
+
+**Example:** A school with token `1ENTK` will have tables like `users_1ENTK`, `students_1ENTK`, `attendance_1ENTK`, etc.
+
+---
+
 ## Problem Statement
 
 Traditional SaaS platforms check feature access through database queries on every app load:
@@ -350,11 +366,11 @@ export const FEATURES: FeatureConfig = ${JSON.stringify(features, null, 2)};
 
 Each school also has environment variables for runtime configuration:
 
-**`.env.production`**
+**`.env.production` (Example for School 1 with token 1ENTK)**
 
 ```bash
 # School Identity
-VITE_INDEX_TOKEN=AZHBXC
+VITE_INDEX_TOKEN=1ENTK
 VITE_SCHOOL_NAME=Delhi Public School
 VITE_SCHOOL_CODE=DPS001
 

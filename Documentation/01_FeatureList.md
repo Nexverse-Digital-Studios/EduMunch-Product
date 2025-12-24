@@ -64,8 +64,7 @@ Each school can enable/disable features through code-based configuration embedde
 - **Course Management**
   - Course creation (Class 1-12, JEE, NEET, etc.)
   - Course code assignment
-  - Branch-wise pricing configuration
-  - Multiple branch support for same course
+  - Unified fee structure per course (single branch per school)
 - **Subject Management**
   - Subject creation with codes
   - Subject type (Theory, Practical, General Knowledge)
@@ -409,8 +408,8 @@ export const SCHOOL_FEATURES = {
   ALUMNI: false,
   ADMISSION_PORTAL: true,
   
-  // Enterprise
-  MULTI_CAMPUS: false,
+  // Enterprise/Custom (XTRA)
+  MULTI_BRANCH: false, // For schools with multiple branches (custom feature)
   AI_PROCTORING: false,
   ACCOUNTING: false
 };
@@ -421,6 +420,19 @@ export const SCHOOL_FEATURES = {
 - Compile-time optimization (tree-shaking removes unused code)
 - Faster app load times
 - Simple to update via build variable injection
+
+---
+
+## Single-Branch Architecture
+
+EduMunch is designed as a **single-branch platform**. Each school deployment is treated as a unified entity with:
+
+- One unified database (no branch-specific tables)
+- One course fee structure (no branch-wise pricing)
+- One batch system per course
+- Simplified data model
+
+**Multi-branch support** (for school chains or organizations with multiple locations) is available as a custom **XTRA feature** requiring specialized development.
 
 ---
 

@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 245 58% 51%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 245 58% 96%;
+    --accent-foreground: 245 58% 51%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 245 58% 51%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 16% 47%;
+    --sidebar-primary: 245 58% 51%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 245 58% 96%;
+    --sidebar-accent-foreground: 245 58% 51%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 245 58% 51%;
+
+    /* Stats card colors */
+    --stat-blue: 217 91% 60%;
+    --stat-blue-bg: 217 91% 97%;
+    --stat-green: 142 71% 45%;
+    --stat-green-bg: 142 71% 95%;
+    --stat-yellow: 45 93% 47%;
+    --stat-yellow-bg: 45 93% 95%;
+    --stat-orange: 25 95% 53%;
+    --stat-orange-bg: 25 95% 95%;
+    --stat-red: 0 84% 60%;
+    --stat-red-bg: 0 84% 95%;
+    --stat-purple: 262 83% 58%;
+    --stat-purple-bg: 262 83% 96%;
+    --stat-teal: 173 80% 40%;
+    --stat-teal-bg: 173 80% 95%;
+  }
+
+  .dark {
+    /* Deep dark navy/charcoal background */
+    --background: 230 25% 9%;
+    --foreground: 220 20% 95%;
+
+    /* Slightly elevated card surface */
+    --card: 230 25% 12%;
+    --card-foreground: 220 20% 95%;
+
+    --popover: 230 25% 14%;
+    --popover-foreground: 220 20% 95%;
+
+    /* Vibrant purple primary */
+    --primary: 262 80% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Muted purple secondary */
+    --secondary: 230 25% 18%;
+    --secondary-foreground: 220 20% 90%;
+
+    --muted: 230 20% 16%;
+    --muted-foreground: 220 15% 60%;
+
+    /* Purple accent */
+    --accent: 262 60% 25%;
+    --accent-foreground: 262 80% 75%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 230 20% 18%;
+    --input: 230 20% 18%;
+    --ring: 262 80% 55%;
+
+    /* Sidebar dark - matching the dark theme */
+    --sidebar-background: 230 25% 10%;
+    --sidebar-foreground: 220 15% 60%;
+    --sidebar-primary: 262 80% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 262 50% 22%;
+    --sidebar-accent-foreground: 262 80% 80%;
+    --sidebar-border: 230 20% 16%;
+    --sidebar-ring: 262 80% 55%;
+
+    /* Stats card colors dark - with purple-tinted backgrounds */
+    --stat-blue: 217 91% 65%;
+    --stat-blue-bg: 217 50% 15%;
+    --stat-green: 155 70% 50%;
+    --stat-green-bg: 155 40% 14%;
+    --stat-yellow: 45 90% 55%;
+    --stat-yellow-bg: 45 50% 14%;
+    --stat-orange: 25 90% 55%;
+    --stat-orange-bg: 25 50% 14%;
+    --stat-red: 0 75% 55%;
+    --stat-red-bg: 0 50% 14%;
+    --stat-purple: 262 80% 65%;
+    --stat-purple-bg: 262 50% 18%;
+    --stat-teal: 173 70% 50%;
+    --stat-teal-bg: 173 40% 14%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
