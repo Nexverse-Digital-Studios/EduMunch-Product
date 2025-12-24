@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, Lock, User, GraduationCap, AlertCircle } from 'lucide-react';
 import { z } from 'zod';
@@ -22,12 +21,12 @@ const signUpSchema = authSchema.extend({
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('demo@eduadmin.com');
-  const [password, setPassword] = useState('demo123');
-  const [fullName, setFullName] = useState('Demo Admin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const { signIn, signUp, user, isDemo } = useAuth();
+  const { signIn, signUp, user, isConfigured } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -78,7 +77,7 @@ const Auth = () => {
     } else {
       toast({
         title: "Welcome back!",
-        description: isDemo ? "You're using demo mode. Connect Lovable Cloud for real authentication." : "You have successfully signed in.",
+        description: "You have successfully signed in.",
       });
       navigate(from, { replace: true });
     }
@@ -89,7 +88,7 @@ const Auth = () => {
     if (!validateForm(true)) return;
 
     setIsLoading(true);
-    const { error } = await signUp(email, password);
+    const { error } = await signUp(email, password, fullName);
     setIsLoading(false);
 
     if (error) {
@@ -109,9 +108,7 @@ const Auth = () => {
     } else {
       toast({
         title: "Account created!",
-        description: isDemo 
-          ? "Demo mode active. Connect Lovable Cloud for real authentication."
-          : "Please check your email to verify your account, or sign in if email confirmation is disabled.",
+        description: "Please check your email to verify your account, or sign in if email confirmation is disabled.",
       });
       navigate(from, { replace: true });
     }
@@ -130,12 +127,12 @@ const Auth = () => {
           </div>
         </div>
 
-        {isDemo && (
-          <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-start gap-2">
-            <AlertCircle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+        {!isConfigured && (
+          <div className="mb-4 p-3 bg-destructive/10 border border-destructive/30 rounded-lg flex items-start gap-2">
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
             <div className="text-sm">
-              <p className="font-medium text-amber-600">Demo Mode</p>
-              <p className="text-muted-foreground">Supabase not connected. Using demo authentication. Any email/password will work.</p>
+              <p className="font-medium text-destructive">Configuration Error</p>
+              <p className="text-muted-foreground">Supabase is not configured. Please contact the administrator.</p>
             </div>
           </div>
         )}
@@ -155,7 +152,6 @@ const Auth = () => {
                   <CardTitle className="text-xl">Welcome back</CardTitle>
                   <CardDescription>
                     Enter your credentials to access your account
-                    {isDemo && <Badge variant="outline" className="ml-2 text-xs">Demo</Badge>}
                   </CardDescription>
                   
                   <div className="space-y-2">
@@ -214,7 +210,6 @@ const Auth = () => {
                   <CardTitle className="text-xl">Create an account</CardTitle>
                   <CardDescription>
                     Enter your details to create a new account
-                    {isDemo && <Badge variant="outline" className="ml-2 text-xs">Demo</Badge>}
                   </CardDescription>
 
                   <div className="space-y-2">

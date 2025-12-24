@@ -2,32 +2,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
 
-// Demo user for when Supabase isn't connected
-const DEMO_USER: User = {
-  id: 'demo-user-id',
-  email: 'demo@eduadmin.com',
-  aud: 'authenticated',
-  role: 'authenticated',
-  app_metadata: {},
-  user_metadata: { full_name: 'Demo Admin' },
-  created_at: new Date().toISOString(),
-};
-
-const DEMO_SESSION: Session = {
-  access_token: 'demo-token',
-  refresh_token: 'demo-refresh',
-  expires_in: 3600,
-  expires_at: Date.now() + 3600000,
-  token_type: 'bearer',
-  user: DEMO_USER,
-};
-
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  isDemo: boolean;
-  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+  isConfigured: boolean;
+  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
@@ -38,17 +18,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const isDemo = !isSupabaseConfigured;
+  const isConfigured = isSupabaseConfigured;
 
   useEffect(() => {
-    // If Supabase isn't configured, use demo mode
+    // If Supabase isn't configured, set loading to false and show error state
     if (!isSupabaseConfigured || !supabase) {
-      // Check if user has "logged in" via demo mode (stored in localStorage)
-      const demoLoggedIn = localStorage.getItem('demo_logged_in');
-      if (demoLoggedIn === 'true') {
-        setUser(DEMO_USER);
-        setSession(DEMO_SESSION);
-      }
+      console.error('Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.');
       setLoading(false);
       return;
     }
@@ -71,14 +46,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
-    // Demo mode signup
+  const signUp = async (email: string, password: string, fullName?: string) => {
+    // Require Supabase to be configured
     if (!isSupabaseConfigured || !supabase) {
-      localStorage.setItem('demo_logged_in', 'true');
-      localStorage.setItem('demo_email', email);
-      setUser({ ...DEMO_USER, email });
-      setSession({ ...DEMO_SESSION, user: { ...DEMO_USER, email } });
-      return { error: null };
+      return { error: new Error('Authentication service is not configured. Please contact the administrator.') };
     }
 
     const redirectUrl = `${window.location.origin}/`;
@@ -86,20 +57,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl
+        emailRedirectTo: redirectUrl,
+        data: {
+          full_name: fullName || '',
+        }
       }
     });
     return { error };
   };
 
   const signIn = async (email: string, password: string) => {
-    // Demo mode signin
+    // Require Supabase to be configured
     if (!isSupabaseConfigured || !supabase) {
-      localStorage.setItem('demo_logged_in', 'true');
-      localStorage.setItem('demo_email', email);
-      setUser({ ...DEMO_USER, email });
-      setSession({ ...DEMO_SESSION, user: { ...DEMO_USER, email } });
-      return { error: null };
+      return { error: new Error('Authentication service is not configured. Please contact the administrator.') };
     }
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -110,20 +80,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    // Demo mode signout
-    if (!isSupabaseConfigured || !supabase) {
-      localStorage.removeItem('demo_logged_in');
-      localStorage.removeItem('demo_email');
+    if (!supabase) {
       setUser(null);
       setSession(null);
       return;
     }
 
     await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isDemo, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, isConfigured, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
