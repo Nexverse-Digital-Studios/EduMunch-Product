@@ -1,5 +1,5 @@
-// This file will be auto-configured when you connect to Lovable Cloud
-// For now, this provides a mock client for demo purposes
+// Supabase client configuration
+// Configure with your Supabase project credentials
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
