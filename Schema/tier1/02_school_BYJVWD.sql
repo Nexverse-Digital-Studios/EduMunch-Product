@@ -1189,7 +1189,145 @@ CREATE INDEX idx_activity_logs_created ON activity_logs_2DDMK(created_at);
 COMMENT ON TABLE activity_logs_2DDMK IS 'Audit trail for all user actions in the system';
 
 -- ============================================================================
--- 10. FOREIGN KEY CONSTRAINTS
+-- 10. DOUBTS & GRIEVANCES (TIER 3)
+-- ============================================================================
+
+-- 10.1 Doubts (Academic Q&A System)
+CREATE TABLE doubts_2DDMK (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  doubt_number VARCHAR(50) UNIQUE NOT NULL,
+  student_id UUID NOT NULL,
+  class_id UUID NOT NULL,
+  section_id UUID NOT NULL,
+  subject_id UUID NOT NULL,
+  topic_id UUID,
+  question_title VARCHAR(255) NOT NULL,
+  question_text TEXT NOT NULL,
+  attachment_urls TEXT[],
+  priority VARCHAR(20) DEFAULT 'Normal' CHECK (priority IN ('Normal', 'Urgent')),
+  status VARCHAR(30) DEFAULT 'Open' CHECK (status IN ('Open', 'In Progress', 'Answered', 'Closed')),
+  is_public BOOLEAN DEFAULT true,
+  assigned_teacher_id UUID,
+  answer_text TEXT,
+  answer_attachment_urls TEXT[],
+  answered_by UUID,
+  answered_at TIMESTAMP,
+  marked_helpful BOOLEAN DEFAULT false,
+  follow_up_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_doubts_student ON doubts_2DDMK(student_id);
+CREATE INDEX idx_doubts_subject ON doubts_2DDMK(subject_id);
+CREATE INDEX idx_doubts_section ON doubts_2DDMK(section_id);
+CREATE INDEX idx_doubts_status ON doubts_2DDMK(status);
+CREATE INDEX idx_doubts_assigned_teacher ON doubts_2DDMK(assigned_teacher_id);
+CREATE INDEX idx_doubts_number ON doubts_2DDMK(doubt_number);
+CREATE INDEX idx_doubts_created_at ON doubts_2DDMK(created_at DESC);
+
+COMMENT ON TABLE doubts_2DDMK IS 'Student academic questions and answers system';
+COMMENT ON COLUMN doubts_2DDMK.is_public IS 'If true, visible to other students in same class';
+COMMENT ON COLUMN doubts_2DDMK.doubt_number IS 'Format: DBT-YYYY-NNNN';
+
+-- 10.2 Doubt Follow-ups (Threaded Discussion)
+CREATE TABLE doubt_follow_ups_2DDMK (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  doubt_id UUID NOT NULL,
+  user_id UUID NOT NULL,
+  user_type VARCHAR(20) CHECK (user_type IN ('Student', 'Teacher')),
+  message_text TEXT NOT NULL,
+  attachment_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_doubt_followups_doubt ON doubt_follow_ups_2DDMK(doubt_id);
+CREATE INDEX idx_doubt_followups_user ON doubt_follow_ups_2DDMK(user_id);
+CREATE INDEX idx_doubt_followups_created_at ON doubt_follow_ups_2DDMK(created_at);
+
+COMMENT ON TABLE doubt_follow_ups_2DDMK IS 'Follow-up messages for doubts - enables threaded discussion';
+
+-- 10.3 Grievances (Complaint/Feedback System)
+CREATE TABLE grievances_2DDMK (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  grievance_number VARCHAR(50) UNIQUE NOT NULL,
+  raised_by_user_id UUID NOT NULL,
+  raised_by_user_type VARCHAR(20) CHECK (raised_by_user_type IN ('Student', 'Parent', 'Teacher', 'Staff')),
+  student_id UUID,
+  grievance_category VARCHAR(50) NOT NULL CHECK (grievance_category IN (
+    'Academic', 'Behavioral', 'Infrastructure', 'Transport', 
+    'Fee', 'Staff Conduct', 'Safety', 'Harassment', 'Other'
+  )),
+  sub_category VARCHAR(100),
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  evidence_urls TEXT[],
+  is_anonymous BOOLEAN DEFAULT false,
+  priority VARCHAR(20) DEFAULT 'Normal' CHECK (priority IN ('Low', 'Normal', 'High', 'Critical')),
+  severity_level VARCHAR(20) CHECK (severity_level IN ('Minor', 'Moderate', 'Serious', 'Critical')),
+  status VARCHAR(30) DEFAULT 'Submitted' CHECK (status IN (
+    'Submitted', 'Under Review', 'Investigating', 'Action Taken', 
+    'Resolved', 'Rejected', 'Closed'
+  )),
+  assigned_to UUID,
+  assigned_department VARCHAR(100),
+  reviewed_by UUID,
+  reviewed_at TIMESTAMP,
+  investigation_notes TEXT,
+  action_taken TEXT,
+  resolution_summary TEXT,
+  resolved_by UUID,
+  resolved_at TIMESTAMP,
+  resolution_satisfaction INTEGER CHECK (resolution_satisfaction >= 1 AND resolution_satisfaction <= 5),
+  feedback_from_complainant TEXT,
+  is_confidential BOOLEAN DEFAULT false,
+  requires_follow_up BOOLEAN DEFAULT false,
+  follow_up_date DATE,
+  escalation_level INTEGER DEFAULT 0,
+  escalated_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_grievances_raised_by ON grievances_2DDMK(raised_by_user_id);
+CREATE INDEX idx_grievances_student ON grievances_2DDMK(student_id);
+CREATE INDEX idx_grievances_category ON grievances_2DDMK(grievance_category);
+CREATE INDEX idx_grievances_status ON grievances_2DDMK(status);
+CREATE INDEX idx_grievances_assigned_to ON grievances_2DDMK(assigned_to);
+CREATE INDEX idx_grievances_number ON grievances_2DDMK(grievance_number);
+CREATE INDEX idx_grievances_priority ON grievances_2DDMK(priority);
+CREATE INDEX idx_grievances_created_at ON grievances_2DDMK(created_at DESC);
+CREATE INDEX idx_grievances_confidential ON grievances_2DDMK(is_confidential) WHERE is_confidential = true;
+
+COMMENT ON TABLE grievances_2DDMK IS 'Complaint and feedback management system for all user types';
+COMMENT ON COLUMN grievances_2DDMK.is_anonymous IS 'If true, complainant identity hidden from non-admin roles';
+COMMENT ON COLUMN grievances_2DDMK.is_confidential IS 'If true, only accessible to Principal and assigned person';
+COMMENT ON COLUMN grievances_2DDMK.escalation_level IS '0=Normal, 1=Principal, 2=Management';
+COMMENT ON COLUMN grievances_2DDMK.grievance_number IS 'Format: GRV-YYYY-NNNN';
+
+-- 10.4 Grievance Updates (Progress Tracking)
+CREATE TABLE grievance_updates_2DDMK (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  grievance_id UUID NOT NULL,
+  updated_by UUID NOT NULL,
+  update_type VARCHAR(30) CHECK (update_type IN ('Status Change', 'Note', 'Communication')),
+  previous_status VARCHAR(30),
+  new_status VARCHAR(30),
+  update_message TEXT NOT NULL,
+  is_visible_to_complainant BOOLEAN DEFAULT true,
+  attachment_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_grievance_updates_grievance ON grievance_updates_2DDMK(grievance_id);
+CREATE INDEX idx_grievance_updates_updated_by ON grievance_updates_2DDMK(updated_by);
+CREATE INDEX idx_grievance_updates_created_at ON grievance_updates_2DDMK(created_at);
+
+COMMENT ON TABLE grievance_updates_2DDMK IS 'Tracks all updates and communications for grievances';
+COMMENT ON COLUMN grievance_updates_2DDMK.is_visible_to_complainant IS 'Internal notes can be hidden from complainant';
+
+-- ============================================================================
+-- 11. FOREIGN KEY CONSTRAINTS
 -- ============================================================================
 -- Adding foreign keys after all tables are created to avoid dependency issues
 
@@ -1339,9 +1477,33 @@ ALTER TABLE id_cards_2DDMK ADD CONSTRAINT fk_id_cards_user FOREIGN KEY (user_id)
 -- Activity Logs FK
 ALTER TABLE activity_logs_2DDMK ADD CONSTRAINT fk_activity_logs_user FOREIGN KEY (user_id) REFERENCES users_2DDMK(id) ON DELETE CASCADE;
 
+-- Doubts FK
+ALTER TABLE doubts_2DDMK ADD CONSTRAINT fk_doubts_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE doubts_2DDMK ADD CONSTRAINT fk_doubts_class FOREIGN KEY (class_id) REFERENCES classes_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE doubts_2DDMK ADD CONSTRAINT fk_doubts_section FOREIGN KEY (section_id) REFERENCES sections_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE doubts_2DDMK ADD CONSTRAINT fk_doubts_subject FOREIGN KEY (subject_id) REFERENCES subjects_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE doubts_2DDMK ADD CONSTRAINT fk_doubts_topic FOREIGN KEY (topic_id) REFERENCES topics_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE doubts_2DDMK ADD CONSTRAINT fk_doubts_assigned_teacher FOREIGN KEY (assigned_teacher_id) REFERENCES teachers_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE doubts_2DDMK ADD CONSTRAINT fk_doubts_answered_by FOREIGN KEY (answered_by) REFERENCES teachers_2DDMK(id) ON DELETE SET NULL;
+
+-- Doubt Follow-ups FK
+ALTER TABLE doubt_follow_ups_2DDMK ADD CONSTRAINT fk_doubt_followups_doubt FOREIGN KEY (doubt_id) REFERENCES doubts_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE doubt_follow_ups_2DDMK ADD CONSTRAINT fk_doubt_followups_user FOREIGN KEY (user_id) REFERENCES users_2DDMK(id) ON DELETE CASCADE;
+
+-- Grievances FK
+ALTER TABLE grievances_2DDMK ADD CONSTRAINT fk_grievances_raised_by FOREIGN KEY (raised_by_user_id) REFERENCES users_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE grievances_2DDMK ADD CONSTRAINT fk_grievances_student FOREIGN KEY (student_id) REFERENCES students_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE grievances_2DDMK ADD CONSTRAINT fk_grievances_assigned_to FOREIGN KEY (assigned_to) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE grievances_2DDMK ADD CONSTRAINT fk_grievances_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
+ALTER TABLE grievances_2DDMK ADD CONSTRAINT fk_grievances_resolved_by FOREIGN KEY (resolved_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
+
+-- Grievance Updates FK
+ALTER TABLE grievance_updates_2DDMK ADD CONSTRAINT fk_grievance_updates_grievance FOREIGN KEY (grievance_id) REFERENCES grievances_2DDMK(id) ON DELETE CASCADE;
+ALTER TABLE grievance_updates_2DDMK ADD CONSTRAINT fk_grievance_updates_updated_by FOREIGN KEY (updated_by) REFERENCES users_2DDMK(id) ON DELETE SET NULL;
+
 -- ============================================================================
 -- END OF SCHEMA FOR SCHOOL 2 (2DDMK)
--- Total Tables: 42
--- Total Foreign Keys: 86
+-- Total Tables: 46 (42 original + 4 doubts/grievances)
+-- Total Foreign Keys: 101 (86 original + 15 doubts/grievances)
 -- ============================================================================
 

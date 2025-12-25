@@ -81,7 +81,6 @@ This document defines **12 default system roles** that collectively provide acce
 | **fees**              | ✅   | ✅     | ✅     | ✅     | ✅      | ✅     |
 | **announcements**     | ✅   | ✅     | ✅     | ✅     | ❌      | ✅     |
 | **notifications**     | ✅   | ✅     | ✅     | ❌     | ❌      | ✅     |
-| **messages**          | ✅   | ✅     | ❌     | ❌     | ❌      | ✅     |
 | **settings**          | ✅   | ✅     | ✅     | ❌     | ✅      | ✅     |
 | **id_cards**          | ✅   | ✅     | ✅     | ❌     | ✅      | ✅     |
 | **reports**           | ✅   | ✅     | ❌     | ❌     | ❌      | ✅     |
@@ -198,7 +197,6 @@ This document defines **12 default system roles** that collectively provide acce
 | **reports**       | ✅   | ✅     | ❌     | ❌     | ❌      | ✅     |
 | **announcements** | ✅   | ❌     | ❌     | ❌     | ❌      | ❌     |
 | **notifications** | ✅   | ✅     | ❌     | ❌     | ❌      | ❌     |
-| **messages**      | ✅   | ✅     | ❌     | ❌     | ❌      | ❌     |
 
 **Constraints**:
 
@@ -439,7 +437,7 @@ Based on ROUTES_FOR_FEATURES.md, module codes include:
 - `classes`, `sections`, `subjects`, `topics`, `academic_years`
 - `timetable`, `lecture_templates`
 - `exams`, `marks`, `report_cards`
-- `fees`, `announcements`, `notifications`, `messages`
+- `fees`, `announcements`, `notifications`
 - `settings`, `id_cards`, `reports`
 - `assignments`, `study_materials`, `online_classes`, `doubts`, `homework`
 - `transport`, `payroll`, `appraisals`, `recruitment`

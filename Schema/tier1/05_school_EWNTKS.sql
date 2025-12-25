@@ -1189,7 +1189,145 @@ CREATE INDEX idx_activity_logs_created ON activity_logs_5HKSK(created_at);
 COMMENT ON TABLE activity_logs_5HKSK IS 'Audit trail for all user actions in the system';
 
 -- ============================================================================
--- 10. FOREIGN KEY CONSTRAINTS
+-- 10. DOUBTS & GRIEVANCES (TIER 3)
+-- ============================================================================
+
+-- 10.1 Doubts (Academic Q&A System)
+CREATE TABLE doubts_5HKSK (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  doubt_number VARCHAR(50) UNIQUE NOT NULL,
+  student_id UUID NOT NULL,
+  class_id UUID NOT NULL,
+  section_id UUID NOT NULL,
+  subject_id UUID NOT NULL,
+  topic_id UUID,
+  question_title VARCHAR(255) NOT NULL,
+  question_text TEXT NOT NULL,
+  attachment_urls TEXT[],
+  priority VARCHAR(20) DEFAULT 'Normal' CHECK (priority IN ('Normal', 'Urgent')),
+  status VARCHAR(30) DEFAULT 'Open' CHECK (status IN ('Open', 'In Progress', 'Answered', 'Closed')),
+  is_public BOOLEAN DEFAULT true,
+  assigned_teacher_id UUID,
+  answer_text TEXT,
+  answer_attachment_urls TEXT[],
+  answered_by UUID,
+  answered_at TIMESTAMP,
+  marked_helpful BOOLEAN DEFAULT false,
+  follow_up_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_doubts_student ON doubts_5HKSK(student_id);
+CREATE INDEX idx_doubts_subject ON doubts_5HKSK(subject_id);
+CREATE INDEX idx_doubts_section ON doubts_5HKSK(section_id);
+CREATE INDEX idx_doubts_status ON doubts_5HKSK(status);
+CREATE INDEX idx_doubts_assigned_teacher ON doubts_5HKSK(assigned_teacher_id);
+CREATE INDEX idx_doubts_number ON doubts_5HKSK(doubt_number);
+CREATE INDEX idx_doubts_created_at ON doubts_5HKSK(created_at DESC);
+
+COMMENT ON TABLE doubts_5HKSK IS 'Student academic questions and answers system';
+COMMENT ON COLUMN doubts_5HKSK.is_public IS 'If true, visible to other students in same class';
+COMMENT ON COLUMN doubts_5HKSK.doubt_number IS 'Format: DBT-YYYY-NNNN';
+
+-- 10.2 Doubt Follow-ups (Threaded Discussion)
+CREATE TABLE doubt_follow_ups_5HKSK (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  doubt_id UUID NOT NULL,
+  user_id UUID NOT NULL,
+  user_type VARCHAR(20) CHECK (user_type IN ('Student', 'Teacher')),
+  message_text TEXT NOT NULL,
+  attachment_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_doubt_followups_doubt ON doubt_follow_ups_5HKSK(doubt_id);
+CREATE INDEX idx_doubt_followups_user ON doubt_follow_ups_5HKSK(user_id);
+CREATE INDEX idx_doubt_followups_created_at ON doubt_follow_ups_5HKSK(created_at);
+
+COMMENT ON TABLE doubt_follow_ups_5HKSK IS 'Follow-up messages for doubts - enables threaded discussion';
+
+-- 10.3 Grievances (Complaint/Feedback System)
+CREATE TABLE grievances_5HKSK (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  grievance_number VARCHAR(50) UNIQUE NOT NULL,
+  raised_by_user_id UUID NOT NULL,
+  raised_by_user_type VARCHAR(20) CHECK (raised_by_user_type IN ('Student', 'Parent', 'Teacher', 'Staff')),
+  student_id UUID,
+  grievance_category VARCHAR(50) NOT NULL CHECK (grievance_category IN (
+    'Academic', 'Behavioral', 'Infrastructure', 'Transport', 
+    'Fee', 'Staff Conduct', 'Safety', 'Harassment', 'Other'
+  )),
+  sub_category VARCHAR(100),
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  evidence_urls TEXT[],
+  is_anonymous BOOLEAN DEFAULT false,
+  priority VARCHAR(20) DEFAULT 'Normal' CHECK (priority IN ('Low', 'Normal', 'High', 'Critical')),
+  severity_level VARCHAR(20) CHECK (severity_level IN ('Minor', 'Moderate', 'Serious', 'Critical')),
+  status VARCHAR(30) DEFAULT 'Submitted' CHECK (status IN (
+    'Submitted', 'Under Review', 'Investigating', 'Action Taken', 
+    'Resolved', 'Rejected', 'Closed'
+  )),
+  assigned_to UUID,
+  assigned_department VARCHAR(100),
+  reviewed_by UUID,
+  reviewed_at TIMESTAMP,
+  investigation_notes TEXT,
+  action_taken TEXT,
+  resolution_summary TEXT,
+  resolved_by UUID,
+  resolved_at TIMESTAMP,
+  resolution_satisfaction INTEGER CHECK (resolution_satisfaction >= 1 AND resolution_satisfaction <= 5),
+  feedback_from_complainant TEXT,
+  is_confidential BOOLEAN DEFAULT false,
+  requires_follow_up BOOLEAN DEFAULT false,
+  follow_up_date DATE,
+  escalation_level INTEGER DEFAULT 0,
+  escalated_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_grievances_raised_by ON grievances_5HKSK(raised_by_user_id);
+CREATE INDEX idx_grievances_student ON grievances_5HKSK(student_id);
+CREATE INDEX idx_grievances_category ON grievances_5HKSK(grievance_category);
+CREATE INDEX idx_grievances_status ON grievances_5HKSK(status);
+CREATE INDEX idx_grievances_assigned_to ON grievances_5HKSK(assigned_to);
+CREATE INDEX idx_grievances_number ON grievances_5HKSK(grievance_number);
+CREATE INDEX idx_grievances_priority ON grievances_5HKSK(priority);
+CREATE INDEX idx_grievances_created_at ON grievances_5HKSK(created_at DESC);
+CREATE INDEX idx_grievances_confidential ON grievances_5HKSK(is_confidential) WHERE is_confidential = true;
+
+COMMENT ON TABLE grievances_5HKSK IS 'Complaint and feedback management system for all user types';
+COMMENT ON COLUMN grievances_5HKSK.is_anonymous IS 'If true, complainant identity hidden from non-admin roles';
+COMMENT ON COLUMN grievances_5HKSK.is_confidential IS 'If true, only accessible to Principal and assigned person';
+COMMENT ON COLUMN grievances_5HKSK.escalation_level IS '0=Normal, 1=Principal, 2=Management';
+COMMENT ON COLUMN grievances_5HKSK.grievance_number IS 'Format: GRV-YYYY-NNNN';
+
+-- 10.4 Grievance Updates (Progress Tracking)
+CREATE TABLE grievance_updates_5HKSK (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  grievance_id UUID NOT NULL,
+  updated_by UUID NOT NULL,
+  update_type VARCHAR(30) CHECK (update_type IN ('Status Change', 'Note', 'Communication')),
+  previous_status VARCHAR(30),
+  new_status VARCHAR(30),
+  update_message TEXT NOT NULL,
+  is_visible_to_complainant BOOLEAN DEFAULT true,
+  attachment_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_grievance_updates_grievance ON grievance_updates_5HKSK(grievance_id);
+CREATE INDEX idx_grievance_updates_updated_by ON grievance_updates_5HKSK(updated_by);
+CREATE INDEX idx_grievance_updates_created_at ON grievance_updates_5HKSK(created_at);
+
+COMMENT ON TABLE grievance_updates_5HKSK IS 'Tracks all updates and communications for grievances';
+COMMENT ON COLUMN grievance_updates_5HKSK.is_visible_to_complainant IS 'Internal notes can be hidden from complainant';
+
+-- ============================================================================
+-- 11. FOREIGN KEY CONSTRAINTS
 -- ============================================================================
 
 ALTER TABLE roles_5HKSK ADD CONSTRAINT fk_roles_created_by FOREIGN KEY (created_by) REFERENCES users_5HKSK(id) ON DELETE SET NULL;
