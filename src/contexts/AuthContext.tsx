@@ -155,6 +155,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Store in localStorage for persistence
       localStorage.setItem('edumunch_user_profile', JSON.stringify(profile));
       localStorage.setItem('edumunch_permissions', JSON.stringify(permCache));
+      
+      // Dispatch custom event to notify PermissionContext in same tab
+      window.dispatchEvent(new CustomEvent('edumunch_permissions_updated', {
+        detail: { permissions: permCache }
+      }));
+      
+      console.log('[AuthContext] Permissions loaded and event dispatched');
     }
   }, [fetchUserProfile, buildPermissionCache]);
 

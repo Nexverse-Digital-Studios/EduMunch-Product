@@ -304,8 +304,24 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     };
 
+    // Listen for same-tab updates from AuthContext
+    const handlePermissionUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const newPermissions = customEvent.detail?.permissions;
+      
+      if (newPermissions) {
+        console.log('[PermissionProvider] Permissions updated via custom event');
+        setPermissionsState(newPermissions);
+      }
+    };
+
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('edumunch_permissions_updated', handlePermissionUpdate);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('edumunch_permissions_updated', handlePermissionUpdate);
+    };
   }, []);
 
   /**

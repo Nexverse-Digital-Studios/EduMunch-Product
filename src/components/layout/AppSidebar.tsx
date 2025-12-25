@@ -217,13 +217,15 @@ interface AppSidebarProps {
  * Filter navigation items based on features and permissions
  */
 const useFilteredNavigation = () => {
-  const { hasModuleAccess, isAdmin } = usePermissions();
+  const { hasModuleAccess, isAdmin, permissions } = usePermissions();
   const { userProfile } = useAuth();
   
   return useMemo(() => {
     console.log('[AppSidebar] Filtering navigation items:', {
       isAdmin: isAdmin(),
       userId: userProfile?.id,
+      hasPermissions: !!permissions,
+      permissionTimestamp: permissions?.timestamp,
     });
 
     const filterItems = (items: NavItemConfig[]): NavItemConfig[] => {
@@ -274,12 +276,19 @@ const useFilteredNavigation = () => {
     const filtered = filterItems(navigationItems);
     console.log('[AppSidebar] Final visible items count:', filtered.length);
     return filtered;
-  }, [hasModuleAccess, isAdmin, userProfile]);
+  }, [hasModuleAccess, isAdmin, userProfile, permissions]);
 };
 
 export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose }: AppSidebarProps) => {
   const filteredNavItems = useFilteredNavigation();
   const { userProfile } = useAuth();
+  const { permissions, isLoading } = usePermissions();
+  
+  console.log('[AppSidebar] Render state:', {
+    hasPermissions: !!permissions,
+    isLoading,
+    visibleItemsCount: filteredNavItems.length,
+  });
   
   return (
     <>
@@ -337,16 +346,27 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
 
         {/* Navigation */}
         <ScrollArea className="flex-1 px-3 py-4">
-          <nav className="space-y-1">
-            {filteredNavItems.map((item, index) => (
-              <NavItem
-                key={item.to || item.label + index}
-                {...item}
-                isCollapsed={isCollapsed && !isMobileOpen}
-                onNavigate={onMobileClose}
-              />
-            ))}
-          </nav>
+          {isLoading && !permissions ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-8">
+              <div className="animate-spin">
+                <Settings className="h-6 w-6 text-muted-foreground" />
+              </div>
+              {!isCollapsed && (
+                <p className="text-xs text-muted-foreground">Loading menu...</p>
+              )}
+            </div>
+          ) : (
+            <nav className="space-y-1">
+              {filteredNavItems.map((item, index) => (
+                <NavItem
+                  key={item.to || item.label + index}
+                  {...item}
+                  isCollapsed={isCollapsed && !isMobileOpen}
+                  onNavigate={onMobileClose}
+                />
+              ))}
+            </nav>
+          )}
         </ScrollArea>
 
         {/* User Profile */}
