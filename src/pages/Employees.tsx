@@ -44,13 +44,7 @@ interface TeacherDB {
   created_at: string;
 }
 
-// Mock data fallback
-const mockEmployees = [
-  { id: "41236", name: "Akshay Pandey", code: "APCH", role: "teacher", designation: "Chemistry Faculty", avatar: "AP", color: "bg-blue-500" },
-  { id: "52684", name: "Aniket Singh", code: "ASB", role: "teacher", designation: "Biology Faculty", avatar: "AS", color: "bg-yellow-500" },
-  { id: "3", name: "Anup Singh", code: "ASM", role: "teacher", designation: "Maths faculty", avatar: "AS", color: "bg-teal-500" },
-  { id: "74268", name: "Kumar Ahire", code: "KAP", role: "teacher", designation: "Physics Faculty", avatar: "KA", color: "bg-purple-500" },
-];
+
 
 const Employees = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,7 +75,7 @@ const Employees = () => {
     designation: t.designation || 'Faculty',
     avatar: `${t.first_name[0]}${t.last_name[0]}`,
     color: getAvatarColor(t.first_name)
-  })) || mockEmployees;
+  })) || [];
 
   const filteredEmployees = employees.filter((employee) => {
     const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

@@ -69,28 +69,7 @@ interface Branch {
   class_name: string;
 }
 
-// Mock data for demo (until Tier 3 is deployed)
-const mockInventoryItems = [
-  { id: "1", name: "Advertising Papers", type: "ASSET", quantity: 10 },
-  { id: "2", name: "Markers", type: "CONSUMABLE", quantity: 50 },
-  { id: "3", name: "Projector", type: "ASSET", quantity: 2 },
-];
 
-const mockTransfers = [
-  { id: "1", fromBranch: "Thane HO Branch", toBranch: "Kalyan Branch", item: "Cash", quantity: 2000, status: "CANCELLED", initiatedAt: "11/15/2025, 2:35:26 PM" },
-  { id: "2", fromBranch: "Thane HO Branch", toBranch: "Manpada Branch", item: "Cash", quantity: 100000, status: "COMPLETED", initiatedAt: "10/17/2025, 4:10:59 PM" },
-];
-
-const mockPettyCashLedger = [
-  { id: "1", date: "10/17/2025, 4:11:05 PM", description: "From Branch ID 1", type: "TRANSFER_IN", recordedBy: "Super Admin", amount: 100000 },
-  { id: "2", date: "10/15/2025, 2:00:00 PM", description: "Stationary Purchase", type: "EXPENSE", recordedBy: "Branch Manager", amount: -500 },
-];
-
-const mockMasterItems = [
-  { id: "1", name: "Advertising Papers", description: "For distribution", type: "ASSET" },
-  { id: "2", name: "Cash", description: "For Spending", type: "CASH" },
-  { id: "3", name: "Maths Books", description: "For student distribution", type: "CONSUMABLE" },
-];
 
 const Inventory = () => {
   const [activeTab, setActiveTab] = useState("branch");
@@ -124,18 +103,15 @@ const Inventory = () => {
 
   const currentBalance = 100000;
 
-  // Use real assets if available, otherwise mock data
+  // Use real assets from database
   const inventoryItems = useMemo(() => {
-    if (isTier3Available && assets.length > 0) {
-      return assets.map(a => ({
-        id: a.id,
-        name: a.asset_name,
-        type: a.asset_category || 'Unknown',
-        quantity: 1 // Assets are typically single items
-      }));
-    }
-    return mockInventoryItems;
-  }, [assets, isTier3Available]);
+    return assets.map(a => ({
+      id: a.id,
+      name: a.asset_name,
+      type: a.asset_category || 'Unknown',
+      quantity: 1 // Assets are typically single items
+    }));
+  }, [assets]);
 
   const filteredItems = useMemo(() => {
     return inventoryItems.filter(item =>
@@ -293,26 +269,11 @@ const Inventory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockTransfers.map((transfer) => (
-                  <TableRow key={transfer.id} className="hover:bg-muted/20">
-                    <TableCell className="text-foreground">{transfer.fromBranch}</TableCell>
-                    <TableCell className="text-foreground">{transfer.toBranch}</TableCell>
-                    <TableCell className="text-foreground">{transfer.item}</TableCell>
-                    <TableCell className="text-right font-medium text-foreground">{transfer.quantity.toLocaleString()}</TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant="outline" 
-                        className={transfer.status === 'COMPLETED' 
-                          ? 'bg-green-100 text-green-800 border-green-300' 
-                          : 'bg-red-100 text-red-800 border-red-300'}
-                      >
-                        {transfer.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">{transfer.initiatedAt}</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                ))}
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                    No transfers found
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </div>
@@ -349,19 +310,10 @@ const Inventory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow className="hover:bg-muted/20">
-                  <TableCell className="text-muted-foreground">11/15/2025, 2:07:41 PM</TableCell>
-                  <TableCell className="text-foreground">Advertising Papers</TableCell>
-                  <TableCell className="text-right font-medium text-red-600">-10</TableCell>
-                  <TableCell className="text-foreground">Distributed</TableCell>
-                  <TableCell className="text-muted-foreground">Thane Branch manager</TableCell>
-                </TableRow>
-                <TableRow className="hover:bg-muted/20">
-                  <TableCell className="text-muted-foreground">10/20/2025, 10:30:00 AM</TableCell>
-                  <TableCell className="text-foreground">Markers</TableCell>
-                  <TableCell className="text-right font-medium text-green-600">+25</TableCell>
-                  <TableCell className="text-foreground">Restocked</TableCell>
-                  <TableCell className="text-muted-foreground">Super Admin</TableCell>
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                    No ledger entries found
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -413,18 +365,11 @@ const Inventory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockPettyCashLedger.map((entry) => (
-                  <TableRow key={entry.id} className="hover:bg-muted/20">
-                    <TableCell className="text-muted-foreground">{entry.date}</TableCell>
-                    <TableCell className="text-foreground">{entry.description}</TableCell>
-                    <TableCell className="text-muted-foreground">{entry.type}</TableCell>
-                    <TableCell className="text-foreground">{entry.recordedBy}</TableCell>
-                    <TableCell className={`text-right font-medium ${entry.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      ₹{Math.abs(entry.amount).toLocaleString('en-IN')}.00
-                    </TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                ))}
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    No petty cash entries found
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </div>
@@ -452,27 +397,11 @@ const Inventory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockMasterItems.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-muted/20">
-                    <TableCell className="font-medium text-foreground">{item.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{item.description}</TableCell>
-                    <TableCell className="text-foreground">{item.type}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {canUpdate && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {canDelete && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                    No master items found
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </div>
@@ -557,7 +486,7 @@ const Inventory = () => {
                   <SelectValue placeholder="Select item" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockMasterItems.map((item) => (
+                  {inventoryItems.map((item) => (
                     <SelectItem key={item.id} value={item.name}>{item.name}</SelectItem>
                   ))}
                 </SelectContent>

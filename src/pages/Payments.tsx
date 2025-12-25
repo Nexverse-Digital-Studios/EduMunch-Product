@@ -71,31 +71,13 @@ interface OutstandingRecord {
   status: "PENDING" | "PARTIALLY PAID";
 }
 
-const students: Student[] = [
-  { id: "1", name: "Student 2", formNumber: "VT25001", course: "JEE Foundation", totalDue: 400000, totalPaid: 0, balance: 400000, installments: 12 },
-  { id: "2", name: "Kumar Kalani", formNumber: "VT25002", course: "NEET Prep", totalDue: 350000, totalPaid: 100000, balance: 250000, installments: 10 },
-];
+const students: Student[] = [];
 
-const installments: Installment[] = [
-  { id: 1, name: "Installment 1", dueDate: "2/1/2025", amount: 33636.36, remaining: 33636.36, status: "PENDING", transactions: [] },
-  { id: 2, name: "Installment 2", dueDate: "3/3/2025", amount: 33636.36, remaining: 33636.36, status: "PENDING", transactions: [] },
-  { id: 3, name: "Installment 3", dueDate: "4/1/2025", amount: 33636.36, remaining: 33636.36, status: "PENDING", transactions: [] },
-  { id: 4, name: "Installment 4", dueDate: "5/1/2025", amount: 33636.36, remaining: 33636.36, status: "PENDING", transactions: [] },
-];
+const installments: Installment[] = [];
 
-const transactions: Transaction[] = [
-  { id: 1, student: "Kumar Kalani", formNumber: "125478", branch: "Thane HO Branch", date: "12/9/2025", amount: 14000, method: "CHEQUE", status: "PENDING", realizedBy: "N/A" },
-  { id: 2, student: "Student test 1", formNumber: "VP26001", branch: "Palava Branch", date: "12/7/2025", amount: 10000, method: "CHEQUE", status: "REALIZED", realizedBy: "Super Admin" },
-  { id: 3, student: "Student test 1", formNumber: "VP26001", branch: "Palava Branch", date: "12/6/2025", amount: 10000, method: "CASH", status: "REALIZED", realizedBy: "Super Admin" },
-  { id: 4, student: "Student test 1", formNumber: "VP26001", branch: "Palava Branch", date: "12/6/2025", amount: 10428.57, method: "CARD", status: "REALIZED", realizedBy: "Super Admin" },
-];
+const transactions: Transaction[] = [];
 
-const outstandingData: OutstandingRecord[] = [
-  { student: "Student 2", phone: "9898988888", branch: "Thane HO Branch", dueDate: "12/8/2025", totalDue: 30000, paid: 0, balance: 30000, status: "PENDING" },
-  { student: "Kabir Singh", phone: "8879012345", branch: "Kalyan Branch", dueDate: "12/16/2025", totalDue: 100000, paid: 0, balance: 100000, status: "PENDING" },
-  { student: "Student test 1", phone: "7485857485", branch: "Palava Branch", dueDate: "12/17/2025", totalDue: 11428.57, paid: 10428.57, balance: 1000, status: "PARTIALLY PAID" },
-  { student: "Kumar Kalani", phone: "9191919191", branch: "Thane HO Branch", dueDate: "12/22/2025", totalDue: 34000, paid: 14000, balance: 20000, status: "PARTIALLY PAID" },
-];
+const outstandingData: OutstandingRecord[] = [];
 
 const Payments = () => {
   const [activeTab, setActiveTab] = useState("search");

@@ -35,33 +35,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 
-const templates = [
-  { id: 1, title: "Quarterly review", type: "FACULTY_REVIEW", description: "Faculty review", qualities: 2 },
-  { id: 2, title: "Dec Teacher reivew", type: "FACULTY_REVIEW", description: "Test", qualities: 2 },
-  { id: 3, title: "teacher review", type: "FACULTY_REVIEW", description: "Test", qualities: 0 },
-  { id: 4, title: "Yearly Teacher Review", type: "FACULTY_REVIEW", description: "Grading", qualities: 0 },
-  { id: 5, title: "Monthly Teacher Review", type: "FACULTY_REVIEW", description: "Performance review", qualities: 0 },
-  { id: 6, title: "DSA", type: "GENERAL", description: "XYZ", qualities: 3 },
-];
+const templates: { id: number; title: string; type: string; description: string; qualities: number }[] = [];
 
-const assignedForms = [
-  { id: 1, name: "Dec Teacher reivew", type: "FACULTY_REVIEW", active: true, startDate: "12/6/2025", endDate: "12/8/2025", submissions: 0 },
-  { id: 2, name: "DSA", type: "GENERAL", active: true, startDate: "12/5/2025", endDate: "12/8/2025", submissions: 1 },
-];
+const assignedForms: { id: number; name: string; type: string; active: boolean; startDate: string; endDate: string; submissions: number }[] = [];
 
-const reviewResults = [
-  { code: "ASB", reviews: 1, avgRating: 5, qualities: { Speed: 4, Quality: 3, Engaging: 5 }, rating: 5, comment: "very good" },
-  { code: "ASM", reviews: 1, avgRating: 4, qualities: { Speed: 3, Quality: 4, Engaging: 4 }, rating: 4, comment: "okay okay" },
-  { code: "JYCH", reviews: 1, avgRating: 2, qualities: { Speed: 1, Quality: 3, Engaging: 2 }, rating: 2, comment: "done" },
-  { code: "KAP", reviews: 1, avgRating: 5, qualities: { Speed: 5, Quality: 5, Engaging: 5 }, rating: 5, comment: "excellent" },
-];
+const reviewResults: { code: string; reviews: number; avgRating: number; qualities: Record<string, number>; rating: number; comment: string }[] = [];
 
-const qualitiesOptions = [
-  { id: "efficiency", name: "Efficiency", description: "The level of understanding of the topic" },
-  { id: "engaging", name: "Engaging", description: "" },
-  { id: "quality", name: "Quality", description: "" },
-  { id: "speed", name: "Speed", description: "" },
-];
+const qualitiesOptions: { id: string; name: string; description: string }[] = [];
 
 const Feedback = () => {
   const [activeTab, setActiveTab] = useState("templates");
@@ -71,7 +51,7 @@ const Feedback = () => {
   const [selectedQualities, setSelectedQualities] = useState<string[]>(["efficiency", "quality"]);
 
   // Permission check
-  const { canRead, canCreate, canUpdate, canDelete } = useModulePermissions('FEEDBACK');
+  const { canView, canCreate, canUpdate, canDelete } = useModulePermissions('FEEDBACK');
 
   const toggleQuality = (id: string) => {
     setSelectedQualities(prev => 

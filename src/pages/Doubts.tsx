@@ -68,19 +68,9 @@ interface Message {
   type: "text" | "image";
 }
 
-const doubtsData: Doubt[] = [
-  { id: "1", title: "i didn't understand the initial part", from: "Kumar Kalani", subject: "Math", topic: "Trigonometry" },
-  { id: "2", title: "speed velocity difference", from: "Student test 1", subject: "Phy", topic: "Electromagnetism" },
-  { id: "3", title: "we cannot understand your language", from: "Kumar Kalani", subject: "Chemistry", topic: "Physical Chemistry" },
-  { id: "4", title: "Cctv", from: "Priya Singh", subject: "Math", topic: "Calculus" },
-  { id: "5", title: "Test question", from: "Ram Sir", subject: "Biology", topic: "Animal Kingdom" },
-  { id: "6", title: "Doubt created from content section", from: "Kumar Kalani", subject: "Biology", topic: "Animal Kingdom" },
-];
+const doubtsData: Doubt[] = [];
 
-const messagesData: Message[] = [
-  { id: "1", sender: "Student test 1", content: "speed velocity difference", time: "07:12 PM", type: "text" },
-  { id: "2", sender: "Student test 1", content: "", time: "07:13 PM", type: "image" },
-];
+const messagesData: Message[] = [];
 
 const Doubts = () => {
   const [showConversation, setShowConversation] = useState(false);
@@ -88,7 +78,7 @@ const Doubts = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Permission check
-  const { canRead } = useModulePermissions('DOUBTS');
+  const { canView } = useModulePermissions('DOUBTS');
 
   const handleDoubtClick = (doubt: Doubt) => {
     setSelectedDoubt(doubt);

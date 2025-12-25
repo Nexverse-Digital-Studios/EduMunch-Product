@@ -35,16 +35,7 @@ interface Admission {
   avatar?: string;
 }
 
-const admissionsData: Admission[] = [
-  { id: "1", name: "Student 2", admissionId: "VT25001", branch: "Thane HO Branch", course: "JEE Foundation", status: "ACTIVE", admissionDate: "12/8/2025", school: "Nalanda Group of schools" },
-  { id: "2", name: "Student test 1", admissionId: "VP26001", branch: "Palava Branch", course: "11th", status: "ACTIVE", admissionDate: "12/6/2025", school: "Saint Maria School" },
-  { id: "3", name: "Ram Sir", admissionId: "VT26001", branch: "Thane HO Branch", course: "CET 1 year", status: "ACTIVE", admissionDate: "11/18/2025", school: "" },
-  { id: "4", name: "Rajesh Kalani", admissionId: "7458", branch: "Thane HO Branch", course: "JEE Foundation", status: "ACTIVE", admissionDate: "11/4/2025", school: "" },
-  { id: "5", name: "Kumar Kalani", admissionId: "125478", branch: "Thane HO Branch", course: "JEE Foundation", status: "ACTIVE", admissionDate: "10/25/2025", school: "" },
-  { id: "6", name: "Ishaan Kulkarni", admissionId: "2025005", branch: "Manpada Branch", course: "CET 1 year", status: "ACTIVE", admissionDate: "10/17/2025", school: "" },
-  { id: "7", name: "Priya Singh", admissionId: "123456", branch: "Thane HO Branch", course: "JEE Foundation", status: "ACTIVE", admissionDate: "10/17/2025", school: "" },
-  { id: "8", name: "Vivaan Mehta", admissionId: "2025007", branch: "Palava Branch", course: "NEET Foundation", status: "ACTIVE", admissionDate: "10/17/2025", school: "" },
-];
+const admissionsData: Admission[] = [];
 
 const Admissions = () => {
   const [showFilters, setShowFilters] = useState(false);

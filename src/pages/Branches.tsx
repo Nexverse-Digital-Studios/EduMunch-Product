@@ -25,12 +25,7 @@ interface Branch {
   address: string;
 }
 
-const branchesData: Branch[] = [
-  { id: "1", name: "Kalyan Branch", code: "KAL", address: "Near railway station" },
-  { id: "2", name: "Manpada Branch", code: "MAN", address: "Sampangi Rama Nagara" },
-  { id: "3", name: "Palava Branch", code: "PAL", address: "Palava station road" },
-  { id: "4", name: "Thane HO Branch", code: "THN", address: "Near Station" },
-];
+const branchesData: Branch[] = [];
 
 const Branches = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);

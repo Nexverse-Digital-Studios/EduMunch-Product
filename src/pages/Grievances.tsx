@@ -68,15 +68,7 @@ interface Grievance {
   attachments: string[];
 }
 
-const grievances: Grievance[] = [
-  { id: 8, parent: "Soham Kalani", phone: "9898989898", subject: "Notes", dateSubmitted: "12/10/2025, 12:38:26 AM", status: "Pending", children: "Kumar Kalani, Rajesh Kalani", branches: "No branch info", description: "child did not receive any notes for the jee prep", attachments: ["/placeholder.svg"] },
-  { id: 7, parent: "Soham Kalani", phone: "9898989898", subject: "Attention", dateSubmitted: "11/25/2025, 2:29:23 PM", status: "In Progress", children: "Kumar Kalani", branches: "Thane Branch", description: "Need more attention on child's progress", attachments: [] },
-  { id: 6, parent: "Soham Kalani", phone: "9898989898", subject: "Sitting arrangement in class", dateSubmitted: "11/25/2025, 2:03:20 PM", status: "Closed", children: "Kumar Kalani", branches: "Thane Branch", description: "Sitting arrangement needs improvement", attachments: [] },
-  { id: 5, parent: "Soham Kalani", phone: "9898989898", subject: "Issue with the notes", dateSubmitted: "11/17/2025, 1:28:31 AM", status: "Resolved", children: "Rajesh Kalani", branches: "Kalyan Branch", description: "Notes quality was poor", attachments: [] },
-  { id: 4, parent: "Soham Kalani", phone: "9898989898", subject: "Payment issue", dateSubmitted: "11/5/2025, 1:30:28 PM", status: "Closed", children: "Kumar Kalani", branches: "Thane Branch", description: "Payment not reflecting", attachments: [] },
-  { id: 3, parent: "Soham Kalani", phone: "9898989898", subject: "xyz", dateSubmitted: "11/2/2025, 7:31:00 PM", status: "Pending", children: "Kumar Kalani", branches: "Thane Branch", description: "General query", attachments: [] },
-  { id: 2, parent: "Soham Kalani", phone: "9898989898", subject: "Bus Service Issue", dateSubmitted: "10/30/2025, 2:43:42 AM", status: "Resolved", children: "Rajesh Kalani", branches: "Kalyan Branch", description: "Bus timing issue", attachments: [] },
-];
+const grievances: Grievance[] = [];
 
 const getStatusColor = (status: GrievanceStatus) => {
   switch (status) {
@@ -100,7 +92,7 @@ const Grievances = () => {
   const [newStatus, setNewStatus] = useState<GrievanceStatus>("Pending");
 
   // Permission check
-  const { canRead, canUpdate } = useModulePermissions('GRIEVANCES');
+  const { canView, canUpdate } = useModulePermissions('GRIEVANCES');
 
   const filteredGrievances = grievances.filter((g) => {
     const matchesSearch = g.parent.toLowerCase().includes(searchQuery.toLowerCase()) ||

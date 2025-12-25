@@ -26,16 +26,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const batches = [
-  { id: "26TJMA1", name: "26TJMA1 (Thane HO Branch)" },
-  { id: "JEE2026", name: "JEE Advance Batch 2026" },
-  { id: "NEET2026", name: "NEET Batch 2026" },
-];
+const batches: { id: string; name: string }[] = [];
 
-const enrolledStudents = [
-  { id: 1, name: "Kumar Kalani", email: "kumar@vraz.com", phone: "9191919191", selected: false },
-  { id: 2, name: "Student 2", email: "st12@gmail.com", phone: "9898988888", selected: false },
-];
+const enrolledStudents: { id: number; name: string; email: string; phone: string; selected: boolean }[] = [];
 
 const Enrollments = () => {
   const [selectedBatch, setSelectedBatch] = useState("26TJMA1");

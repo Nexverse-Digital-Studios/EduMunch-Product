@@ -78,26 +78,9 @@ interface ScheduleSlot {
   slots: { [branchBatch: string]: ClassInfo | null };
 }
 
-const branches = [
-  "Kalyan Branch - 27KJ1",
-  "Kalyan Branch - 27KJ2",
-  "Kalyan Branch - 27KN1",
-  "Manpada Branch - 27MJ1",
-  "Manpada Branch - 27MJ2",
-  "Palava Branch - JEE Advance Batch 2026",
-  "Thane HO Branch",
-];
+const branches: string[] = [];
 
-const timeSlots = [
-  "08:00-10:00",
-  "08:30-10:30",
-  "10:00-12:00",
-  "10:15-12:15",
-  "11:00-13:00",
-  "13:00-15:00",
-  "13:30-15:30",
-  "16:00-18:00",
-];
+const timeSlots: string[] = [];
 
 const subjects = ["Physics", "Chemistry", "Math", "Biology", "GK", "English"];
 const teachers = [

@@ -44,16 +44,7 @@ interface SupportTicket {
   assignedTo: string | null;
 }
 
-const ticketsData: SupportTicket[] = [
-  { id: "1", title: "Attendance: Child is absent", from: "Soham Kalani", status: "OPEN", assignedTo: null },
-  { id: "2", title: "Other: Child not studying", from: "Soham Kalani", status: "OPEN", assignedTo: null },
-  { id: "3", title: "Payment: issue", from: "Soham Kalani", status: "OPEN", assignedTo: null },
-  { id: "4", title: "Course: Missing content", from: "Rahul Sharma", status: "IN_PROGRESS", assignedTo: "Super Admin" },
-  { id: "5", title: "Technical: App not loading", from: "Priya Singh", status: "IN_PROGRESS", assignedTo: "Support Team" },
-  { id: "6", title: "Batch: Schedule conflict", from: "Amit Kumar", status: "IN_PROGRESS", assignedTo: "Super Admin" },
-  { id: "7", title: "Result: Marks not updated", from: "Neha Gupta", status: "IN_PROGRESS", assignedTo: "Teacher" },
-  { id: "8", title: "Fee: Receipt needed", from: "Vikram Iyer", status: "RESOLVED", assignedTo: "Super Admin" },
-];
+const ticketsData: SupportTicket[] = [];
 
 const SupportTickets = () => {
   const [activeTab, setActiveTab] = useState("open");

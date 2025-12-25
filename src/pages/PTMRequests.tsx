@@ -41,32 +41,13 @@ interface PTMRequest {
   status: "PENDING" | "AWAITING_PARENT" | "APPROVED" | "DECLINED";
 }
 
-const ptmRequests: PTMRequest[] = [
-  { id: "1", parent: "Soham Kalani", teacher: "VSM", reason: "performance", preferredTime: "Dec 15, 2025, 12:00 PM", status: "PENDING" },
-  { id: "2", parent: "Soham Kalani", teacher: "RCM", reason: "For student performance", preferredTime: "Dec 14, 2025, 12:00 PM", status: "PENDING" },
-  { id: "3", parent: "Soham Kalani", teacher: "MNP", reason: "Test to keep as pending", preferredTime: "Nov 27, 2025, 12:00 PM", status: "PENDING" },
-  { id: "4", parent: "Rahul Sharma", teacher: "ABC", reason: "Discuss progress", preferredTime: "Dec 10, 2025, 2:00 PM", status: "AWAITING_PARENT" },
-  { id: "5", parent: "Priya Singh", teacher: "DEF", reason: "Academic review", preferredTime: "Dec 12, 2025, 11:00 AM", status: "APPROVED" },
-  { id: "6", parent: "Amit Kumar", teacher: "GHI", reason: "Behavior concerns", preferredTime: "Dec 8, 2025, 3:00 PM", status: "APPROVED" },
-];
+const ptmRequests: PTMRequest[] = [];
 
-const students = [
-  { id: "1", name: "Student 1" },
-  { id: "2", name: "Student 2" },
-  { id: "3", name: "Kumar Kalani" },
-];
+const students: { id: string; name: string }[] = [];
 
-const parents = [
-  { id: "1", name: "Soham Kalani" },
-  { id: "2", name: "Rahul Sharma" },
-  { id: "3", name: "Priya Singh" },
-];
+const parents: { id: string; name: string }[] = [];
 
-const teachers = [
-  { id: "1", name: "VSM" },
-  { id: "2", name: "RCM" },
-  { id: "3", name: "MNP" },
-];
+const teachers: { id: string; name: string }[] = [];
 
 const PTMRequests = () => {
   const [activeTab, setActiveTab] = useState("pending");
