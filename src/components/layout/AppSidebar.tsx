@@ -85,7 +85,7 @@ const NavItem = ({ to, icon: Icon, label, isCollapsed, children, isActive, onNav
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+            "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium transition-all",
             itemIsActive
               ? "bg-sidebar-accent text-sidebar-accent-foreground"
               : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
@@ -121,7 +121,7 @@ const NavItem = ({ to, icon: Icon, label, isCollapsed, children, isActive, onNav
       onClick={onNavigate}
       className={({ isActive }) =>
         cn(
-          "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+          "flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium transition-all",
           isActive
             ? "bg-sidebar-accent text-sidebar-accent-foreground"
             : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
@@ -319,7 +319,7 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <GraduationCap className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-lg font-bold text-foreground">EduMunch</span>
+              <span className="text-xl font-bold text-foreground">EduMunch</span>
             </div>
           )}
           
@@ -352,7 +352,7 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
                 <Settings className="h-6 w-6 text-muted-foreground" />
               </div>
               {!isCollapsed && (
-                <p className="text-xs text-muted-foreground">Loading menu...</p>
+                <p className="text-sm text-muted-foreground">Loading menu...</p>
               )}
             </div>
           ) : (
@@ -377,10 +377,10 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
             </div>
             {(!isCollapsed || isMobileOpen) && (
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium text-foreground">
+                <p className="truncate text-base font-medium text-foreground">
                   {userProfile?.full_name || 'User'}
                 </p>
-                <p className="truncate text-xs text-muted-foreground">
+                <p className="truncate text-sm text-muted-foreground">
                   {userProfile?.primary_role?.role_name || userProfile?.email || ''}
                 </p>
               </div>

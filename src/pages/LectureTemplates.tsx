@@ -25,7 +25,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
-
+ 
 const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
 
 // Database types
