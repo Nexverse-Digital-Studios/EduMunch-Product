@@ -204,7 +204,6 @@ const navigationItems: NavItemConfig[] = [
     ],
   },
   { to: "/profile", icon: User, label: "Profile", isCollapsed: false },
-  { to: "/set-roles", icon: Shield, label: "Configure Roles", isCollapsed: false, feature: 'setRoles', adminOnly: true },
 ];
 
 interface AppSidebarProps {

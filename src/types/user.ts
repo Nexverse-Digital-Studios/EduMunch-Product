@@ -45,6 +45,8 @@ export interface UserPermissionCache {
   } | null;
   permissions: string[]; // Array of permission codes like 'users.view', 'users.create'
   modules: string[]; // Array of module codes the user has access to
+  timestamp?: number; // Cache timestamp for expiry checking
+  version?: string; // Cache version for invalidation
 }
 
 /**

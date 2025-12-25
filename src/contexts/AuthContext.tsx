@@ -127,6 +127,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } : null,
       permissions: [],
       modules: [],
+      timestamp: Date.now(),
+      version: '1.0.0', // Match PermissionContext version
     };
 
     // For ADMIN, we don't need to fetch permissions - they bypass everything
@@ -294,20 +296,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   /**
-   * Sign Out - Clears all user data
+   * Sign Out - Clears all user data and triggers cross-tab sync
    */
   const signOut = async () => {
+    console.log('[AuthContext] Signing out...');
+    
     if (supabase) {
       await supabase.auth.signOut();
     }
     
+    // Clear state
     setUser(null);
     setSession(null);
     setUserProfile(null);
     setPermissions(null);
     
+    // Clear localStorage - this will trigger 'storage' event in other tabs
     localStorage.removeItem('edumunch_user_profile');
     localStorage.removeItem('edumunch_permissions');
+    
+    console.log('[AuthContext] Signed out successfully');
   };
 
   /**

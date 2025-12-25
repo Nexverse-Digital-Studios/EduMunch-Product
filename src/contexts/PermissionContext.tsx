@@ -56,6 +56,7 @@ export interface UserPermissionCache {
   permissions: Record<string, ModulePermissions>;
   routes: string[];
   timestamp: number;
+  version?: string; // Cache version for invalidation
 }
 
 export interface PermissionContextType {
@@ -83,7 +84,9 @@ export interface PermissionContextType {
 // =============================================================================
 
 const CACHE_KEY = 'edumunch_permissions';
+const CACHE_VERSION = '1.0.0'; // Increment to invalidate all caches
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+const BACKGROUND_REFRESH_THRESHOLD = 60 * 60 * 1000; // 1 hour - refresh if cache older than this
 
 // =============================================================================
 // CONTEXT
@@ -124,6 +127,7 @@ export function buildPermissionCache(
     permissions: {},
     routes: [],
     timestamp: Date.now(),
+    version: CACHE_VERSION,
   };
 
   // Group permissions by module
@@ -181,14 +185,24 @@ function loadCacheFromStorage(): UserPermissionCache | null {
 
     const parsed: UserPermissionCache = JSON.parse(cached);
     
+    // Check cache version - invalidate if outdated
+    if (!parsed.version || parsed.version !== CACHE_VERSION) {
+      console.log('[PermissionContext] Cache version mismatch, clearing...');
+      localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+    
     // Check if cache is expired
     if (Date.now() - parsed.timestamp > CACHE_DURATION) {
+      console.log('[PermissionContext] Cache expired, clearing...');
       localStorage.removeItem(CACHE_KEY);
       return null;
     }
 
+    console.log('[PermissionContext] Loaded valid cache from storage');
     return parsed;
-  } catch {
+  } catch (error) {
+    console.error('[PermissionContext] Error loading cache:', error);
     localStorage.removeItem(CACHE_KEY);
     return null;
   }
@@ -200,8 +214,31 @@ function loadCacheFromStorage(): UserPermissionCache | null {
 function saveCacheToStorage(cache: UserPermissionCache): void {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+    console.log('[PermissionContext] Cache saved to storage');
   } catch (error) {
-    console.error('Failed to save permission cache:', error);
+    console.error('[PermissionContext] Failed to save permission cache:', error);
+  }
+}
+
+/**
+ * Check if cache needs background refresh (non-blocking)
+ */
+function shouldRefreshCache(cache: UserPermissionCache | null): boolean {
+  if (!cache) return false;
+  const age = Date.now() - cache.timestamp;
+  return age > BACKGROUND_REFRESH_THRESHOLD && age < CACHE_DURATION;
+}
+
+/**
+ * Clear all cache data (used for logout and cross-tab sync)
+ */
+function clearAllCache(): void {
+  try {
+    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem('edumunch_user_profile');
+    console.log('[PermissionContext] All cache cleared');
+  } catch (error) {
+    console.error('[PermissionContext] Error clearing cache:', error);
   }
 }
 
@@ -234,6 +271,81 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [permissions]);
 
   /**
+   * Cross-tab synchronization - listen for storage changes
+   * This ensures all tabs stay in sync when user logs out or permissions change
+   */
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      // Only handle our cache key
+      if (e.key !== CACHE_KEY) return;
+
+      console.log('[PermissionProvider] Storage change detected:', {
+        key: e.key,
+        hasNewValue: !!e.newValue,
+        hasOldValue: !!e.oldValue,
+      });
+
+      // If cache was cleared in another tab, clear here too
+      if (e.newValue === null && e.oldValue !== null) {
+        console.log('[PermissionProvider] Cache cleared in another tab, syncing...');
+        setPermissionsState(null);
+        return;
+      }
+
+      // If cache was updated in another tab, load the new value
+      if (e.newValue) {
+        try {
+          const newCache = JSON.parse(e.newValue) as UserPermissionCache;
+          console.log('[PermissionProvider] Cache updated in another tab, syncing...');
+          setPermissionsState(newCache);
+        } catch (error) {
+          console.error('[PermissionProvider] Error parsing updated cache:', error);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  /**
+   * Background cache refresh for long sessions
+   * Runs every 5 minutes to check if cache needs refresh
+   */
+  useEffect(() => {
+    if (!permissions) return;
+
+    const checkAndRefresh = async () => {
+      if (shouldRefreshCache(permissions) && !isLoading) {
+        console.log('[PermissionProvider] Cache aging, refreshing in background...');
+        try {
+          await refreshPermissions(permissions.userId);
+        } catch (error) {
+          console.error('[PermissionProvider] Background refresh failed:', error);
+          // Don't clear cache on background refresh failure - keep using current cache
+        }
+      }
+    };
+
+    // Check every 5 minutes
+    const intervalId = setInterval(checkAndRefresh, 5 * 60 * 1000);
+    
+    // Also check on visibility change (when user comes back to tab)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkAndRefresh();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [permissions, isLoading]);
+
+  /**
    * Set permissions and persist to localStorage
    */
   const setPermissions = useCallback((cache: UserPermissionCache) => {
@@ -245,19 +357,25 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
    * Clear all cached permissions
    */
   const clearPermissions = useCallback(() => {
+    console.log('[PermissionProvider] Clearing permissions...');
     setPermissionsState(null);
-    localStorage.removeItem(CACHE_KEY);
+    clearAllCache();
   }, []);
 
   /**
    * Refresh permissions from database
    * Called only when admin changes permissions or on manual refresh
    */
-  const refreshPermissions = useCallback(async (userId: string) => {
-    if (!supabase) return;
+  const refreshPermissions = useCallback(async (userId: string, retryCount = 0) => {
+    if (!supabase) {
+      console.warn('[PermissionProvider] Cannot refresh - Supabase not configured');
+      return;
+    }
 
     setIsLoading(true);
     try {
+      console.log('[PermissionProvider] Refreshing permissions for user:', userId);
+      
       // Call the permission resolution function
       const { data: rawPermissions, error } = await supabase.rpc(
         `get_user_permissions_${INDEX_TOKEN}`,
@@ -265,18 +383,32 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
       );
 
       if (error) {
-        console.error('Failed to refresh permissions:', error);
+        console.error('[PermissionProvider] Failed to refresh permissions:', error);
+        
+        // Retry once on network errors
+        if (retryCount === 0 && error.message?.includes('network')) {
+          console.log('[PermissionProvider] Network error, retrying...');
+          setTimeout(() => refreshPermissions(userId, 1), 2000);
+          return;
+        }
+        
+        // On error, keep using existing cache if available
+        if (!permissions) {
+          console.error('[PermissionProvider] No existing cache, cannot recover');
+        }
         return;
       }
 
-      // Get current primary role from cache
+      // Get current primary role from cache or fetch it
       const primaryRole = permissions?.primaryRole || null;
 
       // Build new cache
       const newCache = buildPermissionCache(userId, primaryRole, rawPermissions || []);
       setPermissions(newCache);
+      console.log('[PermissionProvider] Permissions refreshed successfully');
     } catch (error) {
-      console.error('Error refreshing permissions:', error);
+      console.error('[PermissionProvider] Error refreshing permissions:', error);
+      // Keep existing cache on error
     } finally {
       setIsLoading(false);
     }
