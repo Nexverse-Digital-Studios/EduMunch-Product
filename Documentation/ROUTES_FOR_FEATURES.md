@@ -366,18 +366,6 @@
 | `/notifications/send`          | Send notification         | `notifications.create` | `notifications` |
 | `/notifications/send-bulk`     | Send bulk notifications   | `notifications.create` | `notifications` |
 
-#### Messages (SMS/Email)
-
-| Route                        | Functionality            | Permissions Required | Module Code |
-| ---------------------------- | ------------------------ | -------------------- | ----------- |
-| `/messages`                  | Messages dashboard       | `messages.view`      | `messages`  |
-| `/messages/send`             | Send message             | `messages.create`    | `messages`  |
-| `/messages/send-bulk`        | Send bulk messages       | `messages.create`    | `messages`  |
-| `/messages/templates`        | Message templates        | `messages.view`      | `messages`  |
-| `/messages/templates/create` | Create message template  | `messages.create`    | `messages`  |
-| `/messages/history`          | Message history          | `messages.view`      | `messages`  |
-| `/messages/reports`          | Message delivery reports | `messages.view`      | `messages`  |
-
 ---
 
 ## Common Routes (Available to All)
