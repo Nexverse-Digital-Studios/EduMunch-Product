@@ -95,6 +95,21 @@ import {
   FeeReportsPage,
   FeesExportPage,
 } from "@/pages/fees";
+// Student Management Pages (modular)
+import {
+  StudentsList,
+  StudentCreate,
+  StudentDetail,
+  StudentEdit,
+  StudentsExport,
+} from "@/pages/students";
+// Parent Management Pages (modular)
+import {
+  ParentsList,
+  ParentCreate,
+  ParentDetail,
+  ParentEdit,
+} from "@/pages/parents";
 import Notifications from "@/pages/Notifications";
 // Payments Management Pages (modular)
 import { PaymentsList } from "@/pages/payments";
@@ -140,6 +155,14 @@ import {
   ClassEdit,
 } from "@/pages/classes";
 
+// Sections Management Pages (modular)
+import {
+  SectionsList,
+  SectionCreate,
+  SectionDetail,
+  SectionEdit,
+} from "@/pages/sections";
+
 // Subjects Management Pages (modular)
 import {
   SubjectsList,
@@ -183,6 +206,50 @@ import {
   TeacherEdit,
   TeachersExport,
 } from "@/pages/teachers";
+
+// ID Cards Management Pages (modular)
+import {
+  IDCardsDashboard,
+  StudentIDCards,
+  StaffIDCards,
+  IDCardTemplates,
+} from "@/pages/id-cards";
+
+// Reports & Analytics Pages (modular)
+import {
+  ReportsDashboard,
+  StudentPerformanceReport,
+  AttendanceSummaryReport,
+  AcademicTrendsReport,
+  FeeCollectionReport,
+} from "@/pages/reports";
+
+// Library Management Pages (modular)
+import {
+  LibraryDashboard,
+  BooksList,
+  BookIssue,
+  BookReturn,
+  LibraryMembers,
+} from "@/pages/library";
+
+// Transport Management Pages (modular)
+import {
+  TransportDashboard,
+  RoutesList,
+  VehiclesList,
+  DriversList,
+  StudentTransportList,
+} from "@/pages/transport";
+
+// Hostel Management Pages (modular)
+import {
+  HostelDashboard,
+  BlocksList,
+  RoomsList,
+  AllocationsList,
+  ComplaintsList,
+} from "@/pages/hostel";
 
 const queryClient = new QueryClient();
 
@@ -321,6 +388,105 @@ const App = () => (
                     />
                   )}
 
+                  {/* Students Module (Tier 1) */}
+                  {FEATURES.students && (
+                    <>
+                      <Route
+                        path="/students"
+                        element={
+                          <ProtectedRoute requiredModule="students">
+                            <StudentsList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/students/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="students"
+                            requiredAction="create"
+                          >
+                            <StudentCreate />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/students/export"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="students"
+                            requiredAction="export"
+                          >
+                            <StudentsExport />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/students/:id"
+                        element={
+                          <ProtectedRoute requiredModule="students">
+                            <StudentDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/students/:id/edit"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="students"
+                            requiredAction="update"
+                          >
+                            <StudentEdit />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* Parents Module (Tier 1) */}
+                  {FEATURES.parents && (
+                    <>
+                      <Route
+                        path="/parents"
+                        element={
+                          <ProtectedRoute requiredModule="parents">
+                            <ParentsList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/parents/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="parents"
+                            requiredAction="create"
+                          >
+                            <ParentCreate />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/parents/:id"
+                        element={
+                          <ProtectedRoute requiredModule="parents">
+                            <ParentDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/parents/:id/edit"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="parents"
+                            requiredAction="update"
+                          >
+                            <ParentEdit />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
                   {/* Academic Structure (Tier 1) */}
                   {FEATURES.classes && (
                     <>
@@ -401,6 +567,45 @@ const App = () => (
                             requiredAction="update"
                           >
                             <BatchEdit />
+                          </ProtectedRoute>
+                        }
+                      />
+                      {/* Sections routes */}
+                      <Route
+                        path="/sections"
+                        element={
+                          <ProtectedRoute requiredModule="sections">
+                            <SectionsList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/sections/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="sections"
+                            requiredAction="create"
+                          >
+                            <SectionCreate />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/sections/:id"
+                        element={
+                          <ProtectedRoute requiredModule="sections">
+                            <SectionDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/sections/:id/edit"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="sections"
+                            requiredAction="update"
+                          >
+                            <SectionEdit />
                           </ProtectedRoute>
                         }
                       />
@@ -1470,6 +1675,267 @@ const App = () => (
                         </ProtectedRoute>
                       }
                     />
+                  )}
+
+                  {/* ID Cards (Tier 3) */}
+                  {FEATURES.idCards && (
+                    <>
+                      <Route
+                        path="/id-cards"
+                        element={
+                          <ProtectedRoute requiredModule="id_cards">
+                            <IDCardsDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/id-cards/students"
+                        element={
+                          <ProtectedRoute requiredModule="id_cards">
+                            <StudentIDCards />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/id-cards/students/generate"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="id_cards"
+                            requiredAction="create"
+                          >
+                            <StudentIDCards />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/id-cards/staff"
+                        element={
+                          <ProtectedRoute requiredModule="id_cards">
+                            <StaffIDCards />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/id-cards/staff/generate"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="id_cards"
+                            requiredAction="create"
+                          >
+                            <StaffIDCards />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/id-cards/templates"
+                        element={
+                          <ProtectedRoute requiredModule="id_cards">
+                            <IDCardTemplates />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/id-cards/bulk-generate"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="id_cards"
+                            requiredAction="create"
+                          >
+                            <StudentIDCards />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* Transport Management (Tier 2) */}
+                  {FEATURES.transport && (
+                    <>
+                      <Route
+                        path="/transport"
+                        element={
+                          <ProtectedRoute requiredModule="transport">
+                            <TransportDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/transport/routes"
+                        element={
+                          <ProtectedRoute requiredModule="transport">
+                            <RoutesList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/transport/vehicles"
+                        element={
+                          <ProtectedRoute requiredModule="transport">
+                            <VehiclesList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/transport/drivers"
+                        element={
+                          <ProtectedRoute requiredModule="transport">
+                            <DriversList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/transport/students"
+                        element={
+                          <ProtectedRoute requiredModule="transport">
+                            <StudentTransportList />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* Hostel Management (Tier 3) */}
+                  {FEATURES.hostel && (
+                    <>
+                      <Route
+                        path="/hostel"
+                        element={
+                          <ProtectedRoute requiredModule="hostel">
+                            <HostelDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/hostel/blocks"
+                        element={
+                          <ProtectedRoute requiredModule="hostel">
+                            <BlocksList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/hostel/rooms"
+                        element={
+                          <ProtectedRoute requiredModule="hostel">
+                            <RoomsList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/hostel/allocations"
+                        element={
+                          <ProtectedRoute requiredModule="hostel">
+                            <AllocationsList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/hostel/complaints"
+                        element={
+                          <ProtectedRoute requiredModule="hostel">
+                            <ComplaintsList />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* Library Management (Tier 3) */}
+                  {FEATURES.library && (
+                    <>
+                      <Route
+                        path="/library"
+                        element={
+                          <ProtectedRoute requiredModule="library">
+                            <LibraryDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/library/books"
+                        element={
+                          <ProtectedRoute requiredModule="library">
+                            <BooksList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/library/issue"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="library"
+                            requiredAction="create"
+                          >
+                            <BookIssue />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/library/return"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="library"
+                            requiredAction="update"
+                          >
+                            <BookReturn />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/library/members"
+                        element={
+                          <ProtectedRoute requiredModule="library">
+                            <LibraryMembers />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* Reports & Analytics (Tier 3) */}
+                  {FEATURES.reports && (
+                    <>
+                      <Route
+                        path="/reports"
+                        element={
+                          <ProtectedRoute requiredModule="reports">
+                            <ReportsDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/reports/student-performance"
+                        element={
+                          <ProtectedRoute requiredModule="reports">
+                            <StudentPerformanceReport />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/reports/attendance-summary"
+                        element={
+                          <ProtectedRoute requiredModule="reports">
+                            <AttendanceSummaryReport />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/reports/academic-trends"
+                        element={
+                          <ProtectedRoute requiredModule="reports">
+                            <AcademicTrendsReport />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/reports/fee-collection"
+                        element={
+                          <ProtectedRoute requiredModule="reports">
+                            <FeeCollectionReport />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
                   )}
                 </Route>
 

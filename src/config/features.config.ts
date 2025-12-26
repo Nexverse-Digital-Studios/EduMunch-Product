@@ -117,6 +117,7 @@ export interface FeatureConfig {
   hostel: boolean;
   certificates: boolean;
   idCards: boolean;
+  reports: boolean;  // Reports & Analytics dashboard
   
   // Admin Only
   setRoles: boolean;        // Admin route for role/permission management
@@ -209,11 +210,12 @@ export const FEATURES: FeatureConfig = {
   inventory: false,         // Disabled - can enable if needed
   
   // ===== ADVANCED FEATURES (Tier 3) =====
-  transport: false,
-  library: false,
-  hostel: false,
+  transport: true,          // Transport management - routes, vehicles, drivers
+  library: true,            // Library management - books, issues, returns
+  hostel: true,             // Hostel management - blocks, rooms, allocations
   certificates: false,
   idCards: false,
+  reports: true,            // Reports & Analytics dashboard
   
   // ===== ADMIN ONLY =====
   setRoles: true,           // Role configuration for Admin
