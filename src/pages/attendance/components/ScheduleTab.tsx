@@ -10,25 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-
-// Types
-export interface SectionDB {
-  id: string;
-  class_id: string;
-  section_name: string;
-  section_code: string;
-}
-
-export interface TimetableDB {
-  id: string;
-  section_id: string;
-  subject_id: string;
-  teacher_id: string;
-  period_id: string;
-  day_of_week: number;
-  room_number?: string;
-  is_active: boolean;
-}
+import { SectionDB, TimetableDB } from "./types";
 
 interface ScheduleTabProps {
   sections: SectionDB[];

@@ -29,7 +29,17 @@ import Admissions from "@/pages/Admissions";
 // Assignments Management Pages (modular)
 import { AssignmentsList } from "@/pages/assignments";
 // Attendance Management Pages (modular)
-import { AttendanceList } from "@/pages/attendance";
+import {
+  AttendanceList,
+  MarkAttendancePage,
+  ViewAttendancePage,
+  AttendanceReportsPage,
+  SubjectWiseAttendancePage,
+  ExportAttendancePage,
+  LeaveRequestsPage,
+  CreateLeaveRequestPage,
+  LeaveRequestDetailsPage,
+} from "@/pages/attendance";
 import AvailabilitySlots from "@/pages/AvailabilitySlots";
 import Branches from "@/pages/Branches";
 // Doubts Management Pages (modular)
@@ -55,6 +65,36 @@ import Grievances from "@/pages/Grievances";
 import { InventoryList } from "@/pages/inventory";
 import LeaveManagement from "@/pages/LeaveManagement";
 import LectureTemplates from "@/pages/LectureTemplates";
+// Lecture Templates Management Pages (modular)
+import {
+  LectureTemplatesList,
+  LectureTemplateCreate,
+  LectureTemplateDetail,
+  LectureTemplateEdit,
+} from "@/pages/lecture-templates";
+// Exams Management Pages (modular)
+import {
+  ExamsList,
+  ExamCreate,
+  ExamDetail,
+  ExamEdit,
+  ExamSchedulePage,
+  MarksEntryPage,
+  ReportCardsPage,
+  ExamsExportPage,
+} from "@/pages/exams";
+// Fee Management Pages (modular)
+import {
+  FeeStructuresList,
+  FeeStructureCreate,
+  FeeStructureDetail,
+  FeeStructureEdit,
+  StudentFeesList,
+  FeeCollectionPage,
+  FeeReceiptsPage,
+  FeeReportsPage,
+  FeesExportPage,
+} from "@/pages/fees";
 import Notifications from "@/pages/Notifications";
 // Payments Management Pages (modular)
 import { PaymentsList } from "@/pages/payments";
@@ -67,7 +107,22 @@ import SalaryStructures from "@/pages/SalaryStructures";
 import { SetRolesList } from "@/pages/set-roles";
 import SupportTickets from "@/pages/SupportTickets";
 // Timetables Management Pages (modular)
-import { TimetablesList } from "@/pages/timetables";
+import {
+  TimetablesList,
+  TimetableDashboard,
+  ViewTimetablesPage,
+  SectionTimetablePage,
+  CreateTimetablePage,
+  EditTimetablePage,
+  BulkCreatePage,
+  CopySchedulePage,
+  ConflictsPage,
+  SubstitutePage,
+  PeriodsPage,
+  ExportTimetablePage,
+  MyTimetablePage,
+  ClassTimetablePage,
+} from "@/pages/timetables";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import NotFound from "@/pages/NotFound";
 
@@ -100,6 +155,34 @@ import {
   TopicDetail,
   TopicEdit,
 } from "@/pages/topics";
+
+// Staff Attendance Management Pages (modular)
+import {
+  StaffAttendanceDashboard,
+  MarkStaffAttendancePage,
+  ViewStaffAttendancePage,
+  EmployeeAttendanceDetailPage,
+  StaffAttendanceReportsPage,
+  MonthlyReportPage,
+  ExportStaffAttendancePage,
+} from "@/pages/staff-attendance";
+
+// Academic Years Management Pages (modular)
+import {
+  AcademicYearsList,
+  AcademicYearCreate,
+  AcademicYearDetail,
+  AcademicYearEdit,
+} from "@/pages/academic-years";
+
+// Teachers Management Pages (modular)
+import {
+  TeachersList,
+  TeacherCreate,
+  TeacherDetail,
+  TeacherEdit,
+  TeachersExport,
+} from "@/pages/teachers";
 
 const queryClient = new QueryClient();
 
@@ -454,46 +537,601 @@ const App = () => (
 
                   {/* Attendance (Tier 1) */}
                   {FEATURES.attendance && (
-                    <Route
-                      path="/attendance"
-                      element={
-                        <ProtectedRoute requiredModule="attendance">
-                          <AttendanceList />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <>
+                      <Route
+                        path="/attendance"
+                        element={
+                          <ProtectedRoute requiredModule="attendance">
+                            <AttendanceList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/attendance/mark"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="attendance"
+                            requiredAction="create"
+                          >
+                            <MarkAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/attendance/mark/:sectionId"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="attendance"
+                            requiredAction="create"
+                          >
+                            <MarkAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/attendance/view"
+                        element={
+                          <ProtectedRoute requiredModule="attendance">
+                            <ViewAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/attendance/view/:sectionId"
+                        element={
+                          <ProtectedRoute requiredModule="attendance">
+                            <ViewAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/attendance/view/student/:studentId"
+                        element={
+                          <ProtectedRoute requiredModule="attendance">
+                            <ViewAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/attendance/reports"
+                        element={
+                          <ProtectedRoute requiredModule="attendance">
+                            <AttendanceReportsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/attendance/reports/:reportType"
+                        element={
+                          <ProtectedRoute requiredModule="attendance">
+                            <AttendanceReportsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/attendance/subject-wise"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="attendance"
+                            requiredAction="create"
+                          >
+                            <SubjectWiseAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/attendance/export"
+                        element={
+                          <ProtectedRoute requiredModule="attendance">
+                            <ExportAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
                   )}
+
+                  {/* Leave Requests */}
                   {FEATURES.leaveManagement && (
-                    <Route
-                      path="/leave-management"
-                      element={
-                        <ProtectedRoute requiredModule="leave">
-                          <LeaveManagement />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <>
+                      <Route
+                        path="/leave-requests"
+                        element={
+                          <ProtectedRoute requiredModule="leave">
+                            <LeaveRequestsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/leave-requests/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="leave"
+                            requiredAction="create"
+                          >
+                            <CreateLeaveRequestPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/leave-requests/:id"
+                        element={
+                          <ProtectedRoute requiredModule="leave">
+                            <LeaveRequestDetailsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/leave-requests/:id/approve"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="leave"
+                            requiredAction="approve"
+                          >
+                            <LeaveRequestDetailsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/leave-management"
+                        element={
+                          <ProtectedRoute requiredModule="leave">
+                            <LeaveManagement />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* Staff Attendance (Tier 1) */}
+                  {FEATURES.attendance && (
+                    <>
+                      <Route
+                        path="/staff/attendance"
+                        element={
+                          <ProtectedRoute requiredModule="staff_attendance">
+                            <StaffAttendanceDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/staff/attendance/mark"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="staff_attendance"
+                            requiredAction="create"
+                          >
+                            <MarkStaffAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/staff/attendance/view"
+                        element={
+                          <ProtectedRoute requiredModule="staff_attendance">
+                            <ViewStaffAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/staff/attendance/view/:employeeId"
+                        element={
+                          <ProtectedRoute requiredModule="staff_attendance">
+                            <EmployeeAttendanceDetailPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/staff/attendance/reports"
+                        element={
+                          <ProtectedRoute requiredModule="staff_attendance">
+                            <StaffAttendanceReportsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/staff/attendance/reports/monthly"
+                        element={
+                          <ProtectedRoute requiredModule="staff_attendance">
+                            <MonthlyReportPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/staff/attendance/export"
+                        element={
+                          <ProtectedRoute requiredModule="staff_attendance">
+                            <ExportStaffAttendancePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* Academic Years (Tier 1) */}
+                  {FEATURES.classes && (
+                    <>
+                      <Route
+                        path="/academic-years"
+                        element={
+                          <ProtectedRoute requiredModule="academic_years">
+                            <AcademicYearsList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/academic-years/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="academic_years"
+                            requiredAction="create"
+                          >
+                            <AcademicYearCreate />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/academic-years/:id"
+                        element={
+                          <ProtectedRoute requiredModule="academic_years">
+                            <AcademicYearDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/academic-years/:id/edit"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="academic_years"
+                            requiredAction="update"
+                          >
+                            <AcademicYearEdit />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* Teachers (Tier 1) */}
+                  {FEATURES.teachers && (
+                    <>
+                      <Route
+                        path="/teachers"
+                        element={
+                          <ProtectedRoute requiredModule="teachers">
+                            <TeachersList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/teachers/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="teachers"
+                            requiredAction="create"
+                          >
+                            <TeacherCreate />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/teachers/export"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="teachers"
+                            requiredAction="export"
+                          >
+                            <TeachersExport />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/teachers/:id"
+                        element={
+                          <ProtectedRoute requiredModule="teachers">
+                            <TeacherDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/teachers/:id/edit"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="teachers"
+                            requiredAction="update"
+                          >
+                            <TeacherEdit />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
                   )}
 
                   {/* Timetable (Tier 1) */}
                   {FEATURES.timetables && (
-                    <Route
-                      path="/timetables"
-                      element={
-                        <ProtectedRoute requiredModule="timetable">
-                          <TimetablesList />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <>
+                      <Route
+                        path="/timetables"
+                        element={
+                          <ProtectedRoute requiredModule="timetable">
+                            <TimetablesList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable"
+                        element={
+                          <ProtectedRoute requiredModule="timetable">
+                            <TimetableDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/view"
+                        element={
+                          <ProtectedRoute requiredModule="timetable">
+                            <ViewTimetablesPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/view/:sectionId"
+                        element={
+                          <ProtectedRoute requiredModule="timetable">
+                            <SectionTimetablePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="timetable"
+                            requiredAction="create"
+                          >
+                            <CreateTimetablePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/:id/edit"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="timetable"
+                            requiredAction="update"
+                          >
+                            <EditTimetablePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/bulk-create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="timetable"
+                            requiredAction="create"
+                          >
+                            <BulkCreatePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/copy"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="timetable"
+                            requiredAction="create"
+                          >
+                            <CopySchedulePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/conflicts"
+                        element={
+                          <ProtectedRoute requiredModule="timetable">
+                            <ConflictsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/substitute"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="timetable"
+                            requiredAction="update"
+                          >
+                            <SubstitutePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/periods"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="timetable"
+                            requiredAction="update"
+                          >
+                            <PeriodsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/timetable/export"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="timetable"
+                            requiredAction="export"
+                          >
+                            <ExportTimetablePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/my-timetable"
+                        element={
+                          <ProtectedRoute requiredModule="timetable">
+                            <MyTimetablePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/class-timetable"
+                        element={
+                          <ProtectedRoute requiredModule="timetable">
+                            <ClassTimetablePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
                   )}
                   {FEATURES.lectureTemplates && (
-                    <Route
-                      path="/lecture-templates"
-                      element={
-                        <ProtectedRoute requiredModule="lecture_templates">
-                          <LectureTemplates />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <>
+                      <Route
+                        path="/lecture-templates"
+                        element={
+                          <ProtectedRoute requiredModule="lecture_templates">
+                            <LectureTemplatesList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/lecture-templates/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="lecture_templates"
+                            requiredAction="create"
+                          >
+                            <LectureTemplateCreate />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/lecture-templates/:id"
+                        element={
+                          <ProtectedRoute requiredModule="lecture_templates">
+                            <LectureTemplateDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/lecture-templates/:id/edit"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="lecture_templates"
+                            requiredAction="update"
+                          >
+                            <LectureTemplateEdit />
+                          </ProtectedRoute>
+                        }
+                      />
+                      {/* Legacy route for old LectureTemplates page */}
+                      <Route
+                        path="/lecture-templates-legacy"
+                        element={
+                          <ProtectedRoute requiredModule="lecture_templates">
+                            <LectureTemplates />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* Examinations Module (Tier 1) */}
+                  {FEATURES.exams && (
+                    <>
+                      <Route
+                        path="/exams"
+                        element={
+                          <ProtectedRoute requiredModule="exams">
+                            <ExamsList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/exams/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="exams"
+                            requiredAction="create"
+                          >
+                            <ExamCreate />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/exams/export"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="exams"
+                            requiredAction="export"
+                          >
+                            <ExamsExportPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/exams/:id"
+                        element={
+                          <ProtectedRoute requiredModule="exams">
+                            <ExamDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/exams/:id/edit"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="exams"
+                            requiredAction="update"
+                          >
+                            <ExamEdit />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/exams/:id/schedule"
+                        element={
+                          <ProtectedRoute requiredModule="exams">
+                            <ExamSchedulePage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/exams/:id/marks"
+                        element={
+                          <ProtectedRoute requiredModule="exams">
+                            <MarksEntryPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/exams/:id/marks/enter"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="exams"
+                            requiredAction="update"
+                          >
+                            <MarksEntryPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/exams/:id/report-cards"
+                        element={
+                          <ProtectedRoute requiredModule="exams">
+                            <ReportCardsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/report-cards"
+                        element={
+                          <ProtectedRoute requiredModule="exams">
+                            <ReportCardsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                    </>
                   )}
 
                   {/* Exams & Results (Tier 1) */}
@@ -524,6 +1162,107 @@ const App = () => (
                         element={
                           <ProtectedRoute requiredModule="payments">
                             <Enrollments />
+                          </ProtectedRoute>
+                        }
+                      />
+                      {/* Fee Structures */}
+                      <Route
+                        path="/fees/structures"
+                        element={
+                          <ProtectedRoute requiredModule="fees">
+                            <FeeStructuresList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/fees/structures/create"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="fees"
+                            requiredAction="create"
+                          >
+                            <FeeStructureCreate />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/fees/structures/:id"
+                        element={
+                          <ProtectedRoute requiredModule="fees">
+                            <FeeStructureDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/fees/structures/:id/edit"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="fees"
+                            requiredAction="update"
+                          >
+                            <FeeStructureEdit />
+                          </ProtectedRoute>
+                        }
+                      />
+                      {/* Student Fees */}
+                      <Route
+                        path="/fees/students"
+                        element={
+                          <ProtectedRoute requiredModule="fees">
+                            <StudentFeesList />
+                          </ProtectedRoute>
+                        }
+                      />
+                      {/* Fee Collection */}
+                      <Route
+                        path="/fees/collect"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="fees"
+                            requiredAction="create"
+                          >
+                            <FeeCollectionPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/fees/collect/:studentFeeId"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="fees"
+                            requiredAction="create"
+                          >
+                            <FeeCollectionPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      {/* Fee Receipts */}
+                      <Route
+                        path="/fees/receipts"
+                        element={
+                          <ProtectedRoute requiredModule="fees">
+                            <FeeReceiptsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      {/* Fee Reports */}
+                      <Route
+                        path="/fees/reports"
+                        element={
+                          <ProtectedRoute requiredModule="fees">
+                            <FeeReportsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      {/* Fee Export */}
+                      <Route
+                        path="/fees/export"
+                        element={
+                          <ProtectedRoute
+                            requiredModule="fees"
+                            requiredAction="export"
+                          >
+                            <FeesExportPage />
                           </ProtectedRoute>
                         }
                       />

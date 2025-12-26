@@ -281,6 +281,8 @@
 
 ### 1.7 School Settings & Configuration
 
+<!-- NOT IMPORTANT SKIP THIS  -->
+
 | Route                                | Functionality                | Permissions Required | Module Code |
 | ------------------------------------ | ---------------------------- | -------------------- | ----------- |
 | `/settings`                          | School settings dashboard    | `settings.view`      | `settings`  |

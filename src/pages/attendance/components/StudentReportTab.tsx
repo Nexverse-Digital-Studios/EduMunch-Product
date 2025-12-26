@@ -19,35 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-// Types
-export interface StudentDB {
-  id: string;
-  first_name: string;
-  last_name: string;
-  admission_number: string;
-  section_id: string;
-}
-
-export interface AttendanceDB {
-  id: string;
-  student_id: string;
-  class_id: string;
-  section_id: string;
-  attendance_date: string;
-  status: "present" | "absent" | "late" | "half_day" | "on_leave";
-  marked_by?: string;
-  marked_at?: string;
-  remarks?: string;
-  created_at: string;
-}
-
-export interface SectionDB {
-  id: string;
-  class_id: string;
-  section_name: string;
-  section_code: string;
-}
+import { StudentDB, AttendanceDB, SectionDB } from "./types";
 
 interface StudentReportTabProps {
   students: StudentDB[];

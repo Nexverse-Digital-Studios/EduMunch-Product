@@ -9,14 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-// Types
-export interface TeacherDB {
-  id: string;
-  first_name: string;
-  last_name: string;
-  employee_code: string;
-}
+import { TeacherDB } from "./types";
 
 interface ReportsTabProps {
   teachers: TeacherDB[];
