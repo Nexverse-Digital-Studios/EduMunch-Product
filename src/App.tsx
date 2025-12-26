@@ -1495,7 +1495,7 @@ const App = () => (
                       }
                     />
                   )}
-
+ 
                   {/* LMS Features (Tier 2) */}
                   {FEATURES.assignments && (
                     <Route
