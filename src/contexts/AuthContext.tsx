@@ -9,12 +9,22 @@
  * 3. Create user profile in users table with primary_role_id
  * 4. Create user_roles entry
  * 5. Cache permissions locally
+ * 
+ * Permission Flow:
+ * 1. After login, call get_user_permissions RPC
+ * 2. Build permission cache in PermissionContext format
+ * 3. Dispatch event to sync with PermissionContext
  */
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured, TABLES, INDEX_TOKEN } from '@/lib/supabase';
-import { UserProfile, UserPermissionCache, UserRole } from '@/types/user';
+import { UserProfile, UserRole } from '@/types/user';
+import { 
+  UserPermissionCache, 
+  ModulePermissions,
+  buildPermissionCache as buildPermissionCacheFromRaw 
+} from '@/contexts/PermissionContext';
 
 interface AuthContextType {
   // Auth state
@@ -114,32 +124,89 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   /**
-   * Build permission cache for the user
+   * Build permission cache for the user by fetching from database
+   * This calls the get_user_permissions RPC and builds a cache 
+   * compatible with PermissionContext
    */
-  const buildPermissionCache = useCallback(async (profile: UserProfile): Promise<UserPermissionCache> => {
-    const cache: UserPermissionCache = {
-      userId: profile.id,
-      primaryRole: profile.primary_role ? {
-        id: profile.primary_role.id,
-        code: profile.primary_role.role_code,
-        name: profile.primary_role.role_name,
-        isSystemRole: profile.primary_role.is_system_role,
-      } : null,
-      permissions: [],
-      modules: [],
-      timestamp: Date.now(),
-      version: '1.0.0', // Match PermissionContext version
-    };
+  const fetchAndBuildPermissionCache = useCallback(async (profile: UserProfile): Promise<UserPermissionCache> => {
+    console.log('[AuthContext] Building permission cache for user:', profile.id);
+    
+    const primaryRole = profile.primary_role ? {
+      id: profile.primary_role.id,
+      code: profile.primary_role.role_code,
+      name: profile.primary_role.role_name,
+      isSystemRole: profile.primary_role.is_system_role,
+    } : null;
 
-    // For ADMIN, we don't need to fetch permissions - they bypass everything
-    if (profile.primary_role?.role_code === 'ADMIN') {
-      return cache;
+    // For ADMIN/super_admin, return empty cache - they bypass all permission checks
+    const roleCode = profile.primary_role?.role_code;
+    if (roleCode === 'ADMIN' || roleCode === 'super_admin') {
+      console.log('[AuthContext] Admin user - returning bypass cache');
+      return {
+        userId: profile.id,
+        primaryRole,
+        permissions: {},
+        routes: [],
+        timestamp: Date.now(),
+        version: '1.0.0',
+      };
     }
 
-    // TODO: Fetch actual permissions from role_permissions for non-admin users
-    // This will be implemented in Phase 4
-    
-    return cache;
+    // Fetch permissions from database using RPC
+    if (!supabase) {
+      console.error('[AuthContext] Supabase not configured, returning empty cache');
+      return {
+        userId: profile.id,
+        primaryRole,
+        permissions: {},
+        routes: [],
+        timestamp: Date.now(),
+        version: '1.0.0',
+      };
+    }
+
+    try {
+      console.log('[AuthContext] Calling get_user_permissions RPC for user:', profile.id);
+      const { data: rawPermissions, error } = await supabase.rpc(
+        `get_user_permissions_${INDEX_TOKEN}`,
+        { p_user_id: profile.id }
+      );
+
+      if (error) {
+        console.error('[AuthContext] Error fetching permissions:', error);
+        return {
+          userId: profile.id,
+          primaryRole,
+          permissions: {},
+          routes: [],
+          timestamp: Date.now(),
+          version: '1.0.0',
+        };
+      }
+
+      console.log('[AuthContext] Raw permissions received:', rawPermissions?.length || 0, 'items');
+      
+      // Build cache using the shared function from PermissionContext
+      const cache = buildPermissionCacheFromRaw(profile.id, primaryRole, rawPermissions || []);
+      
+      console.log('[AuthContext] Permission cache built:', {
+        userId: cache.userId,
+        moduleCount: Object.keys(cache.permissions).length,
+        modules: Object.keys(cache.permissions),
+      });
+      
+      return cache;
+    } catch (err) {
+      console.error('[AuthContext] Error in fetchAndBuildPermissionCache:', err);
+      return {
+        userId: profile.id,
+        primaryRole,
+        permissions: {},
+        routes: [],
+        timestamp: Date.now(),
+        version: '1.0.0',
+      };
+    }
   }, []);
 
   /**
@@ -149,7 +216,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const profile = await fetchUserProfile(authUser.id);
     if (profile) {
       setUserProfile(profile);
-      const permCache = await buildPermissionCache(profile);
+      const permCache = await fetchAndBuildPermissionCache(profile);
       setPermissions(permCache);
       
       // Store in localStorage for persistence
@@ -163,7 +230,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       console.log('[AuthContext] Permissions loaded and event dispatched');
     }
-  }, [fetchUserProfile, buildPermissionCache]);
+  }, [fetchUserProfile, fetchAndBuildPermissionCache]);
 
   /**
    * Refresh user profile from database
@@ -327,27 +394,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   /**
    * Permission helper - checks if user has a specific permission
+   * permissionCode format: 'module.action' (e.g., 'users.view', 'students.create')
    */
   const hasPermission = useCallback((permissionCode: string): boolean => {
     if (!permissions) return false;
-    if (permissions.primaryRole?.code === 'ADMIN') return true;
-    return permissions.permissions.includes(permissionCode);
+    const roleCode = permissions.primaryRole?.code;
+    if (roleCode === 'ADMIN' || roleCode === 'super_admin') return true;
+    
+    // Parse permission code: 'module.action'
+    const [moduleCode, action] = permissionCode.split('.');
+    if (!moduleCode || !action) return false;
+    
+    const modulePerms = permissions.permissions[moduleCode];
+    if (!modulePerms) return false;
+    
+    switch (action) {
+      case 'view': return modulePerms.canView;
+      case 'create': return modulePerms.canCreate;
+      case 'update': return modulePerms.canUpdate;
+      case 'delete': return modulePerms.canDelete;
+      case 'approve': return modulePerms.canApprove;
+      case 'export': return modulePerms.canExport;
+      default: return false;
+    }
   }, [permissions]);
 
   /**
-   * Module access helper
+   * Module access helper - checks if user has ANY permission on a module
    */
   const hasModuleAccess = useCallback((moduleCode: string): boolean => {
     if (!permissions) return false;
-    if (permissions.primaryRole?.code === 'ADMIN') return true;
-    return permissions.modules.includes(moduleCode);
+    const roleCode = permissions.primaryRole?.code;
+    if (roleCode === 'ADMIN' || roleCode === 'super_admin') return true;
+    
+    const modulePerms = permissions.permissions[moduleCode];
+    if (!modulePerms) return false;
+    
+    return modulePerms.canView || modulePerms.canCreate || 
+           modulePerms.canUpdate || modulePerms.canDelete ||
+           modulePerms.canApprove || modulePerms.canExport;
   }, [permissions]);
 
   /**
-   * Admin check helper
+   * Admin check helper - checks for both 'ADMIN' and 'super_admin' role codes
    */
   const isAdminCheck = useCallback((): boolean => {
-    return permissions?.primaryRole?.code === 'ADMIN';
+    const roleCode = permissions?.primaryRole?.code;
+    return roleCode === 'ADMIN' || roleCode === 'super_admin';
   }, [permissions]);
 
   /**

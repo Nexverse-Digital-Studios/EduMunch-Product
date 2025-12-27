@@ -445,7 +445,8 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     // ADMIN bypass - full access during development and production
-    if (permissions.primaryRole?.code === 'ADMIN') {
+    const roleCode = permissions.primaryRole?.code;
+    if (roleCode === 'ADMIN' || roleCode === 'super_admin') {
       console.log(`[hasPermission] ADMIN bypass - allowing ${module}:${action}`);
       return true;
     }
@@ -489,7 +490,8 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
     }
     
     // ADMIN bypass
-    if (permissions.primaryRole?.code === 'ADMIN') {
+    const roleCode = permissions.primaryRole?.code;
+    if (roleCode === 'ADMIN' || roleCode === 'super_admin') {
       console.log(`[hasModuleAccess] ADMIN bypass - allowing module ${moduleCode}`);
       return isModuleAvailable(moduleCode);
     }
@@ -522,7 +524,8 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!permissions) return false;
     
     // ADMIN bypass
-    if (permissions.primaryRole?.code === 'ADMIN') {
+    const roleCode = permissions.primaryRole?.code;
+    if (roleCode === 'ADMIN' || roleCode === 'super_admin') {
       return true;
     }
 
@@ -531,10 +534,11 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [permissions]);
 
   /**
-   * Check if user is Admin
+   * Check if user is Admin (supports both 'ADMIN' and 'super_admin' role codes)
    */
   const isAdmin = useCallback((): boolean => {
-    return permissions?.primaryRole?.code === 'ADMIN';
+    const roleCode = permissions?.primaryRole?.code;
+    return roleCode === 'ADMIN' || roleCode === 'super_admin';
   }, [permissions]);
 
   // Memoize context value

@@ -879,6 +879,99 @@ DROP FUNCTION IF EXISTS get_role_id_1EMAET(TEXT);
 DROP FUNCTION IF EXISTS get_permission_id_1EMAET(TEXT);
 
 -- ============================================================================
+-- STEP 5: SYNC USER_ROLES TABLE
+-- ============================================================================
+-- This ensures that every user with a primary_role_id has a corresponding
+-- entry in the user_roles table. The RPC function get_user_permissions
+-- queries user_roles to resolve permissions, so this sync is critical.
+
+-- Insert missing user_roles entries for users who have primary_role_id set
+-- but don't have a corresponding entry in user_roles
+INSERT INTO user_roles_1EMAET (id, user_id, role_id, is_primary, assigned_by, created_at, updated_at)
+SELECT 
+    gen_random_uuid(),
+    u.id,
+    u.primary_role_id,
+    true,
+    null,
+    now(),
+    now()
+FROM users_1EMAET u
+WHERE u.primary_role_id IS NOT NULL
+  AND u.is_active = true
+  AND NOT EXISTS (
+    SELECT 1 FROM user_roles_1EMAET ur 
+    WHERE ur.user_id = u.id 
+      AND ur.role_id = u.primary_role_id
+  );
+
+-- ============================================================================
+-- STEP 6: CREATE TRIGGER FOR AUTO USER_ROLES SYNC
+-- ============================================================================
+-- This trigger automatically creates/updates user_roles entries when a user
+-- is created or their primary_role_id is changed.
+
+-- Function to sync user_roles when user is created/updated
+CREATE OR REPLACE FUNCTION sync_user_roles_1EMAET()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Only proceed if primary_role_id is set
+    IF NEW.primary_role_id IS NOT NULL THEN
+        -- Check if user_roles entry already exists for this user and role
+        IF NOT EXISTS (
+            SELECT 1 FROM user_roles_1EMAET 
+            WHERE user_id = NEW.id 
+              AND role_id = NEW.primary_role_id
+        ) THEN
+            -- Insert new user_roles entry
+            INSERT INTO user_roles_1EMAET (
+                id, user_id, role_id, is_primary, assigned_by, created_at, updated_at
+            ) VALUES (
+                gen_random_uuid(),
+                NEW.id,
+                NEW.primary_role_id,
+                true,
+                null,
+                now(),
+                now()
+            );
+        ELSE
+            -- Update existing entry to be primary
+            UPDATE user_roles_1EMAET 
+            SET is_primary = true, updated_at = now()
+            WHERE user_id = NEW.id 
+              AND role_id = NEW.primary_role_id;
+        END IF;
+        
+        -- If primary role changed, set old role as non-primary
+        IF TG_OP = 'UPDATE' AND OLD.primary_role_id IS NOT NULL 
+           AND OLD.primary_role_id != NEW.primary_role_id THEN
+            UPDATE user_roles_1EMAET 
+            SET is_primary = false, updated_at = now()
+            WHERE user_id = NEW.id 
+              AND role_id = OLD.primary_role_id;
+        END IF;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Drop trigger if exists (to allow re-running script)
+DROP TRIGGER IF EXISTS trigger_sync_user_roles_1EMAET ON users_1EMAET;
+
+-- Create trigger on users table
+CREATE TRIGGER trigger_sync_user_roles_1EMAET
+    AFTER INSERT OR UPDATE OF primary_role_id
+    ON users_1EMAET
+    FOR EACH ROW
+    EXECUTE FUNCTION sync_user_roles_1EMAET();
+
+COMMENT ON FUNCTION sync_user_roles_1EMAET() IS 
+'Automatically syncs user_roles table when a user is created or their primary_role_id changes. 
+This ensures the get_user_permissions RPC can resolve permissions correctly.';
+
+-- ============================================================================
 -- VERIFICATION QUERIES
 -- ============================================================================
 
@@ -897,6 +990,18 @@ DROP FUNCTION IF EXISTS get_permission_id_1EMAET(TEXT);
 -- LEFT JOIN role_permissions_1EMAET rp ON r.id = rp.role_id
 -- GROUP BY r.role_code
 -- ORDER BY r.role_code;
+
+-- Verify user_roles sync - shows users with primary_role but missing user_roles entry
+-- SELECT u.id, u.email, u.full_name, r.role_code, 
+--        CASE WHEN ur.id IS NULL THEN 'MISSING' ELSE 'OK' END as user_roles_status
+-- FROM users_1EMAET u
+-- LEFT JOIN roles_1EMAET r ON u.primary_role_id = r.id
+-- LEFT JOIN user_roles_1EMAET ur ON u.id = ur.user_id AND u.primary_role_id = ur.role_id
+-- WHERE u.primary_role_id IS NOT NULL
+-- ORDER BY user_roles_status DESC, u.email;
+
+-- Verify permissions for a specific user (replace USER_ID with actual UUID)
+-- SELECT * FROM get_user_permissions_1EMAET('USER_ID_HERE');
 
 -- ============================================================================
 -- END OF SCRIPT
