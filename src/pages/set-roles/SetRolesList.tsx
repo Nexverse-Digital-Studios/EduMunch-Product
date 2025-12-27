@@ -402,3 +402,5 @@ export const SetRolesList = () => {
     </div>
   );
 };
+
+export default SetRolesList;

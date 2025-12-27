@@ -47,6 +47,7 @@ const UsersList = lazy(() => import("@/pages/users/UsersList"));
 const UserCreate = lazy(() => import("@/pages/users/UserCreate"));
 const UserDetail = lazy(() => import("@/pages/users/UserDetail"));
 const UserEdit = lazy(() => import("@/pages/users/UserEdit"));
+const PermissionsList = lazy(() => import("@/pages/set-roles/SetRolesList"));
 
 // Role Management
 const RolesList = lazy(() => import("@/pages/roles/RolesList"));
@@ -262,6 +263,7 @@ const routeComponentMap: Record<string, LazyComponent> = {
   '/users/create': UserCreate,
   '/users/:id': UserDetail,
   '/users/:id/edit': UserEdit,
+  '/permissions': PermissionsList,
   
   // Roles
   '/roles': RolesList,
