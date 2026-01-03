@@ -1,7 +1,10 @@
 /**
- * ParentsList Component
- * ====================
- * Main listing page for parents/guardians with search, filters, and stats
+ * ParentsList Component (CONSOLIDATED)
+ * =====================================
+ * Main listing page for parents/guardians with search, filters, and stats.
+ * Create and Edit operations now use modal dialogs instead of separate routes.
+ * 
+ * Route Consolidation: Replaces /parents/create and /parents/:id/edit routes
  */
 
 import { useState, useMemo } from "react";
@@ -17,6 +20,8 @@ import {
   Briefcase,
   MapPin,
   ChevronRight,
+  Pencil,
+  Eye,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -44,22 +49,66 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { ParentDB, RELATIONSHIP_OPTIONS } from "./types";
+import { ParentFormDialog } from "./ParentFormDialog";
 
 const INDEX_TOKEN = "1emaet";
 
 export function ParentsList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [relationshipFilter, setRelationshipFilter] = useState<string>("all");
+  
+  // Modal states for create/edit (consolidation - replaces separate routes)
+  const [showParentModal, setShowParentModal] = useState(false);
+  const [editParentId, setEditParentId] = useState<string | null>(null);
 
-  const { canCreate, canExport } = useModulePermissions("parents");
+  const { canCreate, canUpdate, canExport } = useModulePermissions("parents");
 
   // Fetch parents
-  const { data: parents, isLoading } = useSupabaseTable<ParentDB>(
+  const { data: parents, isLoading, refetch } = useSupabaseTable<ParentDB>(
     `parents_${INDEX_TOKEN}`,
     {
       filters: {},
     }
   );
+
+  // Handle opening create modal
+  const handleCreateParent = () => {
+    setEditParentId(null);
+    setShowParentModal(true);
+  };
+
+  // Handle opening edit modal
+  const handleEditParent = (parentId: string) => {
+    setEditParentId(parentId);
+    setShowParentModal(true);
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setShowParentModal(false);
+    setEditParentId(null);
+  };
+
+  // Get parent data for edit mode
+  const getEditParentData = () => {
+    if (!editParentId || !parents) return undefined;
+    const parent = parents.find((p) => p.id === editParentId);
+    if (!parent) return undefined;
+    return {
+      full_name: parent.full_name,
+      relationship: parent.relationship,
+      phone: parent.phone,
+      email: parent.email || "",
+      occupation: parent.occupation || "",
+      annual_income: parent.annual_income || "",
+      aadhar_number: parent.aadhar_number || "",
+      address_line1: parent.address_line1 || "",
+      address_line2: parent.address_line2 || "",
+      city: parent.city || "",
+      state: parent.state || "",
+      pincode: parent.pincode || "",
+    };
+  };
 
   // Filtered parents
   const filteredParents = useMemo(() => {
@@ -152,11 +201,9 @@ export function ParentsList() {
             </Button>
           )}
           {canCreate && (
-            <Button asChild>
-              <Link to="/parents/create">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Add Parent
-              </Link>
+            <Button onClick={handleCreateParent}>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add Parent
             </Button>
           )}
         </div>
@@ -279,11 +326,9 @@ export function ParentsList() {
                   : "Get started by adding a parent"}
               </p>
               {canCreate && !searchQuery && relationshipFilter === "all" && (
-                <Button className="mt-4" asChild>
-                  <Link to="/parents/create">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Add Parent
-                  </Link>
+                <Button className="mt-4" onClick={handleCreateParent}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Add Parent
                 </Button>
               )}
             </div>
@@ -364,12 +409,22 @@ export function ParentsList() {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/parents/${parent.id}`}>
-                          View
-                          <ChevronRight className="ml-1 h-4 w-4" />
-                        </Link>
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        {canUpdate && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleEditParent(parent.id)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link to={`/parents/${parent.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -378,6 +433,16 @@ export function ParentsList() {
           )}
         </CardContent>
       </Card>
+
+      {/* Create/Edit Parent Modal (Consolidated - replaces /parents/create and /parents/:id/edit routes) */}
+      <ParentFormDialog
+        open={showParentModal}
+        onOpenChange={handleModalClose}
+        mode={editParentId ? "edit" : "create"}
+        parentId={editParentId || undefined}
+        initialData={getEditParentData()}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

@@ -5,8 +5,7 @@
  * Used in SubjectsList page
  */
 
-import { useNavigate } from "react-router-dom";
-import { Edit, Trash2, Eye, BookOpen, MoreVertical } from "lucide-react";
+import { Edit, Trash2, BookOpen, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,6 +27,7 @@ import type { Subject } from "@/hooks/useSupabaseQuery";
 interface SubjectTableProps {
   subjects: Subject[];
   onDelete: (subjectId: string) => void;
+  onEdit?: (subjectId: string) => void;
   canUpdate: boolean;
   canDelete: boolean;
 }
@@ -35,11 +35,10 @@ interface SubjectTableProps {
 export const SubjectTable = ({
   subjects,
   onDelete,
+  onEdit,
   canUpdate,
   canDelete,
 }: SubjectTableProps) => {
-  const navigate = useNavigate();
-
   return (
     <Table>
       <TableHeader>
@@ -85,15 +84,9 @@ export const SubjectTable = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => navigate(`/subjects/${subject.id}`)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View
-                  </DropdownMenuItem>
                   {canUpdate && (
                     <DropdownMenuItem
-                      onClick={() => navigate(`/subjects/${subject.id}/edit`)}
+                      onClick={() => onEdit?.(subject.id)}
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit

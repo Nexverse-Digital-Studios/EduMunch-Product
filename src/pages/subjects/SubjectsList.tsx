@@ -6,7 +6,6 @@
  */
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Plus, BookOpen, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,14 +13,15 @@ import { Input } from "@/components/ui/input";
 import { useSubjects, useDeleteSubject } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
-import { SubjectTable, SubjectCard, DeleteSubjectDialog } from "./components";
+import { SubjectTable, SubjectCard, SubjectFormDialog, DeleteSubjectDialog } from "./components";
 
 export default function SubjectsList() {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [subjectToDelete, setSubjectToDelete] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
   // Permission checks
   const { canCreate, canUpdate, canDelete } = useModulePermissions("subjects");
@@ -31,6 +31,22 @@ export default function SubjectsList() {
 
   // Delete mutation
   const deleteSubjectMutation = useDeleteSubject();
+
+  // Modal handlers
+  const handleCreate = () => {
+    setEditId(null);
+    setShowModal(true);
+  };
+
+  const handleEdit = (id: string) => {
+    setEditId(id);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setEditId(null);
+  };
 
   // Filter subjects by search term
   const filteredSubjects = subjects.filter(
@@ -98,7 +114,7 @@ export default function SubjectsList() {
           </div>
         </div>
         {canCreate && (
-          <Button onClick={() => navigate("/subjects/create")} size="lg">
+          <Button onClick={handleCreate} size="lg">
             <Plus className="h-5 w-5 mr-2" />
             Add Subject
           </Button>
@@ -135,7 +151,7 @@ export default function SubjectsList() {
             </p>
             {canCreate && !searchTerm && (
               <Button
-                onClick={() => navigate("/subjects/create")}
+                onClick={handleCreate}
                 className="mt-6"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -152,6 +168,7 @@ export default function SubjectsList() {
               <SubjectTable
                 subjects={filteredSubjects}
                 onDelete={handleDelete}
+                onEdit={handleEdit}
                 canUpdate={canUpdate}
                 canDelete={canDelete}
               />
@@ -165,6 +182,7 @@ export default function SubjectsList() {
                 key={subject.id}
                 subject={subject}
                 onDelete={handleDelete}
+                onEdit={handleEdit}
                 canUpdate={canUpdate}
                 canDelete={canDelete}
               />
@@ -179,6 +197,14 @@ export default function SubjectsList() {
         onOpenChange={setDeleteDialogOpen}
         onConfirm={confirmDelete}
         subjectName={selectedSubject?.subject_name}
+      />
+
+      {/* Form Dialog */}
+      <SubjectFormDialog
+        open={showModal}
+        onOpenChange={handleModalClose}
+        editId={editId}
+        onSuccess={() => refetch()}
       />
     </div>
   );

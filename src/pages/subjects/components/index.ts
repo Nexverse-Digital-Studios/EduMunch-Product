@@ -7,5 +7,6 @@
 export { SubjectTable } from "./SubjectTable";
 export { SubjectCard } from "./SubjectCard";
 export { SubjectForm } from "./SubjectForm";
+export { SubjectFormDialog } from "./SubjectFormDialog";
 export { DeleteSubjectDialog } from "./DeleteSubjectDialog";
 export type { SubjectFormData } from "./SubjectForm";

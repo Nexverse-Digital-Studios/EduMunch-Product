@@ -2,15 +2,12 @@
  * Leave Requests List Page
  * =========================
  * Page for viewing and managing leave applications
- * Routes:
- * - /leave-requests - View all leave applications
- * - /leave-requests/create - Apply for leave
- * - /leave-requests/:id - View leave request details
- * - /leave-requests/:id/approve - Approve/reject leave
+ * 
+ * CONSOLIDATED: Single route with modal dialogs for create/edit/view
+ * Route: /leave-requests
  */
 
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Plus,
   Loader2,
@@ -38,12 +35,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { TABLES } from "@/lib/supabase";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { LeaveApplicationDB, LeaveStatus, LeaveType, StudentDB } from "./types";
+import { LeaveFormDialog } from "./LeaveFormDialog";
+import { LeaveDetailsDialog } from "./LeaveDetailsDialog";
 
 const STATUS_COLORS: Record<LeaveStatus, string> = {
   Pending:
@@ -67,15 +66,19 @@ const LEAVE_TYPE_COLORS: Record<LeaveType, string> = {
 };
 
 export const LeaveRequestsPage = () => {
-  const navigate = useNavigate();
   const { canCreate, canApprove } = useModulePermissions("leave");
+
+  // Modal states
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedLeave, setSelectedLeave] = useState<LeaveApplicationDB | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeaveStatus | "all">("all");
   const [typeFilter, setTypeFilter] = useState<LeaveType | "all">("all");
 
   // Fetch data
-  const { data: leaveApplications, isLoading: loadingLeave } =
+  const { data: leaveApplications, isLoading: loadingLeave, refetch } =
     useSupabaseTable<LeaveApplicationDB>(TABLES.LEAVE_APPLICATIONS, {
       orderBy: { column: "applied_at", ascending: false },
     });
@@ -91,6 +94,18 @@ export const LeaveRequestsPage = () => {
   const getStudentName = (studentId: string) => {
     const student = students?.find((s) => s.id === studentId);
     return student ? `${student.first_name} ${student.last_name}` : "Unknown";
+  };
+
+  // Handle view details
+  const handleViewDetails = (leave: LeaveApplicationDB) => {
+    setSelectedLeave(leave);
+    setDetailsDialogOpen(true);
+  };
+
+  // Handle create
+  const handleCreate = () => {
+    setSelectedLeave(null);
+    setFormDialogOpen(true);
   };
 
   // Filter leave applications
@@ -138,7 +153,7 @@ export const LeaveRequestsPage = () => {
         </div>
         {canCreate && (
           <Button
-            onClick={() => navigate("/leave-requests/create")}
+            onClick={handleCreate}
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
@@ -292,7 +307,7 @@ export const LeaveRequestsPage = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/leave-requests/${app.id}`)}
+                          onClick={() => handleViewDetails(app)}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -300,9 +315,7 @@ export const LeaveRequestsPage = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() =>
-                              navigate(`/leave-requests/${app.id}/approve`)
-                            }
+                            onClick={() => handleViewDetails(app)}
                           >
                             Review
                           </Button>
@@ -321,7 +334,7 @@ export const LeaveRequestsPage = () => {
               <Card
                 key={app.id}
                 className="cursor-pointer hover:bg-muted/50"
-                onClick={() => navigate(`/leave-requests/${app.id}`)}
+                onClick={() => handleViewDetails(app)}
               >
                 <CardContent className="p-4 space-y-3">
                   <div className="flex justify-between items-start">
@@ -359,6 +372,20 @@ export const LeaveRequestsPage = () => {
           </div>
         </>
       )}
-    </div>
-  );
-};
+
+      {/* Form Dialog for Create/Edit */}
+      <LeaveFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        editData={null}
+        onSuccess={() => refetch()}
+      />
+
+      {/* Details Dialog for View/Approve/Reject */}
+      <LeaveDetailsDialog
+        open={detailsDialogOpen}
+        onOpenChange={setDetailsDialogOpen}
+        leaveRequest={selectedLeave}
+        studentName={selectedLeave ? getStudentName(selectedLeave.student_id) : ""}
+        onSuccess={() => refetch()}
+      />

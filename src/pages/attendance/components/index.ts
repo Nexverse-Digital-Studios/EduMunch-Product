@@ -19,7 +19,11 @@ export { AttendanceReportsPage } from "./AttendanceReportsPage";
 export { SubjectWiseAttendancePage } from "./SubjectWiseAttendancePage";
 export { ExportAttendancePage } from "./ExportAttendancePage";
 
-// Leave Request Pages
+// Leave Request Pages (CONSOLIDATED - using modal dialogs)
 export { LeaveRequestsPage } from "./LeaveRequestsPage";
+export { LeaveFormDialog } from "./LeaveFormDialog";
+export { LeaveDetailsDialog } from "./LeaveDetailsDialog";
+
+// Legacy exports (may be removed later)
 export { CreateLeaveRequestPage } from "./CreateLeaveRequestPage";
 export { LeaveRequestDetailsPage } from "./LeaveRequestDetailsPage";

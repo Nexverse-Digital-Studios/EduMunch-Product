@@ -1,3 +1,11 @@
+/**
+ * Exams List Page
+ * ================
+ * List all exams with management options
+ * 
+ * CONSOLIDATED: Create/Edit via modal dialogs (no sub-routes)
+ */
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -8,7 +16,7 @@ import {
   Trash2,
   Calendar,
   FileCheck,
-  Download,
+  RefreshCw,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,27 +46,46 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { ExamDB, EXAM_TYPES, EXAM_STATUSES } from "./types";
+import { ExamFormDialog } from "./ExamFormDialog";
 
 const INDEX_TOKEN = "1emaet";
 
 export function ExamsList() {
   const { toast } = useToast();
-  const { canView, canCreate, canUpdate, canDelete, canExport } =
+  const { canView, canCreate, canUpdate, canDelete } =
     useModulePermissions("exams");
+
+  // Modal states
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
+  const [selectedExam, setSelectedExam] = useState<ExamDB | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [examToDelete, setExamToDelete] = useState<ExamDB | null>(null);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+
+  // Handlers
+  const handleCreate = () => {
+    setSelectedExam(null);
+    setFormDialogOpen(true);
+  };
+
+  const handleEdit = (exam: ExamDB) => {
+    setSelectedExam(exam);
+    setFormDialogOpen(true);
+  };
 
   const {
     data: exams,
     isLoading,
     error,
+    refetch,
     deleteMutation,
   } = useSupabaseTable<ExamDB>(`exams_${INDEX_TOKEN}`, {
     orderBy: { column: "start_date", ascending: false },
@@ -74,13 +101,16 @@ export function ExamsList() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    if (!examToDelete) return;
     try {
-      await deleteMutation.mutateAsync(id);
+      await deleteMutation.mutateAsync(examToDelete.id);
       toast({
         title: "Exam deleted",
         description: "The exam has been successfully deleted.",
       });
+      setDeleteDialogOpen(false);
+      setExamToDelete(null);
     } catch (error) {
       toast({
         title: "Error",
@@ -138,20 +168,14 @@ export function ExamsList() {
           </p>
         </div>
         <div className="flex gap-2">
-          {canExport && (
-            <Button variant="outline" asChild>
-              <Link to="/exams/export">
-                <Download className="mr-2 h-4 w-4" />
-                Export
-              </Link>
-            </Button>
-          )}
+          <Button variant="outline" onClick={() => refetch()}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
           {canCreate && (
-            <Button asChild>
-              <Link to="/exams/create">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Exam
-              </Link>
+            <Button onClick={handleCreate}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Exam
             </Button>
           )}
         </div>
@@ -285,42 +309,25 @@ export function ExamsList() {
                             </Link>
                           </Button>
                           {canUpdate && (
-                            <Button variant="ghost" size="icon" asChild>
-                              <Link to={`/exams/${exam.id}/edit`}>
-                                <Edit className="h-4 w-4" />
-                              </Link>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEdit(exam)}
+                            >
+                              <Edit className="h-4 w-4" />
                             </Button>
                           )}
                           {canDelete && (
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <Trash2 className="h-4 w-4 text-red-500" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Delete Exam
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Are you sure you want to delete "
-                                    {exam.exam_name}"? This action cannot be
-                                    undone and will remove all associated marks
-                                    and schedules.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleDelete(exam.id)}
-                                    className="bg-red-500 hover:bg-red-600"
-                                  >
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setExamToDelete(exam);
+                                setDeleteDialogOpen(true);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
                           )}
                         </div>
                       </TableCell>
@@ -338,6 +345,37 @@ export function ExamsList() {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Exam</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{examToDelete?.exam_name}"? This
+              action cannot be undone and will remove all associated marks and
+              schedules.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Form Dialog for Create/Edit */}
+      <ExamFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        editData={selectedExam}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

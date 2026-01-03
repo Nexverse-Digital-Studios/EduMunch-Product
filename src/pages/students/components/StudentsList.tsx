@@ -1,3 +1,12 @@
+/**
+ * StudentsList Component (CONSOLIDATED)
+ * =======================================
+ * Main students list with search, filters, and CRUD operations.
+ * Create and Edit operations now use modal dialogs instead of separate routes.
+ * 
+ * Route Consolidation: Replaces /students/create and /students/:id/edit routes
+ */
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -48,6 +57,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { StudentDB } from "./types";
+import { StudentFormDialog } from "./StudentFormDialog";
 
 const INDEX_TOKEN = "1emaet";
 
@@ -76,8 +86,12 @@ export function StudentsList() {
   const [selectedClass, setSelectedClass] = useState<string>("all");
   const [selectedSection, setSelectedSection] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  
+  // Modal states for create/edit (consolidation - replaces separate routes)
+  const [showStudentModal, setShowStudentModal] = useState(false);
+  const [editStudentId, setEditStudentId] = useState<string | null>(null);
 
-  const { data: students, isLoading } = useSupabaseTable<StudentDB>(
+  const { data: students, isLoading, refetch } = useSupabaseTable<StudentDB>(
     `students_${INDEX_TOKEN}`,
     { orderBy: { column: "first_name", ascending: true } }
   );
@@ -223,11 +237,9 @@ export function StudentsList() {
             </Button>
           )}
           {canCreate && (
-            <Button asChild>
-              <Link to="/students/create">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Student
-              </Link>
+            <Button onClick={() => { setEditStudentId(null); setShowStudentModal(true); }}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Student
             </Button>
           )}
         </div>
@@ -406,10 +418,12 @@ export function StudentsList() {
                           </Link>
                         </Button>
                         {canUpdate && (
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link to={`/students/${student.id}/edit`}>
-                              <Edit className="h-4 w-4" />
-                            </Link>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => { setEditStudentId(student.id); setShowStudentModal(true); }}
+                          >
+                            <Edit className="h-4 w-4" />
                           </Button>
                         )}
                         {canDelete && (
@@ -466,6 +480,37 @@ export function StudentsList() {
           )}
         </CardContent>
       </Card>
+
+      {/* Create/Edit Student Modal (Consolidated - replaces /students/create and /students/:id/edit routes) */}
+      <StudentFormDialog
+        open={showStudentModal}
+        onOpenChange={(open) => {
+          setShowStudentModal(open);
+          if (!open) setEditStudentId(null);
+        }}
+        mode={editStudentId ? "edit" : "create"}
+        studentId={editStudentId || undefined}
+        initialData={editStudentId && students ? 
+          (() => {
+            const student = students.find(s => s.id === editStudentId);
+            if (!student) return undefined;
+            return {
+              first_name: student.first_name,
+              middle_name: student.middle_name || "",
+              last_name: student.last_name,
+              admission_number: student.admission_number,
+              class_id: student.class_id,
+              section_id: student.section_id,
+              academic_year_id: student.academic_year_id,
+              date_of_birth: student.date_of_birth || "",
+              gender: student.gender,
+              admission_date: student.admission_date || "",
+            };
+          })() 
+          : undefined
+        }
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

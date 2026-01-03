@@ -1,5 +1,12 @@
+/**
+ * Fee Structures List Page
+ * =========================
+ * List all fee structures with management options
+ * 
+ * CONSOLIDATED: Create/Edit via modal dialogs (no sub-routes)
+ */
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   Plus,
   Search,
@@ -7,7 +14,7 @@ import {
   Edit,
   Trash2,
   IndianRupee,
-  Settings,
+  RefreshCw,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,12 +44,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { FeeStructureDB } from "./types";
+import { FeeStructureFormDialog } from "./FeeStructureFormDialog";
+import { FeeStructureDetailDialog } from "./FeeStructureDetailDialog";
 
 const INDEX_TOKEN = "1emaet";
 
@@ -62,14 +70,39 @@ export function FeeStructuresList() {
   const { toast } = useToast();
   const { canView, canCreate, canUpdate, canDelete } =
     useModulePermissions("fees");
+
+  // Modal states
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [selectedStructure, setSelectedStructure] = useState<FeeStructureDB | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [structureToDelete, setStructureToDelete] = useState<FeeStructureDB | null>(null);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>("all");
+
+  // Handlers
+  const handleCreate = () => {
+    setSelectedStructure(null);
+    setFormDialogOpen(true);
+  };
+
+  const handleEdit = (structure: FeeStructureDB) => {
+    setSelectedStructure(structure);
+    setFormDialogOpen(true);
+  };
+
+  const handleView = (structure: FeeStructureDB) => {
+    setSelectedStructure(structure);
+    setDetailDialogOpen(true);
+  };
 
   const {
     data: feeStructures,
     isLoading,
     error,
+    refetch,
     deleteMutation,
   } = useSupabaseTable<FeeStructureDB>(`fee_structures_${INDEX_TOKEN}`, {
     orderBy: { column: "created_at", ascending: false },
@@ -108,13 +141,16 @@ export function FeeStructuresList() {
     return matchesSearch && matchesClass && matchesYear;
   });
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    if (!structureToDelete) return;
     try {
-      await deleteMutation.mutateAsync(id);
+      await deleteMutation.mutateAsync(structureToDelete.id);
       toast({
         title: "Fee structure deleted",
         description: "The fee structure has been successfully deleted.",
       });
+      setDeleteDialogOpen(false);
+      setStructureToDelete(null);
     } catch (error) {
       toast({
         title: "Error",
@@ -173,18 +209,14 @@ export function FeeStructuresList() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" asChild>
-            <Link to="/fees/components">
-              <Settings className="mr-2 h-4 w-4" />
-              Components
-            </Link>
+          <Button variant="outline" onClick={() => refetch()}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
           </Button>
           {canCreate && (
-            <Button asChild>
-              <Link to="/fees/structures/create">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Structure
-              </Link>
+            <Button onClick={handleCreate}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Structure
             </Button>
           )}
         </div>
@@ -318,49 +350,33 @@ export function FeeStructuresList() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link to={`/fees/structures/${structure.id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleView(structure)}
+                          >
+                            <Eye className="h-4 w-4" />
                           </Button>
                           {canUpdate && (
-                            <Button variant="ghost" size="icon" asChild>
-                              <Link
-                                to={`/fees/structures/${structure.id}/edit`}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Link>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEdit(structure)}
+                            >
+                              <Edit className="h-4 w-4" />
                             </Button>
                           )}
                           {canDelete && (
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <Trash2 className="h-4 w-4 text-red-500" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Delete Fee Structure
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Are you sure you want to delete "
-                                    {structure.structure_name}"? This action
-                                    cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleDelete(structure.id)}
-                                    className="bg-red-500 hover:bg-red-600"
-                                  >
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setStructureToDelete(structure);
+                                setDeleteDialogOpen(true);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
                           )}
                         </div>
                       </TableCell>
@@ -378,6 +394,45 @@ export function FeeStructuresList() {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Fee Structure</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{structureToDelete?.structure_name}"?
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Form Dialog for Create/Edit */}
+      <FeeStructureFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        editData={selectedStructure}
+        onSuccess={() => refetch()}
+      />
+
+      {/* Detail Dialog for View */}
+      <FeeStructureDetailDialog
+        open={detailDialogOpen}
+        onOpenChange={setDetailDialogOpen}
+        structure={selectedStructure}
+        classes={classes || []}
+        academicYears={academicYears || []}
+      />
     </div>
   );
 }

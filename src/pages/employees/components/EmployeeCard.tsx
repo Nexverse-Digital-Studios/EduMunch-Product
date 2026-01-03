@@ -13,6 +13,7 @@ import type { EmployeeDisplay } from "./EmployeeTable";
 
 interface EmployeeCardProps {
   employee: EmployeeDisplay;
+  onEdit: (employeeId: string) => void;
   onDelete: (employeeId: string) => void;
   canUpdate: boolean;
   canDelete: boolean;
@@ -20,6 +21,7 @@ interface EmployeeCardProps {
 
 export const EmployeeCard = ({
   employee,
+  onEdit,
   onDelete,
   canUpdate,
   canDelete,
@@ -71,7 +73,7 @@ export const EmployeeCard = ({
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={() => navigate(`/employees/${employee.id}/edit`)}
+              onClick={() => onEdit(employee.id)}
             >
               <Edit className="h-4 w-4" />
             </Button>

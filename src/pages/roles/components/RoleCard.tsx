@@ -13,10 +13,11 @@ import { Role } from "@/hooks/useSupabaseQuery";
 
 interface RoleCardProps {
   role: Role;
+  onEdit: (roleId: string) => void;
   onDelete: (roleId: string) => void;
 }
 
-export const RoleCard = ({ role, onDelete }: RoleCardProps) => {
+export const RoleCard = ({ role, onEdit, onDelete }: RoleCardProps) => {
   const navigate = useNavigate();
 
   return (
@@ -66,7 +67,7 @@ export const RoleCard = ({ role, onDelete }: RoleCardProps) => {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => navigate(`/roles/${role.id}/edit`)}
+              onClick={() => onEdit(role.id)}
             >
               <Pencil className="h-4 w-4" />
             </Button>

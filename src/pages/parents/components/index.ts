@@ -6,6 +6,7 @@
 
 export { ParentsList } from "./ParentsList";
 export { ParentForm } from "./ParentForm";
+export { ParentFormDialog } from "./ParentFormDialog";
 export { ParentCreate } from "./ParentCreate";
 export { ParentDetail } from "./ParentDetail";
 export { ParentEdit } from "./ParentEdit";

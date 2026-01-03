@@ -1,10 +1,13 @@
 /**
- * UsersList Page
- * ===============
+ * UsersList Page (CONSOLIDATED)
+ * ==============================
  * Route: /users
  * Permission: users.view
  *
- * Displays list of all users with filtering and search
+ * Displays list of all users with filtering and search.
+ * Create and Edit operations now use modal dialogs instead of separate routes.
+ * 
+ * Consolidation: Replaces /users/create and /users/:id/edit routes
  */
 
 import { useState } from "react";
@@ -26,12 +29,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUsers, useRoles, useDeleteUser } from "@/hooks/useSupabaseQuery";
-import { UserTable, UserCard, DeleteUserDialog } from "./components";
+import { UserTable, UserCard, DeleteUserDialog, UserFormDialog } from "./components";
 
 const UsersList = () => {
   const navigate = useNavigate();
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [filterRole, setFilterRole] = useState("all");
+  
+  // Modal states for create/edit (consolidation - replaces separate routes)
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [editUserId, setEditUserId] = useState<string | null>(null);
 
   // Fetch data from Supabase
   const {
@@ -63,6 +70,39 @@ const UsersList = () => {
     setDeleteUserId(null);
   };
 
+  // Handle opening create modal
+  const handleCreateUser = () => {
+    setEditUserId(null);
+    setShowUserModal(true);
+  };
+
+  // Handle opening edit modal
+  const handleEditUser = (userId: string) => {
+    setEditUserId(userId);
+    setShowUserModal(true);
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setShowUserModal(false);
+    setEditUserId(null);
+  };
+
+  // Get user data for edit mode
+  const getEditUserData = () => {
+    if (!editUserId || !users) return undefined;
+    const user = users.find((u) => u.id === editUserId);
+    if (!user) return undefined;
+    return {
+      id: user.id,
+      full_name: user.full_name,
+      email: user.email || "",
+      phone: user.phone || "",
+      primary_role_id: user.primary_role_id || "",
+      is_active: user.is_active,
+    };
+  };
+
   if (usersError) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -85,7 +125,7 @@ const UsersList = () => {
           </h1>
         </div>
         <Button
-          onClick={() => navigate("/users/create")}
+          onClick={handleCreateUser}
           className="bg-primary hover:bg-primary/90"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -140,7 +180,7 @@ const UsersList = () => {
           <p className="text-muted-foreground mb-4">
             Get started by creating your first user.
           </p>
-          <Button onClick={() => navigate("/users/create")}>
+          <Button onClick={handleCreateUser}>
             <Plus className="h-4 w-4 mr-2" />
             Add User
           </Button>
@@ -153,6 +193,7 @@ const UsersList = () => {
           <UserTable
             users={filteredUsers}
             roles={roles}
+            onEdit={handleEditUser}
             onDelete={setDeleteUserId}
           />
         </div>
@@ -166,6 +207,7 @@ const UsersList = () => {
               key={user.id}
               user={user}
               roles={roles}
+              onEdit={handleEditUser}
               onDelete={setDeleteUserId}
             />
           ))}
@@ -178,6 +220,15 @@ const UsersList = () => {
         onOpenChange={() => setDeleteUserId(null)}
         onConfirm={handleDeleteUser}
         userName={getUserName(deleteUserId)}
+      />
+
+      {/* Create/Edit User Modal (Consolidated - replaces /users/create and /users/:id/edit routes) */}
+      <UserFormDialog
+        open={showUserModal}
+        onOpenChange={handleModalClose}
+        mode={editUserId ? "edit" : "create"}
+        userId={editUserId || undefined}
+        initialData={getEditUserData()}
       />
     </div>
   );

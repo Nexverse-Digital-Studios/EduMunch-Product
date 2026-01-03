@@ -2,10 +2,11 @@
  * Lecture Templates List Page
  * ============================
  * List all lecture templates with management options
+ * 
+ * CONSOLIDATED: Create/Edit via modal dialogs (no sub-routes)
  */
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import {
   Plus,
   Search,
@@ -51,6 +52,8 @@ import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { TABLES } from "@/lib/supabase";
 import { LectureTemplateDB, DAYS_OF_WEEK } from "./types";
+import { LectureTemplateFormDialog } from "./LectureTemplateFormDialog";
+import { LectureTemplateDetailDialog } from "./LectureTemplateDetailDialog";
 
 interface SubjectDB {
   id: string;
@@ -59,16 +62,36 @@ interface SubjectDB {
 }
 
 const LectureTemplatesList = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const { canView, canCreate, canUpdate, canDelete } =
     useModulePermissions("lecture_templates");
+
+  // Modal states
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<LectureTemplateDB | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDay, setFilterDay] = useState<string>("all");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [templateToDelete, setTemplateToDelete] =
     useState<LectureTemplateDB | null>(null);
+
+  // Handlers
+  const handleCreate = () => {
+    setSelectedTemplate(null);
+    setFormDialogOpen(true);
+  };
+
+  const handleEdit = (template: LectureTemplateDB) => {
+    setSelectedTemplate(template);
+    setFormDialogOpen(true);
+  };
+
+  const handleView = (template: LectureTemplateDB) => {
+    setSelectedTemplate(template);
+    setDetailDialogOpen(true);
+  };
 
   // Fetch templates
   const {
@@ -168,11 +191,9 @@ const LectureTemplatesList = () => {
             Refresh
           </Button>
           {canCreate && (
-            <Button asChild>
-              <Link to="/lecture-templates/create">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Template
-              </Link>
+            <Button onClick={handleCreate}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Template
             </Button>
           )}
         </div>
@@ -272,11 +293,9 @@ const LectureTemplatesList = () => {
                   : "Create your first lecture template"}
               </p>
               {canCreate && !searchQuery && filterDay === "all" && (
-                <Button className="mt-4" asChild>
-                  <Link to="/lecture-templates/create">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Template
-                  </Link>
+                <Button className="mt-4" onClick={handleCreate}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Template
                 </Button>
               )}
             </div>
@@ -321,9 +340,7 @@ const LectureTemplatesList = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() =>
-                            navigate(`/lecture-templates/${template.id}`)
-                          }
+                          onClick={() => handleView(template)}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -331,9 +348,7 @@ const LectureTemplatesList = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() =>
-                              navigate(`/lecture-templates/${template.id}/edit`)
-                            }
+                            onClick={() => handleEdit(template)}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -381,6 +396,22 @@ const LectureTemplatesList = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Form Dialog for Create/Edit */}
+      <LectureTemplateFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        editData={selectedTemplate}
+        onSuccess={() => refetch()}
+      />
+
+      {/* Detail Dialog for View */}
+      <LectureTemplateDetailDialog
+        open={detailDialogOpen}
+        onOpenChange={setDetailDialogOpen}
+        template={selectedTemplate}
+        subjects={subjects}
+      />
     </div>
   );
 };

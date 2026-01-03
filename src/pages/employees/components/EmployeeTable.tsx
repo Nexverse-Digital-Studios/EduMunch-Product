@@ -53,6 +53,7 @@ export interface EmployeeDisplay {
 
 interface EmployeeTableProps {
   employees: EmployeeDisplay[];
+  onEdit: (employeeId: string) => void;
   onDelete: (employeeId: string) => void;
   canUpdate: boolean;
   canDelete: boolean;
@@ -60,6 +61,7 @@ interface EmployeeTableProps {
 
 export const EmployeeTable = ({
   employees,
+  onEdit,
   onDelete,
   canUpdate,
   canDelete,
@@ -122,7 +124,7 @@ export const EmployeeTable = ({
                   </DropdownMenuItem>
                   {canUpdate && (
                     <DropdownMenuItem
-                      onClick={() => navigate(`/employees/${employee.id}/edit`)}
+                      onClick={() => onEdit(employee.id)}
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit

@@ -5,8 +5,7 @@
  * Used in ClassesList page
  */
 
-import { useNavigate } from "react-router-dom";
-import { Edit, Trash2, Eye, BookOpen, ArrowUpDown } from "lucide-react";
+import { Edit, Trash2, BookOpen, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import type { ClassDB } from "./ClassTable";
 interface ClassCardProps {
   classItem: ClassDB;
   onDelete: (classId: string) => void;
+  onEdit?: (classId: string) => void;
   canUpdate: boolean;
   canDelete: boolean;
 }
@@ -22,11 +22,10 @@ interface ClassCardProps {
 export const ClassCard = ({
   classItem,
   onDelete,
+  onEdit,
   canUpdate,
   canDelete,
 }: ClassCardProps) => {
-  const navigate = useNavigate();
-
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
@@ -71,21 +70,12 @@ export const ClassCard = ({
         </div>
 
         <div className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={() => navigate(`/classes/${classItem.id}`)}
-          >
-            <Eye className="h-4 w-4 mr-1" />
-            View
-          </Button>
           {canUpdate && (
             <Button
               variant="outline"
               size="sm"
               className="flex-1"
-              onClick={() => navigate(`/classes/${classItem.id}/edit`)}
+              onClick={() => onEdit?.(classItem.id)}
             >
               <Edit className="h-4 w-4 mr-1" />
               Edit

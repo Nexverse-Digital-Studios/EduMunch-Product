@@ -5,7 +5,6 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
   LayoutGrid,
   Plus,
@@ -14,9 +13,10 @@ import {
   Users,
   DoorOpen,
   UserCheck,
-  ChevronRight,
   CheckCircle,
   XCircle,
+  Edit,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
+import { useToast } from "@/hooks/use-toast";
+import { SectionFormDialog } from "./SectionFormDialog";
 import { SectionDB, ClassDB, TeacherDB } from "./types";
 
 const INDEX_TOKEN = "1emaet";
@@ -50,11 +52,14 @@ export function SectionsList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [classFilter, setClassFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
-  const { canCreate } = useModulePermissions("sections");
+  const { toast } = useToast();
+  const { canCreate, canUpdate, canDelete } = useModulePermissions("sections");
 
   // Fetch sections
-  const { data: sections, isLoading: loadingSections } =
+  const { data: sections, isLoading: loadingSections, refetch, deleteMutation } =
     useSupabaseTable<SectionDB>(`sections_${INDEX_TOKEN}`, { filters: {} });
 
   // Fetch classes for filter and display
@@ -68,6 +73,39 @@ export function SectionsList() {
   );
 
   const isLoading = loadingSections || loadingClasses;
+
+  // Modal handlers
+  const handleCreate = () => {
+    setEditId(null);
+    setShowModal(true);
+  };
+
+  const handleEdit = (id: string) => {
+    setEditId(id);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setEditId(null);
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMutation.mutateAsync(id);
+      toast({
+        title: "Section deleted",
+        description: "The section has been deleted successfully.",
+      });
+      refetch();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete section.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Create lookup maps
   const classMap = useMemo(() => {
@@ -154,11 +192,9 @@ export function SectionsList() {
           </p>
         </div>
         {canCreate && (
-          <Button asChild>
-            <Link to="/sections/create">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Section
-            </Link>
+          <Button onClick={handleCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Section
           </Button>
         )}
       </div>
@@ -288,11 +324,9 @@ export function SectionsList() {
                 !searchQuery &&
                 classFilter === "all" &&
                 statusFilter === "all" && (
-                  <Button className="mt-4" asChild>
-                    <Link to="/sections/create">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Section
-                    </Link>
+                  <Button className="mt-4" onClick={handleCreate}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Section
                   </Button>
                 )}
             </div>
@@ -373,12 +407,26 @@ export function SectionsList() {
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to={`/sections/${section.id}`}>
-                            View
-                            <ChevronRight className="ml-1 h-4 w-4" />
-                          </Link>
-                        </Button>
+                        <div className="flex justify-end gap-1">
+                          {canUpdate && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(section.id)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {canDelete && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(section.id)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -388,6 +436,14 @@ export function SectionsList() {
           )}
         </CardContent>
       </Card>
+
+      {/* Form Dialog */}
+      <SectionFormDialog
+        open={showModal}
+        onOpenChange={handleModalClose}
+        editId={editId}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

@@ -6,7 +6,6 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
   Plus,
   Calendar,
@@ -49,6 +48,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { TABLES } from "@/lib/supabase";
+import { AcademicYearFormDialog } from "./AcademicYearFormDialog";
 import type { AcademicYearDB } from "./types";
 
 const AcademicYearsList = () => {
@@ -57,13 +57,32 @@ const AcademicYearsList = () => {
     useModulePermissions("academic_years");
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
   // Fetch academic years
   const {
     data: academicYears,
     isLoading,
     refetch,
+    deleteMutation,
   } = useSupabaseTable<AcademicYearDB>(TABLES.ACADEMIC_YEARS);
+
+  // Modal handlers
+  const handleCreate = () => {
+    setEditId(null);
+    setShowModal(true);
+  };
+
+  const handleEdit = (id: string) => {
+    setEditId(id);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setEditId(null);
+  };
 
   // Filter academic years
   const filteredYears = useMemo(() => {
@@ -91,8 +110,7 @@ const AcademicYearsList = () => {
   // Handle delete
   const handleDelete = async (id: string) => {
     try {
-      // In real implementation, call Supabase to delete
-      console.log("Deleting academic year:", id);
+      await deleteMutation.mutateAsync(id);
       toast({
         title: "Academic year deleted",
         description: "The academic year has been deleted successfully.",
@@ -149,11 +167,9 @@ const AcademicYearsList = () => {
           </p>
         </div>
         {canCreate && (
-          <Button asChild>
-            <Link to="/academic-years/create">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Academic Year
-            </Link>
+          <Button onClick={handleCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Academic Year
           </Button>
         )}
       </div>
@@ -235,12 +251,12 @@ const AcademicYearsList = () => {
                   {filteredYears.map((year) => (
                     <TableRow key={year.id}>
                       <TableCell>
-                        <Link
-                          to={`/academic-years/${year.id}`}
-                          className="font-medium hover:underline"
+                        <button
+                          onClick={() => handleEdit(year.id)}
+                          className="font-medium hover:underline text-left"
                         >
                           {year.year_name}
-                        </Link>
+                        </button>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">{year.year_code}</Badge>
@@ -272,10 +288,12 @@ const AcademicYearsList = () => {
                             </Button>
                           )}
                           {canUpdate && (
-                            <Button variant="ghost" size="icon" asChild>
-                              <Link to={`/academic-years/${year.id}/edit`}>
-                                <Edit className="h-4 w-4" />
-                              </Link>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEdit(year.id)}
+                            >
+                              <Edit className="h-4 w-4" />
                             </Button>
                           )}
                           {canDelete && !year.is_current && (
@@ -318,6 +336,14 @@ const AcademicYearsList = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Form Dialog */}
+      <AcademicYearFormDialog
+        open={showModal}
+        onOpenChange={handleModalClose}
+        editId={editId}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 };

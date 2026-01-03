@@ -4,3 +4,4 @@ export { UserCard } from './UserCard';
 export { UserForm } from './UserForm';
 export type { UserFormData } from './UserForm';
 export { DeleteUserDialog } from './DeleteUserDialog';
+export { UserFormDialog } from './UserFormDialog';

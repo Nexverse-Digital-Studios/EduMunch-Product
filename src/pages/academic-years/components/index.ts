@@ -9,6 +9,7 @@ export * from "./types";
 
 // Components
 export { default as AcademicYearForm } from "./AcademicYearForm";
+export { AcademicYearFormDialog } from "./AcademicYearFormDialog";
 
 // Pages
 export { default as AcademicYearsList } from "./AcademicYearsList";

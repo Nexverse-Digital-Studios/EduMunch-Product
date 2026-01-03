@@ -5,11 +5,9 @@
  * Used in ClassesList page
  */
 
-import { useNavigate } from "react-router-dom";
 import {
   Edit,
   Trash2,
-  Eye,
   BookOpen,
   ArrowUpDown,
   MoreVertical,
@@ -46,6 +44,7 @@ export interface ClassDB {
 interface ClassTableProps {
   classes: ClassDB[];
   onDelete: (classId: string) => void;
+  onEdit?: (classId: string) => void;
   canUpdate: boolean;
   canDelete: boolean;
 }
@@ -53,11 +52,10 @@ interface ClassTableProps {
 export const ClassTable = ({
   classes,
   onDelete,
+  onEdit,
   canUpdate,
   canDelete,
 }: ClassTableProps) => {
-  const navigate = useNavigate();
-
   return (
     <Table>
       <TableHeader>
@@ -105,15 +103,9 @@ export const ClassTable = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => navigate(`/classes/${classItem.id}`)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View
-                  </DropdownMenuItem>
                   {canUpdate && (
                     <DropdownMenuItem
-                      onClick={() => navigate(`/classes/${classItem.id}/edit`)}
+                      onClick={() => onEdit?.(classItem.id)}
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit

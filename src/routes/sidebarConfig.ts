@@ -28,41 +28,36 @@ const dashboardModule: ModuleSidebarConfig = {
 };
 
 // Profile - Always visible for authenticated users
+// CONSOLIDATED: Edit, Change Password, Notifications are tabs within the main ProfilePage
 const profileModule: ModuleSidebarConfig = {
   moduleCode: 'profile',
   displayName: 'My Profile',
   icon: 'User',
   basePath: '/profile',
   order: 2,
-  subItems: [
-    { title: 'Edit Profile', path: '/profile/edit', action: 'update' },
-    { title: 'Change Password', path: '/profile/change-password', action: 'update' },
-  ],
+  // No subItems - all functionality is accessible via tabs on the main profile page
 };
 
 // Users Module
+// CONSOLIDATED: Add User, Bulk Upload are modals/dialogs accessible from the main Users page
 const usersModule: ModuleSidebarConfig = {
   moduleCode: 'users',
   displayName: 'Users',
   icon: 'Users',
   basePath: '/users',
   order: 1,
-  subItems: [
-    { title: 'Add User', path: '/users/create', action: 'create' },
-    { title: 'Bulk Upload', path: '/users/bulk-upload', action: 'create' },
-  ],
+  // No subItems - all actions accessible via buttons on the main page
 };
 
 // Roles Module
+// CONSOLIDATED: Create Role is a modal/dialog accessible from the main Roles page
 const rolesModule: ModuleSidebarConfig = {
   moduleCode: 'roles',
   displayName: 'Roles',
   icon: 'Shield',
   basePath: '/roles',
   order: 2,
-  subItems: [
-    { title: 'Create Role', path: '/roles/create', action: 'create' },
-  ],
+  // No subItems - all actions accessible via buttons on the main page
 };
 
 // Permissions Module
@@ -75,59 +70,44 @@ const permissionsModule: ModuleSidebarConfig = {
 };
 
 // Students Module
+// Students Module (CONSOLIDATED - subItems removed, actions via modals/buttons)
 const studentsModule: ModuleSidebarConfig = {
   moduleCode: 'students',
   displayName: 'Students',
   icon: 'GraduationCap',
   basePath: '/students',
   order: 1,
-  subItems: [
-    { title: 'Add Student', path: '/students/create', action: 'create' },
-    { title: 'Bulk Upload', path: '/students/bulk-upload', action: 'create' },
-    { title: 'Promotion', path: '/students/promotion', action: 'view' },
-    { title: 'Transfer', path: '/students/transfer', action: 'update' },
-    { title: 'Export', path: '/students/export', action: 'export' },
-  ],
+  // CONSOLIDATED: Create, Bulk Upload, Promotion, Transfer, Export now handled via modals/buttons in StudentsList
 };
 
-// Parents Module
+// Parents Module (CONSOLIDATED - subItems removed, all CRUD via modals)
 const parentsModule: ModuleSidebarConfig = {
   moduleCode: 'parents',
   displayName: 'Parents',
   icon: 'Users',
   basePath: '/parents',
   order: 2,
-  subItems: [
-    { title: 'Add Parent', path: '/parents/create', action: 'create' },
-  ],
+  // CONSOLIDATED: Create/Edit now handled via modals in ParentsList
 };
 
-// Teachers Module
+// Teachers Module (CONSOLIDATED - subItems removed, actions via modals/buttons)
 const teachersModule: ModuleSidebarConfig = {
   moduleCode: 'teachers',
   displayName: 'Teachers',
   icon: 'BookOpen',
   basePath: '/teachers',
   order: 3,
-  subItems: [
-    { title: 'Add Teacher', path: '/teachers/create', action: 'create' },
-    { title: 'Bulk Upload', path: '/teachers/bulk-upload', action: 'create' },
-    { title: 'Export', path: '/teachers/export', action: 'export' },
-  ],
+  // CONSOLIDATED: Create, Bulk Upload, Export now handled via modals/buttons in TeachersList
 };
 
-// Employees Module
+// Employees Module (CONSOLIDATED - subItems removed, all CRUD via modals)
 const employeesModule: ModuleSidebarConfig = {
   moduleCode: 'employees',
   displayName: 'Employees',
   icon: 'Briefcase',
   basePath: '/employees',
   order: 4,
-  subItems: [
-    { title: 'Add Employee', path: '/employees/create', action: 'create' },
-    { title: 'Bulk Upload', path: '/employees/bulk-upload', action: 'create' },
-    { title: 'Export', path: '/employees/export', action: 'export' },
-  ],
+  // CONSOLIDATED: Create, Bulk Upload, Export now handled via modals/buttons in EmployeesList
 };
 
 // Academic Years Module
@@ -137,9 +117,7 @@ const academicYearsModule: ModuleSidebarConfig = {
   icon: 'Calendar',
   basePath: '/academic-years',
   order: 1,
-  subItems: [
-    { title: 'Create Year', path: '/academic-years/create', action: 'create' },
-  ],
+  // CONSOLIDATED: Create/Edit handled via modals in AcademicYearsList
 };
 
 // Classes Module
@@ -149,9 +127,7 @@ const classesModule: ModuleSidebarConfig = {
   icon: 'School',
   basePath: '/classes',
   order: 2,
-  subItems: [
-    { title: 'Create Class', path: '/classes/create', action: 'create' },
-  ],
+  // CONSOLIDATED: Create/Edit handled via modals in ClassesList
 };
 
 // Sections Module
@@ -161,9 +137,7 @@ const sectionsModule: ModuleSidebarConfig = {
   icon: 'Layout',
   basePath: '/sections',
   order: 3,
-  subItems: [
-    { title: 'Create Section', path: '/sections/create', action: 'create' },
-  ],
+  // CONSOLIDATED: Create/Edit handled via modals in SectionsList
 };
 
 // Subjects Module
@@ -173,9 +147,7 @@ const subjectsModule: ModuleSidebarConfig = {
   icon: 'Book',
   basePath: '/subjects',
   order: 4,
-  subItems: [
-    { title: 'Create Subject', path: '/subjects/create', action: 'create' },
-  ],
+  // CONSOLIDATED: Create/Edit handled via modals in SubjectsList
 };
 
 // Topics Module
@@ -185,9 +157,7 @@ const topicsModule: ModuleSidebarConfig = {
   icon: 'FileText',
   basePath: '/topics',
   order: 5,
-  subItems: [
-    { title: 'Create Topic', path: '/topics/create', action: 'create' },
-  ],
+  // CONSOLIDATED: Create/Edit handled via modals in TopicsList
 };
 
 // Student Attendance Module
@@ -197,13 +167,7 @@ const attendanceModule: ModuleSidebarConfig = {
   icon: 'CheckSquare',
   basePath: '/attendance',
   order: 1,
-  subItems: [
-    { title: 'Mark Attendance', path: '/attendance/mark', action: 'create' },
-    { title: 'View Records', path: '/attendance/view', action: 'view' },
-    { title: 'Reports', path: '/attendance/reports', action: 'view' },
-    { title: 'Subject-wise', path: '/attendance/subject-wise', action: 'create' },
-    { title: 'Export', path: '/attendance/export', action: 'export' },
-  ],
+  // CONSOLIDATED: All sub-features now accessible via tabs on main dashboard
 };
 
 // Staff Attendance Module
@@ -213,12 +177,7 @@ const staffAttendanceModule: ModuleSidebarConfig = {
   icon: 'CheckSquare',
   basePath: '/staff/attendance',
   order: 2,
-  subItems: [
-    { title: 'Mark Attendance', path: '/staff/attendance/mark', action: 'create' },
-    { title: 'View Records', path: '/staff/attendance/view', action: 'view' },
-    { title: 'Reports', path: '/staff/attendance/reports', action: 'view' },
-    { title: 'Export', path: '/staff/attendance/export', action: 'export' },
-  ],
+  // CONSOLIDATED: All sub-features now accessible via tabs on main dashboard
 };
 
 // Student Leave Module
@@ -228,9 +187,7 @@ const leaveModule: ModuleSidebarConfig = {
   icon: 'Calendar',
   basePath: '/leave-requests',
   order: 3,
-  subItems: [
-    { title: 'Apply Leave', path: '/leave-requests/create', action: 'create' },
-  ],
+  // CONSOLIDATED: Create/Edit via modal, no sub-items needed
 };
 
 // Staff Leave Module
@@ -240,11 +197,7 @@ const staffLeaveModule: ModuleSidebarConfig = {
   icon: 'Calendar',
   basePath: '/staff/leave',
   order: 4,
-  subItems: [
-    { title: 'Apply Leave', path: '/staff/leave/apply', action: 'create' },
-    { title: 'My Leaves', path: '/staff/leave/my-leaves', action: 'view' },
-    { title: 'Leave Balance', path: '/staff/leave/balance', action: 'view' },
-  ],
+  // CONSOLIDATED: All features via tabs (My Leaves, Apply, Balance)
 };
 
 // Timetable Module
@@ -254,13 +207,7 @@ const timetableModule: ModuleSidebarConfig = {
   icon: 'Clock',
   basePath: '/timetable',
   order: 1,
-  subItems: [
-    { title: 'Create Timetable', path: '/timetable/create', action: 'create' },
-    { title: 'Bulk Create', path: '/timetable/bulk-create', action: 'create' },
-    { title: 'Conflicts', path: '/timetable/conflicts', action: 'view' },
-    { title: 'Substitute', path: '/timetable/substitute', action: 'update' },
-    { title: 'Export', path: '/timetable/export', action: 'export' },
-  ],
+  // CONSOLIDATED: All features accessible via tabs on dashboard
 };
 
 // My Timetable (for students/teachers)
@@ -279,26 +226,19 @@ const lectureTemplatesModule: ModuleSidebarConfig = {
   icon: 'Layout',
   basePath: '/lecture-templates',
   order: 3,
-  subItems: [
-    { title: 'Create Template', path: '/lecture-templates/create', action: 'create' },
-  ],
+  // CONSOLIDATED: Create/Edit via modal dialogs
 };
 
-// Exams Module
+// Exams Module (CONSOLIDATED: no subItems - create/edit via modals)
 const examsModule: ModuleSidebarConfig = {
   moduleCode: 'exams',
   displayName: 'Exams',
   icon: 'ClipboardList',
   basePath: '/exams',
   order: 1,
-  subItems: [
-    { title: 'Create Exam', path: '/exams/create', action: 'create' },
-    { title: 'All Exams', path: '/exams/list', action: 'view' },
-    { title: 'Export', path: '/exams/export', action: 'export' },
-  ],
 };
 
-// Marks Module
+// Marks Module (CONSOLIDATED: merged into Exam Detail page)
 const marksModule: ModuleSidebarConfig = {
   moduleCode: 'marks',
   displayName: 'Marks Entry',
@@ -307,420 +247,302 @@ const marksModule: ModuleSidebarConfig = {
   order: 2,
 };
 
-// Report Cards Module
+// Report Cards Module (CONSOLIDATED: no subItems)
 const reportCardsModule: ModuleSidebarConfig = {
   moduleCode: 'report_cards',
   displayName: 'Report Cards',
   icon: 'FileText',
   basePath: '/report-cards',
   order: 3,
-  subItems: [
-    { title: 'Templates', path: '/report-cards/templates', action: 'update' },
-  ],
 };
 
-// Fees Module
+// Fees Module (CONSOLIDATED: no subItems - tabs in main page)
 const feesModule: ModuleSidebarConfig = {
   moduleCode: 'fees',
   displayName: 'Fee Management',
   icon: 'DollarSign',
   basePath: '/fees',
   order: 1,
-  subItems: [
-    { title: 'Fee Structures', path: '/fees/structures', action: 'view' },
-    { title: 'Collect Fee', path: '/fees/collect', action: 'create' },
-    { title: 'Receipts', path: '/fees/receipts', action: 'view' },
-    { title: 'Defaulters', path: '/fees/defaulters', action: 'view' },
-    { title: 'Discounts', path: '/fees/discounts', action: 'view' },
-    { title: 'Reports', path: '/fees/reports', action: 'view' },
-    { title: 'Export', path: '/fees/export', action: 'export' },
-  ],
 };
 
-// Announcements Module
+// Announcements Module (CONSOLIDATED: no subItems, modals used for create/edit)
 const announcementsModule: ModuleSidebarConfig = {
   moduleCode: 'announcements',
   displayName: 'Announcements',
   icon: 'Megaphone',
   basePath: '/announcements',
   order: 1,
-  subItems: [
-    { title: 'Create', path: '/announcements/create', action: 'create' },
-  ],
+  subItems: [],
 };
 
-// Notifications Module
+// Notifications Module (CONSOLIDATED: no subItems, all actions in single page)
 const notificationsModule: ModuleSidebarConfig = {
   moduleCode: 'notifications',
   displayName: 'Notifications',
   icon: 'Bell',
   basePath: '/notifications',
   order: 2,
-  subItems: [
-    { title: 'Send', path: '/notifications/send', action: 'create' },
-  ],
+  subItems: [],
 };
 
-// Messages Module
+// Messages Module (CONSOLIDATED: no subItems, tabs used for compose/sms/email/templates/history)
 const messagesModule: ModuleSidebarConfig = {
   moduleCode: 'messages',
   displayName: 'Messages',
   icon: 'Mail',
   basePath: '/messages',
   order: 3,
-  subItems: [
-    { title: 'Compose', path: '/messages/compose', action: 'create' },
-    { title: 'Send SMS', path: '/messages/sms', action: 'create' },
-    { title: 'Send Email', path: '/messages/email', action: 'create' },
-    { title: 'Templates', path: '/messages/templates', action: 'view' },
-    { title: 'History', path: '/messages/history', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Settings Module
+// Settings Module (CONSOLIDATED: no subItems, tabs within single page)
 const settingsModule: ModuleSidebarConfig = {
   moduleCode: 'settings',
   displayName: 'Settings',
   icon: 'Settings',
   basePath: '/settings',
   order: 1,
-  subItems: [
-    { title: 'School Info', path: '/settings/school', action: 'update' },
-    { title: 'Academic', path: '/settings/academic', action: 'update' },
-    { title: 'Fee Settings', path: '/settings/fees', action: 'update' },
-    { title: 'Communication', path: '/settings/communication', action: 'update' },
-  ],
+  subItems: [],
 };
 
-// ID Cards Module
+// ID Cards Module (CONSOLIDATED: no subItems, tabs for Student/Staff/Templates)
 const idCardsModule: ModuleSidebarConfig = {
   moduleCode: 'id_cards',
   displayName: 'ID Cards',
   icon: 'CreditCard',
   basePath: '/id-cards',
   order: 2,
-  subItems: [
-    { title: 'Student IDs', path: '/id-cards/students', action: 'view' },
-    { title: 'Staff IDs', path: '/id-cards/staff', action: 'view' },
-    { title: 'Templates', path: '/id-cards/templates', action: 'update' },
-  ],
+  subItems: [],
 };
 
-// Reports Module
+// Reports Module (CONSOLIDATED: no subItems, report type selector in single page)
 const reportsModule: ModuleSidebarConfig = {
   moduleCode: 'reports',
   displayName: 'Reports',
   icon: 'BarChart',
   basePath: '/reports',
   order: 3,
-  subItems: [
-    { title: 'Student Reports', path: '/reports/students', action: 'view' },
-    { title: 'Attendance', path: '/reports/attendance', action: 'view' },
-    { title: 'Academic', path: '/reports/academic', action: 'view' },
-    { title: 'Financial', path: '/reports/financial', action: 'view' },
-    { title: 'Staff', path: '/reports/staff', action: 'view' },
-    { title: 'Custom', path: '/reports/custom', action: 'create' },
-  ],
+  subItems: [],
 };
 
-// Parent Portal Module
+// Parent Portal Module (CONSOLIDATED: no subItems, children list on dashboard, details via tabs)
 const parentPortalModule: ModuleSidebarConfig = {
   moduleCode: 'parent',
   displayName: 'Parent Portal',
   icon: 'Home',
   basePath: '/parent/dashboard',
   order: 1,
-  subItems: [
-    { title: 'My Children', path: '/parent/children', action: 'view' },
-    { title: 'Pay Fees', path: '/parent/fee-payment', action: 'create' },
-  ],
+  subItems: [],
+  // CONSOLIDATED: My Children list shown on dashboard, child details via /parent/children/:id with tabs
+  // Pay Fees accessible via modal from dashboard or child's fees tab
 };
 
 // ==========================================
 // TIER 2 MODULES
 // ==========================================
 
-// Assignments Module
+// Assignments Module (CONSOLIDATED: no subItems, modals and tabs)
 const assignmentsModule: ModuleSidebarConfig = {
   moduleCode: 'assignments',
   displayName: 'Assignments',
   icon: 'FileEdit',
   basePath: '/assignments',
   order: 1,
-  subItems: [
-    { title: 'Create', path: '/assignments/create', action: 'create' },
-    { title: 'My Assignments', path: '/assignments/my-assignments', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Study Materials Module
+// Study Materials Module (CONSOLIDATED: no subItems, filters and modals)
 const studyMaterialsModule: ModuleSidebarConfig = {
   moduleCode: 'study_materials',
   displayName: 'Study Materials',
   icon: 'BookOpen',
   basePath: '/study-materials',
   order: 2,
-  subItems: [
-    { title: 'Upload', path: '/study-materials/upload', action: 'create' },
-  ],
+  subItems: [],
 };
 
-// Online Classes Module
+// Online Classes Module (CONSOLIDATED: no subItems, tabs for Schedule/My Classes)
 const onlineClassesModule: ModuleSidebarConfig = {
   moduleCode: 'online_classes',
   displayName: 'Online Classes',
   icon: 'Video',
   basePath: '/online-classes',
   order: 3,
-  subItems: [
-    { title: 'Schedule', path: '/online-classes/schedule', action: 'create' },
-    { title: 'My Classes', path: '/online-classes/my-classes', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Homework Module
+// Homework Module (CONSOLIDATED: no subItems, date filters and modals)
 const homeworkModule: ModuleSidebarConfig = {
   moduleCode: 'homework',
   displayName: 'Homework',
   icon: 'ClipboardCheck',
   basePath: '/homework',
   order: 4,
-  subItems: [
-    { title: 'Create', path: '/homework/create', action: 'create' },
-    { title: 'My Homework', path: '/homework/my-homework', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Doubts Module
+// Doubts Module (CONSOLIDATED: no subItems, tabs for Ask/My Doubts)
 const doubtsModule: ModuleSidebarConfig = {
   moduleCode: 'doubts',
   displayName: 'Doubts',
   icon: 'HelpCircle',
   basePath: '/doubts',
   order: 5,
-  subItems: [
-    { title: 'Ask Doubt', path: '/doubts/ask', action: 'create' },
-    { title: 'My Doubts', path: '/doubts/my-doubts', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Transport Module
+// Transport Module (CONSOLIDATED: no subItems, tabs for Routes/Vehicles/Drivers/Assignments/Tracking)
 const transportModule: ModuleSidebarConfig = {
   moduleCode: 'transport',
   displayName: 'Transport',
   icon: 'Bus',
   basePath: '/transport',
   order: 1,
-  subItems: [
-    { title: 'Routes', path: '/transport/routes', action: 'view' },
-    { title: 'Vehicles', path: '/transport/vehicles', action: 'view' },
-    { title: 'Drivers', path: '/transport/drivers', action: 'view' },
-    { title: 'Assignments', path: '/transport/assignments', action: 'view' },
-    { title: 'Live Tracking', path: '/transport/tracking', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Payroll Module
+// Payroll Module (CONSOLIDATED: no subItems, tabs for Structures/Process/Payslips)
 const payrollModule: ModuleSidebarConfig = {
   moduleCode: 'payroll',
   displayName: 'Payroll',
   icon: 'Wallet',
   basePath: '/payroll',
   order: 1,
-  subItems: [
-    { title: 'Salary Structures', path: '/payroll/structures', action: 'view' },
-    { title: 'Process Payroll', path: '/payroll/process', action: 'create' },
-    { title: 'Payslips', path: '/payroll/payslips', action: 'view' },
-    { title: 'My Payslips', path: '/payroll/my-payslips', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Appraisals Module
+// Appraisals Module (CONSOLIDATED: no subItems, tabs for All/My Appraisals)
 const appraisalsModule: ModuleSidebarConfig = {
   moduleCode: 'appraisals',
   displayName: 'Appraisals',
   icon: 'Star',
   basePath: '/appraisals',
   order: 2,
-  subItems: [
-    { title: 'Create', path: '/appraisals/create', action: 'create' },
-    { title: 'My Appraisals', path: '/appraisals/my-appraisals', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Recruitment Module
+// Recruitment Module (CONSOLIDATED: no subItems, tabs for Jobs/Applications/Interviews)
 const recruitmentModule: ModuleSidebarConfig = {
   moduleCode: 'recruitment',
   displayName: 'Recruitment',
   icon: 'UserPlus',
   basePath: '/recruitment',
   order: 3,
-  subItems: [
-    { title: 'Job Postings', path: '/recruitment/jobs', action: 'view' },
-    { title: 'Applications', path: '/recruitment/applications', action: 'view' },
-    { title: 'Interviews', path: '/recruitment/interviews', action: 'create' },
-  ],
+  subItems: [],
 };
 
-// Feedback Module
+// Feedback Module (CONSOLIDATED: no subItems, tabs/modals in single page)
 const feedbackModule: ModuleSidebarConfig = {
   moduleCode: 'feedback',
   displayName: 'Feedback',
   icon: 'MessageCircle',
   basePath: '/feedback',
   order: 1,
-  subItems: [
-    { title: 'Submit', path: '/feedback/submit', action: 'create' },
-    { title: 'Forms', path: '/feedback/forms', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Grievances Module
+// Grievances Module (CONSOLIDATED: no subItems, tabs/modals in single page)
 const grievancesModule: ModuleSidebarConfig = {
   moduleCode: 'grievances',
   displayName: 'Grievances',
   icon: 'AlertTriangle',
   basePath: '/grievances',
   order: 2,
-  subItems: [
-    { title: 'Submit', path: '/grievances/submit', action: 'create' },
-    { title: 'My Grievances', path: '/grievances/my-grievances', action: 'view' },
-  ],
+  subItems: [],
 };
 
-// Support Module
+// Support Module (CONSOLIDATED: no subItems, tabs/modals in single page)
 const supportModule: ModuleSidebarConfig = {
   moduleCode: 'support',
   displayName: 'Support',
   icon: 'LifeBuoy',
   basePath: '/support',
   order: 3,
-  subItems: [
-    { title: 'Create Ticket', path: '/support/create', action: 'create' },
-    { title: 'My Tickets', path: '/support/my-tickets', action: 'view' },
-  ],
+  subItems: [],
 };
 
 // ==========================================
 // TIER 3 MODULES
 // ==========================================
 
-// Analytics Module
+// Analytics Module (CONSOLIDATED - tabs for analytics types)
 const analyticsModule: ModuleSidebarConfig = {
   moduleCode: 'analytics',
   displayName: 'Analytics',
   icon: 'TrendingUp',
   basePath: '/analytics',
   order: 1,
-  subItems: [
-    { title: 'Students', path: '/analytics/students', action: 'view' },
-    { title: 'Attendance', path: '/analytics/attendance', action: 'view' },
-    { title: 'Financial', path: '/analytics/financial', action: 'view' },
-    { title: 'Academic', path: '/analytics/academic', action: 'view' },
-    { title: 'Predictions', path: '/analytics/predictions', action: 'view' },
-    { title: 'Export', path: '/analytics/export', action: 'export' },
-  ],
+  subItems: [], // CONSOLIDATED: Students/Attendance/Financial/Academic/Predictions/Export → tabs
 };
 
-// PTM Module
+// PTM Module (CONSOLIDATED - tabs for schedule/slots/bookings)
 const ptmModule: ModuleSidebarConfig = {
   moduleCode: 'ptm',
   displayName: 'PTM',
   icon: 'Users',
   basePath: '/ptm',
   order: 1,
-  subItems: [
-    { title: 'Schedule', path: '/ptm/schedule', action: 'view' },
-    { title: 'Manage Slots', path: '/ptm/slots', action: 'create' },
-    { title: 'Bookings', path: '/ptm/bookings', action: 'view' },
-    { title: 'My Bookings', path: '/ptm/my-bookings', action: 'view' },
-  ],
+  subItems: [], // CONSOLIDATED: Schedule/Slots/Bookings/My Bookings → tabs
 };
 
-// Alumni Module
+// Alumni Module (CONSOLIDATED - tabs for list/events/donations)
 const alumniModule: ModuleSidebarConfig = {
   moduleCode: 'alumni',
   displayName: 'Alumni',
   icon: 'GraduationCap',
   basePath: '/alumni',
   order: 2,
-  subItems: [
-    { title: 'Register', path: '/alumni/register', action: 'create' },
-    { title: 'Events', path: '/alumni/events', action: 'view' },
-    { title: 'Donations', path: '/alumni/donations', action: 'view' },
-  ],
+  subItems: [], // CONSOLIDATED: Register/Events/Donations → tabs/modals
 };
 
-// Admissions Module
+// Admissions Module (CONSOLIDATED - tabs for applications/tests/interviews)
 const admissionsModule: ModuleSidebarConfig = {
   moduleCode: 'admissions',
   displayName: 'Admissions',
   icon: 'UserPlus',
   basePath: '/admissions',
   order: 1,
-  subItems: [
-    { title: 'Applications', path: '/admissions/applications', action: 'view' },
-    { title: 'New Application', path: '/admissions/apply', action: 'create' },
-    { title: 'Entrance Tests', path: '/admissions/entrance-tests', action: 'view' },
-    { title: 'Interviews', path: '/admissions/interviews', action: 'view' },
-  ],
+  subItems: [], // CONSOLIDATED: Applications/New/Tests/Interviews → tabs/modals
 };
 
-// Inventory Module
+// Inventory Module (CONSOLIDATED - tabs for items/categories/issued/library)
 const inventoryModule: ModuleSidebarConfig = {
   moduleCode: 'inventory',
   displayName: 'Inventory',
   icon: 'Package',
   basePath: '/inventory',
   order: 1,
-  subItems: [
-    { title: 'All Items', path: '/inventory/items', action: 'view' },
-    { title: 'Categories', path: '/inventory/categories', action: 'view' },
-    { title: 'Issue Item', path: '/inventory/issue', action: 'create' },
-    { title: 'Issued Items', path: '/inventory/issued', action: 'view' },
-    { title: 'Stock Report', path: '/inventory/stock', action: 'view' },
-    { title: 'Library', path: '/inventory/library', action: 'view' },
-  ],
+  subItems: [], // CONSOLIDATED: Items/Categories/Issue/Issued/Stock/Library → tabs
 };
 
-// Certificates Module
+// Certificates Module (CONSOLIDATED - tabs for generate/templates/issued)
 const certificatesModule: ModuleSidebarConfig = {
   moduleCode: 'certificates',
   displayName: 'Certificates',
   icon: 'Award',
   basePath: '/certificates',
   order: 2,
-  subItems: [
-    { title: 'Generate', path: '/certificates/generate', action: 'create' },
-    { title: 'Templates', path: '/certificates/templates', action: 'view' },
-    { title: 'Issued', path: '/certificates/issued', action: 'view' },
-    { title: 'Bulk Generate', path: '/certificates/bulk-generate', action: 'create' },
-  ],
+  subItems: [], // CONSOLIDATED: Generate/Templates/Issued/Bulk → tabs/modals
 };
 
-// Surveys Module
+// Surveys Module (CONSOLIDATED - modals for create/edit/respond)
 const surveysModule: ModuleSidebarConfig = {
   moduleCode: 'surveys',
   displayName: 'Surveys',
   icon: 'ClipboardList',
   basePath: '/surveys',
   order: 3,
-  subItems: [
-    { title: 'Create', path: '/surveys/create', action: 'create' },
-  ],
+  subItems: [], // CONSOLIDATED: Create → modal
 };
 
-// Branches Module
+// Branches Module (CONSOLIDATED - modals for CRUD)
 const branchesModule: ModuleSidebarConfig = {
   moduleCode: 'branches',
   displayName: 'Branches',
   icon: 'Building',
   basePath: '/branches',
   order: 1,
-  subItems: [
-    { title: 'Create Branch', path: '/branches/create', action: 'create' },
-    { title: 'Switch Branch', path: '/branches/switch', action: 'update' },
-  ],
+  subItems: [], // CONSOLIDATED: Create/Switch → modals
 };
 
 

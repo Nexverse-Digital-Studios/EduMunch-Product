@@ -1,8 +1,11 @@
 /**
- * Teachers List Page
- * ===================
- * List and manage all teachers
+ * Teachers List Page (CONSOLIDATED)
+ * ===================================
+ * List and manage all teachers.
+ * Create and Edit operations now use modal dialogs instead of separate routes.
+ * 
  * Route: /teachers
+ * Route Consolidation: Replaces /teachers/create and /teachers/:id/edit routes
  */
 
 import { useState, useMemo } from "react";
@@ -61,6 +64,7 @@ import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { TABLES } from "@/lib/supabase";
 import type { TeacherDB, TeacherStatus } from "./types";
+import { TeacherFormDialog } from "./TeacherFormDialog";
 
 const statusColors: Record<TeacherStatus, string> = {
   active: "bg-green-100 text-green-800",
@@ -77,6 +81,10 @@ const TeachersList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
+  
+  // Modal states for create/edit (consolidation - replaces separate routes)
+  const [showTeacherModal, setShowTeacherModal] = useState(false);
+  const [editTeacher, setEditTeacher] = useState<TeacherDB | null>(null);
 
   // Fetch teachers
   const {
@@ -154,6 +162,24 @@ const TeachersList = () => {
     }
   };
 
+  // Handle opening create modal
+  const handleCreateTeacher = () => {
+    setEditTeacher(null);
+    setShowTeacherModal(true);
+  };
+
+  // Handle opening edit modal
+  const handleEditTeacher = (teacher: TeacherDB) => {
+    setEditTeacher(teacher);
+    setShowTeacherModal(true);
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setShowTeacherModal(false);
+    setEditTeacher(null);
+  };
+
   // Get initials for avatar
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -196,11 +222,9 @@ const TeachersList = () => {
                   Bulk Upload
                 </Link>
               </Button>
-              <Button asChild>
-                <Link to="/teachers/create">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Teacher
-                </Link>
+              <Button onClick={handleCreateTeacher}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Teacher
               </Button>
             </>
           )}
@@ -383,10 +407,12 @@ const TeachersList = () => {
                             </Link>
                           </Button>
                           {canUpdate && (
-                            <Button variant="ghost" size="icon" asChild>
-                              <Link to={`/teachers/${teacher.id}/edit`}>
-                                <Edit className="h-4 w-4" />
-                              </Link>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => handleEditTeacher(teacher)}
+                            >
+                              <Edit className="h-4 w-4" />
                             </Button>
                           )}
                           {canDelete && (
@@ -429,6 +455,16 @@ const TeachersList = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Create/Edit Teacher Modal (Consolidated - replaces /teachers/create and /teachers/:id/edit routes) */}
+      <TeacherFormDialog
+        open={showTeacherModal}
+        onOpenChange={handleModalClose}
+        mode={editTeacher ? "edit" : "create"}
+        teacherId={editTeacher?.id}
+        initialData={editTeacher || undefined}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 };

@@ -6,7 +6,6 @@
  */
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Plus, BookOpen, CheckCircle2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,16 +17,18 @@ import { useToast } from "@/hooks/use-toast";
 import {
   ClassTable,
   ClassCard,
+  ClassFormDialog,
   DeleteClassDialog,
   type ClassDB,
 } from "./components";
 
 export default function ClassesList() {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [classToDelete, setClassToDelete] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
   // Permission checks
   const { canCreate, canUpdate, canDelete } = useModulePermissions("classes");
@@ -42,6 +43,22 @@ export default function ClassesList() {
 
   // Delete mutation
   const { deleteMutation } = useSupabaseTable<ClassDB>(TABLES.CLASSES);
+
+  // Modal handlers
+  const handleCreate = () => {
+    setEditId(null);
+    setShowModal(true);
+  };
+
+  const handleEdit = (id: string) => {
+    setEditId(id);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setEditId(null);
+  };
 
   // Calculate stats
   const totalClasses = classes.length;
@@ -111,7 +128,7 @@ export default function ClassesList() {
           </p>
         </div>
         {canCreate && (
-          <Button onClick={() => navigate("/classes/create")} size="lg">
+          <Button onClick={handleCreate} size="lg">
             <Plus className="h-5 w-5 mr-2" />
             Add Class
           </Button>
@@ -183,7 +200,7 @@ export default function ClassesList() {
             </p>
             {canCreate && !searchTerm && (
               <Button
-                onClick={() => navigate("/classes/create")}
+                onClick={handleCreate}
                 className="mt-6"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -200,6 +217,7 @@ export default function ClassesList() {
               <ClassTable
                 classes={filteredClasses}
                 onDelete={handleDelete}
+                onEdit={handleEdit}
                 canUpdate={canUpdate}
                 canDelete={canDelete}
               />
@@ -213,6 +231,7 @@ export default function ClassesList() {
                 key={classItem.id}
                 classItem={classItem}
                 onDelete={handleDelete}
+                onEdit={handleEdit}
                 canUpdate={canUpdate}
                 canDelete={canDelete}
               />
@@ -227,6 +246,13 @@ export default function ClassesList() {
         onOpenChange={setDeleteDialogOpen}
         onConfirm={confirmDelete}
         className={selectedClass?.class_name}
+      />
+
+      {/* Form Dialog */}
+      <ClassFormDialog
+        open={showModal}
+        onOpenChange={handleModalClose}
+        editId={editId}
       />
     </div>
   );

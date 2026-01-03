@@ -120,75 +120,34 @@ const TopicCreate = lazy(() => import("@/pages/topics").then(m => ({ default: m.
 const TopicDetail = lazy(() => import("@/pages/topics").then(m => ({ default: m.TopicDetail })));
 const TopicEdit = lazy(() => import("@/pages/topics").then(m => ({ default: m.TopicEdit })));
 
-// Attendance
+// Attendance (CONSOLIDATED)
 const AttendanceList = lazy(() => import("@/pages/attendance").then(m => ({ default: m.AttendanceList })));
-const MarkAttendancePage = lazy(() => import("@/pages/attendance").then(m => ({ default: m.MarkAttendancePage })));
-const ViewAttendancePage = lazy(() => import("@/pages/attendance").then(m => ({ default: m.ViewAttendancePage })));
-const AttendanceReportsPage = lazy(() => import("@/pages/attendance").then(m => ({ default: m.AttendanceReportsPage })));
-const SubjectWiseAttendancePage = lazy(() => import("@/pages/attendance").then(m => ({ default: m.SubjectWiseAttendancePage })));
-const ExportAttendancePage = lazy(() => import("@/pages/attendance").then(m => ({ default: m.ExportAttendancePage })));
 
-// Staff Attendance
+// Staff Attendance (CONSOLIDATED)
 const StaffAttendanceDashboard = lazy(() => import("@/pages/staff-attendance").then(m => ({ default: m.StaffAttendanceDashboard })));
-const MarkStaffAttendancePage = lazy(() => import("@/pages/staff-attendance").then(m => ({ default: m.MarkStaffAttendancePage })));
-const ViewStaffAttendancePage = lazy(() => import("@/pages/staff-attendance").then(m => ({ default: m.ViewStaffAttendancePage })));
-const EmployeeAttendanceDetailPage = lazy(() => import("@/pages/staff-attendance").then(m => ({ default: m.EmployeeAttendanceDetailPage })));
-const StaffAttendanceReportsPage = lazy(() => import("@/pages/staff-attendance").then(m => ({ default: m.StaffAttendanceReportsPage })));
-const MonthlyReportPage = lazy(() => import("@/pages/staff-attendance").then(m => ({ default: m.MonthlyReportPage })));
-const ExportStaffAttendancePage = lazy(() => import("@/pages/staff-attendance").then(m => ({ default: m.ExportStaffAttendancePage })));
 
-// Leave Management
+// Leave Management (CONSOLIDATED)
 const LeaveRequestsPage = lazy(() => import("@/pages/attendance").then(m => ({ default: m.LeaveRequestsPage })));
-const CreateLeaveRequestPage = lazy(() => import("@/pages/attendance").then(m => ({ default: m.CreateLeaveRequestPage })));
-const LeaveRequestDetailsPage = lazy(() => import("@/pages/attendance").then(m => ({ default: m.LeaveRequestDetailsPage })));
 const LeaveManagement = lazy(() => import("@/pages/LeaveManagement"));
 
-// Timetables
-const TimetablesList = lazy(() => import("@/pages/timetables").then(m => ({ default: m.TimetablesList })));
+// Timetables (CONSOLIDATED)
 const TimetableDashboard = lazy(() => import("@/pages/timetables").then(m => ({ default: m.TimetableDashboard })));
-const ViewTimetablesPage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.ViewTimetablesPage })));
-const SectionTimetablePage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.SectionTimetablePage })));
-const CreateTimetablePage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.CreateTimetablePage })));
-const EditTimetablePage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.EditTimetablePage })));
-const BulkCreatePage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.BulkCreatePage })));
-const CopySchedulePage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.CopySchedulePage })));
-const ConflictsPage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.ConflictsPage })));
-const SubstitutePage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.SubstitutePage })));
-const PeriodsPage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.PeriodsPage })));
-const ExportTimetablePage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.ExportTimetablePage })));
 const MyTimetablePage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.MyTimetablePage })));
-const ClassTimetablePage = lazy(() => import("@/pages/timetables").then(m => ({ default: m.ClassTimetablePage })));
 
-// Lecture Templates
+// Lecture Templates (CONSOLIDATED)
 const LectureTemplatesList = lazy(() => import("@/pages/lecture-templates").then(m => ({ default: m.LectureTemplatesList })));
-const LectureTemplateCreate = lazy(() => import("@/pages/lecture-templates").then(m => ({ default: m.LectureTemplateCreate })));
-const LectureTemplateDetail = lazy(() => import("@/pages/lecture-templates").then(m => ({ default: m.LectureTemplateDetail })));
-const LectureTemplateEdit = lazy(() => import("@/pages/lecture-templates").then(m => ({ default: m.LectureTemplateEdit })));
-const LectureTemplates = lazy(() => import("@/pages/LectureTemplates"));
 
-// Exams
+// Exams (CONSOLIDATED: 2 routes only)
 const ExamsList = lazy(() => import("@/pages/exams").then(m => ({ default: m.ExamsList })));
-const ExamCreate = lazy(() => import("@/pages/exams").then(m => ({ default: m.ExamCreate })));
 const ExamDetail = lazy(() => import("@/pages/exams").then(m => ({ default: m.ExamDetail })));
-const ExamEdit = lazy(() => import("@/pages/exams").then(m => ({ default: m.ExamEdit })));
-const ExamSchedulePage = lazy(() => import("@/pages/exams").then(m => ({ default: m.ExamSchedulePage })));
-const MarksEntryPage = lazy(() => import("@/pages/exams").then(m => ({ default: m.MarksEntryPage })));
 const ReportCardsPage = lazy(() => import("@/pages/exams").then(m => ({ default: m.ReportCardsPage })));
-const ExamsExportPage = lazy(() => import("@/pages/exams").then(m => ({ default: m.ExamsExportPage })));
 
 // Results
 const ResultsList = lazy(() => import("@/pages/results").then(m => ({ default: m.ResultsList })));
 
-// Fees
+// Fees (CONSOLIDATED: 2 routes only)
 const FeeStructuresList = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeStructuresList })));
-const FeeStructureCreate = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeStructureCreate })));
-const FeeStructureDetail = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeStructureDetail })));
-const FeeStructureEdit = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeStructureEdit })));
-const StudentFeesList = lazy(() => import("@/pages/fees").then(m => ({ default: m.StudentFeesList })));
 const FeeCollectionPage = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeCollectionPage })));
-const FeeReceiptsPage = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeReceiptsPage })));
-const FeeReportsPage = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeReportsPage })));
-const FeesExportPage = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeesExportPage })));
 
 // Payments
 const PaymentsList = lazy(() => import("@/pages/payments").then(m => ({ default: m.PaymentsList })));
@@ -209,29 +168,18 @@ const SupportTickets = lazy(() => import("@/pages/SupportTickets"));
 const SalaryStructures = lazy(() => import("@/pages/SalaryStructures"));
 const Payslips = lazy(() => import("@/pages/Payslips"));
 
-// Transport
+// Transport (CONSOLIDATED: Single dashboard with tabs)
 const TransportDashboard = lazy(() => import("@/pages/transport").then(m => ({ default: m.TransportDashboard })));
-const RoutesList = lazy(() => import("@/pages/transport").then(m => ({ default: m.RoutesList })));
-const VehiclesList = lazy(() => import("@/pages/transport").then(m => ({ default: m.VehiclesList })));
-const DriversList = lazy(() => import("@/pages/transport").then(m => ({ default: m.DriversList })));
-const StudentTransportList = lazy(() => import("@/pages/transport").then(m => ({ default: m.StudentTransportList })));
 
 // Tier 3 Pages
 const Branches = lazy(() => import("@/pages/Branches"));
 const InventoryList = lazy(() => import("@/pages/inventory").then(m => ({ default: m.InventoryList })));
 
-// ID Cards
+// ID Cards (CONSOLIDATED: Single dashboard with tabs)
 const IDCardsDashboard = lazy(() => import("@/pages/id-cards").then(m => ({ default: m.IDCardsDashboard })));
-const StudentIDCards = lazy(() => import("@/pages/id-cards").then(m => ({ default: m.StudentIDCards })));
-const StaffIDCards = lazy(() => import("@/pages/id-cards").then(m => ({ default: m.StaffIDCards })));
-const IDCardTemplates = lazy(() => import("@/pages/id-cards").then(m => ({ default: m.IDCardTemplates })));
 
-// Reports
+// Reports (CONSOLIDATED: Single dashboard with report type selector)
 const ReportsDashboard = lazy(() => import("@/pages/reports").then(m => ({ default: m.ReportsDashboard })));
-const StudentPerformanceReport = lazy(() => import("@/pages/reports").then(m => ({ default: m.StudentPerformanceReport })));
-const AttendanceSummaryReport = lazy(() => import("@/pages/reports").then(m => ({ default: m.AttendanceSummaryReport })));
-const AcademicTrendsReport = lazy(() => import("@/pages/reports").then(m => ({ default: m.AcademicTrendsReport })));
-const FeeCollectionReport = lazy(() => import("@/pages/reports").then(m => ({ default: m.FeeCollectionReport })));
 
 // Library
 const LibraryDashboard = lazy(() => import("@/pages/library").then(m => ({ default: m.LibraryDashboard })));
@@ -336,83 +284,34 @@ const routeComponentMap: Record<string, LazyComponent> = {
   '/topics/:id': TopicDetail,
   '/topics/:id/edit': TopicEdit,
   
-  // Attendance
+  // Attendance (CONSOLIDATED: All features via tabs on main dashboard)
   '/attendance': AttendanceList,
-  '/attendance/mark': MarkAttendancePage,
-  '/attendance/mark/:sectionId': MarkAttendancePage,
-  '/attendance/view': ViewAttendancePage,
-  '/attendance/view/:sectionId': ViewAttendancePage,
-  '/attendance/view/student/:studentId': ViewAttendancePage,
-  '/attendance/reports': AttendanceReportsPage,
-  '/attendance/reports/:reportType': AttendanceReportsPage,
-  '/attendance/subject-wise': SubjectWiseAttendancePage,
-  '/attendance/export': ExportAttendancePage,
   
-  // Staff Attendance
+  // Staff Attendance (CONSOLIDATED: All features via tabs on main dashboard)
   '/staff/attendance': StaffAttendanceDashboard,
-  '/staff/attendance/mark': MarkStaffAttendancePage,
-  '/staff/attendance/view': ViewStaffAttendancePage,
-  '/staff/attendance/view/:employeeId': EmployeeAttendanceDetailPage,
-  '/staff/attendance/reports': StaffAttendanceReportsPage,
-  '/staff/attendance/reports/monthly': MonthlyReportPage,
-  '/staff/attendance/export': ExportStaffAttendancePage,
   
-  // Leave Management
+  // Leave Management (CONSOLIDATED: Create/Edit via modal)
   '/leave-requests': LeaveRequestsPage,
-  '/leave-requests/create': CreateLeaveRequestPage,
-  '/leave-requests/:id': LeaveRequestDetailsPage,
-  '/leave-requests/:id/approve': LeaveRequestDetailsPage,
-  '/leave-management': LeaveManagement,
+  '/staff/leave': LeaveManagement,
   
-  // Timetables
-  '/timetables': TimetablesList,
+  // Timetables (CONSOLIDATED: All features via tabs on dashboard)
   '/timetable': TimetableDashboard,
-  '/timetable/view': ViewTimetablesPage,
-  '/timetable/view/:sectionId': SectionTimetablePage,
-  '/timetable/create': CreateTimetablePage,
-  '/timetable/:id/edit': EditTimetablePage,
-  '/timetable/bulk-create': BulkCreatePage,
-  '/timetable/copy': CopySchedulePage,
-  '/timetable/conflicts': ConflictsPage,
-  '/timetable/substitute': SubstitutePage,
-  '/timetable/periods': PeriodsPage,
-  '/timetable/export': ExportTimetablePage,
   '/my-timetable': MyTimetablePage,
-  '/class-timetable': ClassTimetablePage,
   
-  // Lecture Templates
+  // Lecture Templates (CONSOLIDATED: Create/Edit via modals)
   '/lecture-templates': LectureTemplatesList,
-  '/lecture-templates/create': LectureTemplateCreate,
-  '/lecture-templates/:id': LectureTemplateDetail,
-  '/lecture-templates/:id/edit': LectureTemplateEdit,
-  '/lecture-templates-legacy': LectureTemplates,
   
-  // Exams
+  // Exams (CONSOLIDATED)
   '/exams': ExamsList,
-  '/exams/create': ExamCreate,
   '/exams/:id': ExamDetail,
-  '/exams/:id/edit': ExamEdit,
-  '/exams/:id/schedule': ExamSchedulePage,
-  '/exams/:id/marks': MarksEntryPage,
-  '/exams/:id/marks/enter': MarksEntryPage,
-  '/exams/:id/report-cards': ReportCardsPage,
-  '/exams/export': ExamsExportPage,
   '/report-cards': ReportCardsPage,
   
   // Results
   '/results': ResultsList,
   
-  // Fees
-  '/fees/structures': FeeStructuresList,
-  '/fees/structures/create': FeeStructureCreate,
-  '/fees/structures/:id': FeeStructureDetail,
-  '/fees/structures/:id/edit': FeeStructureEdit,
-  '/fees/students': StudentFeesList,
+  // Fees (CONSOLIDATED)
+  '/fees': FeeStructuresList,
   '/fees/collect': FeeCollectionPage,
-  '/fees/collect/:studentFeeId': FeeCollectionPage,
-  '/fees/receipts': FeeReceiptsPage,
-  '/fees/reports': FeeReportsPage,
-  '/fees/export': FeesExportPage,
   
   // Payments & Enrollments
   '/payments': PaymentsList,
@@ -439,12 +338,8 @@ const routeComponentMap: Record<string, LazyComponent> = {
   '/salary-structures': SalaryStructures,
   '/payslips': Payslips,
   
-  // Tier 2 - Transport
+  // Tier 2 - Transport (CONSOLIDATED: Single dashboard with tabs)
   '/transport': TransportDashboard,
-  '/transport/routes': RoutesList,
-  '/transport/vehicles': VehiclesList,
-  '/transport/drivers': DriversList,
-  '/transport/students': StudentTransportList,
   
   // Tier 3 - Branches
   '/branches': Branches,
@@ -452,21 +347,11 @@ const routeComponentMap: Record<string, LazyComponent> = {
   // Tier 3 - Inventory
   '/inventory': InventoryList,
   
-  // Tier 3 - ID Cards
+  // Tier 3 - ID Cards (CONSOLIDATED: Single dashboard with tabs)
   '/id-cards': IDCardsDashboard,
-  '/id-cards/students': StudentIDCards,
-  '/id-cards/students/generate': StudentIDCards,
-  '/id-cards/staff': StaffIDCards,
-  '/id-cards/staff/generate': StaffIDCards,
-  '/id-cards/templates': IDCardTemplates,
-  '/id-cards/bulk-generate': StudentIDCards,
   
-  // Tier 3 - Reports
+  // Tier 3 - Reports (CONSOLIDATED: Single dashboard with report selector)
   '/reports': ReportsDashboard,
-  '/reports/student-performance': StudentPerformanceReport,
-  '/reports/attendance-summary': AttendanceSummaryReport,
-  '/reports/academic-trends': AcademicTrendsReport,
-  '/reports/fee-collection': FeeCollectionReport,
   
   // Tier 3 - Library
   '/library': LibraryDashboard,

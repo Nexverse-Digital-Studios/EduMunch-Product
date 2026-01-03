@@ -1,8 +1,11 @@
 /**
- * EmployeesList Page
- * ===================
- * Main employees listing page with search, filters, and CRUD operations
+ * EmployeesList Page (CONSOLIDATED)
+ * ===================================
+ * Main employees listing page with search, filters, and CRUD operations.
+ * Create and Edit operations now use modal dialogs instead of separate routes.
+ * 
  * Route: /employees
+ * Route Consolidation: Replaces /employees/create and /employees/:id/edit routes
  */
 
 import { useState } from "react";
@@ -26,6 +29,7 @@ import {
   EmployeeTable,
   EmployeeCard,
   DeleteEmployeeDialog,
+  EmployeeFormDialog,
   type EmployeeDB,
   type EmployeeDisplay,
 } from "./components";
@@ -54,6 +58,10 @@ export default function EmployeesList() {
   const [designationFilter, setDesignationFilter] = useState("all");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState<string | null>(null);
+  
+  // Modal states for create/edit (consolidation - replaces separate routes)
+  const [showEmployeeModal, setShowEmployeeModal] = useState(false);
+  const [editEmployeeId, setEditEmployeeId] = useState<string | null>(null);
 
   // Permission checks
   const { canCreate, canUpdate, canDelete } = useModulePermissions("employees");
@@ -91,6 +99,42 @@ export default function EmployeesList() {
   const handleDelete = (employeeId: string) => {
     setEmployeeToDelete(employeeId);
     setDeleteDialogOpen(true);
+  };
+
+  // Handle opening create modal
+  const handleCreateEmployee = () => {
+    setEditEmployeeId(null);
+    setShowEmployeeModal(true);
+  };
+
+  // Handle opening edit modal
+  const handleEditEmployee = (employeeId: string) => {
+    setEditEmployeeId(employeeId);
+    setShowEmployeeModal(true);
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setShowEmployeeModal(false);
+    setEditEmployeeId(null);
+  };
+
+  // Get employee data for edit mode
+  const getEditEmployeeData = () => {
+    if (!editEmployeeId || !teachers) return undefined;
+    const teacher = teachers.find((t) => t.id === editEmployeeId);
+    if (!teacher) return undefined;
+    return {
+      first_name: teacher.first_name,
+      middle_name: teacher.middle_name || "",
+      last_name: teacher.last_name,
+      employee_code: teacher.employee_code,
+      email: teacher.email || "",
+      phone: teacher.phone,
+      department: teacher.department || "",
+      designation: teacher.designation || "",
+      status: teacher.status,
+    };
   };
 
   const confirmDelete = () => {
@@ -145,7 +189,7 @@ export default function EmployeesList() {
         </div>
         {canCreate && (
           <Button
-            onClick={() => navigate("/employees/create")}
+            onClick={handleCreateEmployee}
             className="bg-primary hover:bg-primary/90"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -215,7 +259,7 @@ export default function EmployeesList() {
             </p>
             {canCreate && !searchQuery && (
               <Button
-                onClick={() => navigate("/employees/create")}
+                onClick={handleCreateEmployee}
                 className="mt-6"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -231,6 +275,7 @@ export default function EmployeesList() {
             <CardContent className="pt-6">
               <EmployeeTable
                 employees={filteredEmployees}
+                onEdit={handleEditEmployee}
                 onDelete={handleDelete}
                 canUpdate={canUpdate}
                 canDelete={canDelete}
@@ -244,6 +289,7 @@ export default function EmployeesList() {
               <EmployeeCard
                 key={employee.id}
                 employee={employee}
+                onEdit={handleEditEmployee}
                 onDelete={handleDelete}
                 canUpdate={canUpdate}
                 canDelete={canDelete}
@@ -259,6 +305,16 @@ export default function EmployeesList() {
         onOpenChange={setDeleteDialogOpen}
         onConfirm={confirmDelete}
         employeeName={selectedEmployee?.name}
+      />
+
+      {/* Create/Edit Employee Modal (Consolidated - replaces /employees/create and /employees/:id/edit routes) */}
+      <EmployeeFormDialog
+        open={showEmployeeModal}
+        onOpenChange={handleModalClose}
+        mode={editEmployeeId ? "edit" : "create"}
+        employeeId={editEmployeeId || undefined}
+        initialData={getEditEmployeeData()}
+        onSuccess={() => {}}
       />
     </div>
   );

@@ -6,7 +6,6 @@
  */
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Plus, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -23,6 +22,7 @@ import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   TopicItem,
+  TopicFormDialog,
   AddContentDialog,
   DeleteTopicDialog,
   DeleteContentDialog,
@@ -39,7 +39,6 @@ interface SubjectDB {
 }
 
 export default function TopicsList() {
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   // UI State
@@ -49,6 +48,8 @@ export default function TopicsList() {
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [deleteTopicId, setDeleteTopicId] = useState<string | null>(null);
   const [deleteContentId, setDeleteContentId] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
   // Permission checks
   const { canCreate, canUpdate, canDelete } = useModulePermissions("topics");
@@ -77,6 +78,22 @@ export default function TopicsList() {
   });
 
   const isLoading = loadingSubjects || loadingTopics || loadingContents;
+
+  // Modal handlers
+  const handleCreate = () => {
+    setEditId(null);
+    setShowModal(true);
+  };
+
+  const handleEdit = (id: string) => {
+    setEditId(id);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setEditId(null);
+  };
 
   // Toggle topic expansion
   const toggleTopic = (topicId: string) => {
@@ -218,7 +235,7 @@ export default function TopicsList() {
         </div>
         {canCreate && (
           <Button
-            onClick={() => navigate("/topics/create")}
+            onClick={handleCreate}
             className="bg-primary hover:bg-primary/90"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -316,6 +333,14 @@ export default function TopicsList() {
         onOpenChange={(open) => !open && setDeleteContentId(null)}
         onConfirm={handleDeleteContent}
         contentTitle={selectedContent?.content_title}
+      />
+
+      {/* Form Dialog */}
+      <TopicFormDialog
+        open={showModal}
+        onOpenChange={handleModalClose}
+        editId={editId}
+        defaultSubjectId={selectedSubject !== "all" ? selectedSubject : undefined}
       />
     </div>
   );

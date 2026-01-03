@@ -5,8 +5,7 @@
  * Used in SubjectsList page
  */
 
-import { useNavigate } from "react-router-dom";
-import { Edit, Trash2, Eye, BookOpen } from "lucide-react";
+import { Edit, Trash2, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import type { Subject } from "@/hooks/useSupabaseQuery";
 interface SubjectCardProps {
   subject: Subject;
   onDelete: (subjectId: string) => void;
+  onEdit?: (subjectId: string) => void;
   canUpdate: boolean;
   canDelete: boolean;
 }
@@ -22,11 +22,10 @@ interface SubjectCardProps {
 export const SubjectCard = ({
   subject,
   onDelete,
+  onEdit,
   canUpdate,
   canDelete,
 }: SubjectCardProps) => {
-  const navigate = useNavigate();
-
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
@@ -62,21 +61,12 @@ export const SubjectCard = ({
         </div>
 
         <div className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={() => navigate(`/subjects/${subject.id}`)}
-          >
-            <Eye className="h-4 w-4 mr-1" />
-            View
-          </Button>
           {canUpdate && (
             <Button
               variant="outline"
               size="sm"
               className="flex-1"
-              onClick={() => navigate(`/subjects/${subject.id}/edit`)}
+              onClick={() => onEdit?.(subject.id)}
             >
               <Edit className="h-4 w-4 mr-1" />
               Edit

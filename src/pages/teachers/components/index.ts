@@ -9,6 +9,7 @@ export * from "./types";
 
 // Components
 export { default as TeacherForm } from "./TeacherForm";
+export { TeacherFormDialog } from "./TeacherFormDialog";
 
 // Pages
 export { default as TeachersList } from "./TeachersList";

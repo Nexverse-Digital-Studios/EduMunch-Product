@@ -23,6 +23,7 @@ import { User, Role } from "@/hooks/useSupabaseQuery";
 interface UserTableProps {
   users: User[];
   roles: Role[] | undefined;
+  onEdit: (userId: string) => void;
   onDelete: (userId: string) => void;
 }
 
@@ -43,7 +44,7 @@ const getRoleName = (roleId: string | undefined, roles: Role[] | undefined) => {
   return role?.role_name || "No Role";
 };
 
-export const UserTable = ({ users, roles, onDelete }: UserTableProps) => {
+export const UserTable = ({ users, roles, onEdit, onDelete }: UserTableProps) => {
   const navigate = useNavigate();
 
   return (
@@ -102,7 +103,7 @@ export const UserTable = ({ users, roles, onDelete }: UserTableProps) => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => navigate(`/users/${user.id}/edit`)}
+                    onClick={() => onEdit(user.id)}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>

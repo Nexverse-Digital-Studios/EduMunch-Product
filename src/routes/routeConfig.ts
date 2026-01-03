@@ -25,38 +25,30 @@ export const dashboardRoutes: RouteConfig[] = [
 ];
 
 // --------------------------------------
-// Module 2: Profile (4 routes)
+// Module 2: Profile (1 route) - CONSOLIDATED
+// Edit, Change Password, Upload Photo are handled via tabs in the main ProfilePage
 // --------------------------------------
 export const profileRoutes: RouteConfig[] = [
   { path: '/profile', title: 'My Profile', module: 'profile', action: 'view', tier: 1, showInSidebar: true, icon: 'User' },
-  { path: '/profile/edit', title: 'Edit Profile', module: 'profile', action: 'update', tier: 1 },
-  { path: '/profile/change-password', title: 'Change Password', module: 'profile', action: 'update', tier: 1 },
-  { path: '/profile/upload-photo', title: 'Upload Photo', module: 'profile', action: 'update', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 3: Users (8 routes)
+// Module 3: Users (2 routes) - CONSOLIDATED
+// Create, Edit, Delete, Assign Role, Grant Permission, Bulk Upload are handled via modals/dialogs in the main pages
 // --------------------------------------
 export const userRoutes: RouteConfig[] = [
   { path: '/users', title: 'Users', module: 'users', action: 'view', tier: 1, showInSidebar: true, icon: 'Users' },
-  { path: '/users/create', title: 'Add User', module: 'users', action: 'create', tier: 1 },
   { path: '/users/:id', title: 'User Details', module: 'users', action: 'view', tier: 1 },
-  { path: '/users/:id/edit', title: 'Edit User', module: 'users', action: 'update', tier: 1 },
-  { path: '/users/:id/delete', title: 'Delete User', module: 'users', action: 'delete', tier: 1 },
-  { path: '/users/:id/assign-role', title: 'Assign Role', module: 'users', action: 'update', tier: 1 },
-  { path: '/users/:id/grant-permission', title: 'Grant Permission', module: 'users', action: 'update', tier: 1 },
-  { path: '/users/bulk-upload', title: 'Bulk Upload Users', module: 'users', action: 'create', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 4: Roles (5 routes)
+// Module 4: Roles (2 routes) - CONSOLIDATED
+// Create, Edit, Delete are handled via modals/dialogs in the main pages
+// Permissions management is a tab/section in the Role detail page
 // --------------------------------------
 export const roleRoutes: RouteConfig[] = [
   { path: '/roles', title: 'Roles', module: 'roles', action: 'view', tier: 1, showInSidebar: true, icon: 'Shield' },
-  { path: '/roles/create', title: 'Create Role', module: 'roles', action: 'create', tier: 1 },
-  { path: '/roles/:id/edit', title: 'Edit Role', module: 'roles', action: 'update', tier: 1 },
-  { path: '/roles/:id/permissions', title: 'Role Permissions', module: 'roles', action: 'update', tier: 1 },
-  { path: '/roles/:id/delete', title: 'Delete Role', module: 'roles', action: 'delete', tier: 1 },
+  { path: '/roles/:id', title: 'Role Details', module: 'roles', action: 'view', tier: 1 },
 ];
 
 // --------------------------------------
@@ -69,367 +61,289 @@ export const permissionRoutes: RouteConfig[] = [
 // --------------------------------------
 // Module 6: Students (20 routes)
 // --------------------------------------
+// --------------------------------------
+// Module 6: Students (20 → 2 routes - CONSOLIDATED)
+// Create/Edit use modals, sub-routes become tabs in detail page
+// --------------------------------------
 export const studentRoutes: RouteConfig[] = [
   { path: '/students', title: 'Students', module: 'students', action: 'view', tier: 1, showInSidebar: true, icon: 'GraduationCap' },
-  { path: '/students/create', title: 'Add Student', module: 'students', action: 'create', tier: 1 },
   { path: '/students/:id', title: 'Student Details', module: 'students', action: 'view', tier: 1 },
-  { path: '/students/:id/edit', title: 'Edit Student', module: 'students', action: 'update', tier: 1 },
-  { path: '/students/:id/delete', title: 'Delete Student', module: 'students', action: 'delete', tier: 1 },
-  { path: '/students/:id/documents', title: 'Student Documents', module: 'students', action: 'view', tier: 1 },
-  { path: '/students/:id/documents/upload', title: 'Upload Documents', module: 'students', action: 'update', tier: 1 },
-  { path: '/students/:id/medical-records', title: 'Medical Records', module: 'students', action: 'view', tier: 1 },
-  { path: '/students/:id/medical-records/edit', title: 'Edit Medical Records', module: 'students', action: 'update', tier: 1 },
-  { path: '/students/:id/parents', title: 'Parent Info', module: 'students', action: 'view', tier: 1 },
-  { path: '/students/:id/parents/add', title: 'Add Parent', module: 'students', action: 'update', tier: 1 },
-  { path: '/students/:id/id-card', title: 'Student ID Card', module: 'students', action: 'view', tier: 1 },
-  { path: '/students/bulk-upload', title: 'Bulk Upload Students', module: 'students', action: 'create', tier: 1 },
-  { path: '/students/promotion', title: 'Student Promotion', module: 'students', action: 'view', tier: 1 },
-  { path: '/students/promotion/configure', title: 'Configure Promotion', module: 'students', action: 'update', tier: 1 },
-  { path: '/students/promotion/preview', title: 'Preview Promotion', module: 'students', action: 'view', tier: 1 },
-  { path: '/students/promotion/execute', title: 'Execute Promotion', module: 'students', action: 'approve', tier: 1 },
-  { path: '/students/promote', title: 'Bulk Promote', module: 'students', action: 'approve', tier: 1 },
-  { path: '/students/transfer', title: 'Transfer Students', module: 'students', action: 'update', tier: 1 },
-  { path: '/students/export', title: 'Export Students', module: 'students', action: 'export', tier: 1 },
+  // CONSOLIDATED: The following routes are now handled within the pages above:
+  // - /students/create → Modal in StudentsList
+  // - /students/:id/edit → Modal in StudentDetail
+  // - /students/:id/documents → Tab in StudentDetail
+  // - /students/:id/medical-records → Tab in StudentDetail  
+  // - /students/:id/parents → Tab in StudentDetail
+  // - /students/bulk-upload → Button/Modal in StudentsList
+  // - /students/promotion → Button/Modal in StudentsList
+  // - /students/transfer → Button/Modal in StudentsList
+  // - /students/export → Button in StudentsList
 ];
 
 // --------------------------------------
-// Module 7: Parents (4 routes)
+// Module 7: Parents (4 → 1 route - CONSOLIDATED)
+// All CRUD operations use modals
 // --------------------------------------
 export const parentRoutes: RouteConfig[] = [
   { path: '/parents', title: 'Parents', module: 'parents', action: 'view', tier: 1, showInSidebar: true, icon: 'Users' },
-  { path: '/parents/create', title: 'Add Parent', module: 'parents', action: 'create', tier: 1 },
-  { path: '/parents/:id', title: 'Parent Details', module: 'parents', action: 'view', tier: 1 },
-  { path: '/parents/:id/edit', title: 'Edit Parent', module: 'parents', action: 'update', tier: 1 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /parents/create → Modal in ParentsList
+  // - /parents/:id → Modal view in ParentsList
+  // - /parents/:id/edit → Modal in ParentsList
 ];
 
 // --------------------------------------
-// Module 8: Parent Portal (10 routes)
+// Module 8: Parent Portal (CONSOLIDATED: 10 → 2 routes)
+// Dashboard + Child detail page with tabs for Profile/Attendance/Results/Fees/Homework/Timetable/Teachers
+// Pay Fees is modal from dashboard or child detail
 // --------------------------------------
 export const parentPortalRoutes: RouteConfig[] = [
   { path: '/parent/dashboard', title: 'Parent Dashboard', module: 'parent', action: 'view', tier: 1, showInSidebar: true, icon: 'Home' },
-  { path: '/parent/children', title: 'My Children', module: 'parent', action: 'view', tier: 1 },
-  { path: '/parent/children/:id/profile', title: 'Child Profile', module: 'parent', action: 'view', tier: 1 },
-  { path: '/parent/children/:id/attendance', title: 'Child Attendance', module: 'parent', action: 'view', tier: 1 },
-  { path: '/parent/children/:id/results', title: 'Child Results', module: 'parent', action: 'view', tier: 1 },
-  { path: '/parent/children/:id/fees', title: 'Child Fees', module: 'parent', action: 'view', tier: 1 },
-  { path: '/parent/children/:id/homework', title: 'Child Homework', module: 'parent', action: 'view', tier: 1 },
-  { path: '/parent/children/:id/timetable', title: 'Child Timetable', module: 'parent', action: 'view', tier: 1 },
-  { path: '/parent/children/:id/teachers', title: 'Child Teachers', module: 'parent', action: 'view', tier: 1 },
-  { path: '/parent/fee-payment', title: 'Pay Fees', module: 'parent', action: 'create', tier: 1 },
+  { path: '/parent/children/:id', title: 'Child Details', module: 'parent', action: 'view', tier: 1 },
+  // CONSOLIDATED: The following routes are now tabs within ChildDetail page:
+  // - /parent/children → Children list shown on dashboard
+  // - /parent/children/:id/profile → Profile tab
+  // - /parent/children/:id/attendance → Attendance tab
+  // - /parent/children/:id/results → Results tab
+  // - /parent/children/:id/fees → Fees tab
+  // - /parent/children/:id/homework → Homework tab
+  // - /parent/children/:id/timetable → Timetable tab
+  // - /parent/children/:id/teachers → Teachers tab
+  // - /parent/fee-payment → Modal from dashboard or fees tab
 ];
 
 // --------------------------------------
-// Module 9: Teachers (10 routes)
+// Module 9: Teachers (10 → 2 routes - CONSOLIDATED)
+// Create/Edit use modals, sub-routes become tabs in detail page
 // --------------------------------------
 export const teacherRoutes: RouteConfig[] = [
   { path: '/teachers', title: 'Teachers', module: 'teachers', action: 'view', tier: 1, showInSidebar: true, icon: 'BookOpen' },
-  { path: '/teachers/create', title: 'Add Teacher', module: 'teachers', action: 'create', tier: 1 },
   { path: '/teachers/:id', title: 'Teacher Details', module: 'teachers', action: 'view', tier: 1 },
-  { path: '/teachers/:id/edit', title: 'Edit Teacher', module: 'teachers', action: 'update', tier: 1 },
-  { path: '/teachers/:id/delete', title: 'Delete Teacher', module: 'teachers', action: 'delete', tier: 1 },
-  { path: '/teachers/:id/subjects', title: 'Teacher Subjects', module: 'teachers', action: 'view', tier: 1 },
-  { path: '/teachers/:id/assign-subject', title: 'Assign Subject', module: 'teachers', action: 'update', tier: 1 },
-  { path: '/teachers/:id/timetable', title: 'Teacher Timetable', module: 'teachers', action: 'view', tier: 1 },
-  { path: '/teachers/bulk-upload', title: 'Bulk Upload Teachers', module: 'teachers', action: 'create', tier: 1 },
-  { path: '/teachers/export', title: 'Export Teachers', module: 'teachers', action: 'export', tier: 1 },
+  // CONSOLIDATED: The following routes are now handled within the pages above:
+  // - /teachers/create → Modal in TeachersList
+  // - /teachers/:id/edit → Modal in TeacherDetail
+  // - /teachers/:id/subjects → Tab in TeacherDetail
+  // - /teachers/:id/timetable → Tab in TeacherDetail
+  // - /teachers/bulk-upload → Button/Modal in TeachersList
+  // - /teachers/export → Button in TeachersList
 ];
 
 // --------------------------------------
-// Module 10: Employees (7 routes)
+// Module 10: Employees (7 → 1 route - CONSOLIDATED)
+// All CRUD operations use modals
 // --------------------------------------
 export const employeeRoutes: RouteConfig[] = [
   { path: '/employees', title: 'Employees', module: 'employees', action: 'view', tier: 1, showInSidebar: true, icon: 'Briefcase' },
-  { path: '/employees/create', title: 'Add Employee', module: 'employees', action: 'create', tier: 1 },
-  { path: '/employees/:id', title: 'Employee Details', module: 'employees', action: 'view', tier: 1 },
-  { path: '/employees/:id/edit', title: 'Edit Employee', module: 'employees', action: 'update', tier: 1 },
-  { path: '/employees/:id/delete', title: 'Delete Employee', module: 'employees', action: 'delete', tier: 1 },
-  { path: '/employees/bulk-upload', title: 'Bulk Upload Employees', module: 'employees', action: 'create', tier: 1 },
-  { path: '/employees/export', title: 'Export Employees', module: 'employees', action: 'export', tier: 1 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /employees/create → Modal in EmployeesList
+  // - /employees/:id → Modal view in EmployeesList
+  // - /employees/:id/edit → Modal in EmployeesList
+  // - /employees/bulk-upload → Button/Modal in EmployeesList
+  // - /employees/export → Button in EmployeesList
 ];
 
 // --------------------------------------
-// Module 11: Student Attendance (14 routes)
+// Module 11: Student Attendance (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 14 routes → 1 route
+// All functionality now accessible via tabs on the main dashboard
 export const attendanceRoutes: RouteConfig[] = [
   { path: '/attendance', title: 'Attendance', module: 'attendance', action: 'view', tier: 1, showInSidebar: true, icon: 'CheckSquare' },
-  { path: '/attendance/mark', title: 'Mark Attendance', module: 'attendance', action: 'create', tier: 1 },
-  { path: '/attendance/mark/:sectionId', title: 'Mark Section Attendance', module: 'attendance', action: 'create', tier: 1 },
-  { path: '/attendance/mark/:sectionId/:date', title: 'Edit Attendance', module: 'attendance', action: 'update', tier: 1 },
-  { path: '/attendance/view', title: 'View Attendance', module: 'attendance', action: 'view', tier: 1 },
-  { path: '/attendance/view/:sectionId', title: 'Section Attendance', module: 'attendance', action: 'view', tier: 1 },
-  { path: '/attendance/view/student/:studentId', title: 'Student Attendance', module: 'attendance', action: 'view', tier: 1 },
-  { path: '/attendance/reports', title: 'Attendance Reports', module: 'attendance', action: 'view', tier: 1 },
-  { path: '/attendance/reports/daily', title: 'Daily Report', module: 'attendance', action: 'view', tier: 1 },
-  { path: '/attendance/reports/weekly', title: 'Weekly Report', module: 'attendance', action: 'view', tier: 1 },
-  { path: '/attendance/reports/monthly', title: 'Monthly Report', module: 'attendance', action: 'view', tier: 1 },
-  { path: '/attendance/reports/low-attendance', title: 'Low Attendance', module: 'attendance', action: 'view', tier: 1 },
-  { path: '/attendance/export', title: 'Export Attendance', module: 'attendance', action: 'export', tier: 1 },
-  { path: '/attendance/subject-wise', title: 'Subject-wise Attendance', module: 'attendance', action: 'create', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 12: Staff Attendance (7 routes)
+// Module 12: Staff Attendance (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 7 routes → 1 route
+// All functionality now accessible via tabs on the main dashboard
 export const staffAttendanceRoutes: RouteConfig[] = [
   { path: '/staff/attendance', title: 'Staff Attendance', module: 'staff_attendance', action: 'view', tier: 1, showInSidebar: true, icon: 'CheckSquare' },
-  { path: '/staff/attendance/mark', title: 'Mark Staff Attendance', module: 'staff_attendance', action: 'create', tier: 1 },
-  { path: '/staff/attendance/view', title: 'View Staff Attendance', module: 'staff_attendance', action: 'view', tier: 1 },
-  { path: '/staff/attendance/view/:employeeId', title: 'Employee Attendance', module: 'staff_attendance', action: 'view', tier: 1 },
-  { path: '/staff/attendance/reports', title: 'Staff Attendance Reports', module: 'staff_attendance', action: 'view', tier: 1 },
-  { path: '/staff/attendance/reports/monthly', title: 'Monthly Staff Report', module: 'staff_attendance', action: 'view', tier: 1 },
-  { path: '/staff/attendance/export', title: 'Export Staff Attendance', module: 'staff_attendance', action: 'export', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 13: Student Leave (5 routes)
+// Module 13: Student Leave (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 5 routes → 1 route
+// Create/Edit via modal dialog, Details via expandable rows
 export const leaveRoutes: RouteConfig[] = [
   { path: '/leave-requests', title: 'Leave Requests', module: 'leave', action: 'view', tier: 1, showInSidebar: true, icon: 'Calendar' },
-  { path: '/leave-requests/create', title: 'Apply Leave', module: 'leave', action: 'create', tier: 1 },
-  { path: '/leave-requests/:id', title: 'Leave Details', module: 'leave', action: 'view', tier: 1 },
-  { path: '/leave-requests/:id/approve', title: 'Approve Leave', module: 'leave', action: 'approve', tier: 1 },
-  { path: '/leave-requests/student/:studentId', title: 'Student Leave History', module: 'leave', action: 'view', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 14: Staff Leave (6 routes)
+// Module 14: Staff Leave (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 6 routes → 1 route
+// All functionality via tabs (My Leaves, Apply, Balance)
 export const staffLeaveRoutes: RouteConfig[] = [
   { path: '/staff/leave', title: 'Staff Leave', module: 'staff_leave', action: 'view', tier: 1, showInSidebar: true, icon: 'Calendar' },
-  { path: '/staff/leave/apply', title: 'Apply Leave', module: 'staff_leave', action: 'create', tier: 1 },
-  { path: '/staff/leave/:id', title: 'Leave Details', module: 'staff_leave', action: 'view', tier: 1 },
-  { path: '/staff/leave/:id/approve', title: 'Approve Leave', module: 'staff_leave', action: 'approve', tier: 1 },
-  { path: '/staff/leave/my-leaves', title: 'My Leaves', module: 'staff_leave', action: 'view', tier: 1 },
-  { path: '/staff/leave/balance', title: 'Leave Balance', module: 'staff_leave', action: 'view', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 15: Academic Years (6 routes)
+// Module 15: Academic Years (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 6 routes → 1 route
+// - /academic-years/create → Modal in AcademicYearsList
+// - /academic-years/:id → Modal in AcademicYearsList  
+// - /academic-years/:id/edit → Modal in AcademicYearsList
+// - /academic-years/:id/delete → Delete confirmation in list
+// - /academic-years/:id/set-current → Action button in list
 export const academicYearRoutes: RouteConfig[] = [
   { path: '/academic-years', title: 'Academic Years', module: 'academic_years', action: 'view', tier: 1, showInSidebar: true, icon: 'Calendar' },
-  { path: '/academic-years/create', title: 'Create Academic Year', module: 'academic_years', action: 'create', tier: 1 },
-  { path: '/academic-years/:id', title: 'Academic Year Details', module: 'academic_years', action: 'view', tier: 1 },
-  { path: '/academic-years/:id/edit', title: 'Edit Academic Year', module: 'academic_years', action: 'update', tier: 1 },
-  { path: '/academic-years/:id/delete', title: 'Delete Academic Year', module: 'academic_years', action: 'delete', tier: 1 },
-  { path: '/academic-years/:id/set-current', title: 'Set Current Year', module: 'academic_years', action: 'update', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 16: Classes (5 routes)
+// Module 16: Classes (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 5 routes → 1 route
+// - /classes/create → Modal in ClassesList
+// - /classes/:id → Modal in ClassesList
+// - /classes/:id/edit → Modal in ClassesList
+// - /classes/:id/delete → Delete confirmation in list
 export const classRoutes: RouteConfig[] = [
   { path: '/classes', title: 'Classes', module: 'classes', action: 'view', tier: 1, showInSidebar: true, icon: 'School' },
-  { path: '/classes/create', title: 'Create Class', module: 'classes', action: 'create', tier: 1 },
-  { path: '/classes/:id', title: 'Class Details', module: 'classes', action: 'view', tier: 1 },
-  { path: '/classes/:id/edit', title: 'Edit Class', module: 'classes', action: 'update', tier: 1 },
-  { path: '/classes/:id/delete', title: 'Delete Class', module: 'classes', action: 'delete', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 17: Sections (7 routes)
+// Module 17: Sections (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 7 routes → 1 route
+// - /sections/create → Modal in SectionsList
+// - /sections/:id → Modal in SectionsList
+// - /sections/:id/edit → Modal in SectionsList
+// - /sections/:id/delete → Delete confirmation in list
+// - /sections/:id/students → Students tab in modal
+// - /sections/:id/assign-teacher → Teacher select in modal
 export const sectionRoutes: RouteConfig[] = [
   { path: '/sections', title: 'Sections', module: 'sections', action: 'view', tier: 1, showInSidebar: true, icon: 'Layout' },
-  { path: '/sections/create', title: 'Create Section', module: 'sections', action: 'create', tier: 1 },
-  { path: '/sections/:id', title: 'Section Details', module: 'sections', action: 'view', tier: 1 },
-  { path: '/sections/:id/edit', title: 'Edit Section', module: 'sections', action: 'update', tier: 1 },
-  { path: '/sections/:id/delete', title: 'Delete Section', module: 'sections', action: 'delete', tier: 1 },
-  { path: '/sections/:id/students', title: 'Section Students', module: 'sections', action: 'view', tier: 1 },
-  { path: '/sections/:id/assign-teacher', title: 'Assign Class Teacher', module: 'sections', action: 'update', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 18: Subjects (7 routes)
+// Module 18: Subjects (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 7 routes → 1 route
+// - /subjects/create → Modal in SubjectsList
+// - /subjects/:id → Modal in SubjectsList
+// - /subjects/:id/edit → Modal in SubjectsList
+// - /subjects/:id/delete → Delete confirmation in list
+// - /subjects/:id/assign-class → Handled in Topics
+// - /subjects/:id/topics → Navigate to Topics with filter
 export const subjectRoutes: RouteConfig[] = [
   { path: '/subjects', title: 'Subjects', module: 'subjects', action: 'view', tier: 1, showInSidebar: true, icon: 'Book' },
-  { path: '/subjects/create', title: 'Create Subject', module: 'subjects', action: 'create', tier: 1 },
-  { path: '/subjects/:id', title: 'Subject Details', module: 'subjects', action: 'view', tier: 1 },
-  { path: '/subjects/:id/edit', title: 'Edit Subject', module: 'subjects', action: 'update', tier: 1 },
-  { path: '/subjects/:id/delete', title: 'Delete Subject', module: 'subjects', action: 'delete', tier: 1 },
-  { path: '/subjects/:id/assign-class', title: 'Assign to Class', module: 'subjects', action: 'update', tier: 1 },
-  { path: '/subjects/:id/topics', title: 'Subject Topics', module: 'subjects', action: 'view', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 19: Topics (7 routes)
+// Module 19: Topics (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 7 routes → 1 route
+// - /topics/create → Modal in TopicsList
+// - /topics/:id → Expand in TopicsList
+// - /topics/:id/edit → Modal in TopicsList
+// - /topics/:id/delete → Delete confirmation in list
+// - /topics/:id/content → Expand in TopicsList
+// - /topics/:id/content/upload → AddContentDialog in TopicsList
 export const topicRoutes: RouteConfig[] = [
   { path: '/topics', title: 'Topics', module: 'topics', action: 'view', tier: 1, showInSidebar: true, icon: 'FileText' },
-  { path: '/topics/create', title: 'Create Topic', module: 'topics', action: 'create', tier: 1 },
-  { path: '/topics/:id', title: 'Topic Details', module: 'topics', action: 'view', tier: 1 },
-  { path: '/topics/:id/edit', title: 'Edit Topic', module: 'topics', action: 'update', tier: 1 },
-  { path: '/topics/:id/delete', title: 'Delete Topic', module: 'topics', action: 'delete', tier: 1 },
-  { path: '/topics/:id/content', title: 'Topic Content', module: 'topics', action: 'view', tier: 1 },
-  { path: '/topics/:id/content/upload', title: 'Upload Content', module: 'topics', action: 'update', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 20: Timetable (14 routes)
+// Module 20: Timetable (2 routes - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 14 routes → 2 routes
+// All features accessible via tabs on TimetableDashboard
 export const timetableRoutes: RouteConfig[] = [
   { path: '/timetable', title: 'Timetable', module: 'timetable', action: 'view', tier: 1, showInSidebar: true, icon: 'Clock' },
-  { path: '/timetable/view', title: 'View Timetables', module: 'timetable', action: 'view', tier: 1 },
-  { path: '/timetable/view/:sectionId', title: 'Section Timetable', module: 'timetable', action: 'view', tier: 1 },
-  { path: '/timetable/create', title: 'Create Timetable', module: 'timetable', action: 'create', tier: 1 },
-  { path: '/timetable/:id/edit', title: 'Edit Timetable', module: 'timetable', action: 'update', tier: 1 },
-  { path: '/timetable/:id/delete', title: 'Delete Timetable', module: 'timetable', action: 'delete', tier: 1 },
-  { path: '/timetable/bulk-create', title: 'Bulk Create', module: 'timetable', action: 'create', tier: 1 },
-  { path: '/timetable/copy', title: 'Copy Timetable', module: 'timetable', action: 'create', tier: 1 },
-  { path: '/timetable/conflicts', title: 'Schedule Conflicts', module: 'timetable', action: 'view', tier: 1 },
-  { path: '/timetable/substitute', title: 'Substitute Teacher', module: 'timetable', action: 'update', tier: 1 },
-  { path: '/timetable/periods', title: 'Period Configuration', module: 'timetable', action: 'update', tier: 1 },
-  { path: '/timetable/export', title: 'Export Timetable', module: 'timetable', action: 'export', tier: 1 },
   { path: '/my-timetable', title: 'My Timetable', module: 'timetable', action: 'view', tier: 1, showInSidebar: true, icon: 'Clock' },
-  { path: '/class-timetable', title: 'Class Timetable', module: 'timetable', action: 'view', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 21: Lecture Templates (5 routes)
+// Module 21: Lecture Templates (1 route - CONSOLIDATED)
 // --------------------------------------
+// CONSOLIDATION: 5 routes → 1 route
+// Create/Edit via modal dialogs
 export const lectureTemplateRoutes: RouteConfig[] = [
   { path: '/lecture-templates', title: 'Lecture Templates', module: 'lecture_templates', action: 'view', tier: 1, showInSidebar: true, icon: 'Layout' },
-  { path: '/lecture-templates/create', title: 'Create Template', module: 'lecture_templates', action: 'create', tier: 1 },
-  { path: '/lecture-templates/:id', title: 'Template Details', module: 'lecture_templates', action: 'view', tier: 1 },
-  { path: '/lecture-templates/:id/edit', title: 'Edit Template', module: 'lecture_templates', action: 'update', tier: 1 },
-  { path: '/lecture-templates/:id/delete', title: 'Delete Template', module: 'lecture_templates', action: 'delete', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 22: Exams (10 routes)
+// Module 22: Exams (CONSOLIDATED: 10 → 2 routes)
+// Create/Edit via modal dialogs, Schedule/Marks/Reports as tabs in Detail page
 // --------------------------------------
 export const examRoutes: RouteConfig[] = [
   { path: '/exams', title: 'Exams', module: 'exams', action: 'view', tier: 1, showInSidebar: true, icon: 'ClipboardList' },
-  { path: '/exams/list', title: 'All Exams', module: 'exams', action: 'view', tier: 1 },
-  { path: '/exams/create', title: 'Create Exam', module: 'exams', action: 'create', tier: 1 },
   { path: '/exams/:id', title: 'Exam Details', module: 'exams', action: 'view', tier: 1 },
-  { path: '/exams/:id/edit', title: 'Edit Exam', module: 'exams', action: 'update', tier: 1 },
-  { path: '/exams/:id/delete', title: 'Delete Exam', module: 'exams', action: 'delete', tier: 1 },
-  { path: '/exams/:id/schedule', title: 'Exam Schedule', module: 'exams', action: 'view', tier: 1 },
-  { path: '/exams/:id/seating', title: 'Seating Arrangement', module: 'exams', action: 'create', tier: 1 },
-  { path: '/exams/:id/admit-cards', title: 'Admit Cards', module: 'exams', action: 'create', tier: 1 },
-  { path: '/exams/export', title: 'Export Exams', module: 'exams', action: 'export', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 23: Marks (6 routes)
+// Module 23: Marks (CONSOLIDATED: 6 → 0 routes)
+// Marks entry is now a tab in Exam Detail page (/exams/:id)
 // --------------------------------------
 export const marksRoutes: RouteConfig[] = [
-  { path: '/exams/:id/marks', title: 'Marks Dashboard', module: 'marks', action: 'view', tier: 1, showInSidebar: false },
-  { path: '/exams/:id/marks/enter', title: 'Enter Marks', module: 'marks', action: 'create', tier: 1 },
-  { path: '/exams/:id/marks/bulk-upload', title: 'Bulk Upload Marks', module: 'marks', action: 'create', tier: 1 },
-  { path: '/exams/:id/marks/verify', title: 'Verify Marks', module: 'marks', action: 'approve', tier: 1 },
-  { path: '/exams/:id/marks/:studentId', title: 'Student Marks', module: 'marks', action: 'view', tier: 1 },
-  { path: '/exams/:id/grades', title: 'Calculate Grades', module: 'marks', action: 'update', tier: 1 },
+  // All marks functionality merged into Exam Detail page
 ];
 
 // --------------------------------------
-// Module 24: Report Cards (5 routes)
+// Module 24: Report Cards (CONSOLIDATED: 5 → 1 route)
+// View/Download handled via modal, generation via Exam Detail page
 // --------------------------------------
 export const reportCardRoutes: RouteConfig[] = [
   { path: '/report-cards', title: 'Report Cards', module: 'report_cards', action: 'view', tier: 1, showInSidebar: true, icon: 'FileText' },
-  { path: '/exams/:id/report-cards', title: 'Generate Report Cards', module: 'report_cards', action: 'create', tier: 1 },
-  { path: '/report-cards/:id', title: 'View Report Card', module: 'report_cards', action: 'view', tier: 1 },
-  { path: '/report-cards/:id/download', title: 'Download Report Card', module: 'report_cards', action: 'view', tier: 1 },
-  { path: '/report-cards/templates', title: 'Report Card Templates', module: 'report_cards', action: 'update', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 25: Fees (22 routes)
+// Module 25: Fees (CONSOLIDATED: 22 → 2 routes)
+// Dashboard with tabs for structures/receipts/reports, Collection page for payments
 // --------------------------------------
 export const feeRoutes: RouteConfig[] = [
   { path: '/fees', title: 'Fee Management', module: 'fees', action: 'view', tier: 1, showInSidebar: true, icon: 'DollarSign' },
-  { path: '/fees/structures', title: 'Fee Structures', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/structures/create', title: 'Create Fee Structure', module: 'fees', action: 'create', tier: 1 },
-  { path: '/fees/structures/:id/edit', title: 'Edit Fee Structure', module: 'fees', action: 'update', tier: 1 },
-  { path: '/fees/assign', title: 'Assign Fees', module: 'fees', action: 'create', tier: 1 },
-  { path: '/fees/payments', title: 'View Payments', module: 'fees', action: 'view', tier: 1 },
   { path: '/fees/collect', title: 'Collect Fee', module: 'fees', action: 'create', tier: 1 },
-  { path: '/fees/collect/:studentId', title: 'Collect Student Fee', module: 'fees', action: 'create', tier: 1 },
-  { path: '/fees/receipts', title: 'Fee Receipts', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/receipts/:id', title: 'Receipt Details', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/receipts/:id/download', title: 'Download Receipt', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/receipts/:id/print', title: 'Print Receipt', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/defaulters', title: 'Fee Defaulters', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/reminders', title: 'Send Reminders', module: 'fees', action: 'create', tier: 1 },
-  { path: '/fees/reports', title: 'Fee Reports', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/reports/daily', title: 'Daily Collection', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/reports/monthly', title: 'Monthly Collection', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/reports/class-wise', title: 'Class-wise Collection', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/discounts', title: 'Fee Discounts', module: 'fees', action: 'view', tier: 1 },
-  { path: '/fees/discounts/apply', title: 'Apply Discount', module: 'fees', action: 'create', tier: 1 },
-  { path: '/fees/refunds', title: 'Process Refunds', module: 'fees', action: 'create', tier: 1 },
-  { path: '/fees/export', title: 'Export Fees', module: 'fees', action: 'export', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 26: Settings (6 routes)
+// Module 26: Settings (CONSOLIDATED: 6 → 1 route)
+// School/Academic/Fees/Communication/Notifications as tabs within single Settings page
 // --------------------------------------
 export const settingsRoutes: RouteConfig[] = [
   { path: '/settings', title: 'Settings', module: 'settings', action: 'view', tier: 1, showInSidebar: true, icon: 'Settings' },
-  { path: '/settings/school', title: 'School Information', module: 'settings', action: 'update', tier: 1 },
-  { path: '/settings/academic', title: 'Academic Settings', module: 'settings', action: 'update', tier: 1 },
-  { path: '/settings/fees', title: 'Fee Settings', module: 'settings', action: 'update', tier: 1 },
-  { path: '/settings/communication', title: 'Communication Settings', module: 'settings', action: 'update', tier: 1 },
-  { path: '/settings/notifications', title: 'Notification Preferences', module: 'settings', action: 'update', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 27: ID Cards (6 routes)
+// Module 27: ID Cards (CONSOLIDATED: 6 → 1 route)
+// Student IDs/Staff IDs/Templates as tabs, Generate via modal
 // --------------------------------------
 export const idCardRoutes: RouteConfig[] = [
   { path: '/id-cards', title: 'ID Cards', module: 'id_cards', action: 'view', tier: 1, showInSidebar: true, icon: 'CreditCard' },
-  { path: '/id-cards/students', title: 'Student ID Cards', module: 'id_cards', action: 'view', tier: 1 },
-  { path: '/id-cards/students/generate', title: 'Generate Student IDs', module: 'id_cards', action: 'create', tier: 1 },
-  { path: '/id-cards/staff', title: 'Staff ID Cards', module: 'id_cards', action: 'view', tier: 1 },
-  { path: '/id-cards/staff/generate', title: 'Generate Staff IDs', module: 'id_cards', action: 'create', tier: 1 },
-  { path: '/id-cards/templates', title: 'ID Card Templates', module: 'id_cards', action: 'update', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 28: Reports (7 routes)
+// Module 28: Reports (CONSOLIDATED: 7 → 1 route)
+// Report type selector within single page (Student/Attendance/Academic/Financial/Staff/Custom)
 // --------------------------------------
 export const reportsRoutes: RouteConfig[] = [
   { path: '/reports', title: 'Reports', module: 'reports', action: 'view', tier: 1, showInSidebar: true, icon: 'BarChart' },
-  { path: '/reports/students', title: 'Student Reports', module: 'reports', action: 'view', tier: 1 },
-  { path: '/reports/attendance', title: 'Attendance Reports', module: 'reports', action: 'view', tier: 1 },
-  { path: '/reports/academic', title: 'Academic Reports', module: 'reports', action: 'view', tier: 1 },
-  { path: '/reports/financial', title: 'Financial Reports', module: 'reports', action: 'view', tier: 1 },
-  { path: '/reports/staff', title: 'Staff Reports', module: 'reports', action: 'view', tier: 1 },
-  { path: '/reports/custom', title: 'Custom Report', module: 'reports', action: 'create', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 29: Announcements (5 routes)
+// Module 29: Announcements (CONSOLIDATED: 5 → 1 route)
+// Create/Edit/Delete handled via modals in the main AnnouncementsList page
 // --------------------------------------
 export const announcementRoutes: RouteConfig[] = [
   { path: '/announcements', title: 'Announcements', module: 'announcements', action: 'view', tier: 1, showInSidebar: true, icon: 'Megaphone' },
-  { path: '/announcements/create', title: 'Create Announcement', module: 'announcements', action: 'create', tier: 1 },
-  { path: '/announcements/:id', title: 'Announcement Details', module: 'announcements', action: 'view', tier: 1 },
-  { path: '/announcements/:id/edit', title: 'Edit Announcement', module: 'announcements', action: 'update', tier: 1 },
-  { path: '/announcements/:id/delete', title: 'Delete Announcement', module: 'announcements', action: 'delete', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 30: Notifications (3 routes)
+// Module 30: Notifications (CONSOLIDATED: 3 → 1 route)
+// Send notification and mark-read handled within the single Notifications page
 // --------------------------------------
 export const notificationRoutes: RouteConfig[] = [
   { path: '/notifications', title: 'Notifications', module: 'notifications', action: 'view', tier: 1, showInSidebar: true, icon: 'Bell' },
-  { path: '/notifications/send', title: 'Send Notification', module: 'notifications', action: 'create', tier: 1 },
-  { path: '/notifications/:id/mark-read', title: 'Mark as Read', module: 'notifications', action: 'update', tier: 1 },
 ];
 
 // --------------------------------------
-// Module 31: Messages (6 routes)
+// Module 31: Messages (CONSOLIDATED: 6 → 1 route)
+// Compose, SMS, Email, Templates, History accessible via tabs within the Messages page
 // --------------------------------------
 export const messageRoutes: RouteConfig[] = [
   { path: '/messages', title: 'Messages', module: 'messages', action: 'view', tier: 1, showInSidebar: true, icon: 'Mail' },
-  { path: '/messages/compose', title: 'Compose Message', module: 'messages', action: 'create', tier: 1 },
-  { path: '/messages/sms', title: 'Send SMS', module: 'messages', action: 'create', tier: 1 },
-  { path: '/messages/email', title: 'Send Email', module: 'messages', action: 'create', tier: 1 },
-  { path: '/messages/templates', title: 'Message Templates', module: 'messages', action: 'view', tier: 1 },
-  { path: '/messages/history', title: 'Message History', module: 'messages', action: 'view', tier: 1 },
 ];
 
 // --------------------------------------
@@ -498,165 +412,192 @@ export const tier1Routes: RouteConfig[] = [
 // ==========================================
 
 // --------------------------------------
-// Module 32: Assignments (10 routes)
+// Module 32: Assignments (CONSOLIDATED: 10 → 2 routes)
+// List + Detail page with submissions tab, create/edit via modals
 // --------------------------------------
 export const assignmentRoutes: RouteConfig[] = [
   { path: '/assignments', title: 'Assignments', module: 'assignments', action: 'view', tier: 2, showInSidebar: true, icon: 'FileEdit' },
-  { path: '/assignments/create', title: 'Create Assignment', module: 'assignments', action: 'create', tier: 2 },
   { path: '/assignments/:id', title: 'Assignment Details', module: 'assignments', action: 'view', tier: 2 },
-  { path: '/assignments/:id/edit', title: 'Edit Assignment', module: 'assignments', action: 'update', tier: 2 },
-  { path: '/assignments/:id/delete', title: 'Delete Assignment', module: 'assignments', action: 'delete', tier: 2 },
-  { path: '/assignments/:id/submissions', title: 'View Submissions', module: 'assignments', action: 'view', tier: 2 },
-  { path: '/assignments/:id/submissions/:studentId', title: 'Student Submission', module: 'assignments', action: 'view', tier: 2 },
-  { path: '/assignments/:id/submissions/:studentId/grade', title: 'Grade Submission', module: 'assignments', action: 'approve', tier: 2 },
-  { path: '/assignments/:id/submit', title: 'Submit Assignment', module: 'assignments', action: 'create', tier: 2 },
-  { path: '/assignments/my-assignments', title: 'My Assignments', module: 'assignments', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the pages above:
+  // - /assignments/create → Modal in AssignmentsList
+  // - /assignments/:id/edit → Modal in AssignmentDetail
+  // - /assignments/:id/delete → Modal confirmation
+  // - /assignments/:id/submissions → Tab in AssignmentDetail
+  // - /assignments/:id/submissions/:studentId → Modal in submissions tab
+  // - /assignments/:id/submissions/:studentId/grade → Modal in submissions tab
+  // - /assignments/:id/submit → Modal/form in AssignmentDetail (student view)
+  // - /assignments/my-assignments → Filter/tab in AssignmentsList
 ];
 
 // --------------------------------------
-// Module 33: Study Materials (7 routes)
+// Module 33: Study Materials (CONSOLIDATED: 7 → 1 route)
+// Single page with filters by subject/class, upload via modal
 // --------------------------------------
 export const studyMaterialRoutes: RouteConfig[] = [
   { path: '/study-materials', title: 'Study Materials', module: 'study_materials', action: 'view', tier: 2, showInSidebar: true, icon: 'BookOpen' },
-  { path: '/study-materials/upload', title: 'Upload Material', module: 'study_materials', action: 'create', tier: 2 },
-  { path: '/study-materials/:id', title: 'Material Details', module: 'study_materials', action: 'view', tier: 2 },
-  { path: '/study-materials/:id/edit', title: 'Edit Material', module: 'study_materials', action: 'update', tier: 2 },
-  { path: '/study-materials/:id/delete', title: 'Delete Material', module: 'study_materials', action: 'delete', tier: 2 },
-  { path: '/study-materials/by-subject/:subjectId', title: 'Materials by Subject', module: 'study_materials', action: 'view', tier: 2 },
-  { path: '/study-materials/by-class/:classId', title: 'Materials by Class', module: 'study_materials', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /study-materials/upload → Modal in StudyMaterialsList
+  // - /study-materials/:id → Modal detail view
+  // - /study-materials/:id/edit → Modal in StudyMaterialsList
+  // - /study-materials/:id/delete → Modal confirmation
+  // - /study-materials/by-subject/:subjectId → Filter in list
+  // - /study-materials/by-class/:classId → Filter in list
 ];
 
 // --------------------------------------
-// Module 34: Online Classes (8 routes)
+// Module 34: Online Classes (CONSOLIDATED: 8 → 1 route)
+// Tabs: Schedule, My Classes, Upcoming, Recordings
 // --------------------------------------
 export const onlineClassRoutes: RouteConfig[] = [
   { path: '/online-classes', title: 'Online Classes', module: 'online_classes', action: 'view', tier: 2, showInSidebar: true, icon: 'Video' },
-  { path: '/online-classes/schedule', title: 'Schedule Class', module: 'online_classes', action: 'create', tier: 2 },
-  { path: '/online-classes/:id', title: 'Class Details', module: 'online_classes', action: 'view', tier: 2 },
-  { path: '/online-classes/:id/edit', title: 'Edit Class', module: 'online_classes', action: 'update', tier: 2 },
-  { path: '/online-classes/:id/cancel', title: 'Cancel Class', module: 'online_classes', action: 'delete', tier: 2 },
-  { path: '/online-classes/:id/join', title: 'Join Class', module: 'online_classes', action: 'view', tier: 2 },
-  { path: '/online-classes/:id/recording', title: 'View Recording', module: 'online_classes', action: 'view', tier: 2 },
-  { path: '/online-classes/my-classes', title: 'My Classes', module: 'online_classes', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /online-classes/schedule → Modal to schedule class
+  // - /online-classes/:id → Modal detail view
+  // - /online-classes/:id/edit → Modal edit
+  // - /online-classes/:id/cancel → Modal confirmation
+  // - /online-classes/:id/join → Button action
+  // - /online-classes/:id/recording → Modal/embedded player
+  // - /online-classes/my-classes → Tab in main page
 ];
 
 // --------------------------------------
-// Module 35: Homework (7 routes)
+// Module 35: Homework (CONSOLIDATED: 7 → 1 route)
+// Single page with date filter, create/edit via modals
 // --------------------------------------
 export const homeworkRoutes: RouteConfig[] = [
   { path: '/homework', title: 'Homework', module: 'homework', action: 'view', tier: 2, showInSidebar: true, icon: 'ClipboardCheck' },
-  { path: '/homework/create', title: 'Create Homework', module: 'homework', action: 'create', tier: 2 },
-  { path: '/homework/:id', title: 'Homework Details', module: 'homework', action: 'view', tier: 2 },
-  { path: '/homework/:id/edit', title: 'Edit Homework', module: 'homework', action: 'update', tier: 2 },
-  { path: '/homework/:id/delete', title: 'Delete Homework', module: 'homework', action: 'delete', tier: 2 },
-  { path: '/homework/my-homework', title: 'My Homework', module: 'homework', action: 'view', tier: 2 },
-  { path: '/homework/by-date/:date', title: 'Homework by Date', module: 'homework', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /homework/create → Modal in HomeworkList
+  // - /homework/:id → Modal detail view
+  // - /homework/:id/edit → Modal edit
+  // - /homework/:id/delete → Modal confirmation
+  // - /homework/my-homework → Tab/filter in list
+  // - /homework/by-date/:date → Date filter in list
 ];
 
 // --------------------------------------
-// Module 36: Doubts (6 routes)
+// Module 36: Doubts (CONSOLIDATED: 6 → 1 route)
+// Tabs: Ask Doubt, My Doubts, All Doubts
 // --------------------------------------
 export const doubtRoutes: RouteConfig[] = [
   { path: '/doubts', title: 'Doubts', module: 'doubts', action: 'view', tier: 2, showInSidebar: true, icon: 'HelpCircle' },
-  { path: '/doubts/ask', title: 'Ask Doubt', module: 'doubts', action: 'create', tier: 2 },
-  { path: '/doubts/:id', title: 'Doubt Details', module: 'doubts', action: 'view', tier: 2 },
-  { path: '/doubts/:id/answer', title: 'Answer Doubt', module: 'doubts', action: 'create', tier: 2 },
-  { path: '/doubts/:id/resolve', title: 'Mark Resolved', module: 'doubts', action: 'update', tier: 2 },
-  { path: '/doubts/my-doubts', title: 'My Doubts', module: 'doubts', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /doubts/ask → Modal/form in Doubts page
+  // - /doubts/:id → Modal detail view with answers
+  // - /doubts/:id/answer → Modal/form in detail view
+  // - /doubts/:id/resolve → Button action
+  // - /doubts/my-doubts → Tab in main page
 ];
 
 // --------------------------------------
-// Module 37: Transport (12 routes)
+// Module 37: Transport (CONSOLIDATED: 12 → 1 route)
+// Tabs: Routes, Vehicles, Drivers, Student Assignments, Live Tracking
+// Create/Edit via modals within each tab
 // --------------------------------------
 export const transportRoutes: RouteConfig[] = [
   { path: '/transport', title: 'Transport', module: 'transport', action: 'view', tier: 2, showInSidebar: true, icon: 'Bus' },
-  { path: '/transport/routes', title: 'View Routes', module: 'transport', action: 'view', tier: 2 },
-  { path: '/transport/routes/create', title: 'Create Route', module: 'transport', action: 'create', tier: 2 },
-  { path: '/transport/routes/:id/edit', title: 'Edit Route', module: 'transport', action: 'update', tier: 2 },
-  { path: '/transport/vehicles', title: 'View Vehicles', module: 'transport', action: 'view', tier: 2 },
-  { path: '/transport/vehicles/create', title: 'Add Vehicle', module: 'transport', action: 'create', tier: 2 },
-  { path: '/transport/vehicles/:id/edit', title: 'Edit Vehicle', module: 'transport', action: 'update', tier: 2 },
-  { path: '/transport/drivers', title: 'View Drivers', module: 'transport', action: 'view', tier: 2 },
-  { path: '/transport/drivers/create', title: 'Add Driver', module: 'transport', action: 'create', tier: 2 },
-  { path: '/transport/drivers/:id/edit', title: 'Edit Driver', module: 'transport', action: 'update', tier: 2 },
-  { path: '/transport/assignments', title: 'Student Assignments', module: 'transport', action: 'view', tier: 2 },
-  { path: '/transport/tracking', title: 'Live Tracking', module: 'transport', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now tabs within the Transport dashboard:
+  // - /transport/routes → Routes tab
+  // - /transport/routes/create → Modal in Routes tab
+  // - /transport/routes/:id/edit → Modal in Routes tab
+  // - /transport/vehicles → Vehicles tab
+  // - /transport/vehicles/create → Modal in Vehicles tab
+  // - /transport/vehicles/:id/edit → Modal in Vehicles tab
+  // - /transport/drivers → Drivers tab
+  // - /transport/drivers/create → Modal in Drivers tab
+  // - /transport/drivers/:id/edit → Modal in Drivers tab
+  // - /transport/assignments → Student Assignments tab
+  // - /transport/tracking → Live Tracking tab
 ];
 
 // --------------------------------------
-// Module 38: Payroll (8 routes)
+// Module 38: Payroll (CONSOLIDATED: 8 → 1 route)
+// Tabs: Salary Structures, Process Payroll, Payslips, My Payslips
+// Create/Edit via modals, download as button action
 // --------------------------------------
 export const payrollRoutes: RouteConfig[] = [
   { path: '/payroll', title: 'Payroll', module: 'payroll', action: 'view', tier: 2, showInSidebar: true, icon: 'Wallet' },
-  { path: '/payroll/structures', title: 'Salary Structures', module: 'payroll', action: 'view', tier: 2 },
-  { path: '/payroll/structures/create', title: 'Create Structure', module: 'payroll', action: 'create', tier: 2 },
-  { path: '/payroll/process', title: 'Process Payroll', module: 'payroll', action: 'create', tier: 2 },
-  { path: '/payroll/payslips', title: 'View Payslips', module: 'payroll', action: 'view', tier: 2 },
-  { path: '/payroll/payslips/:id', title: 'Payslip Details', module: 'payroll', action: 'view', tier: 2 },
-  { path: '/payroll/payslips/:id/download', title: 'Download Payslip', module: 'payroll', action: 'view', tier: 2 },
-  { path: '/payroll/my-payslips', title: 'My Payslips', module: 'payroll', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now tabs/modals within Payroll dashboard:
+  // - /payroll/structures → Salary Structures tab
+  // - /payroll/structures/create → Modal in Structures tab
+  // - /payroll/process → Process Payroll tab/modal
+  // - /payroll/payslips → Payslips tab
+  // - /payroll/payslips/:id → Modal detail view
+  // - /payroll/payslips/:id/download → Button action
+  // - /payroll/my-payslips → Tab/filter in Payslips
 ];
 
 // --------------------------------------
-// Module 39: Appraisals (6 routes)
+// Module 39: Appraisals (CONSOLIDATED: 6 → 1 route)
+// Single page with tabs for All/My Appraisals, create/edit via modals
 // --------------------------------------
 export const appraisalRoutes: RouteConfig[] = [
   { path: '/appraisals', title: 'Appraisals', module: 'appraisals', action: 'view', tier: 2, showInSidebar: true, icon: 'Star' },
-  { path: '/appraisals/create', title: 'Create Appraisal', module: 'appraisals', action: 'create', tier: 2 },
-  { path: '/appraisals/:id', title: 'Appraisal Details', module: 'appraisals', action: 'view', tier: 2 },
-  { path: '/appraisals/:id/edit', title: 'Edit Appraisal', module: 'appraisals', action: 'update', tier: 2 },
-  { path: '/appraisals/:id/submit', title: 'Submit for Approval', module: 'appraisals', action: 'approve', tier: 2 },
-  { path: '/appraisals/my-appraisals', title: 'My Appraisals', module: 'appraisals', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /appraisals/create → Modal in Appraisals page
+  // - /appraisals/:id → Modal detail view
+  // - /appraisals/:id/edit → Modal edit
+  // - /appraisals/:id/submit → Button action
+  // - /appraisals/my-appraisals → Tab/filter in list
 ];
 
 // --------------------------------------
-// Module 40: Recruitment (9 routes)
+// Module 40: Recruitment (CONSOLIDATED: 9 → 2 routes)
+// Dashboard + Job detail page with applications tab
 // --------------------------------------
 export const recruitmentRoutes: RouteConfig[] = [
   { path: '/recruitment', title: 'Recruitment', module: 'recruitment', action: 'view', tier: 2, showInSidebar: true, icon: 'UserPlus' },
-  { path: '/recruitment/jobs', title: 'Job Postings', module: 'recruitment', action: 'view', tier: 2 },
-  { path: '/recruitment/jobs/create', title: 'Create Job', module: 'recruitment', action: 'create', tier: 2 },
-  { path: '/recruitment/jobs/:id/edit', title: 'Edit Job', module: 'recruitment', action: 'update', tier: 2 },
-  { path: '/recruitment/applications', title: 'Applications', module: 'recruitment', action: 'view', tier: 2 },
-  { path: '/recruitment/applications/:id', title: 'Application Details', module: 'recruitment', action: 'view', tier: 2 },
-  { path: '/recruitment/applications/:id/shortlist', title: 'Shortlist Candidate', module: 'recruitment', action: 'approve', tier: 2 },
-  { path: '/recruitment/applications/:id/reject', title: 'Reject Application', module: 'recruitment', action: 'delete', tier: 2 },
-  { path: '/recruitment/interviews', title: 'Schedule Interviews', module: 'recruitment', action: 'create', tier: 2 },
+  { path: '/recruitment/jobs/:id', title: 'Job Details', module: 'recruitment', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the pages above:
+  // - /recruitment/jobs → Tab in Recruitment dashboard
+  // - /recruitment/jobs/create → Modal in Jobs tab
+  // - /recruitment/jobs/:id/edit → Modal in Job detail
+  // - /recruitment/applications → Tab in Recruitment dashboard
+  // - /recruitment/applications/:id → Modal in applications view
+  // - /recruitment/applications/:id/shortlist → Button action
+  // - /recruitment/applications/:id/reject → Button action
+  // - /recruitment/interviews → Tab/modal in dashboard
 ];
 
 // --------------------------------------
-// Module 41: Feedback (5 routes)
+// Module 41: Feedback (CONSOLIDATED: 5 → 1 route)
+// Single page with tabs/modals for submit, view, respond, forms
 // --------------------------------------
 export const feedbackRoutes: RouteConfig[] = [
   { path: '/feedback', title: 'Feedback', module: 'feedback', action: 'view', tier: 2, showInSidebar: true, icon: 'MessageCircle' },
-  { path: '/feedback/submit', title: 'Submit Feedback', module: 'feedback', action: 'create', tier: 2 },
-  { path: '/feedback/:id', title: 'Feedback Details', module: 'feedback', action: 'view', tier: 2 },
-  { path: '/feedback/:id/respond', title: 'Respond to Feedback', module: 'feedback', action: 'create', tier: 2 },
-  { path: '/feedback/forms', title: 'Feedback Forms', module: 'feedback', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /feedback/submit → Modal/tab in Feedback page
+  // - /feedback/:id → Modal detail view
+  // - /feedback/:id/respond → Modal in detail view
+  // - /feedback/forms → Tab in Feedback page
 ];
 
 // --------------------------------------
-// Module 42: Grievances (6 routes)
+// Module 42: Grievances (CONSOLIDATED: 6 → 1 route)
+// Single page with tabs for All/My Grievances, modals for actions
 // --------------------------------------
 export const grievanceRoutes: RouteConfig[] = [
   { path: '/grievances', title: 'Grievances', module: 'grievances', action: 'view', tier: 2, showInSidebar: true, icon: 'AlertTriangle' },
-  { path: '/grievances/submit', title: 'Submit Grievance', module: 'grievances', action: 'create', tier: 2 },
-  { path: '/grievances/:id', title: 'Grievance Details', module: 'grievances', action: 'view', tier: 2 },
-  { path: '/grievances/:id/assign', title: 'Assign to Officer', module: 'grievances', action: 'update', tier: 2 },
-  { path: '/grievances/:id/resolve', title: 'Mark Resolved', module: 'grievances', action: 'approve', tier: 2 },
-  { path: '/grievances/my-grievances', title: 'My Grievances', module: 'grievances', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /grievances/submit → Modal in Grievances page
+  // - /grievances/:id → Modal detail view
+  // - /grievances/:id/assign → Button action in detail
+  // - /grievances/:id/resolve → Button action in detail
+  // - /grievances/my-grievances → Tab/filter in list
 ];
 
 // --------------------------------------
-// Module 43: Support Tickets (6 routes)
+// Module 43: Support Tickets (CONSOLIDATED: 6 → 1 route)
+// Single page with tabs for All/My Tickets, modals for actions
 // --------------------------------------
 export const supportRoutes: RouteConfig[] = [
   { path: '/support', title: 'Support Tickets', module: 'support', action: 'view', tier: 2, showInSidebar: true, icon: 'LifeBuoy' },
-  { path: '/support/create', title: 'Create Ticket', module: 'support', action: 'create', tier: 2 },
-  { path: '/support/:id', title: 'Ticket Details', module: 'support', action: 'view', tier: 2 },
-  { path: '/support/:id/reply', title: 'Reply to Ticket', module: 'support', action: 'create', tier: 2 },
-  { path: '/support/:id/close', title: 'Close Ticket', module: 'support', action: 'update', tier: 2 },
-  { path: '/support/my-tickets', title: 'My Tickets', module: 'support', action: 'view', tier: 2 },
+  // CONSOLIDATED: The following routes are now handled within the page above:
+  // - /support/create → Modal in Support page
+  // - /support/:id → Modal detail view
+  // - /support/:id/reply → Modal in detail view
+  // - /support/:id/close → Button action in detail
+  // - /support/my-tickets → Tab/filter in list
 ];
 
 
@@ -684,120 +625,136 @@ export const tier2Routes: RouteConfig[] = [
 // ==========================================
 
 // --------------------------------------
-// Module 44: Analytics (8 routes)
+// Module 44: Analytics (CONSOLIDATED: 8 → 1 route)
+// Dashboard with tabs for Students/Attendance/Financial/Academic/Predictions
 // --------------------------------------
 export const analyticsRoutes: RouteConfig[] = [
   { path: '/analytics', title: 'Analytics', module: 'analytics', action: 'view', tier: 3, showInSidebar: true, icon: 'TrendingUp' },
-  { path: '/analytics/students', title: 'Student Analytics', module: 'analytics', action: 'view', tier: 3 },
-  { path: '/analytics/attendance', title: 'Attendance Trends', module: 'analytics', action: 'view', tier: 3 },
-  { path: '/analytics/financial', title: 'Financial Analytics', module: 'analytics', action: 'view', tier: 3 },
-  { path: '/analytics/academic', title: 'Academic Insights', module: 'analytics', action: 'view', tier: 3 },
-  { path: '/analytics/predictions', title: 'Predictive Analytics', module: 'analytics', action: 'view', tier: 3 },
-  { path: '/analytics/custom', title: 'Custom Report', module: 'analytics', action: 'create', tier: 3 },
-  { path: '/analytics/export', title: 'Export Analytics', module: 'analytics', action: 'export', tier: 3 },
+  // CONSOLIDATED: All analytics views are tabs within the dashboard
+  // - /analytics/students → Students tab
+  // - /analytics/attendance → Attendance tab
+  // - /analytics/financial → Financial tab
+  // - /analytics/academic → Academic tab
+  // - /analytics/predictions → Predictions tab
+  // - /analytics/custom → Modal for custom report
+  // - /analytics/export → Button action
 ];
 
 // --------------------------------------
-// Module 45: PTM - Parent Teacher Meetings (9 routes)
+// Module 45: PTM - Parent Teacher Meetings (CONSOLIDATED: 9 → 1 route)
+// Tabs: Schedule, Slots, Bookings, My Bookings
 // --------------------------------------
 export const ptmRoutes: RouteConfig[] = [
   { path: '/ptm', title: 'PTM', module: 'ptm', action: 'view', tier: 3, showInSidebar: true, icon: 'Users' },
-  { path: '/ptm/schedule', title: 'PTM Schedule', module: 'ptm', action: 'view', tier: 3 },
-  { path: '/ptm/slots', title: 'Manage Slots', module: 'ptm', action: 'create', tier: 3 },
-  { path: '/ptm/slots/:id/book', title: 'Book Slot', module: 'ptm', action: 'create', tier: 3 },
-  { path: '/ptm/bookings', title: 'View Bookings', module: 'ptm', action: 'view', tier: 3 },
-  { path: '/ptm/bookings/:id', title: 'Booking Details', module: 'ptm', action: 'view', tier: 3 },
-  { path: '/ptm/bookings/:id/cancel', title: 'Cancel Booking', module: 'ptm', action: 'delete', tier: 3 },
-  { path: '/ptm/my-bookings', title: 'My Bookings', module: 'ptm', action: 'view', tier: 3 },
-  { path: '/ptm/feedback', title: 'PTM Feedback', module: 'ptm', action: 'create', tier: 3 },
+  // CONSOLIDATED: All PTM features are tabs/modals
+  // - /ptm/schedule → Schedule tab
+  // - /ptm/slots → Manage Slots tab
+  // - /ptm/slots/:id/book → Modal in slots
+  // - /ptm/bookings → Bookings tab
+  // - /ptm/bookings/:id → Modal detail
+  // - /ptm/bookings/:id/cancel → Button action
+  // - /ptm/my-bookings → Tab/filter
+  // - /ptm/feedback → Modal
 ];
 
 // --------------------------------------
-// Module 46: Alumni (7 routes)
+// Module 46: Alumni (CONSOLIDATED: 7 → 1 route)
+// Tabs: List, Events, Donations
 // --------------------------------------
 export const alumniRoutes: RouteConfig[] = [
   { path: '/alumni', title: 'Alumni', module: 'alumni', action: 'view', tier: 3, showInSidebar: true, icon: 'GraduationCap' },
-  { path: '/alumni/register', title: 'Alumni Registration', module: 'alumni', action: 'create', tier: 3 },
-  { path: '/alumni/:id', title: 'Alumni Profile', module: 'alumni', action: 'view', tier: 3 },
-  { path: '/alumni/:id/edit', title: 'Edit Alumni', module: 'alumni', action: 'update', tier: 3 },
-  { path: '/alumni/events', title: 'Alumni Events', module: 'alumni', action: 'view', tier: 3 },
-  { path: '/alumni/events/create', title: 'Create Event', module: 'alumni', action: 'create', tier: 3 },
-  { path: '/alumni/donations', title: 'Alumni Donations', module: 'alumni', action: 'view', tier: 3 },
+  // CONSOLIDATED: All alumni features are tabs/modals
+  // - /alumni/register → Modal in list
+  // - /alumni/:id → Modal detail
+  // - /alumni/:id/edit → Modal edit
+  // - /alumni/events → Events tab
+  // - /alumni/events/create → Modal in events
+  // - /alumni/donations → Donations tab
 ];
 
 // --------------------------------------
-// Module 47: Admissions (11 routes)
+// Module 47: Admissions (CONSOLIDATED: 11 → 2 routes)
+// Dashboard + Application detail page
 // --------------------------------------
 export const admissionRoutes: RouteConfig[] = [
   { path: '/admissions', title: 'Admissions', module: 'admissions', action: 'view', tier: 3, showInSidebar: true, icon: 'UserPlus' },
-  { path: '/admissions/applications', title: 'Applications', module: 'admissions', action: 'view', tier: 3 },
-  { path: '/admissions/apply', title: 'New Application', module: 'admissions', action: 'create', tier: 3 },
   { path: '/admissions/applications/:id', title: 'Application Details', module: 'admissions', action: 'view', tier: 3 },
-  { path: '/admissions/applications/:id/review', title: 'Review Application', module: 'admissions', action: 'update', tier: 3 },
-  { path: '/admissions/applications/:id/approve', title: 'Approve Application', module: 'admissions', action: 'approve', tier: 3 },
-  { path: '/admissions/applications/:id/reject', title: 'Reject Application', module: 'admissions', action: 'delete', tier: 3 },
-  { path: '/admissions/entrance-tests', title: 'Entrance Tests', module: 'admissions', action: 'view', tier: 3 },
-  { path: '/admissions/entrance-tests/create', title: 'Create Test', module: 'admissions', action: 'create', tier: 3 },
-  { path: '/admissions/interviews', title: 'Interviews', module: 'admissions', action: 'view', tier: 3 },
-  { path: '/admissions/interviews/schedule', title: 'Schedule Interview', module: 'admissions', action: 'create', tier: 3 },
+  // CONSOLIDATED: Most features are tabs/modals
+  // - /admissions/applications → Applications tab
+  // - /admissions/apply → Modal in applications
+  // - /admissions/applications/:id/review → Tab in detail
+  // - /admissions/applications/:id/approve → Button action
+  // - /admissions/applications/:id/reject → Button action
+  // - /admissions/entrance-tests → Tab in dashboard
+  // - /admissions/entrance-tests/create → Modal
+  // - /admissions/interviews → Tab in dashboard
+  // - /admissions/interviews/schedule → Modal
 ];
 
 // --------------------------------------
-// Module 48: Inventory (12 routes)
+// Module 48: Inventory (CONSOLIDATED: 12 → 1 route)
+// Tabs: Items, Categories, Issue/Return, Issued, Stock, Library
 // --------------------------------------
 export const inventoryRoutes: RouteConfig[] = [
   { path: '/inventory', title: 'Inventory', module: 'inventory', action: 'view', tier: 3, showInSidebar: true, icon: 'Package' },
-  { path: '/inventory/items', title: 'All Items', module: 'inventory', action: 'view', tier: 3 },
-  { path: '/inventory/items/create', title: 'Add Item', module: 'inventory', action: 'create', tier: 3 },
-  { path: '/inventory/items/:id/edit', title: 'Edit Item', module: 'inventory', action: 'update', tier: 3 },
-  { path: '/inventory/categories', title: 'Categories', module: 'inventory', action: 'view', tier: 3 },
-  { path: '/inventory/issue', title: 'Issue Item', module: 'inventory', action: 'create', tier: 3 },
-  { path: '/inventory/return', title: 'Return Item', module: 'inventory', action: 'update', tier: 3 },
-  { path: '/inventory/issued', title: 'Issued Items', module: 'inventory', action: 'view', tier: 3 },
-  { path: '/inventory/stock', title: 'Stock Report', module: 'inventory', action: 'view', tier: 3 },
-  { path: '/inventory/library', title: 'Library', module: 'inventory', action: 'view', tier: 3 },
-  { path: '/inventory/library/books', title: 'Manage Books', module: 'inventory', action: 'view', tier: 3 },
-  { path: '/inventory/library/issue', title: 'Issue Book', module: 'inventory', action: 'create', tier: 3 },
+  // CONSOLIDATED: All inventory features are tabs/modals
+  // - /inventory/items → Items tab
+  // - /inventory/items/create → Modal in items
+  // - /inventory/items/:id/edit → Modal edit
+  // - /inventory/categories → Categories tab
+  // - /inventory/issue → Modal in items
+  // - /inventory/return → Modal action
+  // - /inventory/issued → Issued Items tab
+  // - /inventory/stock → Stock Report tab
+  // - /inventory/library → Library tab
+  // - /inventory/library/books → Sub-tab in library
+  // - /inventory/library/issue → Modal in library
 ];
 
 // --------------------------------------
-// Module 49: Certificates (9 routes)
+// Module 49: Certificates (CONSOLIDATED: 9 → 1 route)
+// Tabs: Generate, Templates, Issued
 // --------------------------------------
 export const certificateRoutes: RouteConfig[] = [
   { path: '/certificates', title: 'Certificates', module: 'certificates', action: 'view', tier: 3, showInSidebar: true, icon: 'Award' },
-  { path: '/certificates/generate', title: 'Generate Certificate', module: 'certificates', action: 'create', tier: 3 },
-  { path: '/certificates/templates', title: 'Templates', module: 'certificates', action: 'view', tier: 3 },
-  { path: '/certificates/templates/create', title: 'Create Template', module: 'certificates', action: 'create', tier: 3 },
-  { path: '/certificates/templates/:id/edit', title: 'Edit Template', module: 'certificates', action: 'update', tier: 3 },
-  { path: '/certificates/issued', title: 'Issued Certificates', module: 'certificates', action: 'view', tier: 3 },
-  { path: '/certificates/:id', title: 'Certificate Details', module: 'certificates', action: 'view', tier: 3 },
-  { path: '/certificates/:id/download', title: 'Download Certificate', module: 'certificates', action: 'view', tier: 3 },
-  { path: '/certificates/bulk-generate', title: 'Bulk Generate', module: 'certificates', action: 'create', tier: 3 },
+  // CONSOLIDATED: All certificate features are tabs/modals
+  // - /certificates/generate → Modal in main page
+  // - /certificates/templates → Templates tab
+  // - /certificates/templates/create → Modal in templates
+  // - /certificates/templates/:id/edit → Modal edit
+  // - /certificates/issued → Issued tab
+  // - /certificates/:id → Modal detail
+  // - /certificates/:id/download → Button action
+  // - /certificates/bulk-generate → Modal
 ];
 
 // --------------------------------------
-// Module 50: Surveys (7 routes)
+// Module 50: Surveys (CONSOLIDATED: 7 → 1 route)
+// Single page with modals for create/respond/results
 // --------------------------------------
 export const surveyRoutes: RouteConfig[] = [
   { path: '/surveys', title: 'Surveys', module: 'surveys', action: 'view', tier: 3, showInSidebar: true, icon: 'ClipboardList' },
-  { path: '/surveys/create', title: 'Create Survey', module: 'surveys', action: 'create', tier: 3 },
-  { path: '/surveys/:id', title: 'Survey Details', module: 'surveys', action: 'view', tier: 3 },
-  { path: '/surveys/:id/edit', title: 'Edit Survey', module: 'surveys', action: 'update', tier: 3 },
-  { path: '/surveys/:id/respond', title: 'Respond to Survey', module: 'surveys', action: 'create', tier: 3 },
-  { path: '/surveys/:id/results', title: 'Survey Results', module: 'surveys', action: 'view', tier: 3 },
-  { path: '/surveys/:id/export', title: 'Export Results', module: 'surveys', action: 'export', tier: 3 },
+  // CONSOLIDATED: All survey features are modals
+  // - /surveys/create → Modal in surveys
+  // - /surveys/:id → Modal detail
+  // - /surveys/:id/edit → Modal edit
+  // - /surveys/:id/respond → Modal/embedded form
+  // - /surveys/:id/results → Modal/tab in detail
+  // - /surveys/:id/export → Button action
 ];
 
 // --------------------------------------
-// Module 51: Branches (6 routes)
+// Module 51: Branches (CONSOLIDATED: 6 → 1 route)
+// Single page with modals for CRUD
 // --------------------------------------
 export const branchRoutes: RouteConfig[] = [
   { path: '/branches', title: 'Branches', module: 'branches', action: 'view', tier: 3, showInSidebar: true, icon: 'Building' },
-  { path: '/branches/create', title: 'Create Branch', module: 'branches', action: 'create', tier: 3 },
-  { path: '/branches/:id', title: 'Branch Details', module: 'branches', action: 'view', tier: 3 },
-  { path: '/branches/:id/edit', title: 'Edit Branch', module: 'branches', action: 'update', tier: 3 },
-  { path: '/branches/:id/delete', title: 'Delete Branch', module: 'branches', action: 'delete', tier: 3 },
-  { path: '/branches/switch', title: 'Switch Branch', module: 'branches', action: 'update', tier: 3 },
+  // CONSOLIDATED: All branch features are modals
+  // - /branches/create → Modal in branches
+  // - /branches/:id → Modal detail
+  // - /branches/:id/edit → Modal edit
+  // - /branches/:id/delete → Modal confirmation
+  // - /branches/switch → Modal/dropdown
 ];
 
 

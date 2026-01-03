@@ -6,6 +6,7 @@
 
 export { SectionsList } from "./SectionsList";
 export { SectionForm } from "./SectionForm";
+export { SectionFormDialog } from "./SectionFormDialog";
 export { SectionCreate } from "./SectionCreate";
 export { SectionDetail } from "./SectionDetail";
 export { SectionEdit } from "./SectionEdit";
