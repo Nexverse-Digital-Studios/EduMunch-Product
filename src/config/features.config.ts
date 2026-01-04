@@ -207,14 +207,14 @@ export const FEATURES: FeatureConfig = {
   tieUpSchools: false,      // Disabled - not a coaching center
   
   // ===== INVENTORY (Tier 3) =====
-  inventory: false,         // Disabled - can enable if needed
+  inventory: true,          // Inventory management - assets, transfers, ledger, petty cash
   
   // ===== ADVANCED FEATURES (Tier 3) =====
   transport: true,          // Transport management - routes, vehicles, drivers
   library: true,            // Library management - books, issues, returns
   hostel: true,             // Hostel management - blocks, rooms, allocations
   certificates: false,
-  idCards: false,
+  idCards: true,            // ID Cards management - students, staff, templates
   reports: true,            // Reports & Analytics dashboard
   
   // ===== ADMIN ONLY =====

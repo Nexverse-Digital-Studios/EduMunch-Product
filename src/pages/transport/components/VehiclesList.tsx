@@ -5,9 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   Bus,
   Search,
   Filter,
@@ -194,25 +192,16 @@ export function VehiclesList() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/transport">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Fleet Management</h1>
-            <p className="text-muted-foreground">
-              {stats.active} active vehicles • {stats.capacity} total capacity
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">Fleet Management</h1>
+          <p className="text-muted-foreground">
+            {stats.active} active vehicles • {stats.capacity} total capacity
+          </p>
         </div>
         {canCreate && (
-          <Button asChild>
-            <Link to="/transport/vehicles/create">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Vehicle
-            </Link>
+          <Button onClick={() => toast({ title: "Add Vehicle", description: "Vehicle form coming soon." })}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Vehicle
           </Button>
         )}
       </div>

@@ -5,10 +5,8 @@
  */
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   FileDown,
-  ArrowLeft,
   FileSpreadsheet,
   FileText,
   File,
@@ -133,18 +131,13 @@ const ExportTimetablePage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Export Timetable
-          </h1>
-          <p className="text-muted-foreground">
-            Download timetable data in various formats
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Export Timetable
+        </h1>
+        <p className="text-muted-foreground">
+          Download timetable data in various formats
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

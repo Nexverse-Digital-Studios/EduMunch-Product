@@ -5,9 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   Building2,
   Search,
   Filter,
@@ -188,28 +186,19 @@ export function BlocksList() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/hostel">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Hostel Blocks</h1>
-            <p className="text-muted-foreground">
-              {stats.active} active blocks
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">Hostel Blocks</h1>
+          <p className="text-muted-foreground">
+            {stats.active} active blocks
+          </p>
         </div>
         {canCreate && (
-          <Button asChild>
-            <Link to="/hostel/blocks/create">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Block
-            </Link>
+          <Button onClick={() => toast({ title: "Add Block", description: "Block form coming soon." })}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Block
           </Button>
         )}
       </div>

@@ -5,7 +5,6 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
   Building2,
   BedDouble,
@@ -19,6 +18,7 @@ import {
   Wrench,
   TrendingUp,
   UserX,
+  Plus,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
@@ -51,6 +52,8 @@ const INDEX_TOKEN = "1emaet";
 
 export function HostelDashboard() {
   const { canCreate } = useModulePermissions("hostel");
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Fetch data (will be empty until tables are created)
   const { data: blocks, isLoading: loadingBlocks } =
@@ -158,6 +161,22 @@ export function HostelDashboard() {
     }).format(amount);
   };
 
+  const handleAddAllocation = () => {
+    toast({
+      title: "Allocate Room",
+      description: "Room allocation will be available in the Allocations tab.",
+    });
+    setActiveTab("allocations");
+  };
+
+  const handleAddBlock = () => {
+    toast({
+      title: "Add Block",
+      description: "Block creation will be available in the Blocks tab.",
+    });
+    setActiveTab("blocks");
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-6 p-6">
@@ -188,17 +207,13 @@ export function HostelDashboard() {
         <div className="flex gap-2">
           {canCreate && (
             <>
-              <Button variant="outline" asChild>
-                <Link to="/hostel/allocations/create">
-                  <UserCheck className="mr-2 h-4 w-4" />
-                  Allocate Room
-                </Link>
+              <Button variant="outline" onClick={handleAddAllocation}>
+                <UserCheck className="mr-2 h-4 w-4" />
+                Allocate Room
               </Button>
-              <Button asChild>
-                <Link to="/hostel/blocks/create">
-                  <Building2 className="mr-2 h-4 w-4" />
-                  Add Block
-                </Link>
+              <Button onClick={handleAddBlock}>
+                <Building2 className="mr-2 h-4 w-4" />
+                Add Block
               </Button>
             </>
           )}
@@ -290,58 +305,74 @@ export function HostelDashboard() {
         </Card>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Now using buttons to switch tabs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link to="/hostel/blocks" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <Building2 className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-              <p className="font-medium">Blocks</p>
-              <p className="text-xs text-muted-foreground">Manage blocks</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/hostel/rooms" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <DoorOpen className="h-8 w-8 mx-auto mb-2 text-green-600" />
-              <p className="font-medium">Rooms</p>
-              <p className="text-xs text-muted-foreground">Room management</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/hostel/allocations" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <UserCheck className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-              <p className="font-medium">Allocations</p>
-              <p className="text-xs text-muted-foreground">Room allocations</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/hostel/complaints" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <ClipboardList className="h-8 w-8 mx-auto mb-2 text-amber-600" />
-              <p className="font-medium">Complaints</p>
-              <p className="text-xs text-muted-foreground">
-                {stats.openComplaints} open
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("blocks")}
+        >
+          <CardContent className="pt-6 text-center">
+            <Building2 className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+            <p className="font-medium">Blocks</p>
+            <p className="text-xs text-muted-foreground">Manage blocks</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("rooms")}
+        >
+          <CardContent className="pt-6 text-center">
+            <DoorOpen className="h-8 w-8 mx-auto mb-2 text-green-600" />
+            <p className="font-medium">Rooms</p>
+            <p className="text-xs text-muted-foreground">Room management</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("allocations")}
+        >
+          <CardContent className="pt-6 text-center">
+            <UserCheck className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+            <p className="font-medium">Allocations</p>
+            <p className="text-xs text-muted-foreground">Room allocations</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("complaints")}
+        >
+          <CardContent className="pt-6 text-center">
+            <ClipboardList className="h-8 w-8 mx-auto mb-2 text-amber-600" />
+            <p className="font-medium">Complaints</p>
+            <p className="text-xs text-muted-foreground">
+              {stats.openComplaints} open
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="blocks" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
+          <TabsTrigger value="overview">
+            <TrendingUp className="mr-2 h-4 w-4" />
+            Overview
+          </TabsTrigger>
           <TabsTrigger value="blocks">
             <Building2 className="mr-2 h-4 w-4" />
-            Block Overview
+            Blocks
+          </TabsTrigger>
+          <TabsTrigger value="rooms">
+            <DoorOpen className="mr-2 h-4 w-4" />
+            Rooms
+          </TabsTrigger>
+          <TabsTrigger value="allocations">
+            <UserCheck className="mr-2 h-4 w-4" />
+            Allocations
           </TabsTrigger>
           <TabsTrigger value="complaints">
             <ClipboardList className="mr-2 h-4 w-4" />
-            Recent Complaints
+            Complaints
             {stats.openComplaints > 0 && (
               <Badge variant="destructive" className="ml-2">
                 {stats.openComplaints}
@@ -350,17 +381,155 @@ export function HostelDashboard() {
           </TabsTrigger>
           <TabsTrigger value="leaves">
             <Calendar className="mr-2 h-4 w-4" />
-            Active Leaves
+            Leaves
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="overview">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Blocks Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Block Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {blockStats.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Block</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Occupancy</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {blockStats.slice(0, 5).map((block) => {
+                        const occupancyRate =
+                          block.total > 0
+                            ? (block.occupied / block.total) * 100
+                            : 0;
+                        return (
+                          <TableRow key={block.id}>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">{block.block_name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {block.block_code}
+                                </p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{block.block_type}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Progress
+                                  value={occupancyRate}
+                                  className="w-16 h-2"
+                                />
+                                <span className="text-sm">
+                                  {occupancyRate.toFixed(0)}%
+                                </span>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="text-center py-8">
+                    <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium">No blocks configured</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Start by adding hostel blocks
+                    </p>
+                    {canCreate && (
+                      <Button onClick={handleAddBlock}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Block
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Complaints Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Open Complaints</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {complaints &&
+                complaints.filter((c) => c.status !== "Closed").length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Priority</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {complaints
+                        .filter((c) => c.status !== "Closed")
+                        .slice(0, 5)
+                        .map((complaint) => (
+                          <TableRow key={complaint.id}>
+                            <TableCell>
+                              <Badge variant="outline">
+                                {complaint.complaint_type}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  complaint.priority === "Urgent"
+                                    ? "destructive"
+                                    : complaint.priority === "High"
+                                    ? "default"
+                                    : "secondary"
+                                }
+                              >
+                                {complaint.priority}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  complaint.status === "Open"
+                                    ? "outline"
+                                    : complaint.status === "In Progress"
+                                    ? "default"
+                                    : "secondary"
+                                }
+                              >
+                                {complaint.status}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="text-center py-8">
+                    <TrendingUp className="h-12 w-12 text-green-600 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium">No open complaints!</h3>
+                    <p className="text-muted-foreground">
+                      All complaints have been resolved.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
         <TabsContent value="blocks">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
               <CardTitle>Block Status</CardTitle>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/hostel/blocks">View All</Link>
-              </Button>
             </CardHeader>
             <CardContent>
               {blockStats.length > 0 ? (
@@ -436,8 +605,129 @@ export function HostelDashboard() {
                     Start by adding hostel blocks
                   </p>
                   {canCreate && (
-                    <Button asChild>
-                      <Link to="/hostel/blocks/create">Add Block</Link>
+                    <Button onClick={handleAddBlock}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Block
+                    </Button>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="rooms">
+          <Card>
+            <CardHeader>
+              <CardTitle>Rooms</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {rooms && rooms.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Room</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Capacity</TableHead>
+                      <TableHead>Occupancy</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {rooms.map((room) => (
+                      <TableRow key={room.id}>
+                        <TableCell>
+                          <p className="font-medium">{room.room_number}</p>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{room.room_type}</Badge>
+                        </TableCell>
+                        <TableCell>{room.capacity}</TableCell>
+                        <TableCell>{room.current_occupancy}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              room.status === "Available"
+                                ? "default"
+                                : room.status === "Occupied"
+                                ? "secondary"
+                                : "outline"
+                            }
+                          >
+                            {room.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-12">
+                  <DoorOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">No rooms configured</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Add rooms to your hostel blocks
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="allocations">
+          <Card>
+            <CardHeader>
+              <CardTitle>Room Allocations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {allocations && allocations.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Student</TableHead>
+                      <TableHead>Room</TableHead>
+                      <TableHead>From</TableHead>
+                      <TableHead>To</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {allocations.map((allocation) => (
+                      <TableRow key={allocation.id}>
+                        <TableCell>{allocation.student_id}</TableCell>
+                        <TableCell>{allocation.room_id}</TableCell>
+                        <TableCell>
+                          {new Date(allocation.from_date).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          {allocation.to_date
+                            ? new Date(allocation.to_date).toLocaleDateString()
+                            : "Ongoing"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              allocation.status === "Active" ? "default" : "secondary"
+                            }
+                          >
+                            {allocation.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-12">
+                  <UserCheck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">No allocations</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Allocate students to rooms
+                  </p>
+                  {canCreate && (
+                    <Button onClick={handleAddAllocation}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Allocate Room
                     </Button>
                   )}
                 </div>
@@ -448,11 +738,8 @@ export function HostelDashboard() {
 
         <TabsContent value="complaints">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
               <CardTitle>Open Complaints</CardTitle>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/hostel/complaints">View All</Link>
-              </Button>
             </CardHeader>
             <CardContent>
               {complaints &&
@@ -531,11 +818,8 @@ export function HostelDashboard() {
 
         <TabsContent value="leaves">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
               <CardTitle>Students on Leave</CardTitle>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/hostel/leaves">View All</Link>
-              </Button>
             </CardHeader>
             <CardContent>
               {activeLeaves.length > 0 ? (

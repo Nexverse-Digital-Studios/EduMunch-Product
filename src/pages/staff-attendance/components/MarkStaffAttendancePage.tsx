@@ -6,9 +6,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   Save,
   CheckCircle,
   XCircle,
@@ -70,7 +68,6 @@ const statusOptions: {
 ];
 
 const MarkStaffAttendancePage = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const today = new Date().toISOString().split("T")[0];
 
@@ -238,18 +235,13 @@ const MarkStaffAttendancePage = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              Mark Staff Attendance
-            </h1>
-            <p className="text-muted-foreground">
-              Record daily attendance for all staff members
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Mark Staff Attendance
+          </h1>
+          <p className="text-muted-foreground">
+            Record daily attendance for all staff members
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={markAllPresent}>

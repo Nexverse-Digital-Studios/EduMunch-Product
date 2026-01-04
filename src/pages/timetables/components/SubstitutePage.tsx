@@ -5,10 +5,8 @@
  */
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   UserCheck,
-  ArrowLeft,
   Search,
   Calendar,
   User,
@@ -171,20 +169,13 @@ const SubstitutePage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Substitute Teacher Assignment
-            </h1>
-            <p className="text-muted-foreground">
-              Assign substitute teachers for absent staff
-            </p>
-          </div>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Substitute Teacher Assignment
+        </h1>
+        <p className="text-muted-foreground">
+          Assign substitute teachers for absent staff
+        </p>
       </div>
 
       {/* Filters */}

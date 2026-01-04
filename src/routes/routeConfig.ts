@@ -517,6 +517,7 @@ export const transportRoutes: RouteConfig[] = [
 // --------------------------------------
 export const payrollRoutes: RouteConfig[] = [
   { path: '/payroll', title: 'Payroll', module: 'payroll', action: 'view', tier: 2, showInSidebar: true, icon: 'Wallet' },
+  { path: '/salary-structures', title: 'Salary Structures', module: 'salary_structures', action: 'view', tier: 2, showInSidebar: false, icon: 'Wallet' },
   // CONSOLIDATED: The following routes are now tabs/modals within Payroll dashboard:
   // - /payroll/structures → Salary Structures tab
   // - /payroll/structures/create → Modal in Structures tab
@@ -712,6 +713,46 @@ export const inventoryRoutes: RouteConfig[] = [
 ];
 
 // --------------------------------------
+// Module 48a: Library (CONSOLIDATED: 10 → 1 route)
+// Tabs: Dashboard, Books, Issue, Return, Members
+// Create/Edit via modals within each tab
+// --------------------------------------
+export const libraryRoutes: RouteConfig[] = [
+  { path: '/library', title: 'Library', module: 'library', action: 'view', tier: 3, showInSidebar: true, icon: 'BookOpen' },
+  // CONSOLIDATED: The following routes are now tabs within the Library dashboard:
+  // - /library/books → Books tab
+  // - /library/books/create → Modal in Books tab
+  // - /library/books/:id/edit → Modal in Books tab
+  // - /library/issue → Issue Books tab
+  // - /library/return → Return Books tab
+  // - /library/members → Members tab
+  // - /library/members/create → Modal in Members tab
+  // - /library/transactions → Transactions tab
+  // - /library/fines → Fines tab (or modal)
+];
+
+// --------------------------------------
+// Module 48b: Hostel (CONSOLIDATED: 12 → 1 route)
+// Tabs: Dashboard, Blocks, Rooms, Allocations, Complaints, Leaves
+// Create/Edit via modals within each tab
+// --------------------------------------
+export const hostelRoutes: RouteConfig[] = [
+  { path: '/hostel', title: 'Hostel', module: 'hostel', action: 'view', tier: 3, showInSidebar: true, icon: 'Building2' },
+  // CONSOLIDATED: The following routes are now tabs within the Hostel dashboard:
+  // - /hostel/blocks → Blocks tab
+  // - /hostel/blocks/create → Modal in Blocks tab
+  // - /hostel/blocks/:id/edit → Modal in Blocks tab
+  // - /hostel/rooms → Rooms tab
+  // - /hostel/rooms/create → Modal in Rooms tab
+  // - /hostel/allocations → Allocations tab
+  // - /hostel/allocations/create → Modal in Allocations tab
+  // - /hostel/complaints → Complaints tab
+  // - /hostel/complaints/create → Modal in Complaints tab
+  // - /hostel/leaves → Leaves tab
+  // - /hostel/fees → Fees tab (or modal)
+];
+
+// --------------------------------------
 // Module 49: Certificates (CONSOLIDATED: 9 → 1 route)
 // Tabs: Generate, Templates, Issued
 // --------------------------------------
@@ -767,6 +808,8 @@ export const tier3Routes: RouteConfig[] = [
   ...alumniRoutes,
   ...admissionRoutes,
   ...inventoryRoutes,
+  ...libraryRoutes,
+  ...hostelRoutes,
   ...certificateRoutes,
   ...surveyRoutes,
   ...branchRoutes,

@@ -29,7 +29,7 @@ import { TABLES } from "@/lib/supabase";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { DeleteEmployeeDialog, type EmployeeDB } from "./components";
+import { DeleteEmployeeDialog, EmployeeFormDialog, type EmployeeDB } from "./components";
 
 // Generate avatar color based on name
 const getAvatarColor = (name: string) => {
@@ -52,6 +52,7 @@ export default function EmployeeDetail() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   // Permission checks
   const { canUpdate, canDelete } = useModulePermissions("employees");
@@ -157,7 +158,7 @@ export default function EmployeeDetail() {
           {canUpdate && (
             <Button
               variant="outline"
-              onClick={() => navigate(`/employees/${id}/edit`)}
+              onClick={() => setEditDialogOpen(true)}
             >
               <Edit className="h-4 w-4 mr-2" />
               Edit
@@ -306,6 +307,34 @@ export default function EmployeeDetail() {
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleDelete}
         employeeName={fullName}
+      />
+
+      {/* Edit Employee Dialog */}
+      <EmployeeFormDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        mode="edit"
+        employeeId={id}
+        initialData={{
+          first_name: employee.first_name,
+          middle_name: employee.middle_name || "",
+          last_name: employee.last_name,
+          email: employee.email,
+          phone: employee.phone || "",
+          employee_code: employee.employee_code,
+          designation: employee.designation || "",
+          department: employee.department || "",
+          date_of_birth: employee.date_of_birth || "",
+          date_of_joining: employee.date_of_joining || "",
+          status: employee.status || "active",
+        }}
+        onSuccess={() => {
+          setEditDialogOpen(false);
+          toast({
+            title: "Success",
+            description: "Employee updated successfully",
+          });
+        }}
       />
     </div>
   );

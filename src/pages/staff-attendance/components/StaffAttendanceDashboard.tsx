@@ -1,20 +1,27 @@
 /**
- * Staff Attendance Dashboard Page
- * ================================
- * Main dashboard for staff attendance management
+ * Staff Attendance Dashboard Page (CONSOLIDATED)
+ * ================================================
+ * Main dashboard for staff attendance management with tabs
  * Route: /staff/attendance
+ * 
+ * CONSOLIDATED: All features accessible via tabs (no sub-routes)
+ * - Dashboard: Overview with stats
+ * - Mark: Mark daily attendance
+ * - View: View and filter attendance records
+ * - Reports: Generate attendance reports
  */
 
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import {
   CheckSquare,
   Eye,
   BarChart3,
-  FileDown,
   Users,
   Clock,
   UserCheck,
   UserX,
+  Loader2,
+  LayoutDashboard,
 } from "lucide-react";
 import {
   Card,
@@ -23,7 +30,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { TABLES } from "@/lib/supabase";
@@ -32,10 +39,13 @@ import type {
   EmployeeReference,
   DailyAttendanceStats,
 } from "./types";
+import MarkStaffAttendancePage from "./MarkStaffAttendancePage";
+import ViewStaffAttendancePage from "./ViewStaffAttendancePage";
+import StaffAttendanceReportsPage from "./StaffAttendanceReportsPage";
 
 const StaffAttendanceDashboard = () => {
-  const { canView, canCreate, canExport } =
-    useModulePermissions("staff_attendance");
+  const { canView, canCreate } = useModulePermissions("staff_attendance");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const today = new Date().toISOString().split("T")[0];
 
   // Fetch today's attendance records
@@ -75,57 +85,19 @@ const StaffAttendanceDashboard = () => {
       stats.half_day +
       stats.on_leave);
 
-  const quickActions = [
-    {
-      title: "Mark Attendance",
-      description: "Record today's staff attendance",
-      icon: CheckSquare,
-      href: "/staff/attendance/mark",
-      permission: canCreate,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-    },
-    {
-      title: "View Attendance",
-      description: "View and filter attendance records",
-      icon: Eye,
-      href: "/staff/attendance/view",
-      permission: canView,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-    },
-    {
-      title: "Reports",
-      description: "Generate attendance reports",
-      icon: BarChart3,
-      href: "/staff/attendance/reports",
-      permission: canView,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-    },
-    {
-      title: "Export Data",
-      description: "Export attendance data",
-      icon: FileDown,
-      href: "/staff/attendance/export",
-      permission: canExport,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-    },
-  ];
-
   const isLoading = isLoadingAttendance || isLoadingEmployees;
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Staff Attendance</h1>
-        <p className="text-muted-foreground">
-          Manage and track attendance for all staff members
-        </p>
-      </div>
+  // Tab configuration with permissions
+  const tabs = [
+    { value: "dashboard", label: "Dashboard", icon: LayoutDashboard, permission: canView },
+    { value: "mark", label: "Mark Attendance", icon: CheckSquare, permission: canCreate },
+    { value: "view", label: "View Records", icon: Eye, permission: canView },
+    { value: "reports", label: "Reports", icon: BarChart3, permission: canView },
+  ];
 
+  // Dashboard content component
+  const DashboardContent = () => (
+    <div className="space-y-6">
       {/* Today's Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card>
@@ -198,33 +170,6 @@ const StaffAttendanceDashboard = () => {
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {quickActions
-            .filter((action) => action.permission)
-            .map((action) => (
-              <Card
-                key={action.href}
-                className="hover:shadow-md transition-shadow"
-              >
-                <Link to={action.href}>
-                  <CardHeader>
-                    <div
-                      className={`w-12 h-12 rounded-lg ${action.bgColor} flex items-center justify-center mb-2`}
-                    >
-                      <action.icon className={`h-6 w-6 ${action.color}`} />
-                    </div>
-                    <CardTitle className="text-lg">{action.title}</CardTitle>
-                    <CardDescription>{action.description}</CardDescription>
-                  </CardHeader>
-                </Link>
-              </Card>
-            ))}
-        </div>
-      </div>
-
       {/* Recent Activity */}
       <Card>
         <CardHeader>
@@ -248,36 +193,69 @@ const StaffAttendanceDashboard = () => {
                 <span className="font-medium">{todayAttendance.length}</span>{" "}
                 attendance records marked today
               </p>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/staff/attendance/view">View Details</Link>
-                </Button>
-                {notMarked > 0 && canCreate && (
-                  <Button size="sm" asChild>
-                    <Link to="/staff/attendance/mark">
-                      Mark Remaining ({notMarked})
-                    </Link>
-                  </Button>
-                )}
-              </div>
+              {notMarked > 0 && canCreate && (
+                <p className="text-sm text-muted-foreground">
+                  {notMarked} staff member(s) attendance pending - use the "Mark Attendance" tab
+                </p>
+              )}
             </div>
           ) : (
             <div className="space-y-2">
               <p className="text-muted-foreground">
-                No attendance marked yet today
+                No attendance marked yet today. Use the "Mark Attendance" tab to get started.
               </p>
-              {canCreate && (
-                <Button asChild>
-                  <Link to="/staff/attendance/mark">
-                    <CheckSquare className="mr-2 h-4 w-4" />
-                    Mark Attendance
-                  </Link>
-                </Button>
-              )}
             </div>
           )}
         </CardContent>
       </Card>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Staff Attendance</h1>
+        <p className="text-muted-foreground">
+          Manage and track attendance for all staff members
+        </p>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          {tabs.filter(tab => tab.permission).map(tab => (
+            <TabsTrigger key={tab.value} value={tab.value} className="gap-2">
+              <tab.icon className="h-4 w-4 hidden sm:inline" />
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {isLoading && activeTab === "dashboard" ? (
+          <div className="flex items-center justify-center h-64 mt-6">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2">Loading attendance data...</span>
+          </div>
+        ) : (
+          <>
+            <TabsContent value="dashboard" className="mt-6">
+              <DashboardContent />
+            </TabsContent>
+
+            <TabsContent value="mark" className="mt-6">
+              <MarkStaffAttendancePage />
+            </TabsContent>
+
+            <TabsContent value="view" className="mt-6">
+              <ViewStaffAttendancePage />
+            </TabsContent>
+
+            <TabsContent value="reports" className="mt-6">
+              <StaffAttendanceReportsPage />
+            </TabsContent>
+          </>
+        )}
+      </Tabs>
     </div>
   );
 };

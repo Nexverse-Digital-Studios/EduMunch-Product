@@ -5,9 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   Download,
   FileText,
   Filter,
@@ -323,18 +321,11 @@ export function FeeCollectionReport() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/reports">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Fee Collection Report</h1>
-            <p className="text-muted-foreground">
-              Fee collection status and pending dues analysis
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">Fee Collection Report</h1>
+          <p className="text-muted-foreground">
+            Fee collection status and pending dues analysis
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleExportCSV}>
@@ -590,8 +581,8 @@ export function FeeCollectionReport() {
                       </TableCell>
                       <TableCell>{getStatusBadge(student.status)}</TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to={`/students/${student.id}/fees`}>View</Link>
+                        <Button variant="ghost" size="sm" onClick={() => {}}>
+                          View
                         </Button>
                       </TableCell>
                     </TableRow>

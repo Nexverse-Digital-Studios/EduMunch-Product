@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, IndianRupee, Receipt, User, Calendar } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { IndianRupee, Receipt, User, Calendar } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -46,9 +46,14 @@ interface ClassDB {
   class_name: string;
 }
 
-export function FeeCollectionPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+interface FeeCollectionPageProps {
+  embedded?: boolean;
+  selectedFeeId?: string;
+}
+
+export function FeeCollectionPage({ embedded = false, selectedFeeId }: FeeCollectionPageProps) {
+  const { id: paramId } = useParams<{ id: string }>();
+  const id = selectedFeeId || paramId;
   const { toast } = useToast();
   const { canUpdate } = useModulePermissions("fees");
 
@@ -217,12 +222,9 @@ export function FeeCollectionPage() {
     return (
       <Card>
         <CardContent className="p-6">
-          <p className="text-center text-red-500">Fee record not found</p>
-          <div className="flex justify-center mt-4">
-            <Button onClick={() => navigate("/fees/students")}>
-              Back to Fees
-            </Button>
-          </div>
+          <p className="text-center text-muted-foreground">
+            {id ? "Fee record not found" : "Select a student fee to collect payment"}
+          </p>
         </CardContent>
       </Card>
     );
@@ -231,21 +233,14 @@ export function FeeCollectionPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/fees/students")}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
+      {!embedded && (
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Collect Fee</h1>
           <p className="text-muted-foreground">
             Record fee payment for student
           </p>
         </div>
-      </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Student & Fee Info */}

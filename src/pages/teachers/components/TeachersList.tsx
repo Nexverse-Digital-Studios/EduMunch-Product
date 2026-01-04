@@ -207,20 +207,28 @@ const TeachersList = () => {
         </div>
         <div className="flex gap-2">
           {canExport && (
-            <Button variant="outline" asChild>
-              <Link to="/teachers/export">
-                <Download className="mr-2 h-4 w-4" />
-                Export
-              </Link>
+            <Button 
+              variant="outline" 
+              onClick={() => toast({ 
+                title: "Export Teachers", 
+                description: "Export functionality coming soon." 
+              })}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Export
             </Button>
           )}
           {canCreate && (
             <>
-              <Button variant="outline" asChild>
-                <Link to="/teachers/bulk-upload">
-                  <Upload className="mr-2 h-4 w-4" />
-                  Bulk Upload
-                </Link>
+              <Button 
+                variant="outline" 
+                onClick={() => toast({ 
+                  title: "Bulk Upload", 
+                  description: "Bulk upload functionality coming soon." 
+                })}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Bulk Upload
               </Button>
               <Button onClick={handleCreateTeacher}>
                 <Plus className="mr-2 h-4 w-4" />

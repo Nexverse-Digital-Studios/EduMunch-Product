@@ -54,6 +54,10 @@ import { FeeStructureDetailDialog } from "./FeeStructureDetailDialog";
 
 const INDEX_TOKEN = "1emaet";
 
+interface FeeStructuresListProps {
+  embedded?: boolean;
+}
+
 interface ClassDB {
   id: string;
   class_name: string;
@@ -66,7 +70,7 @@ interface AcademicYearDB {
   is_current: boolean;
 }
 
-export function FeeStructuresList() {
+export function FeeStructuresList({ embedded = false }: FeeStructuresListProps) {
   const { toast } = useToast();
   const { canView, canCreate, canUpdate, canDelete } =
     useModulePermissions("fees");
@@ -201,14 +205,31 @@ export function FeeStructuresList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Fee Structures</h1>
-          <p className="text-muted-foreground">
-            Manage fee structures and components for each class
-          </p>
+      {!embedded && (
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Fee Structures</h1>
+            <p className="text-muted-foreground">
+              Manage fee structures and components for each class
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => refetch()}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
+            {canCreate && (
+              <Button onClick={handleCreate}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Structure
+              </Button>
+            )}
+          </div>
         </div>
-        <div className="flex gap-2">
+      )}
+
+      {embedded && (
+        <div className="flex items-center justify-end gap-2">
           <Button variant="outline" onClick={() => refetch()}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
@@ -220,7 +241,7 @@ export function FeeStructuresList() {
             </Button>
           )}
         </div>
-      </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">

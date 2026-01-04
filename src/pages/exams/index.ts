@@ -2,24 +2,22 @@
  * Exams Module
  * =============
  * Examination system including:
- * - Exam management (CRUD)
- * - Exam scheduling
+ * - Exam management (CRUD via modals)
  * - Marks entry and management
  * - Report card generation
  * - Grade calculations
- * - Export functionality
+ * 
+ * CONSOLIDATED: Create/Edit via modal dialogs in ExamsList
+ * Schedule and Export functionality integrated into ExamDetail
  */
 
 export {
   ExamsList,
   ExamForm,
-  ExamCreate,
   ExamDetail,
-  ExamEdit,
-  ExamSchedulePage,
   MarksEntryPage,
   ReportCardsPage,
-  ExamsExportPage,
+  ExamFormDialog,
 } from "./components";
 
 export type {

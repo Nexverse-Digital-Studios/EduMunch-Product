@@ -5,7 +5,6 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
   Bus,
   MapPin,
@@ -19,6 +18,7 @@ import {
   Clock,
   TrendingUp,
   FileText,
+  Plus,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
@@ -50,6 +51,8 @@ const INDEX_TOKEN = "1emaet";
 
 export function TransportDashboard() {
   const { canCreate } = useModulePermissions("transport");
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Fetch data
   const { data: routes, isLoading: loadingRoutes } =
@@ -168,6 +171,22 @@ export function TransportDashboard() {
     }).format(amount);
   };
 
+  const handleAddVehicle = () => {
+    toast({
+      title: "Add Vehicle",
+      description: "Vehicle creation will be available in the Vehicles tab.",
+    });
+    setActiveTab("vehicles");
+  };
+
+  const handleAddRoute = () => {
+    toast({
+      title: "Add Route",
+      description: "Route creation will be available in the Routes tab.",
+    });
+    setActiveTab("routes");
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-6 p-6">
@@ -198,17 +217,13 @@ export function TransportDashboard() {
         <div className="flex gap-2">
           {canCreate && (
             <>
-              <Button variant="outline" asChild>
-                <Link to="/transport/vehicles/create">
-                  <Car className="mr-2 h-4 w-4" />
-                  Add Vehicle
-                </Link>
+              <Button variant="outline" onClick={handleAddVehicle}>
+                <Car className="mr-2 h-4 w-4" />
+                Add Vehicle
               </Button>
-              <Button asChild>
-                <Link to="/transport/routes/create">
-                  <Route className="mr-2 h-4 w-4" />
-                  Add Route
-                </Link>
+              <Button onClick={handleAddRoute}>
+                <Route className="mr-2 h-4 w-4" />
+                Add Route
               </Button>
             </>
           )}
@@ -298,58 +313,74 @@ export function TransportDashboard() {
         </Card>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Now using buttons to switch tabs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link to="/transport/routes" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <Route className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-              <p className="font-medium">Routes</p>
-              <p className="text-xs text-muted-foreground">Manage routes</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/transport/vehicles" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <Bus className="h-8 w-8 mx-auto mb-2 text-green-600" />
-              <p className="font-medium">Vehicles</p>
-              <p className="text-xs text-muted-foreground">Fleet management</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/transport/drivers" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <UserCheck className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-              <p className="font-medium">Drivers</p>
-              <p className="text-xs text-muted-foreground">Driver management</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/transport/students" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <Users className="h-8 w-8 mx-auto mb-2 text-amber-600" />
-              <p className="font-medium">Students</p>
-              <p className="text-xs text-muted-foreground">
-                Transport allocation
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("routes")}
+        >
+          <CardContent className="pt-6 text-center">
+            <Route className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+            <p className="font-medium">Routes</p>
+            <p className="text-xs text-muted-foreground">Manage routes</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("vehicles")}
+        >
+          <CardContent className="pt-6 text-center">
+            <Bus className="h-8 w-8 mx-auto mb-2 text-green-600" />
+            <p className="font-medium">Vehicles</p>
+            <p className="text-xs text-muted-foreground">Fleet management</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("drivers")}
+        >
+          <CardContent className="pt-6 text-center">
+            <UserCheck className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+            <p className="font-medium">Drivers</p>
+            <p className="text-xs text-muted-foreground">Driver management</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("students")}
+        >
+          <CardContent className="pt-6 text-center">
+            <Users className="h-8 w-8 mx-auto mb-2 text-amber-600" />
+            <p className="font-medium">Students</p>
+            <p className="text-xs text-muted-foreground">
+              Transport allocation
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="routes" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
+          <TabsTrigger value="overview">
+            <TrendingUp className="mr-2 h-4 w-4" />
+            Overview
+          </TabsTrigger>
           <TabsTrigger value="routes">
             <Route className="mr-2 h-4 w-4" />
-            Routes Overview
+            Routes
           </TabsTrigger>
           <TabsTrigger value="vehicles">
             <Bus className="mr-2 h-4 w-4" />
-            Fleet Status
+            Vehicles
+          </TabsTrigger>
+          <TabsTrigger value="drivers">
+            <UserCheck className="mr-2 h-4 w-4" />
+            Drivers
+          </TabsTrigger>
+          <TabsTrigger value="students">
+            <Users className="mr-2 h-4 w-4" />
+            Students
           </TabsTrigger>
           <TabsTrigger value="alerts">
             <AlertTriangle className="mr-2 h-4 w-4" />
@@ -362,13 +393,137 @@ export function TransportDashboard() {
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="overview">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Routes Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Active Routes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {routes && routes.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Route</TableHead>
+                        <TableHead>From - To</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {routes.slice(0, 5).map((route) => (
+                        <TableRow key={route.id}>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{route.route_name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {route.route_code}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1 text-sm">
+                              <MapPin className="h-3 w-3" />
+                              {route.start_location} → {route.end_location}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={route.is_active ? "default" : "secondary"}
+                            >
+                              {route.is_active ? "Active" : "Inactive"}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="text-center py-8">
+                    <Route className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium">No routes configured</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Start by adding transport routes
+                    </p>
+                    {canCreate && (
+                      <Button onClick={handleAddRoute}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Route
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Vehicles Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Fleet Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {vehicles && vehicles.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Vehicle</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {vehicles.slice(0, 5).map((vehicle) => (
+                        <TableRow key={vehicle.id}>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{vehicle.vehicle_number}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {vehicle.make} {vehicle.model}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>{vehicle.vehicle_type}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                vehicle.status === "Active"
+                                  ? "default"
+                                  : vehicle.status === "Maintenance"
+                                  ? "outline"
+                                  : "secondary"
+                              }
+                            >
+                              {vehicle.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="text-center py-8">
+                    <Bus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium">No vehicles added</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Add vehicles to your fleet
+                    </p>
+                    {canCreate && (
+                      <Button onClick={handleAddVehicle}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Vehicle
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
         <TabsContent value="routes">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Active Routes</CardTitle>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/transport/routes">View All</Link>
-              </Button>
+            <CardHeader>
+              <CardTitle>All Routes</CardTitle>
             </CardHeader>
             <CardContent>
               {routes && routes.length > 0 ? (
@@ -384,7 +539,7 @@ export function TransportDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {routes.slice(0, 5).map((route) => (
+                    {routes.map((route) => (
                       <TableRow key={route.id}>
                         <TableCell>
                           <div>
@@ -434,8 +589,9 @@ export function TransportDashboard() {
                     Start by adding transport routes
                   </p>
                   {canCreate && (
-                    <Button asChild>
-                      <Link to="/transport/routes/create">Add Route</Link>
+                    <Button onClick={handleAddRoute}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Route
                     </Button>
                   )}
                 </div>
@@ -446,11 +602,8 @@ export function TransportDashboard() {
 
         <TabsContent value="vehicles">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
               <CardTitle>Fleet Status</CardTitle>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/transport/vehicles">View All</Link>
-              </Button>
             </CardHeader>
             <CardContent>
               {vehicles && vehicles.length > 0 ? (
@@ -465,7 +618,7 @@ export function TransportDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {vehicles.slice(0, 5).map((vehicle) => {
+                    {vehicles.map((vehicle) => {
                       const insuranceDays = vehicle.insurance_expiry
                         ? Math.ceil(
                             (new Date(vehicle.insurance_expiry).getTime() -
@@ -548,10 +701,114 @@ export function TransportDashboard() {
                     Start by adding vehicles to your fleet
                   </p>
                   {canCreate && (
-                    <Button asChild>
-                      <Link to="/transport/vehicles/create">Add Vehicle</Link>
+                    <Button onClick={handleAddVehicle}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Vehicle
                     </Button>
                   )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="drivers">
+          <Card>
+            <CardHeader>
+              <CardTitle>Drivers</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {drivers && drivers.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Driver</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>License Expiry</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {drivers.map((driver) => (
+                      <TableRow key={driver.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{driver.full_name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {driver.license_number}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{driver.phone || "-"}</TableCell>
+                        <TableCell>
+                          {driver.license_expiry
+                            ? new Date(driver.license_expiry).toLocaleDateString()
+                            : "-"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={driver.status === "Active" ? "default" : "secondary"}
+                          >
+                            {driver.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-12">
+                  <UserCheck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">No drivers added</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Add drivers to manage transport
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="students">
+          <Card>
+            <CardHeader>
+              <CardTitle>Student Transport Allocations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {studentTransport && studentTransport.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Student</TableHead>
+                      <TableHead>Route</TableHead>
+                      <TableHead>Pickup Point</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {studentTransport.map((st) => (
+                      <TableRow key={st.id}>
+                        <TableCell>{st.student_id}</TableCell>
+                        <TableCell>{st.route_id}</TableCell>
+                        <TableCell>{st.pickup_point || "-"}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={st.is_active ? "default" : "secondary"}
+                          >
+                            {st.is_active ? "Active" : "Inactive"}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-12">
+                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">No student allocations</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Assign students to transport routes
+                  </p>
                 </div>
               )}
             </CardContent>

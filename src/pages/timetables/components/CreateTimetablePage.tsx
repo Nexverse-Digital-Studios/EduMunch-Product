@@ -5,8 +5,8 @@
  */
 
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Save, Calendar } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Save, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -182,20 +182,13 @@ const CreateTimetablePage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/timetable">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Create Timetable Entry
-          </h1>
-          <p className="text-muted-foreground">
-            Add a new entry to a section's timetable
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Create Timetable Entry
+        </h1>
+        <p className="text-muted-foreground">
+          Add a new entry to a section's timetable
+        </p>
       </div>
 
       {/* Form */}

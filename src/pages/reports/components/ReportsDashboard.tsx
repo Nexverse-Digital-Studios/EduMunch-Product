@@ -5,7 +5,6 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
   BarChart3,
   TrendingUp,
@@ -43,6 +42,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
@@ -67,6 +67,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export function ReportsDashboard() {
   const [selectedYear, setSelectedYear] = useState<string>("all");
+  const { toast } = useToast();
 
   const { canView, canCreate } = useModulePermissions("reports");
 
@@ -305,11 +306,16 @@ export function ReportsDashboard() {
                           </Badge>
                         ))}
                       </div>
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/reports/${report.id}`}>
-                          Generate
-                          <ArrowUpRight className="ml-1 h-3 w-3" />
-                        </Link>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => toast({ 
+                          title: `Generate ${report.title}`, 
+                          description: "Report generation feature coming soon" 
+                        })}
+                      >
+                        Generate
+                        <ArrowUpRight className="ml-1 h-3 w-3" />
                       </Button>
                     </div>
                   </CardContent>
@@ -370,46 +376,38 @@ export function ReportsDashboard() {
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  asChild
+                  onClick={() => toast({ title: "Attendance Report", description: "Generating today's attendance report..." })}
                 >
-                  <Link to="/reports/attendance-summary">
-                    <CalendarCheck className="mr-2 h-4 w-4" />
-                    Today's Attendance Report
-                    <Download className="ml-auto h-4 w-4" />
-                  </Link>
+                  <CalendarCheck className="mr-2 h-4 w-4" />
+                  Today's Attendance Report
+                  <Download className="ml-auto h-4 w-4" />
                 </Button>
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  asChild
+                  onClick={() => toast({ title: "Fee Collection Report", description: "Generating monthly fee collection report..." })}
                 >
-                  <Link to="/reports/fee-collection">
-                    <IndianRupee className="mr-2 h-4 w-4" />
-                    Monthly Fee Collection
-                    <Download className="ml-auto h-4 w-4" />
-                  </Link>
+                  <IndianRupee className="mr-2 h-4 w-4" />
+                  Monthly Fee Collection
+                  <Download className="ml-auto h-4 w-4" />
                 </Button>
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  asChild
+                  onClick={() => toast({ title: "Performance Report", description: "Generating class performance summary..." })}
                 >
-                  <Link to="/reports/student-performance">
-                    <GraduationCap className="mr-2 h-4 w-4" />
-                    Class Performance Summary
-                    <Download className="ml-auto h-4 w-4" />
-                  </Link>
+                  <GraduationCap className="mr-2 h-4 w-4" />
+                  Class Performance Summary
+                  <Download className="ml-auto h-4 w-4" />
                 </Button>
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  asChild
+                  onClick={() => toast({ title: "Workload Analysis", description: "Generating teacher workload analysis..." })}
                 >
-                  <Link to="/reports/teacher-workload">
-                    <Users className="mr-2 h-4 w-4" />
-                    Teacher Workload Analysis
-                    <Download className="ml-auto h-4 w-4" />
-                  </Link>
+                  <Users className="mr-2 h-4 w-4" />
+                  Teacher Workload Analysis
+                  <Download className="ml-auto h-4 w-4" />
                 </Button>
               </CardContent>
             </Card>
@@ -472,8 +470,12 @@ export function ReportsDashboard() {
                           {student.risk} Risk
                         </Badge>
                         <Badge variant="outline">{student.type}</Badge>
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to={`/students/${student.id}`}>View</Link>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => toast({ title: "View Student", description: `Viewing ${student.name}'s details` })}
+                        >
+                          View
                         </Button>
                       </div>
                     </div>

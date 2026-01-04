@@ -5,7 +5,6 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
   BookOpen,
   BookCopy,
@@ -41,6 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
 
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
@@ -55,8 +55,10 @@ const INDEX_TOKEN = "1emaet";
 
 export function LibraryDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("books");
 
   const { canView, canCreate } = useModulePermissions("library");
+  const { toast } = useToast();
 
   // Fetch books
   const { data: books, isLoading: loadingBooks } =
@@ -133,6 +135,14 @@ export function LibraryDashboard() {
     }).format(amount);
   };
 
+  const handleAddBook = () => {
+    toast({
+      title: "Add Book",
+      description: "Book creation will be available in the Books tab.",
+    });
+    setActiveTab("books");
+  };
+
   if (loadingBooks) {
     return (
       <div className="space-y-6 p-6">
@@ -152,7 +162,10 @@ export function LibraryDashboard() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Library Management</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <BookOpen className="h-6 w-6 text-primary" />
+            Library Management
+          </h1>
           <p className="text-muted-foreground">
             Manage books, members, and transactions
           </p>
@@ -162,11 +175,9 @@ export function LibraryDashboard() {
             <RefreshCw className="h-4 w-4" />
           </Button>
           {canCreate && (
-            <Button asChild>
-              <Link to="/library/books/create">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Book
-              </Link>
+            <Button onClick={handleAddBook}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Book
             </Button>
           )}
         </div>
@@ -238,54 +249,74 @@ export function LibraryDashboard() {
         </Card>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Now using buttons to switch tabs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link to="/library/books" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <BookOpen className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <p className="font-medium">Browse Books</p>
-              <p className="text-xs text-muted-foreground">View catalog</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/library/issue" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <BookMarked className="h-8 w-8 mx-auto mb-2 text-green-600" />
-              <p className="font-medium">Issue Book</p>
-              <p className="text-xs text-muted-foreground">New checkout</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/library/return" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <RotateCcw className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-              <p className="font-medium">Return Book</p>
-              <p className="text-xs text-muted-foreground">Process return</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/library/members" className="block">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-            <CardContent className="pt-6 text-center">
-              <Users className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-              <p className="font-medium">Members</p>
-              <p className="text-xs text-muted-foreground">
-                {stats.totalMembers} active
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("books")}
+        >
+          <CardContent className="pt-6 text-center">
+            <BookOpen className="h-8 w-8 mx-auto mb-2 text-primary" />
+            <p className="font-medium">Browse Books</p>
+            <p className="text-xs text-muted-foreground">View catalog</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("issue")}
+        >
+          <CardContent className="pt-6 text-center">
+            <BookMarked className="h-8 w-8 mx-auto mb-2 text-green-600" />
+            <p className="font-medium">Issue Book</p>
+            <p className="text-xs text-muted-foreground">New checkout</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("return")}
+        >
+          <CardContent className="pt-6 text-center">
+            <RotateCcw className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+            <p className="font-medium">Return Book</p>
+            <p className="text-xs text-muted-foreground">Process return</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className="hover:shadow-md transition-shadow cursor-pointer h-full"
+          onClick={() => setActiveTab("members")}
+        >
+          <CardContent className="pt-6 text-center">
+            <Users className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+            <p className="font-medium">Members</p>
+            <p className="text-xs text-muted-foreground">
+              {stats.totalMembers} active
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="recent" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="recent">
+          <TabsTrigger value="books">
+            <BookOpen className="mr-2 h-4 w-4" />
+            Books
+          </TabsTrigger>
+          <TabsTrigger value="issue">
+            <BookMarked className="mr-2 h-4 w-4" />
+            Issue
+          </TabsTrigger>
+          <TabsTrigger value="return">
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Return
+          </TabsTrigger>
+          <TabsTrigger value="members">
+            <Users className="mr-2 h-4 w-4" />
+            Members
+          </TabsTrigger>
+          <TabsTrigger value="transactions">
             <Clock className="mr-2 h-4 w-4" />
-            Recent Activity
+            Transactions
           </TabsTrigger>
           <TabsTrigger value="overdue">
             <AlertTriangle className="mr-2 h-4 w-4" />
@@ -293,19 +324,155 @@ export function LibraryDashboard() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Recent Transactions */}
-        <TabsContent value="recent">
+        {/* Books Tab */}
+        <TabsContent value="books">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Recent Transactions</CardTitle>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to="/library/transactions">
-                    View All
-                    <ArrowUpRight className="ml-1 h-3 w-3" />
-                  </Link>
+              <CardTitle>Book Catalog</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {books && books.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Author</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Available</TableHead>
+                      <TableHead>Total</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {books.map((book) => (
+                      <TableRow key={book.id}>
+                        <TableCell className="font-medium">{book.title}</TableCell>
+                        <TableCell>{book.author}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{book.category}</Badge>
+                        </TableCell>
+                        <TableCell>{book.available_copies}</TableCell>
+                        <TableCell>{book.total_copies}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-12">
+                  <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">No books in catalog</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Add books to your library
+                  </p>
+                  {canCreate && (
+                    <Button onClick={handleAddBook}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Book
+                    </Button>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Issue Tab */}
+        <TabsContent value="issue">
+          <Card>
+            <CardHeader>
+              <CardTitle>Issue Books</CardTitle>
+              <CardDescription>Issue books to library members</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <BookMarked className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium">Issue a Book</h3>
+                <p className="text-muted-foreground mb-4">
+                  Select a book and member to issue
+                </p>
+                <Button variant="outline">
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Issue
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Return Tab */}
+        <TabsContent value="return">
+          <Card>
+            <CardHeader>
+              <CardTitle>Return Books</CardTitle>
+              <CardDescription>Process book returns</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <RotateCcw className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium">Process Return</h3>
+                <p className="text-muted-foreground mb-4">
+                  Enter book or member ID to process return
+                </p>
+                <Button variant="outline">
+                  <Search className="mr-2 h-4 w-4" />
+                  Search Transaction
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Members Tab */}
+        <TabsContent value="members">
+          <Card>
+            <CardHeader>
+              <CardTitle>Library Members</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {members && members.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Books Issued</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {members.map((member) => (
+                      <TableRow key={member.id}>
+                        <TableCell className="font-medium">{member.id}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{member.member_type}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={member.status === "active" ? "default" : "secondary"}>
+                            {member.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{member.current_books_count || 0}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-12">
+                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">No members registered</h3>
+                  <p className="text-muted-foreground">
+                    Library members will appear here
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Transactions Tab */}
+        <TabsContent value="transactions">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Transactions</CardTitle>
             </CardHeader>
             <CardContent>
               {recentTransactions.length === 0 ? (

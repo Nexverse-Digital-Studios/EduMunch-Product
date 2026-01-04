@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   Search,
   Download,
   Eye,
@@ -35,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useModulePermissions } from "@/contexts/PermissionContext";
+import { useToast } from "@/hooks/use-toast";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { ReportCardDB, ExamDB, GRADES } from "./types";
 
@@ -55,7 +54,7 @@ interface ClassDB {
 }
 
 export function ReportCardsPage() {
-  const navigate = useNavigate();
+  const { toast } = useToast();
   const { canView, canExport } = useModulePermissions("exams");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState<string>("all");
@@ -159,27 +158,19 @@ export function ReportCardsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/exams")}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Report Cards</h1>
-            <p className="text-muted-foreground">
-              View and manage student report cards
-            </p>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Report Cards</h1>
+          <p className="text-muted-foreground">
+            View and manage student report cards
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" asChild>
-            <Link to="/report-cards/templates">
-              <FileText className="mr-2 h-4 w-4" />
-              Templates
-            </Link>
+          <Button 
+            variant="outline"
+            onClick={() => toast({ title: "Templates", description: "Template management coming soon" })}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Templates
           </Button>
           {canExport && (
             <Button variant="outline">
@@ -335,10 +326,12 @@ export function ReportCardsPage() {
                       <TableCell>{rc.rank ? `#${rc.rank}` : "-"}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link to={`/report-cards/${rc.id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => toast({ title: "View Report Card", description: "Report card detail view coming soon" })}
+                          >
+                            <Eye className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="icon">
                             <Download className="h-4 w-4" />

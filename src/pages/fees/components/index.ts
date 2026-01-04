@@ -3,24 +3,22 @@
  * =================================
  * Exports all fee management components
  * 
- * CONSOLIDATED: Create/Edit via modal dialogs
+ * CONSOLIDATED: All fee pages consolidated into FeeDashboard with tabs
  */
 
 // Types
 export * from "./types";
 
-// Main Pages
+// Main Dashboard (Consolidated)
+export { FeeDashboard } from "./FeeDashboard";
+
+// Sub-page Components (used as tab content)
 export { FeeStructuresList } from "./FeeStructuresList";
+export { StudentFeesList } from "./StudentFeesList";
 export { FeeCollectionPage } from "./FeeCollectionPage";
+export { FeeReceiptsPage } from "./FeeReceiptsPage";
+export { FeeReportsPage } from "./FeeReportsPage";
 
 // Dialog Components (Consolidated CRUD)
 export { FeeStructureFormDialog } from "./FeeStructureFormDialog";
 export { FeeStructureDetailDialog } from "./FeeStructureDetailDialog";
-
-// Legacy exports (routes removed, kept for reference)
-// export { FeeStructureForm, FeeStructureCreate, FeeStructureEdit } from "./FeeStructureForm";
-// export { FeeStructureDetail } from "./FeeStructureDetail";
-// export { StudentFeesList } from "./StudentFeesList";
-// export { FeeReceiptsPage } from "./FeeReceiptsPage";
-// export { FeeReportsPage } from "./FeeReportsPage";
-// export { FeesExportPage } from "./FeesExportPage";

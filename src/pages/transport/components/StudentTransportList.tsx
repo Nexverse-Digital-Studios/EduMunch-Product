@@ -5,9 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   Users,
   Search,
   Filter,
@@ -207,28 +205,19 @@ export function StudentTransportList() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/transport">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Student Transport</h1>
-            <p className="text-muted-foreground">
-              {stats.active} students enrolled in transport
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">Student Transport</h1>
+          <p className="text-muted-foreground">
+            {stats.active} students enrolled in transport
+          </p>
         </div>
         {canCreate && (
-          <Button asChild>
-            <Link to="/transport/students/allocate">
-              <Plus className="mr-2 h-4 w-4" />
-              Allocate Transport
-            </Link>
+          <Button onClick={() => toast({ title: "Allocate Transport", description: "Allocation form coming soon." })}>
+            <Plus className="mr-2 h-4 w-4" />
+            Allocate Transport
           </Button>
         )}
       </div>

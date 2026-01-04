@@ -46,6 +46,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { useToast } from "@/hooks/use-toast";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { ParentDB, RELATIONSHIP_OPTIONS } from "./types";
@@ -61,6 +62,7 @@ export function ParentsList() {
   const [showParentModal, setShowParentModal] = useState(false);
   const [editParentId, setEditParentId] = useState<string | null>(null);
 
+  const { toast } = useToast();
   const { canCreate, canUpdate, canExport } = useModulePermissions("parents");
 
   // Fetch parents
@@ -193,11 +195,15 @@ export function ParentsList() {
         </div>
         <div className="flex gap-2">
           {canExport && (
-            <Button variant="outline" asChild>
-              <Link to="/parents/export">
-                <Download className="mr-2 h-4 w-4" />
-                Export
-              </Link>
+            <Button 
+              variant="outline" 
+              onClick={() => toast({ 
+                title: "Export Parents", 
+                description: "Export functionality coming soon." 
+              })}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Export
             </Button>
           )}
           {canCreate && (

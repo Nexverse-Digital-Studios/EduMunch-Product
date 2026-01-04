@@ -5,8 +5,7 @@
  */
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, Palette, Users, UserCheck, Check, Eye } from "lucide-react";
+import { Palette, Users, UserCheck, Check, Eye } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -74,7 +73,11 @@ const SAMPLE_STAFF: StaffForIDCard = {
   status: "active",
 };
 
-export function IDCardTemplates() {
+interface IDCardTemplatesProps {
+  embedded?: boolean;
+}
+
+export function IDCardTemplates({ embedded = false }: IDCardTemplatesProps) {
   const [studentDesign, setStudentDesign] = useState<IDCardDesign>(
     DEFAULT_STUDENT_TEMPLATE
   );
@@ -272,19 +275,14 @@ export function IDCardTemplates() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/id-cards">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
+      {!embedded && (
         <div>
           <h1 className="text-2xl font-bold">ID Card Templates</h1>
           <p className="text-muted-foreground">
             Customize the design of student and staff ID cards
           </p>
         </div>
-      </div>
+      )}
 
       {/* Template Editor */}
       <Card>

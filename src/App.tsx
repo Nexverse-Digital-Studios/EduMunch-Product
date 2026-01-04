@@ -44,81 +44,49 @@ import PlaceholderPage from "@/pages/PlaceholderPage";
 
 // User Management
 const UsersList = lazy(() => import("@/pages/users/UsersList"));
-const UserCreate = lazy(() => import("@/pages/users/UserCreate"));
 const UserDetail = lazy(() => import("@/pages/users/UserDetail"));
-const UserEdit = lazy(() => import("@/pages/users/UserEdit"));
 const PermissionsList = lazy(() => import("@/pages/set-roles/SetRolesList"));
 
 // Role Management
 const RolesList = lazy(() => import("@/pages/roles/RolesList"));
-const RoleCreate = lazy(() => import("@/pages/roles/RoleCreate"));
 const RoleDetail = lazy(() => import("@/pages/roles/RoleDetail"));
-const RoleEdit = lazy(() => import("@/pages/roles/RoleEdit"));
 
 // Set Roles
 const SetRolesList = lazy(() => import("@/pages/set-roles").then(m => ({ default: m.SetRolesList })));
 
 // Students
 const StudentsList = lazy(() => import("@/pages/students").then(m => ({ default: m.StudentsList })));
-const StudentCreate = lazy(() => import("@/pages/students").then(m => ({ default: m.StudentCreate })));
 const StudentDetail = lazy(() => import("@/pages/students").then(m => ({ default: m.StudentDetail })));
-const StudentEdit = lazy(() => import("@/pages/students").then(m => ({ default: m.StudentEdit })));
-const StudentsExport = lazy(() => import("@/pages/students").then(m => ({ default: m.StudentsExport })));
 
 // Parents
 const ParentsList = lazy(() => import("@/pages/parents").then(m => ({ default: m.ParentsList })));
-const ParentCreate = lazy(() => import("@/pages/parents").then(m => ({ default: m.ParentCreate })));
 const ParentDetail = lazy(() => import("@/pages/parents").then(m => ({ default: m.ParentDetail })));
-const ParentEdit = lazy(() => import("@/pages/parents").then(m => ({ default: m.ParentEdit })));
 
 // Teachers
 const TeachersList = lazy(() => import("@/pages/teachers").then(m => ({ default: m.TeachersList })));
-const TeacherCreate = lazy(() => import("@/pages/teachers").then(m => ({ default: m.TeacherCreate })));
 const TeacherDetail = lazy(() => import("@/pages/teachers").then(m => ({ default: m.TeacherDetail })));
-const TeacherEdit = lazy(() => import("@/pages/teachers").then(m => ({ default: m.TeacherEdit })));
-const TeachersExport = lazy(() => import("@/pages/teachers").then(m => ({ default: m.TeachersExport })));
 
 // Employees
 const EmployeesList = lazy(() => import("@/pages/employees").then(m => ({ default: m.EmployeesList })));
-const EmployeeCreate = lazy(() => import("@/pages/employees").then(m => ({ default: m.EmployeeCreate })));
 const EmployeeDetail = lazy(() => import("@/pages/employees").then(m => ({ default: m.EmployeeDetail })));
-const EmployeeEdit = lazy(() => import("@/pages/employees").then(m => ({ default: m.EmployeeEdit })));
 
 // Academic Years
 const AcademicYearsList = lazy(() => import("@/pages/academic-years").then(m => ({ default: m.AcademicYearsList })));
-const AcademicYearCreate = lazy(() => import("@/pages/academic-years").then(m => ({ default: m.AcademicYearCreate })));
-const AcademicYearDetail = lazy(() => import("@/pages/academic-years").then(m => ({ default: m.AcademicYearDetail })));
-const AcademicYearEdit = lazy(() => import("@/pages/academic-years").then(m => ({ default: m.AcademicYearEdit })));
 
 // Classes
 const ClassesList = lazy(() => import("@/pages/classes").then(m => ({ default: m.ClassesList })));
-const ClassCreate = lazy(() => import("@/pages/classes").then(m => ({ default: m.ClassCreate })));
-const ClassDetail = lazy(() => import("@/pages/classes").then(m => ({ default: m.ClassDetail })));
-const ClassEdit = lazy(() => import("@/pages/classes").then(m => ({ default: m.ClassEdit })));
 
 // Sections
 const SectionsList = lazy(() => import("@/pages/sections").then(m => ({ default: m.SectionsList })));
-const SectionCreate = lazy(() => import("@/pages/sections").then(m => ({ default: m.SectionCreate })));
-const SectionDetail = lazy(() => import("@/pages/sections").then(m => ({ default: m.SectionDetail })));
-const SectionEdit = lazy(() => import("@/pages/sections").then(m => ({ default: m.SectionEdit })));
 
 // Batches
 const BatchesList = lazy(() => import("@/pages/batches").then(m => ({ default: m.BatchesList })));
-const BatchCreate = lazy(() => import("@/pages/batches").then(m => ({ default: m.BatchCreate })));
-const BatchDetail = lazy(() => import("@/pages/batches").then(m => ({ default: m.BatchDetail })));
-const BatchEdit = lazy(() => import("@/pages/batches").then(m => ({ default: m.BatchEdit })));
 
 // Subjects
 const SubjectsList = lazy(() => import("@/pages/subjects").then(m => ({ default: m.SubjectsList })));
-const SubjectCreate = lazy(() => import("@/pages/subjects").then(m => ({ default: m.SubjectCreate })));
-const SubjectDetail = lazy(() => import("@/pages/subjects").then(m => ({ default: m.SubjectDetail })));
-const SubjectEdit = lazy(() => import("@/pages/subjects").then(m => ({ default: m.SubjectEdit })));
 
 // Topics
 const TopicsList = lazy(() => import("@/pages/topics").then(m => ({ default: m.TopicsList })));
-const TopicCreate = lazy(() => import("@/pages/topics").then(m => ({ default: m.TopicCreate })));
-const TopicDetail = lazy(() => import("@/pages/topics").then(m => ({ default: m.TopicDetail })));
-const TopicEdit = lazy(() => import("@/pages/topics").then(m => ({ default: m.TopicEdit })));
 
 // Attendance (CONSOLIDATED)
 const AttendanceList = lazy(() => import("@/pages/attendance").then(m => ({ default: m.AttendanceList })));
@@ -145,9 +113,8 @@ const ReportCardsPage = lazy(() => import("@/pages/exams").then(m => ({ default:
 // Results
 const ResultsList = lazy(() => import("@/pages/results").then(m => ({ default: m.ResultsList })));
 
-// Fees (CONSOLIDATED: 2 routes only)
-const FeeStructuresList = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeStructuresList })));
-const FeeCollectionPage = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeCollectionPage })));
+// Fees (CONSOLIDATED: Single dashboard with tabs)
+const FeeDashboard = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeDashboard })));
 
 // Payments
 const PaymentsList = lazy(() => import("@/pages/payments").then(m => ({ default: m.PaymentsList })));
@@ -181,19 +148,11 @@ const IDCardsDashboard = lazy(() => import("@/pages/id-cards").then(m => ({ defa
 // Reports (CONSOLIDATED: Single dashboard with report type selector)
 const ReportsDashboard = lazy(() => import("@/pages/reports").then(m => ({ default: m.ReportsDashboard })));
 
-// Library
+// Library (CONSOLIDATED: Single dashboard with tabs)
 const LibraryDashboard = lazy(() => import("@/pages/library").then(m => ({ default: m.LibraryDashboard })));
-const BooksList = lazy(() => import("@/pages/library").then(m => ({ default: m.BooksList })));
-const BookIssue = lazy(() => import("@/pages/library").then(m => ({ default: m.BookIssue })));
-const BookReturn = lazy(() => import("@/pages/library").then(m => ({ default: m.BookReturn })));
-const LibraryMembers = lazy(() => import("@/pages/library").then(m => ({ default: m.LibraryMembers })));
 
-// Hostel
+// Hostel (CONSOLIDATED: Single dashboard with tabs)
 const HostelDashboard = lazy(() => import("@/pages/hostel").then(m => ({ default: m.HostelDashboard })));
-const BlocksList = lazy(() => import("@/pages/hostel").then(m => ({ default: m.BlocksList })));
-const RoomsList = lazy(() => import("@/pages/hostel").then(m => ({ default: m.RoomsList })));
-const AllocationsList = lazy(() => import("@/pages/hostel").then(m => ({ default: m.AllocationsList })));
-const ComplaintsList = lazy(() => import("@/pages/hostel").then(m => ({ default: m.ComplaintsList })));
 
 // ==========================================
 // ROUTE TO COMPONENT MAPPING
@@ -208,81 +167,49 @@ type LazyComponent = React.LazyExoticComponent<ComponentType<any>> | ComponentTy
 const routeComponentMap: Record<string, LazyComponent> = {
   // Users
   '/users': UsersList,
-  '/users/create': UserCreate,
   '/users/:id': UserDetail,
-  '/users/:id/edit': UserEdit,
   '/permissions': PermissionsList,
   
   // Roles
   '/roles': RolesList,
-  '/roles/create': RoleCreate,
   '/roles/:id': RoleDetail,
-  '/roles/:id/edit': RoleEdit,
   
   // Set Roles
   '/set-roles': SetRolesList,
   
   // Students
   '/students': StudentsList,
-  '/students/create': StudentCreate,
   '/students/:id': StudentDetail,
-  '/students/:id/edit': StudentEdit,
-  '/students/export': StudentsExport,
   
   // Parents
   '/parents': ParentsList,
-  '/parents/create': ParentCreate,
   '/parents/:id': ParentDetail,
-  '/parents/:id/edit': ParentEdit,
   
   // Teachers
   '/teachers': TeachersList,
-  '/teachers/create': TeacherCreate,
   '/teachers/:id': TeacherDetail,
-  '/teachers/:id/edit': TeacherEdit,
-  '/teachers/export': TeachersExport,
   
   // Employees
   '/employees': EmployeesList,
-  '/employees/create': EmployeeCreate,
   '/employees/:id': EmployeeDetail,
-  '/employees/:id/edit': EmployeeEdit,
   
   // Academic Years
   '/academic-years': AcademicYearsList,
-  '/academic-years/create': AcademicYearCreate,
-  '/academic-years/:id': AcademicYearDetail,
-  '/academic-years/:id/edit': AcademicYearEdit,
   
   // Classes
   '/classes': ClassesList,
-  '/classes/create': ClassCreate,
-  '/classes/:id': ClassDetail,
-  '/classes/:id/edit': ClassEdit,
   
   // Sections
   '/sections': SectionsList,
-  '/sections/create': SectionCreate,
-  '/sections/:id': SectionDetail,
-  '/sections/:id/edit': SectionEdit,
   
   // Batches
   '/batches': BatchesList,
-  '/batches/create': BatchCreate,
-  '/batches/:id': BatchDetail,
-  '/batches/:id/edit': BatchEdit,
   
   // Subjects
   '/subjects': SubjectsList,
-  '/subjects/create': SubjectCreate,
-  '/subjects/:id': SubjectDetail,
-  '/subjects/:id/edit': SubjectEdit,
   
   // Topics
   '/topics': TopicsList,
-  '/topics/create': TopicCreate,
-  '/topics/:id': TopicDetail,
-  '/topics/:id/edit': TopicEdit,
   
   // Attendance (CONSOLIDATED: All features via tabs on main dashboard)
   '/attendance': AttendanceList,
@@ -309,9 +236,8 @@ const routeComponentMap: Record<string, LazyComponent> = {
   // Results
   '/results': ResultsList,
   
-  // Fees (CONSOLIDATED)
-  '/fees': FeeStructuresList,
-  '/fees/collect': FeeCollectionPage,
+  // Fees (CONSOLIDATED: Single dashboard with tabs)
+  '/fees': FeeDashboard,
   
   // Payments & Enrollments
   '/payments': PaymentsList,
@@ -353,19 +279,11 @@ const routeComponentMap: Record<string, LazyComponent> = {
   // Tier 3 - Reports (CONSOLIDATED: Single dashboard with report selector)
   '/reports': ReportsDashboard,
   
-  // Tier 3 - Library
+  // Tier 3 - Library (CONSOLIDATED: Single dashboard with tabs)
   '/library': LibraryDashboard,
-  '/library/books': BooksList,
-  '/library/issue': BookIssue,
-  '/library/return': BookReturn,
-  '/library/members': LibraryMembers,
   
-  // Tier 3 - Hostel
+  // Tier 3 - Hostel (CONSOLIDATED: Single dashboard with tabs)
   '/hostel': HostelDashboard,
-  '/hostel/blocks': BlocksList,
-  '/hostel/rooms': RoomsList,
-  '/hostel/allocations': AllocationsList,
-  '/hostel/complaints': ComplaintsList,
 };
 
 // ==========================================

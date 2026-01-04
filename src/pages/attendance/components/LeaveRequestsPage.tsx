@@ -389,3 +389,6 @@ export const LeaveRequestsPage = () => {
         studentName={selectedLeave ? getStudentName(selectedLeave.student_id) : ""}
         onSuccess={() => refetch()}
       />
+    </div>
+  );
+};

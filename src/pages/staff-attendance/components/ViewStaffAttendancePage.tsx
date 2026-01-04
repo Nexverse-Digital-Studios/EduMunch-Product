@@ -6,9 +6,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   Search,
   Filter,
   Calendar,
@@ -41,6 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { TABLES } from "@/lib/supabase";
 import type {
@@ -58,7 +57,7 @@ const statusColors: Record<StaffAttendanceStatus, string> = {
 };
 
 const ViewStaffAttendancePage = () => {
-  const navigate = useNavigate();
+  const { toast } = useToast();
   const today = new Date().toISOString().split("T")[0];
 
   // Filter states
@@ -147,24 +146,23 @@ const ViewStaffAttendancePage = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              View Staff Attendance
-            </h1>
-            <p className="text-muted-foreground">
-              Browse and filter attendance records
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            View Staff Attendance
+          </h1>
+          <p className="text-muted-foreground">
+            Browse and filter attendance records
+          </p>
         </div>
-        <Button variant="outline" asChild>
-          <Link to="/staff/attendance/export">
-            <Download className="mr-2 h-4 w-4" />
-            Export Data
-          </Link>
+        <Button 
+          variant="outline" 
+          onClick={() => toast({
+            title: "Export",
+            description: "Export functionality coming soon"
+          })}
+        >
+          <Download className="mr-2 h-4 w-4" />
+          Export Data
         </Button>
       </div>
 

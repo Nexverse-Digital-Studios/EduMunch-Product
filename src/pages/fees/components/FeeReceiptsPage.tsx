@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   Search,
   Download,
   Eye,
@@ -46,8 +44,11 @@ interface StudentDB {
   admission_number: string;
 }
 
-export function FeeReceiptsPage() {
-  const navigate = useNavigate();
+interface FeeReceiptsPageProps {
+  embedded?: boolean;
+}
+
+export function FeeReceiptsPage({ embedded = false }: FeeReceiptsPageProps) {
   const { canView, canExport } = useModulePermissions("fees");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMode, setSelectedMode] = useState<string>("all");
@@ -113,29 +114,31 @@ export function FeeReceiptsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/fees/students")}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+      {!embedded && (
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Fee Receipts</h1>
             <p className="text-muted-foreground">
               View and print payment receipts
             </p>
           </div>
+          {canExport && (
+            <Button variant="outline">
+              <Download className="mr-2 h-4 w-4" />
+              Export
+            </Button>
+          )}
         </div>
-        {canExport && (
+      )}
+
+      {embedded && canExport && (
+        <div className="flex justify-end">
           <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Summary */}
       <div className="grid gap-4 md:grid-cols-3">

@@ -5,9 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   Download,
   FileText,
   Filter,
@@ -261,18 +259,11 @@ export function AttendanceSummaryReport() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/reports">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Attendance Summary Report</h1>
-            <p className="text-muted-foreground">
-              Comprehensive attendance statistics and patterns
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">Attendance Summary Report</h1>
+          <p className="text-muted-foreground">
+            Comprehensive attendance statistics and patterns
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleExportCSV}>

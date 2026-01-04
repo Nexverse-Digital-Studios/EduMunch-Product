@@ -229,11 +229,12 @@ export function StudentsList() {
         </div>
         <div className="flex gap-2">
           {canExport && (
-            <Button variant="outline" asChild>
-              <Link to="/students/export">
-                <Download className="mr-2 h-4 w-4" />
-                Export
-              </Link>
+            <Button 
+              variant="outline" 
+              onClick={() => toast({ title: "Export", description: "Export functionality coming soon." })}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Export
             </Button>
           )}
           {canCreate && (

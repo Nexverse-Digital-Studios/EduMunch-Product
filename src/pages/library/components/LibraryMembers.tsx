@@ -5,9 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   Users,
   Search,
   Filter,
@@ -45,6 +43,7 @@ import { Progress } from "@/components/ui/progress";
 
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
+import { useToast } from "@/hooks/use-toast";
 import { LibraryMember, StudentInfo, TeacherInfo } from "./types";
 
 const INDEX_TOKEN = "1emaet";
@@ -54,6 +53,7 @@ export function LibraryMembers() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
+  const { toast } = useToast();
   const { canCreate, canUpdate } = useModulePermissions("library");
 
   // Fetch members
@@ -164,25 +164,16 @@ export function LibraryMembers() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/library">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Library Members</h1>
-            <p className="text-muted-foreground">
-              {stats.active} active members
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">Library Members</h1>
+          <p className="text-muted-foreground">
+            {stats.active} active members
+          </p>
         </div>
         {canCreate && (
-          <Button asChild>
-            <Link to="/library/members/create">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Member
-            </Link>
+          <Button onClick={() => toast({ title: "Add Member", description: "Member form coming soon." })}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Member
           </Button>
         )}
       </div>

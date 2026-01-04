@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Trash2, Calendar, Clock, MapPin } from "lucide-react";
+import { Plus, Trash2, Calendar, Clock, MapPin } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -49,8 +49,13 @@ interface SubjectDB {
   subject_code: string;
 }
 
-export function ExamSchedulePage() {
-  const { id } = useParams<{ id: string }>();
+interface ExamSchedulePageProps {
+  examId?: string;
+}
+
+export function ExamSchedulePage({ examId: propExamId }: ExamSchedulePageProps) {
+  const { id: paramId } = useParams<{ id: string }>();
+  const examId = propExamId || paramId;
   const navigate = useNavigate();
   const { toast } = useToast();
   const { canView, canUpdate } = useModulePermissions("exams");
@@ -67,7 +72,7 @@ export function ExamSchedulePage() {
 
   const { data: exams, isLoading: loadingExam } = useSupabaseTable<ExamDB>(
     `exams_${INDEX_TOKEN}`,
-    { filters: { id } }
+    { filters: { id: examId } }
   );
 
   const { data: subjects } = useSupabaseTable<SubjectDB>(
@@ -81,7 +86,7 @@ export function ExamSchedulePage() {
     createMutation,
     deleteMutation,
   } = useSupabaseTable<ExamSubjectDB>(`exam_subjects_${INDEX_TOKEN}`, {
-    filters: { exam_id: id },
+    filters: { exam_id: examId },
     orderBy: { column: "exam_date", ascending: true },
   });
 
@@ -193,20 +198,11 @@ export function ExamSchedulePage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(`/exams/${exam.id}`)}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Exam Schedule</h1>
-            <p className="text-muted-foreground">
-              Manage schedule for {exam.exam_name}
-            </p>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Exam Schedule</h1>
+          <p className="text-muted-foreground">
+            Manage schedule for {exam.exam_name}
+          </p>
         </div>
         {canUpdate && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

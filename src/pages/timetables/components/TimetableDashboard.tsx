@@ -1,10 +1,11 @@
 /**
  * Timetable Dashboard
  * ====================
- * Overview dashboard for timetable management with quick actions
+ * Overview dashboard for timetable management with tabbed interface
+ * All sub-functionality is accessible via tabs, no separate routes needed
  */
 
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import {
   Calendar,
   Clock,
@@ -19,18 +20,29 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useModulePermissions } from "@/contexts/PermissionContext";
+
+// Import sub-page components for tab content
+import ViewTimetablesPage from "./ViewTimetablesPage";
+import CreateTimetablePage from "./CreateTimetablePage";
+import BulkCreatePage from "./BulkCreatePage";
+import ConflictsPage from "./ConflictsPage";
+import SubstitutePage from "./SubstitutePage";
+import PeriodsPage from "./PeriodsPage";
+import ExportTimetablePage from "./ExportTimetablePage";
 
 const TimetableDashboard = () => {
   const { canView, canCreate, canUpdate, canExport } =
     useModulePermissions("timetable");
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const quickActions = [
     {
       title: "View Timetables",
       description: "Browse all section timetables",
       icon: Eye,
-      href: "/timetable/view",
+      tabValue: "view",
       permission: canView,
       color: "bg-blue-500",
     },
@@ -38,7 +50,7 @@ const TimetableDashboard = () => {
       title: "Create Timetable",
       description: "Create new timetable entry",
       icon: Plus,
-      href: "/timetable/create",
+      tabValue: "create",
       permission: canCreate,
       color: "bg-green-500",
     },
@@ -46,23 +58,15 @@ const TimetableDashboard = () => {
       title: "Bulk Schedule",
       description: "Schedule multiple classes at once",
       icon: Calendar,
-      href: "/timetable/bulk-create",
+      tabValue: "bulk",
       permission: canCreate,
       color: "bg-purple-500",
-    },
-    {
-      title: "Copy Schedule",
-      description: "Copy from previous week",
-      icon: Copy,
-      href: "/timetable/copy",
-      permission: canCreate,
-      color: "bg-orange-500",
     },
     {
       title: "View Conflicts",
       description: "Check scheduling conflicts",
       icon: AlertTriangle,
-      href: "/timetable/conflicts",
+      tabValue: "conflicts",
       permission: canView,
       color: "bg-red-500",
     },
@@ -70,7 +74,7 @@ const TimetableDashboard = () => {
       title: "Substitute Teacher",
       description: "Assign substitute teachers",
       icon: UserCheck,
-      href: "/timetable/substitute",
+      tabValue: "substitute",
       permission: canUpdate,
       color: "bg-yellow-500",
     },
@@ -78,7 +82,7 @@ const TimetableDashboard = () => {
       title: "Period Settings",
       description: "Manage period configuration",
       icon: Settings,
-      href: "/timetable/periods",
+      tabValue: "periods",
       permission: canUpdate,
       color: "bg-gray-500",
     },
@@ -86,7 +90,7 @@ const TimetableDashboard = () => {
       title: "Export Timetable",
       description: "Download timetable data",
       icon: FileDown,
-      href: "/timetable/export",
+      tabValue: "export",
       permission: canExport,
       color: "bg-teal-500",
     },
@@ -132,81 +136,145 @@ const TimetableDashboard = () => {
           </p>
         </div>
         {canCreate && (
-          <Button asChild>
-            <Link to="/timetable/create">
-              <Plus className="mr-2 h-4 w-4" />
-              Create Entry
-            </Link>
+          <Button onClick={() => setActiveTab("create")}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Entry
           </Button>
         )}
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
+      {/* Tabs for all timetable functionality */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="view">View</TabsTrigger>
+          {canCreate && <TabsTrigger value="create">Create</TabsTrigger>}
+          {canCreate && <TabsTrigger value="bulk">Bulk</TabsTrigger>}
+          <TabsTrigger value="conflicts">Conflicts</TabsTrigger>
+          {canUpdate && <TabsTrigger value="substitute">Substitute</TabsTrigger>}
+          {canUpdate && <TabsTrigger value="periods">Periods</TabsTrigger>}
+          {canExport && <TabsTrigger value="export">Export</TabsTrigger>}
+        </TabsList>
+
+        {/* Dashboard Tab - Quick Overview */}
+        <TabsContent value="dashboard" className="space-y-6">
+          {/* Stats Cards */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {stats.map((stat) => (
+              <Card key={stat.title}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    {stat.title}
+                  </CardTitle>
+                  <stat.icon className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {stat.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Quick Actions */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {quickActions
+                .filter((action) => action.permission)
+                .map((action) => (
+                  <Card 
+                    key={action.tabValue} 
+                    className={`hover:shadow-md transition-shadow cursor-pointer h-full ${
+                      activeTab === action.tabValue ? "ring-2 ring-primary" : ""
+                    }`}
+                    onClick={() => setActiveTab(action.tabValue)}
+                  >
+                    <CardContent className="pt-6">
+                      <div className="flex items-start space-x-4">
+                        <div className={`p-2 rounded-lg ${action.color}`}>
+                          <action.icon className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">{action.title}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {action.description}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          </div>
+
+          {/* Today's Schedule Preview */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                Today's Schedule Overview
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.description}
-              </p>
+              <div className="text-center py-8 text-muted-foreground">
+                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Schedule overview will be displayed here</p>
+                <Button variant="outline" className="mt-4" onClick={() => setActiveTab("view")}>
+                  View Full Timetable
+                </Button>
+              </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+        </TabsContent>
 
-      {/* Quick Actions */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {quickActions
-            .filter((action) => action.permission)
-            .map((action) => (
-              <Link key={action.href} to={action.href}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-                  <CardContent className="pt-6">
-                    <div className="flex items-start space-x-4">
-                      <div className={`p-2 rounded-lg ${action.color}`}>
-                        <action.icon className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold">{action.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {action.description}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-        </div>
-      </div>
+        {/* View Timetables Tab */}
+        <TabsContent value="view">
+          <ViewTimetablesPage />
+        </TabsContent>
 
-      {/* Today's Schedule Preview */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Today's Schedule Overview
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Schedule overview will be displayed here</p>
-            <Button variant="outline" className="mt-4" asChild>
-              <Link to="/timetable/view">View Full Timetable</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Create Timetable Tab */}
+        {canCreate && (
+          <TabsContent value="create">
+            <CreateTimetablePage />
+          </TabsContent>
+        )}
+
+        {/* Bulk Create Tab */}
+        {canCreate && (
+          <TabsContent value="bulk">
+            <BulkCreatePage />
+          </TabsContent>
+        )}
+
+        {/* Conflicts Tab */}
+        <TabsContent value="conflicts">
+          <ConflictsPage />
+        </TabsContent>
+
+        {/* Substitute Teacher Tab */}
+        {canUpdate && (
+          <TabsContent value="substitute">
+            <SubstitutePage />
+          </TabsContent>
+        )}
+
+        {/* Periods Settings Tab */}
+        {canUpdate && (
+          <TabsContent value="periods">
+            <PeriodsPage />
+          </TabsContent>
+        )}
+
+        {/* Export Tab */}
+        {canExport && (
+          <TabsContent value="export">
+            <ExportTimetablePage />
+          </TabsContent>
+        )}
+      </Tabs>
     </div>
   );
 };

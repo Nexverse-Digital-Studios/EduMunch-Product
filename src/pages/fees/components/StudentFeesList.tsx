@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   Search,
   IndianRupee,
@@ -10,6 +9,7 @@ import {
   Receipt,
   Filter,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -55,7 +55,13 @@ interface ClassDB {
   class_name: string;
 }
 
-export function StudentFeesList() {
+interface StudentFeesListProps {
+  embedded?: boolean;
+  onCollectFee?: (feeId: string) => void;
+}
+
+export function StudentFeesList({ embedded = false, onCollectFee }: StudentFeesListProps) {
+  const { toast } = useToast();
   const { canView, canExport } = useModulePermissions("fees");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState<string>("all");
@@ -152,30 +158,34 @@ export function StudentFeesList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Student Fees</h1>
-          <p className="text-muted-foreground">
-            View and manage student fee payments
-          </p>
-        </div>
-        <div className="flex gap-2">
-          {canExport && (
-            <Button variant="outline" asChild>
-              <Link to="/fees/reports">
+      {!embedded && (
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Student Fees</h1>
+            <p className="text-muted-foreground">
+              View and manage student fee payments
+            </p>
+          </div>
+          <div className="flex gap-2">
+            {canExport && (
+              <Button 
+                variant="outline" 
+                onClick={() => toast({ title: "Reports", description: "Fee reports available in Reports tab" })}
+              >
                 <Download className="mr-2 h-4 w-4" />
                 Reports
-              </Link>
-            </Button>
-          )}
-          <Button variant="outline" asChild>
-            <Link to="/fees/receipts">
+              </Button>
+            )}
+            <Button 
+              variant="outline" 
+              onClick={() => toast({ title: "Receipts", description: "View receipts in Receipts tab" })}
+            >
               <Receipt className="mr-2 h-4 w-4" />
               Receipts
-            </Link>
-          </Button>
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -346,11 +356,22 @@ export function StudentFeesList() {
                         </TableCell>
                         <TableCell>{getStatusBadge(fee.status)}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="outline" size="sm" asChild>
-                            <Link to={`/fees/collect/${fee.id}`}>
-                              <IndianRupee className="mr-2 h-3 w-3" />
-                              Collect
-                            </Link>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => {
+                              if (onCollectFee) {
+                                onCollectFee(fee.id);
+                              } else {
+                                toast({ 
+                                  title: "Collect Fee", 
+                                  description: "Use the Collection tab to collect this fee" 
+                                });
+                              }
+                            }}
+                          >
+                            <IndianRupee className="mr-2 h-3 w-3" />
+                            Collect
                           </Button>
                         </TableCell>
                       </TableRow>

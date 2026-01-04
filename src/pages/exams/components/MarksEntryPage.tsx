@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Save, Upload, CheckCircle, Download } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Save, Upload, CheckCircle, Download } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -48,8 +48,13 @@ interface SubjectDB {
   subject_code: string;
 }
 
-export function MarksEntryPage() {
-  const { id } = useParams<{ id: string }>();
+interface MarksEntryPageProps {
+  examId?: string;
+}
+
+export function MarksEntryPage({ examId: propExamId }: MarksEntryPageProps) {
+  const { id: paramId } = useParams<{ id: string }>();
+  const examId = propExamId || paramId;
   const navigate = useNavigate();
   const { toast } = useToast();
   const { canView, canUpdate } = useModulePermissions("exams");
@@ -60,7 +65,7 @@ export function MarksEntryPage() {
 
   const { data: exams, isLoading: loadingExam } = useSupabaseTable<ExamDB>(
     `exams_${INDEX_TOKEN}`,
-    { filters: { id } }
+    { filters: { id: examId } }
   );
 
   const { data: subjects } = useSupabaseTable<SubjectDB>(
@@ -76,8 +81,8 @@ export function MarksEntryPage() {
   const { data: existingMarks } = useSupabaseTable<MarksDB>(
     `marks_${INDEX_TOKEN}`,
     {
-      filters: { exam_id: id },
-      enabled: !!id,
+      filters: { exam_id: examId },
+      enabled: !!examId,
     }
   );
 
@@ -238,33 +243,26 @@ export function MarksEntryPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(`/exams/${exam.id}`)}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Marks Entry</h1>
-            <p className="text-muted-foreground">
-              Enter marks for {exam.exam_name}
-            </p>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Marks Entry</h1>
+          <p className="text-muted-foreground">
+            Enter marks for {exam.exam_name}
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" asChild>
-            <Link to={`/exams/${exam.id}/marks/bulk-upload`}>
-              <Upload className="mr-2 h-4 w-4" />
-              Bulk Upload
-            </Link>
+          <Button 
+            variant="outline" 
+            onClick={() => toast({ title: "Bulk Upload", description: "Coming soon" })}
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            Bulk Upload
           </Button>
-          <Button variant="outline" asChild>
-            <Link to={`/exams/${exam.id}/marks/verify`}>
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Verify Marks
-            </Link>
+          <Button 
+            variant="outline" 
+            onClick={() => toast({ title: "Verify Marks", description: "Coming soon" })}
+          >
+            <CheckCircle className="mr-2 h-4 w-4" />
+            Verify Marks
           </Button>
         </div>
       </div>

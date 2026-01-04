@@ -5,10 +5,8 @@
  */
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
-  ArrowLeft,
   Users,
   Clock,
   MapPin,
@@ -226,20 +224,13 @@ const ConflictsPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Schedule Conflicts
-            </h1>
-            <p className="text-muted-foreground">
-              View and resolve scheduling conflicts
-            </p>
-          </div>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Schedule Conflicts
+        </h1>
+        <p className="text-muted-foreground">
+          View and resolve scheduling conflicts
+        </p>
       </div>
 
       {/* Stats */}

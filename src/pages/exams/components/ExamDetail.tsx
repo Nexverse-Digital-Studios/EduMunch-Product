@@ -1,4 +1,5 @@
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Edit,
@@ -19,21 +20,32 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
+import { useToast } from "@/hooks/use-toast";
 import { ExamDB, EXAM_TYPES, EXAM_STATUSES } from "./types";
+import { ExamFormDialog } from "./ExamFormDialog";
+
+// Sub-page components (embedded as tabs)
+import { ExamSchedulePage } from "./ExamSchedulePage";
+import { MarksEntryPage } from "./MarksEntryPage";
 
 const INDEX_TOKEN = "1emaet";
 
 export function ExamDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { canView, canUpdate } = useModulePermissions("exams");
+  const { toast } = useToast();
+  const { canView, canUpdate, canCreate } = useModulePermissions("exams");
+  const [activeTab, setActiveTab] = useState("details");
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const {
     data: exams,
     isLoading,
     error,
+    refetch,
   } = useSupabaseTable<ExamDB>(`exams_${INDEX_TOKEN}`, {
     filters: { id },
   });
@@ -122,179 +134,241 @@ export function ExamDetail() {
           </div>
         </div>
         {canUpdate && (
-          <Button asChild>
-            <Link to={`/exams/${exam.id}/edit`}>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Exam
-            </Link>
+          <Button onClick={() => setEditDialogOpen(true)}>
+            <Edit className="mr-2 h-4 w-4" />
+            Edit Exam
           </Button>
         )}
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Link to={`/exams/${exam.id}/schedule`}>
-          <Card className="cursor-pointer hover:shadow-md transition-shadow h-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Schedule</CardTitle>
-              <Calendar className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">
-                Manage exam schedule
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+      {/* Tabs for all exam functionality */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="schedule">Schedule</TabsTrigger>
+          <TabsTrigger value="marks">Marks</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger>
+        </TabsList>
 
-        <Link to={`/exams/${exam.id}/marks`}>
-          <Card className="cursor-pointer hover:shadow-md transition-shadow h-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Marks Entry</CardTitle>
-              <ClipboardList className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">
-                Enter student marks
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Link to={`/exams/${exam.id}/seating`}>
-          <Card className="cursor-pointer hover:shadow-md transition-shadow h-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Seating</CardTitle>
-              <Users className="h-4 w-4 text-orange-500" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">
-                Seating arrangement
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Link to={`/exams/${exam.id}/report-cards`}>
-          <Card className="cursor-pointer hover:shadow-md transition-shadow h-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Report Cards
-              </CardTitle>
-              <FileText className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">
-                Generate report cards
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
-
-      {/* Exam Details */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Exam Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Exam Type</p>
-                <p className="font-medium">
-                  {EXAM_TYPES.find((t) => t.value === exam.exam_type)?.label ||
-                    exam.exam_type}
+        {/* Details Tab */}
+        <TabsContent value="details" className="space-y-6">
+          {/* Quick Actions */}
+          <div className="grid gap-4 md:grid-cols-4">
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow h-full"
+              onClick={() => setActiveTab("schedule")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Schedule</CardTitle>
+                <Calendar className="h-4 w-4 text-blue-500" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Manage exam schedule
                 </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Status</p>
-                <p className="font-medium">{getStatusBadge(exam.status)}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Start Date</p>
-                <p className="font-medium">
-                  {new Date(exam.start_date).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">End Date</p>
-                <p className="font-medium">
-                  {new Date(exam.end_date).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-            <Separator />
-            {exam.description && (
-              <div>
-                <p className="text-sm text-muted-foreground">Description</p>
-                <p className="mt-1">{exam.description}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Marks Configuration</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Maximum Marks</p>
-                <p className="text-2xl font-bold">{exam.max_marks}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Passing Marks</p>
-                <p className="text-2xl font-bold">{exam.passing_marks}</p>
-              </div>
-            </div>
-            <Separator />
-            <div className="flex items-center gap-2">
-              <CheckCircle
-                className={`h-5 w-5 ${
-                  exam.is_published ? "text-green-500" : "text-gray-400"
-                }`}
-              />
-              <span>{exam.is_published ? "Published" : "Not Published"}</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow h-full"
+              onClick={() => setActiveTab("marks")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Marks Entry</CardTitle>
+                <ClipboardList className="h-4 w-4 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Enter student marks
+                </p>
+              </CardContent>
+            </Card>
 
-      {/* Additional Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Additional Actions</CardTitle>
-          <CardDescription>More exam management options</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" asChild>
-              <Link to={`/exams/${exam.id}/admit-cards`}>
-                <FileText className="mr-2 h-4 w-4" />
-                Generate Admit Cards
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to={`/exams/${exam.id}/grades`}>
-                <ClipboardList className="mr-2 h-4 w-4" />
-                Calculate Grades
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to={`/exams/${exam.id}/marks/verify`}>
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Verify Marks
-              </Link>
-            </Button>
-            <Button variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export Results
-            </Button>
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow h-full"
+              onClick={() => toast({ title: "Seating", description: "Seating arrangement coming soon" })}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Seating</CardTitle>
+                <Users className="h-4 w-4 text-orange-500" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Seating arrangement
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow h-full"
+              onClick={() => setActiveTab("reports")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Report Cards
+                </CardTitle>
+                <FileText className="h-4 w-4 text-purple-500" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Generate report cards
+                </p>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Exam Details */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Exam Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Exam Type</p>
+                    <p className="font-medium">
+                      {EXAM_TYPES.find((t) => t.value === exam.exam_type)?.label ||
+                        exam.exam_type}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Status</p>
+                    <p className="font-medium">{getStatusBadge(exam.status)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Start Date</p>
+                    <p className="font-medium">
+                      {new Date(exam.start_date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">End Date</p>
+                    <p className="font-medium">
+                      {new Date(exam.end_date).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                <Separator />
+                {exam.description && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Description</p>
+                    <p className="mt-1">{exam.description}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Marks Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Maximum Marks</p>
+                    <p className="text-2xl font-bold">{exam.max_marks}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Passing Marks</p>
+                    <p className="text-2xl font-bold">{exam.passing_marks}</p>
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex items-center gap-2">
+                  <CheckCircle
+                    className={`h-5 w-5 ${
+                      exam.is_published ? "text-green-500" : "text-gray-400"
+                    }`}
+                  />
+                  <span>{exam.is_published ? "Published" : "Not Published"}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Additional Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Additional Actions</CardTitle>
+              <CardDescription>More exam management options</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => toast({ title: "Admit Cards", description: "Coming soon" })}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Generate Admit Cards
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => toast({ title: "Grades", description: "Coming soon" })}
+                >
+                  <ClipboardList className="mr-2 h-4 w-4" />
+                  Calculate Grades
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => toast({ title: "Verify Marks", description: "Coming soon" })}
+                >
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Verify Marks
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => toast({ title: "Export", description: "Coming soon" })}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Export Results
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Schedule Tab */}
+        <TabsContent value="schedule">
+          <ExamSchedulePage examId={exam.id} />
+        </TabsContent>
+
+        {/* Marks Tab */}
+        <TabsContent value="marks">
+          <MarksEntryPage examId={exam.id} />
+        </TabsContent>
+
+        {/* Reports Tab */}
+        <TabsContent value="reports">
+          <Card>
+            <CardHeader>
+              <CardTitle>Report Cards</CardTitle>
+              <CardDescription>Generate and manage report cards for this exam</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-muted-foreground">
+                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Report card generation will be available here</p>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => navigate("/report-cards")}
+                >
+                  View All Report Cards
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Edit Dialog */}
+      <ExamFormDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        exam={exam}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

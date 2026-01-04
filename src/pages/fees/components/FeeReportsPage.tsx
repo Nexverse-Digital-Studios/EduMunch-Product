@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   Download,
   BarChart3,
   PieChart,
@@ -45,8 +43,11 @@ interface AcademicYearDB {
   is_current: boolean;
 }
 
-export function FeeReportsPage() {
-  const navigate = useNavigate();
+interface FeeReportsPageProps {
+  embedded?: boolean;
+}
+
+export function FeeReportsPage({ embedded = false }: FeeReportsPageProps) {
   const { toast } = useToast();
   const { canView, canExport } = useModulePermissions("fees");
   const [selectedClass, setSelectedClass] = useState<string>("all");
@@ -142,35 +143,41 @@ export function FeeReportsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/fees/students")}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+      {!embedded && (
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Fee Reports</h1>
             <p className="text-muted-foreground">
               Analytics and reports for fee collection
             </p>
           </div>
+          {canExport && (
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => handleExport("csv")}>
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+              <Button variant="outline" onClick={() => handleExport("pdf")}>
+                <Download className="mr-2 h-4 w-4" />
+                Export PDF
+              </Button>
+            </div>
+          )}
         </div>
-        {canExport && (
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => handleExport("csv")}>
-              <Download className="mr-2 h-4 w-4" />
-              Export CSV
-            </Button>
-            <Button variant="outline" onClick={() => handleExport("pdf")}>
-              <Download className="mr-2 h-4 w-4" />
-              Export PDF
-            </Button>
-          </div>
-        )}
-      </div>
+      )}
+
+      {embedded && canExport && (
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => handleExport("csv")}>
+            <Download className="mr-2 h-4 w-4" />
+            Export CSV
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <Download className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
