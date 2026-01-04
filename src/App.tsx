@@ -22,6 +22,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PermissionProvider } from "@/contexts/PermissionContext";
+import { SidebarConfigProvider } from "@/contexts/SidebarConfigContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { FEATURES } from "@/config/features.config";
@@ -525,46 +526,48 @@ const App = () => (
     <ThemeProvider>
       <AuthProvider>
         <PermissionProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                {/* Public route - Authentication */}
-                <Route path="/auth" element={<Auth />} />
+          <SidebarConfigProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  {/* Public route - Authentication */}
+                  <Route path="/auth" element={<Auth />} />
 
-                {/* Protected routes - Wrapped in MainLayout */}
-                <Route
-                  element={
-                    <ProtectedRoute>
-                      <MainLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  {/* Core Routes - Always Available (eagerly loaded) */}
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/profile" element={<ProfilePage />} />
+                  {/* Protected routes - Wrapped in MainLayout */}
+                  <Route
+                    element={
+                      <ProtectedRoute>
+                        <MainLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    {/* Core Routes - Always Available (eagerly loaded) */}
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/profile" element={<ProfilePage />} />
 
-                  {/* 
-                   * Dynamic Routes from Centralized Configuration
-                   * ==============================================
-                   * All routes are generated from the allRoutes array
-                   * defined in @/routes/routeConfig.ts
-                   * 
-                   * Each route is:
-                   * 1. Filtered by feature flag
-                   * 2. Protected by ProtectedRoute with module/action
-                   * 3. Lazy loaded with Suspense
-                   * 4. Falls back to PlaceholderPage if component not mapped
-                   */}
-                  {allRoutes.map(renderRoute)}
-                </Route>
+                    {/* 
+                    * Dynamic Routes from Centralized Configuration
+                    * ==============================================
+                    * All routes are generated from the allRoutes array
+                    * defined in @/routes/routeConfig.ts
+                    * 
+                    * Each route is:
+                    * 1. Filtered by feature flag
+                    * 2. Protected by ProtectedRoute with module/action
+                    * 3. Lazy loaded with Suspense
+                    * 4. Falls back to PlaceholderPage if component not mapped
+                    */}
+                    {allRoutes.map(renderRoute)}
+                  </Route>
 
-                {/* 404 - Not Found */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
+                  {/* 404 - Not Found */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </SidebarConfigProvider>
         </PermissionProvider>
       </AuthProvider>
     </ThemeProvider>

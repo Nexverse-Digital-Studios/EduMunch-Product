@@ -7,6 +7,7 @@
  * - Notification Settings
  * - Security Settings
  * - Integration Settings
+ * - Sidebar Configuration (local preferences)
  *
  * Note: Currently using demo data. Full Supabase integration pending.
  */
@@ -37,7 +38,9 @@ import {
   MessageSquare,
   Video,
   Cloud,
+  PanelLeft,
 } from "lucide-react";
+import { SidebarConfigTab } from "./tabs/SidebarConfigTab";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -177,6 +180,13 @@ export const SettingsPage = () => {
           >
             <Plug className="h-4 w-4" />
             Integrations
+          </TabsTrigger>
+          <TabsTrigger
+            value="sidebar"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 gap-2"
+          >
+            <PanelLeft className="h-4 w-4" />
+            Configure Sidebar
           </TabsTrigger>
         </TabsList>
 
@@ -764,6 +774,11 @@ export const SettingsPage = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Sidebar Configuration Tab */}
+        <TabsContent value="sidebar" className="mt-6">
+          <SidebarConfigTab />
         </TabsContent>
       </Tabs>
     </div>

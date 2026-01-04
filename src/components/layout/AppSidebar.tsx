@@ -31,6 +31,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FEATURES, isFeatureEnabled } from "@/config/features.config";
 import { usePermissions } from "@/contexts/PermissionContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSidebarConfig } from "@/contexts/SidebarConfigContext";
+import { SidebarDisplayStyle, SYSTEM_ROUTES } from "@/types/sidebarConfig";
 
 // Import centralized sidebar configuration
 import { sidebarGroups, SidebarGroup, ModuleSidebarConfig, ModuleSubItem } from "@/routes";
@@ -146,7 +148,7 @@ interface NavItemConfig {
 }
 
 // ==========================================
-// NAV ITEM COMPONENT
+// NAV ITEM COMPONENT (Dropdown Style)
 // ==========================================
 
 const NavItem = ({ to, icon: Icon, label, isCollapsed, children, isActive, onNavigate }: NavItemConfig) => {
@@ -216,6 +218,63 @@ const NavItem = ({ to, icon: Icon, label, isCollapsed, children, isActive, onNav
       <Icon className="h-5 w-5 shrink-0" />
       {!isCollapsed && <span>{label}</span>}
     </NavLink>
+  );
+};
+
+// ==========================================
+// SECTION NAV ITEM (Sections Style - Flat with accent headers)
+// ==========================================
+
+interface SectionNavItemProps {
+  to: string;
+  icon: React.ElementType;
+  label: string;
+  isCollapsed: boolean;
+  onNavigate?: () => void;
+}
+
+const SectionNavItem = ({ to, icon: Icon, label, isCollapsed, onNavigate }: SectionNavItemProps) => {
+  return (
+    <NavLink
+      to={to}
+      onClick={onNavigate}
+      className={({ isActive }) =>
+        cn(
+          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+          isActive
+            ? "bg-primary text-primary-foreground"
+            : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+        )
+      }
+    >
+      <Icon className="h-4 w-4 shrink-0" />
+      {!isCollapsed && <span>{label}</span>}
+    </NavLink>
+  );
+};
+
+interface SectionGroupProps {
+  title: string;
+  children: React.ReactNode;
+  isCollapsed: boolean;
+}
+
+const SectionGroup = ({ title, children, isCollapsed }: SectionGroupProps) => {
+  if (isCollapsed) {
+    return <div className="space-y-1">{children}</div>;
+  }
+  
+  return (
+    <div className="space-y-2">
+      <div className="px-3 py-1">
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+          {title}
+        </span>
+      </div>
+      <div className="space-y-1">
+        {children}
+      </div>
+    </div>
   );
 };
 
@@ -304,10 +363,10 @@ interface AppSidebarProps {
 // ==========================================
 
 /**
- * Filter navigation items based on features and permissions
+ * Filter navigation items based on features, permissions, and user sidebar config
  * Uses the centralized sidebarGroups configuration
  */
-const useFilteredNavigation = () => {
+const useFilteredNavigation = (isRouteVisible: (path: string) => boolean) => {
   const { hasModuleAccess, isAdmin, permissions } = usePermissions();
   const { userProfile } = useAuth();
   
@@ -327,13 +386,16 @@ const useFilteredNavigation = () => {
         .filter(item => {
           // Check admin-only
           if (item.adminOnly && !isAdmin()) {
-            console.log(`[AppSidebar] Filtering out admin-only item: ${item.label}`);
             return false;
           }
           
           // Check feature toggle for module
           if (item.moduleCode && !isModuleFeatureEnabled(item.moduleCode)) {
-            console.log(`[AppSidebar] Filtering out disabled feature: ${item.label} (${item.moduleCode})`);
+            return false;
+          }
+          
+          // Check user visibility preferences (for routes with paths)
+          if (item.to && !SYSTEM_ROUTES.includes(item.to) && !isRouteVisible(item.to)) {
             return false;
           }
           
@@ -341,15 +403,14 @@ const useFilteredNavigation = () => {
           if (item.children) {
             const visibleChildren = filterItems(item.children);
             if (visibleChildren.length === 0) {
-              console.log(`[AppSidebar] Filtering out parent with no visible children: ${item.label}`);
+              return false;
             }
-            return visibleChildren.length > 0;
+            return true;
           }
           
           // Check module permission (Admin bypasses this)
           if (item.moduleCode && !isAdmin()) {
             const hasAccess = hasModuleAccess(item.moduleCode);
-            console.log(`[AppSidebar] Module permission check: ${item.label} (${item.moduleCode}) = ${hasAccess}`);
             return hasAccess;
           }
 
@@ -369,7 +430,110 @@ const useFilteredNavigation = () => {
     const filtered = filterItems(navigationItems);
     console.log('[AppSidebar] Final visible items count:', filtered.length);
     return filtered;
-  }, [hasModuleAccess, isAdmin, userProfile, permissions]);
+  }, [hasModuleAccess, isAdmin, userProfile, permissions, isRouteVisible]);
+};
+
+// ==========================================
+// SECTIONS LAYOUT RENDERER
+// ==========================================
+
+interface SectionsLayoutProps {
+  items: NavItemConfig[];
+  isCollapsed: boolean;
+  onNavigate?: () => void;
+}
+
+const SectionsLayout = ({ items, isCollapsed, onNavigate }: SectionsLayoutProps) => {
+  // Group items: first item is Dashboard (HOME section), 
+  // middle items are groups (their own sections),
+  // last item is Profile (part of the last group or separate)
+  
+  const sections: { title: string; items: NavItemConfig[] }[] = [];
+  
+  items.forEach(item => {
+    if (item.to === '/' || item.to === '/dashboard') {
+      // Dashboard goes in HOME section
+      sections.push({
+        title: 'HOME',
+        items: [item],
+      });
+    } else if (item.to === '/profile') {
+      // Profile goes at the end
+      // Add to last section or create new
+      if (sections.length > 0) {
+        sections[sections.length - 1].items.push(item);
+      } else {
+        sections.push({
+          title: 'PROFILE',
+          items: [item],
+        });
+      }
+    } else if (item.children && item.children.length > 0) {
+      // This is a group - flatten it into a section
+      sections.push({
+        title: item.label.toUpperCase(),
+        items: item.children,
+      });
+    } else {
+      // Single item - add to a misc section or last section
+      if (sections.length > 1) {
+        sections[sections.length - 1].items.push(item);
+      } else {
+        sections.push({
+          title: 'NAVIGATION',
+          items: [item],
+        });
+      }
+    }
+  });
+  
+  return (
+    <nav className="space-y-4">
+      {sections.map((section, sectionIndex) => (
+        <SectionGroup
+          key={section.title + sectionIndex}
+          title={section.title}
+          isCollapsed={isCollapsed}
+        >
+          {section.items.map((item, itemIndex) => (
+            <SectionNavItem
+              key={item.to || item.label + itemIndex}
+              to={item.to || '/'}
+              icon={item.icon}
+              label={item.label}
+              isCollapsed={isCollapsed}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </SectionGroup>
+      ))}
+    </nav>
+  );
+};
+
+// ==========================================
+// DROPDOWN LAYOUT RENDERER
+// ==========================================
+
+interface DropdownLayoutProps {
+  items: NavItemConfig[];
+  isCollapsed: boolean;
+  onNavigate?: () => void;
+}
+
+const DropdownLayout = ({ items, isCollapsed, onNavigate }: DropdownLayoutProps) => {
+  return (
+    <nav className="space-y-1">
+      {items.map((item, index) => (
+        <NavItem
+          key={item.to || item.label + index}
+          {...item}
+          isCollapsed={isCollapsed}
+          onNavigate={onNavigate}
+        />
+      ))}
+    </nav>
+  );
 };
 
 // ==========================================
@@ -377,15 +541,24 @@ const useFilteredNavigation = () => {
 // ==========================================
 
 export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose }: AppSidebarProps) => {
-  const filteredNavItems = useFilteredNavigation();
+  // Get sidebar config from context - need to handle case where provider might not exist
+  let displayStyle: SidebarDisplayStyle = 'dropdown';
+  let isRouteVisibleFn = (_path: string) => true;
+  
+  try {
+    const sidebarConfig = useSidebarConfig();
+    displayStyle = sidebarConfig.displayStyle;
+    isRouteVisibleFn = sidebarConfig.isRouteVisible;
+  } catch {
+    // Provider not available, use defaults
+    console.log('[AppSidebar] SidebarConfigProvider not found, using defaults');
+  }
+  
+  const filteredNavItems = useFilteredNavigation(isRouteVisibleFn);
   const { userProfile } = useAuth();
   const { permissions, isLoading } = usePermissions();
   
-  console.log('[AppSidebar] Render state:', {
-    hasPermissions: !!permissions,
-    isLoading,
-    visibleItemsCount: filteredNavItems.length,
-  });
+  const effectiveCollapsed = isCollapsed && !isMobileOpen;
   
   return (
     <>
@@ -448,21 +621,22 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
               <div className="animate-spin">
                 <Settings className="h-6 w-6 text-muted-foreground" />
               </div>
-              {!isCollapsed && (
+              {!effectiveCollapsed && (
                 <p className="text-sm text-muted-foreground">Loading menu...</p>
               )}
             </div>
+          ) : displayStyle === 'sections' ? (
+            <SectionsLayout
+              items={filteredNavItems}
+              isCollapsed={effectiveCollapsed}
+              onNavigate={onMobileClose}
+            />
           ) : (
-            <nav className="space-y-1">
-              {filteredNavItems.map((item, index) => (
-                <NavItem
-                  key={item.to || item.label + index}
-                  {...item}
-                  isCollapsed={isCollapsed && !isMobileOpen}
-                  onNavigate={onMobileClose}
-                />
-              ))}
-            </nav>
+            <DropdownLayout
+              items={filteredNavItems}
+              isCollapsed={effectiveCollapsed}
+              onNavigate={onMobileClose}
+            />
           )}
         </ScrollArea>
 
