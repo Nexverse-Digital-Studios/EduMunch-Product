@@ -239,13 +239,13 @@ const examsModule: ModuleSidebarConfig = {
 };
 
 // Marks Module (CONSOLIDATED: merged into Exam Detail page)
-const marksModule: ModuleSidebarConfig = {
-  moduleCode: 'marks',
-  displayName: 'Marks Entry',
-  icon: 'Edit',
-  basePath: '/exams',
-  order: 2,
-};
+// const marksModule: ModuleSidebarConfig = {
+//   moduleCode: 'marks',
+//   displayName: 'Marks Entry',
+//   icon: 'Edit',
+//   basePath: '/exams',
+//   order: 2,
+// };
 
 // Report Cards Module (CONSOLIDATED: no subItems)
 const reportCardsModule: ModuleSidebarConfig = {
@@ -551,18 +551,6 @@ const branchesModule: ModuleSidebarConfig = {
 // ==========================================
 
 export const sidebarGroups: SidebarGroup[] = [
-  // ----------------------------------------
-  // ALWAYS VISIBLE
-  // ----------------------------------------
-  {
-    id: 'main',
-    groupName: 'Main',
-    icon: 'Home',
-    order: 0,
-    tier: 1,
-    alwaysVisible: true,
-    modules: [dashboardModule, profileModule],
-  },
 
   // ----------------------------------------
   // TIER 1 GROUPS
@@ -613,7 +601,7 @@ export const sidebarGroups: SidebarGroup[] = [
     icon: 'ClipboardList',
     order: 6,
     tier: 1,
-    modules: [examsModule, marksModule, reportCardsModule],
+    modules: [examsModule, /* marksModule, */ reportCardsModule],
   },
   {
     id: 'finance',

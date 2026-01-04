@@ -139,7 +139,7 @@ const Payslips = lazy(() => import("@/pages/Payslips"));
 const TransportDashboard = lazy(() => import("@/pages/transport").then(m => ({ default: m.TransportDashboard })));
 
 // Tier 3 Pages
-const Branches = lazy(() => import("@/pages/Branches"));
+// const Branches = lazy(() => import("@/pages/Branches")); // REMOVED: Not needed
 const InventoryList = lazy(() => import("@/pages/inventory").then(m => ({ default: m.InventoryList })));
 
 // ID Cards (CONSOLIDATED: Single dashboard with tabs)
@@ -151,8 +151,62 @@ const ReportsDashboard = lazy(() => import("@/pages/reports").then(m => ({ defau
 // Library (CONSOLIDATED: Single dashboard with tabs)
 const LibraryDashboard = lazy(() => import("@/pages/library").then(m => ({ default: m.LibraryDashboard })));
 
-// Hostel (CONSOLIDATED: Single dashboard with tabs)
-const HostelDashboard = lazy(() => import("@/pages/hostel").then(m => ({ default: m.HostelDashboard })));
+// Hostel - REMOVED (Not needed)
+// const HostelDashboard = lazy(() => import("@/pages/hostel").then(m => ({ default: m.HostelDashboard })));
+
+// Settings Page
+const SettingsPage = lazy(() => import("@/pages/settings").then(m => ({ default: m.SettingsPage })));
+
+// Announcements Page
+const AnnouncementsPage = lazy(() => import("@/pages/announcements").then(m => ({ default: m.AnnouncementsPage })));
+
+// Messages Page
+const MessagesPage = lazy(() => import("@/pages/messages").then(m => ({ default: m.MessagesPage })));
+
+// Fee Collect Page
+const FeeCollectPage = lazy(() => import("@/pages/fees").then(m => ({ default: m.FeeCollectPage })));
+
+// Study Materials Page
+const StudyMaterialsPage = lazy(() => import("@/pages/study-materials").then(m => ({ default: m.StudyMaterialsPage })));
+
+// Online Classes Page
+const OnlineClassesPage = lazy(() => import("@/pages/online-classes").then(m => ({ default: m.OnlineClassesPage })));
+
+// Homework Page
+const HomeworkPage = lazy(() => import("@/pages/homework").then(m => ({ default: m.HomeworkPage })));
+
+// Payroll Page
+const PayrollPage = lazy(() => import("@/pages/payroll").then(m => ({ default: m.PayrollPage })));
+
+// Appraisals Page
+const AppraisalsPage = lazy(() => import("@/pages/appraisals").then(m => ({ default: m.AppraisalsPage })));
+
+// Recruitment Page
+const RecruitmentPage = lazy(() => import("@/pages/recruitment").then(m => ({ default: m.RecruitmentPage })));
+
+// Recruitment Job Detail Page
+const RecruitmentJobDetailPage = lazy(() => import("@/pages/recruitment").then(m => ({ default: m.RecruitmentJobDetailPage })));
+
+// Analytics Page
+const AnalyticsPage = lazy(() => import("@/pages/analytics").then(m => ({ default: m.AnalyticsPage })));
+
+// Certificates Page
+const CertificatesPage = lazy(() => import("@/pages/certificates").then(m => ({ default: m.CertificatesPage })));
+
+// Surveys Page
+const SurveysPage = lazy(() => import("@/pages/surveys").then(m => ({ default: m.SurveysPage })));
+
+// Parent Dashboard Page
+const ParentDashboardPage = lazy(() => import("@/pages/parent").then(m => ({ default: m.ParentDashboardPage })));
+
+// Parent Child Detail Page
+const ParentChildDetailPage = lazy(() => import("@/pages/parent").then(m => ({ default: m.ParentChildDetailPage })));
+
+// Assignment Detail Page
+const AssignmentDetailPage = lazy(() => import("@/pages/assignments").then(m => ({ default: m.AssignmentDetailPage })));
+
+// Admission Application Detail Page
+const AdmissionApplicationDetailPage = lazy(() => import("@/pages/admissions/AdmissionApplicationDetailPage").then(m => ({ default: m.AdmissionApplicationDetailPage })));
 
 // ==========================================
 // ROUTE TO COMPONENT MAPPING
@@ -245,12 +299,14 @@ const routeComponentMap: Record<string, LazyComponent> = {
   
   // Admissions
   '/admissions': Admissions,
+  '/admissions/applications/:id': AdmissionApplicationDetailPage,
   
   // Notifications
   '/notifications': Notifications,
   
   // Tier 2 - LMS
   '/assignments': AssignmentsList,
+  '/assignments/:id': AssignmentDetailPage,
   '/doubts': DoubtsList,
   
   // Tier 2 - Advanced
@@ -267,8 +323,8 @@ const routeComponentMap: Record<string, LazyComponent> = {
   // Tier 2 - Transport (CONSOLIDATED: Single dashboard with tabs)
   '/transport': TransportDashboard,
   
-  // Tier 3 - Branches
-  '/branches': Branches,
+  // Tier 3 - Branches - REMOVED (Not needed)
+  // '/branches': Branches,
   
   // Tier 3 - Inventory
   '/inventory': InventoryList,
@@ -282,8 +338,47 @@ const routeComponentMap: Record<string, LazyComponent> = {
   // Tier 3 - Library (CONSOLIDATED: Single dashboard with tabs)
   '/library': LibraryDashboard,
   
-  // Tier 3 - Hostel (CONSOLIDATED: Single dashboard with tabs)
-  '/hostel': HostelDashboard,
+  // ==========================================
+  // PLACEHOLDER ROUTES (Not yet implemented)
+  // ==========================================
+  
+  // Settings & Communication
+  '/settings': SettingsPage,
+  '/announcements': AnnouncementsPage,
+  '/messages': MessagesPage,
+  
+  // Fee Collection
+  '/fees/collect': FeeCollectPage,
+  
+  // LMS Extended
+  '/study-materials': StudyMaterialsPage,
+  '/online-classes': OnlineClassesPage,
+  '/homework': HomeworkPage,
+  
+  // HR Extended
+  '/payroll': PayrollPage,
+  '/appraisals': AppraisalsPage,
+  
+  // Recruitment
+  '/recruitment': RecruitmentPage,
+  '/recruitment/jobs/:id': RecruitmentJobDetailPage,
+  
+  // Analytics
+  '/analytics': AnalyticsPage,
+  
+  // Certificates & Surveys
+  '/certificates': CertificatesPage,
+  '/surveys': SurveysPage,
+  
+  // Parent Portal
+  '/parent/dashboard': ParentDashboardPage,
+  '/parent/children/:id': ParentChildDetailPage,
+  
+  // Support (alias for support-tickets)
+  '/support': SupportTickets,
+  
+  // PTM (alias for ptm-requests)  
+  '/ptm': PTMRequests,
 };
 
 // ==========================================
@@ -335,11 +430,11 @@ const moduleToFeatureMap: Record<string, keyof typeof FEATURES> = {
   'working_hours': 'workingHours',
   'ptm_requests': 'ptmRequests',
   'inventory': 'inventory',
-  'branches': 'branches',
+  // 'branches': 'branches', // REMOVED: Not needed
   'tie_up_schools': 'tieUpSchools',
   'id_cards': 'idCards',
   'library': 'library',
-  'hostel': 'hostel',
+  // 'hostel': 'hostel', // REMOVED: Not needed
   'reports': 'reports',
 };
 

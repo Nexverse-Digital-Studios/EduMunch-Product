@@ -1,0 +1,1 @@
+export { AdmissionApplicationDetailPage } from "./AdmissionApplicationDetailPage";

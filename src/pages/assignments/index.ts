@@ -12,6 +12,7 @@
  */
 
 export { default as AssignmentsList } from "./AssignmentsList";
+export { AssignmentDetailPage } from "./AssignmentDetailPage";
 
 // Re-export types for external use
 export type { Assignment } from "./components";

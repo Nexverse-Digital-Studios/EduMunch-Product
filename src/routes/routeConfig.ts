@@ -659,19 +659,9 @@ export const ptmRoutes: RouteConfig[] = [
 ];
 
 // --------------------------------------
-// Module 46: Alumni (CONSOLIDATED: 7 → 1 route)
-// Tabs: List, Events, Donations
+// Module 46: Alumni - REMOVED (Not needed)
 // --------------------------------------
-export const alumniRoutes: RouteConfig[] = [
-  { path: '/alumni', title: 'Alumni', module: 'alumni', action: 'view', tier: 3, showInSidebar: true, icon: 'GraduationCap' },
-  // CONSOLIDATED: All alumni features are tabs/modals
-  // - /alumni/register → Modal in list
-  // - /alumni/:id → Modal detail
-  // - /alumni/:id/edit → Modal edit
-  // - /alumni/events → Events tab
-  // - /alumni/events/create → Modal in events
-  // - /alumni/donations → Donations tab
-];
+export const alumniRoutes: RouteConfig[] = [];
 
 // --------------------------------------
 // Module 47: Admissions (CONSOLIDATED: 11 → 2 routes)
@@ -732,25 +722,9 @@ export const libraryRoutes: RouteConfig[] = [
 ];
 
 // --------------------------------------
-// Module 48b: Hostel (CONSOLIDATED: 12 → 1 route)
-// Tabs: Dashboard, Blocks, Rooms, Allocations, Complaints, Leaves
-// Create/Edit via modals within each tab
+// Module 48b: Hostel - REMOVED (Not needed)
 // --------------------------------------
-export const hostelRoutes: RouteConfig[] = [
-  { path: '/hostel', title: 'Hostel', module: 'hostel', action: 'view', tier: 3, showInSidebar: true, icon: 'Building2' },
-  // CONSOLIDATED: The following routes are now tabs within the Hostel dashboard:
-  // - /hostel/blocks → Blocks tab
-  // - /hostel/blocks/create → Modal in Blocks tab
-  // - /hostel/blocks/:id/edit → Modal in Blocks tab
-  // - /hostel/rooms → Rooms tab
-  // - /hostel/rooms/create → Modal in Rooms tab
-  // - /hostel/allocations → Allocations tab
-  // - /hostel/allocations/create → Modal in Allocations tab
-  // - /hostel/complaints → Complaints tab
-  // - /hostel/complaints/create → Modal in Complaints tab
-  // - /hostel/leaves → Leaves tab
-  // - /hostel/fees → Fees tab (or modal)
-];
+export const hostelRoutes: RouteConfig[] = [];
 
 // --------------------------------------
 // Module 49: Certificates (CONSOLIDATED: 9 → 1 route)
@@ -785,18 +759,9 @@ export const surveyRoutes: RouteConfig[] = [
 ];
 
 // --------------------------------------
-// Module 51: Branches (CONSOLIDATED: 6 → 1 route)
-// Single page with modals for CRUD
+// Module 51: Branches - REMOVED (Not needed)
 // --------------------------------------
-export const branchRoutes: RouteConfig[] = [
-  { path: '/branches', title: 'Branches', module: 'branches', action: 'view', tier: 3, showInSidebar: true, icon: 'Building' },
-  // CONSOLIDATED: All branch features are modals
-  // - /branches/create → Modal in branches
-  // - /branches/:id → Modal detail
-  // - /branches/:id/edit → Modal edit
-  // - /branches/:id/delete → Modal confirmation
-  // - /branches/switch → Modal/dropdown
-];
+export const branchRoutes: RouteConfig[] = [];
 
 
 // ==========================================
