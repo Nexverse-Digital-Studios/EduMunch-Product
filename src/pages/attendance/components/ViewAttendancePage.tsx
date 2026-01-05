@@ -17,6 +17,8 @@ import {
   Users,
   Download,
   Eye,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -175,7 +177,6 @@ export const ViewAttendancePage = () => {
       absent: filteredAttendance.filter((a) => a.status === "Absent").length,
       late: filteredAttendance.filter((a) => a.status === "Late").length,
       halfDay: filteredAttendance.filter((a) => a.status === "Half-day").length,
-      onLeave: filteredAttendance.filter((a) => a.status === "On-leave").length,
     };
   }, [filteredAttendance]);
 
@@ -251,11 +252,38 @@ export const ViewAttendancePage = () => {
             )}
             <div>
               <label className="mb-1.5 block text-sm font-medium">Date</label>
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-              />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    const date = new Date(selectedDate);
+                    date.setDate(date.getDate() - 1);
+                    setSelectedDate(date.toISOString().split("T")[0]);
+                  }}
+                  title="Previous day"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    const date = new Date(selectedDate);
+                    date.setDate(date.getDate() + 1);
+                    setSelectedDate(date.toISOString().split("T")[0]);
+                  }}
+                  title="Next day"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium">Range</label>

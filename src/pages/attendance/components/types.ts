@@ -11,7 +11,7 @@
 // ==========================
 // Student Daily Attendance
 // ==========================
-export type AttendanceStatus = 'Present' | 'Absent' | 'Late' | 'Half-day' | 'On-leave';
+export type AttendanceStatus = 'Present' | 'Absent' | 'Late' | 'Half-day';
 
 export interface AttendanceDB {
   id: string;

@@ -1,4 +1,4 @@
-import { Plus, Pencil, Trash2, Link2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Link2, Unlink2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -18,6 +18,8 @@ interface TimetableGridProps {
     branch: string,
     classInfo: ClassInfo
   ) => void;
+  onMergeClick?: (timeIndex: number, period: string) => void;
+  onUnmergeClick?: (timeIndex: number, masterSection: string) => void;
 }
 
 export const TimetableGrid = ({
@@ -26,6 +28,8 @@ export const TimetableGrid = ({
   onAddClass,
   onEditClass,
   onDeleteClass,
+  onMergeClick,
+  onUnmergeClick,
 }: TimetableGridProps) => {
   return (
     <div className="border border-border rounded-lg overflow-hidden">
@@ -65,30 +69,38 @@ export const TimetableGrid = ({
                   <div
                     key={branch}
                     className={`flex-1 min-w-[150px] p-2 border-r border-border last:border-r-0 min-h-[80px] group hover:bg-muted/20 transition-colors ${
-                      classInfo?.isMerged ? "bg-primary/10" : ""
+                      classInfo?.isMerged
+                        ? "bg-primary/10 border-l-4 border-l-primary"
+                        : ""
                     }`}
                   >
                     {classInfo ? (
                       <div className="space-y-1">
                         <div className="flex items-start justify-between gap-2">
-                          <div>
+                          <div className="flex-1">
                             <p className="font-medium text-foreground text-sm">
                               {classInfo.subject}
                             </p>
                             <p className="text-xs text-primary">
                               {classInfo.teacher}
                             </p>
-                            {classInfo.isMerged && (
-                              <Badge
-                                variant="outline"
-                                className="mt-1 text-xs bg-primary/10 text-primary border-primary/30"
-                              >
-                                <Link2 className="h-3 w-3 mr-1" />
-                                MERGED
-                              </Badge>
+                            {classInfo.isMerged && classInfo.mergedSections && (
+                              <div className="mt-2 space-y-1">
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs bg-primary/10 text-primary border-primary/30"
+                                >
+                                  <Link2 className="h-3 w-3 mr-1" />
+                                  MERGED ({classInfo.mergedSections.length})
+                                </Badge>
+                                <div className="text-xs text-muted-foreground bg-muted/30 p-1 rounded">
+                                  Sections:{" "}
+                                  {classInfo.mergedSections.join(", ")}
+                                </div>
+                              </div>
                             )}
                           </div>
-                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                             <Button
                               size="icon"
                               variant="ghost"
@@ -96,9 +108,31 @@ export const TimetableGrid = ({
                               onClick={() =>
                                 onEditClass(rowIndex, branch, classInfo)
                               }
+                              title="Edit class"
                             >
                               <Pencil className="h-3 w-3" />
                             </Button>
+                            {classInfo.isMerged && onUnmergeClick ? (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6 text-primary"
+                                onClick={() => onUnmergeClick(rowIndex, branch)}
+                                title="Unmerge classes"
+                              >
+                                <Unlink2 className="h-3 w-3" />
+                              </Button>
+                            ) : !classInfo.isMerged && onMergeClick ? (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6 text-primary"
+                                onClick={() => onMergeClick(rowIndex, row.time)}
+                                title="Merge with other sections"
+                              >
+                                <Link2 className="h-3 w-3" />
+                              </Button>
+                            ) : null}
                             <Button
                               size="icon"
                               variant="ghost"
@@ -106,6 +140,7 @@ export const TimetableGrid = ({
                               onClick={() =>
                                 onDeleteClass(rowIndex, branch, classInfo)
                               }
+                              title="Delete class"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>

@@ -3,7 +3,7 @@
  * ===================================
  * List and manage all teachers.
  * Create and Edit operations now use modal dialogs instead of separate routes.
- * 
+ *
  * Route: /teachers
  * Route Consolidation: Replaces /teachers/create and /teachers/:id/edit routes
  */
@@ -65,6 +65,12 @@ import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { TABLES } from "@/lib/supabase";
 import type { TeacherDB, TeacherStatus } from "./types";
 import { TeacherFormDialog } from "./TeacherFormDialog";
+import { BulkImportDialog } from "@/components/ui/bulk-import-dialog";
+import {
+  exportToExcel,
+  TEACHER_IMPORT_TEMPLATE,
+  TEACHER_IMPORT_CONFIG,
+} from "@/lib/excel";
 
 const statusColors: Record<TeacherStatus, string> = {
   active: "bg-green-100 text-green-800",
@@ -81,16 +87,18 @@ const TeachersList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
-  
+
   // Modal states for create/edit (consolidation - replaces separate routes)
   const [showTeacherModal, setShowTeacherModal] = useState(false);
   const [editTeacher, setEditTeacher] = useState<TeacherDB | null>(null);
+  const [showBulkImportModal, setShowBulkImportModal] = useState(false);
 
   // Fetch teachers
   const {
     data: teachers,
     isLoading,
     refetch,
+    createMutation,
   } = useSupabaseTable<TeacherDB>(TABLES.TEACHERS);
 
   // Get unique departments
@@ -180,6 +188,115 @@ const TeachersList = () => {
     setEditTeacher(null);
   };
 
+  // Export teachers to Excel
+  const handleExport = () => {
+    if (!filteredTeachers || filteredTeachers.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No teachers to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    exportToExcel({
+      data: filteredTeachers,
+      filename: `teachers_export_${new Date().toISOString().split("T")[0]}`,
+      sheetName: "Teachers",
+      columns: [
+        { header: "Employee Code", key: "employee_code", width: 15 },
+        { header: "First Name", key: "first_name", width: 15 },
+        { header: "Middle Name", key: "middle_name", width: 15 },
+        { header: "Last Name", key: "last_name", width: 15 },
+        { header: "Email", key: "email", width: 25 },
+        { header: "Phone", key: "phone", width: 15 },
+        { header: "Department", key: "department", width: 15 },
+        { header: "Designation", key: "designation", width: 15 },
+        { header: "Qualification", key: "qualification", width: 15 },
+        { header: "Specialization", key: "specialization", width: 15 },
+        { header: "Experience Years", key: "experience_years", width: 12 },
+        { header: "Employment Type", key: "employment_type", width: 15 },
+        { header: "Joining Date", key: "joining_date", width: 14 },
+        { header: "Status", key: "status", width: 12 },
+      ],
+    });
+
+    toast({
+      title: "Export Complete",
+      description: `Exported ${filteredTeachers.length} teachers to Excel.`,
+    });
+  };
+
+  // Bulk import handler
+  const handleBulkImport = async (data: Record<string, any>[]) => {
+    let success = 0;
+    let failed = 0;
+    const results: {
+      data: Record<string, any>;
+      success: boolean;
+      reason?: string;
+    }[] = [];
+
+    // Get existing employee codes to check for duplicates
+    const existingCodes = new Set(teachers?.map((t) => t.employee_code) || []);
+
+    for (const row of data) {
+      // Skip if employee code already exists
+      if (existingCodes.has(row.employee_code)) {
+        results.push({
+          data: row,
+          success: false,
+          reason: `Duplicate employee code: ${row.employee_code}`,
+        });
+        failed++;
+        continue;
+      }
+
+      try {
+        await createMutation.mutateAsync({
+          employee_code: row.employee_code,
+          first_name: row.first_name,
+          middle_name: row.middle_name || null,
+          last_name: row.last_name,
+          date_of_birth: row.date_of_birth || null,
+          gender: row.gender || null,
+          email: row.email || null,
+          phone: row.phone,
+          address_line1: row.address_line1 || null,
+          city: row.city || null,
+          state: row.state || null,
+          pincode: row.pincode || null,
+          country: "India",
+          qualification: row.qualification || null,
+          specialization: row.specialization || null,
+          experience_years: row.experience_years
+            ? parseInt(row.experience_years)
+            : null,
+          joining_date: row.joining_date,
+          employment_type: row.employment_type || "Permanent",
+          designation: row.designation || null,
+          department: row.department || null,
+          status: "active",
+        });
+        results.push({ data: row, success: true });
+        success++;
+        // Add to existing codes to prevent duplicates within the same import batch
+        existingCodes.add(row.employee_code);
+      } catch (error: any) {
+        console.error("Failed to import teacher:", row, error);
+        results.push({
+          data: row,
+          success: false,
+          reason: error?.message || "Database insertion failed",
+        });
+        failed++;
+      }
+    }
+
+    refetch();
+    return { success, failed, results };
+  };
+
   // Get initials for avatar
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -206,35 +323,26 @@ const TeachersList = () => {
           <p className="text-muted-foreground">Manage teaching staff members</p>
         </div>
         <div className="flex gap-2">
-          {canExport && (
-            <Button 
-              variant="outline" 
-              onClick={() => toast({ 
-                title: "Export Teachers", 
-                description: "Export functionality coming soon." 
-              })}
+          {canCreate && (
+            <Button
+              variant="outline"
+              onClick={() => setShowBulkImportModal(true)}
             >
+              <Upload className="mr-2 h-4 w-4" />
+              Bulk Import
+            </Button>
+          )}
+          {canExport && (
+            <Button variant="outline" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
           )}
           {canCreate && (
-            <>
-              <Button 
-                variant="outline" 
-                onClick={() => toast({ 
-                  title: "Bulk Upload", 
-                  description: "Bulk upload functionality coming soon." 
-                })}
-              >
-                <Upload className="mr-2 h-4 w-4" />
-                Bulk Upload
-              </Button>
-              <Button onClick={handleCreateTeacher}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Teacher
-              </Button>
-            </>
+            <Button onClick={handleCreateTeacher}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Teacher
+            </Button>
           )}
         </div>
       </div>
@@ -415,8 +523,8 @@ const TeachersList = () => {
                             </Link>
                           </Button>
                           {canUpdate && (
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="icon"
                               onClick={() => handleEditTeacher(teacher)}
                             >
@@ -472,6 +580,20 @@ const TeachersList = () => {
         teacherId={editTeacher?.id}
         initialData={editTeacher || undefined}
         onSuccess={() => refetch()}
+      />
+
+      {/* Bulk Import Dialog */}
+      <BulkImportDialog
+        open={showBulkImportModal}
+        onOpenChange={setShowBulkImportModal}
+        title="Bulk Import Teachers"
+        description="Import multiple teachers from an Excel file. Download the template to see the required format."
+        importConfig={TEACHER_IMPORT_CONFIG}
+        templateData={TEACHER_IMPORT_TEMPLATE}
+        templateFilename="teachers_import"
+        onImport={handleBulkImport}
+        entityName="teachers"
+        identifierField="employee_code"
       />
     </div>
   );

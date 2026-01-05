@@ -1,472 +1,178 @@
 /**
  * My Timetable Page (Student View)
  * =================================
- * Personal timetable view for students
+ * Personal timetable view for students - fetches real data from database
  */
 
-import { useState } from "react";
+import { useMemo } from "react";
 import { Calendar, Clock, BookOpen, User, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { useModulePermissions } from "@/contexts/PermissionContext";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
+import { TABLES } from "@/lib/supabase";
 
-interface TimetableEntry {
+interface TimetableEntryDB {
   id: string;
-  period: string;
-  time: string;
-  subject: string;
-  teacher: string;
-  room: string;
-  type: "class" | "break" | "lunch" | "free";
+  section_id: string;
+  academic_year_id: string;
+  day_of_week: string;
+  period_id: string;
+  subject_id: string | null;
+  teacher_id: string | null;
+  room_number: string | null;
+  is_active: boolean;
 }
 
-// Mock timetable data for student
-const mockTimetable: { [key: string]: TimetableEntry[] } = {
-  monday: [
-    {
-      id: "1",
-      period: "Period 1",
-      time: "08:30 - 09:15",
-      subject: "Mathematics",
-      teacher: "Mr. John Smith",
-      room: "Room 101",
-      type: "class",
-    },
-    {
-      id: "2",
-      period: "Period 2",
-      time: "09:15 - 10:00",
-      subject: "Physics",
-      teacher: "Dr. Sarah Lee",
-      room: "Physics Lab",
-      type: "class",
-    },
-    {
-      id: "3",
-      period: "Break",
-      time: "10:00 - 10:15",
-      subject: "Short Break",
-      teacher: "",
-      room: "",
-      type: "break",
-    },
-    {
-      id: "4",
-      period: "Period 3",
-      time: "10:15 - 11:00",
-      subject: "Chemistry",
-      teacher: "Mr. Robert Brown",
-      room: "Chemistry Lab",
-      type: "class",
-    },
-    {
-      id: "5",
-      period: "Period 4",
-      time: "11:00 - 11:45",
-      subject: "English",
-      teacher: "Mrs. Emily Davis",
-      room: "Room 102",
-      type: "class",
-    },
-    {
-      id: "6",
-      period: "Lunch",
-      time: "11:45 - 12:30",
-      subject: "Lunch Break",
-      teacher: "",
-      room: "",
-      type: "lunch",
-    },
-    {
-      id: "7",
-      period: "Period 5",
-      time: "12:30 - 13:15",
-      subject: "Biology",
-      teacher: "Dr. Anna Taylor",
-      room: "Biology Lab",
-      type: "class",
-    },
-    {
-      id: "8",
-      period: "Period 6",
-      time: "13:15 - 14:00",
-      subject: "History",
-      teacher: "Mr. Michael Wilson",
-      room: "Room 103",
-      type: "class",
-    },
-  ],
-  tuesday: [
-    {
-      id: "1",
-      period: "Period 1",
-      time: "08:30 - 09:15",
-      subject: "English",
-      teacher: "Mrs. Emily Davis",
-      room: "Room 102",
-      type: "class",
-    },
-    {
-      id: "2",
-      period: "Period 2",
-      time: "09:15 - 10:00",
-      subject: "Mathematics",
-      teacher: "Mr. John Smith",
-      room: "Room 101",
-      type: "class",
-    },
-    {
-      id: "3",
-      period: "Break",
-      time: "10:00 - 10:15",
-      subject: "Short Break",
-      teacher: "",
-      room: "",
-      type: "break",
-    },
-    {
-      id: "4",
-      period: "Period 3",
-      time: "10:15 - 11:00",
-      subject: "Physics Practical",
-      teacher: "Dr. Sarah Lee",
-      room: "Physics Lab",
-      type: "class",
-    },
-    {
-      id: "5",
-      period: "Period 4",
-      time: "11:00 - 11:45",
-      subject: "Physics Practical",
-      teacher: "Dr. Sarah Lee",
-      room: "Physics Lab",
-      type: "class",
-    },
-    {
-      id: "6",
-      period: "Lunch",
-      time: "11:45 - 12:30",
-      subject: "Lunch Break",
-      teacher: "",
-      room: "",
-      type: "lunch",
-    },
-    {
-      id: "7",
-      period: "Period 5",
-      time: "12:30 - 13:15",
-      subject: "Chemistry",
-      teacher: "Mr. Robert Brown",
-      room: "Chemistry Lab",
-      type: "class",
-    },
-    {
-      id: "8",
-      period: "Period 6",
-      time: "13:15 - 14:00",
-      subject: "Free Period",
-      teacher: "",
-      room: "",
-      type: "free",
-    },
-  ],
-  wednesday: [
-    {
-      id: "1",
-      period: "Period 1",
-      time: "08:30 - 09:15",
-      subject: "Biology",
-      teacher: "Dr. Anna Taylor",
-      room: "Biology Lab",
-      type: "class",
-    },
-    {
-      id: "2",
-      period: "Period 2",
-      time: "09:15 - 10:00",
-      subject: "Chemistry",
-      teacher: "Mr. Robert Brown",
-      room: "Chemistry Lab",
-      type: "class",
-    },
-    {
-      id: "3",
-      period: "Break",
-      time: "10:00 - 10:15",
-      subject: "Short Break",
-      teacher: "",
-      room: "",
-      type: "break",
-    },
-    {
-      id: "4",
-      period: "Period 3",
-      time: "10:15 - 11:00",
-      subject: "Mathematics",
-      teacher: "Mr. John Smith",
-      room: "Room 101",
-      type: "class",
-    },
-    {
-      id: "5",
-      period: "Period 4",
-      time: "11:00 - 11:45",
-      subject: "Physics",
-      teacher: "Dr. Sarah Lee",
-      room: "Physics Lab",
-      type: "class",
-    },
-    {
-      id: "6",
-      period: "Lunch",
-      time: "11:45 - 12:30",
-      subject: "Lunch Break",
-      teacher: "",
-      room: "",
-      type: "lunch",
-    },
-    {
-      id: "7",
-      period: "Period 5",
-      time: "12:30 - 13:15",
-      subject: "English",
-      teacher: "Mrs. Emily Davis",
-      room: "Room 102",
-      type: "class",
-    },
-    {
-      id: "8",
-      period: "Period 6",
-      time: "13:15 - 14:00",
-      subject: "History",
-      teacher: "Mr. Michael Wilson",
-      room: "Room 103",
-      type: "class",
-    },
-  ],
-  thursday: [
-    {
-      id: "1",
-      period: "Period 1",
-      time: "08:30 - 09:15",
-      subject: "Physics",
-      teacher: "Dr. Sarah Lee",
-      room: "Physics Lab",
-      type: "class",
-    },
-    {
-      id: "2",
-      period: "Period 2",
-      time: "09:15 - 10:00",
-      subject: "Biology Practical",
-      teacher: "Dr. Anna Taylor",
-      room: "Biology Lab",
-      type: "class",
-    },
-    {
-      id: "3",
-      period: "Break",
-      time: "10:00 - 10:15",
-      subject: "Short Break",
-      teacher: "",
-      room: "",
-      type: "break",
-    },
-    {
-      id: "4",
-      period: "Period 3",
-      time: "10:15 - 11:00",
-      subject: "Biology Practical",
-      teacher: "Dr. Anna Taylor",
-      room: "Biology Lab",
-      type: "class",
-    },
-    {
-      id: "5",
-      period: "Period 4",
-      time: "11:00 - 11:45",
-      subject: "Mathematics",
-      teacher: "Mr. John Smith",
-      room: "Room 101",
-      type: "class",
-    },
-    {
-      id: "6",
-      period: "Lunch",
-      time: "11:45 - 12:30",
-      subject: "Lunch Break",
-      teacher: "",
-      room: "",
-      type: "lunch",
-    },
-    {
-      id: "7",
-      period: "Period 5",
-      time: "12:30 - 13:15",
-      subject: "Chemistry Practical",
-      teacher: "Mr. Robert Brown",
-      room: "Chemistry Lab",
-      type: "class",
-    },
-    {
-      id: "8",
-      period: "Period 6",
-      time: "13:15 - 14:00",
-      subject: "Chemistry Practical",
-      teacher: "Mr. Robert Brown",
-      room: "Chemistry Lab",
-      type: "class",
-    },
-  ],
-  friday: [
-    {
-      id: "1",
-      period: "Period 1",
-      time: "08:30 - 09:15",
-      subject: "English",
-      teacher: "Mrs. Emily Davis",
-      room: "Room 102",
-      type: "class",
-    },
-    {
-      id: "2",
-      period: "Period 2",
-      time: "09:15 - 10:00",
-      subject: "History",
-      teacher: "Mr. Michael Wilson",
-      room: "Room 103",
-      type: "class",
-    },
-    {
-      id: "3",
-      period: "Break",
-      time: "10:00 - 10:15",
-      subject: "Short Break",
-      teacher: "",
-      room: "",
-      type: "break",
-    },
-    {
-      id: "4",
-      period: "Period 3",
-      time: "10:15 - 11:00",
-      subject: "Mathematics",
-      teacher: "Mr. John Smith",
-      room: "Room 101",
-      type: "class",
-    },
-    {
-      id: "5",
-      period: "Period 4",
-      time: "11:00 - 11:45",
-      subject: "Physics",
-      teacher: "Dr. Sarah Lee",
-      room: "Physics Lab",
-      type: "class",
-    },
-    {
-      id: "6",
-      period: "Lunch",
-      time: "11:45 - 12:30",
-      subject: "Lunch Break",
-      teacher: "",
-      room: "",
-      type: "lunch",
-    },
-    {
-      id: "7",
-      period: "Period 5",
-      time: "12:30 - 13:15",
-      subject: "Biology",
-      teacher: "Dr. Anna Taylor",
-      room: "Biology Lab",
-      type: "class",
-    },
-    {
-      id: "8",
-      period: "Period 6",
-      time: "13:15 - 14:00",
-      subject: "Free Period",
-      teacher: "",
-      room: "",
-      type: "free",
-    },
-  ],
-  saturday: [
-    {
-      id: "1",
-      period: "Period 1",
-      time: "08:30 - 09:15",
-      subject: "Extra Class - Mathematics",
-      teacher: "Mr. John Smith",
-      room: "Room 101",
-      type: "class",
-    },
-    {
-      id: "2",
-      period: "Period 2",
-      time: "09:15 - 10:00",
-      subject: "Extra Class - Physics",
-      teacher: "Dr. Sarah Lee",
-      room: "Physics Lab",
-      type: "class",
-    },
-    {
-      id: "3",
-      period: "Break",
-      time: "10:00 - 10:15",
-      subject: "Short Break",
-      teacher: "",
-      room: "",
-      type: "break",
-    },
-    {
-      id: "4",
-      period: "Period 3",
-      time: "10:15 - 11:00",
-      subject: "Extra Class - Chemistry",
-      teacher: "Mr. Robert Brown",
-      room: "Chemistry Lab",
-      type: "class",
-    },
-  ],
-};
+interface PeriodDB {
+  id: string;
+  period_number: number;
+  period_name: string | null;
+  start_time: string;
+  end_time: string;
+  is_break: boolean;
+  display_order: number | null;
+}
+
+interface SubjectDB {
+  id: string;
+  subject_name: string;
+  subject_code: string;
+}
+
+interface TeacherDB {
+  id: string;
+  first_name: string;
+  last_name: string;
+  employee_code: string;
+}
+
+interface StudentDB {
+  id: string;
+  section_id: string;
+  user_id: string;
+}
 
 const DAYS = [
-  { value: "monday", label: "Monday" },
-  { value: "tuesday", label: "Tuesday" },
-  { value: "wednesday", label: "Wednesday" },
-  { value: "thursday", label: "Thursday" },
-  { value: "friday", label: "Friday" },
-  { value: "saturday", label: "Saturday" },
+  { value: "Monday", label: "Monday" },
+  { value: "Tuesday", label: "Tuesday" },
+  { value: "Wednesday", label: "Wednesday" },
+  { value: "Thursday", label: "Thursday" },
+  { value: "Friday", label: "Friday" },
+  { value: "Saturday", label: "Saturday" },
 ];
 
 const MyTimetablePage = () => {
   const { user } = useAuth();
   const { canView } = useModulePermissions("timetable");
 
-  const today = new Date()
-    .toLocaleDateString("en-US", { weekday: "long" })
-    .toLowerCase();
-  const [selectedDay, setSelectedDay] = useState(
-    today === "sunday" ? "monday" : today
+  const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+  const defaultDay = today === "Sunday" ? "Monday" : today;
+
+  // Fetch student's section (assuming user is a student)
+  const { data: studentData } = useSupabaseTable<StudentDB>(TABLES.STUDENTS, {
+    filters: user?.id ? { user_id: user.id } : undefined,
+  });
+  const sectionId = studentData?.[0]?.section_id;
+
+  // Fetch timetable entries for student's section
+  const { data: timetableData, isLoading } = useSupabaseTable<TimetableEntryDB>(
+    TABLES.TIMETABLES,
+    {
+      filters: sectionId
+        ? { section_id: sectionId, is_active: true }
+        : undefined,
+    }
   );
 
-  const getEntryStyle = (type: string) => {
-    switch (type) {
-      case "class":
-        return "border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30";
-      case "break":
-        return "border-l-4 border-l-yellow-500 bg-yellow-50 dark:bg-yellow-950/30";
-      case "lunch":
-        return "border-l-4 border-l-orange-500 bg-orange-50 dark:bg-orange-950/30";
-      case "free":
-        return "border-l-4 border-l-green-500 bg-green-50 dark:bg-green-950/30";
-      default:
-        return "";
+  // Fetch periods
+  const { data: periodsData } = useSupabaseTable<PeriodDB>(
+    TABLES.TIMETABLE_PERIODS,
+    {
+      orderBy: { column: "display_order", ascending: true },
     }
+  );
+
+  // Fetch subjects
+  const { data: subjectsData } = useSupabaseTable<SubjectDB>(TABLES.SUBJECTS);
+
+  // Fetch teachers
+  const { data: teachersData } = useSupabaseTable<TeacherDB>(TABLES.TEACHERS);
+
+  const timetableEntries = timetableData || [];
+  const periods = periodsData || [];
+  const subjects = subjectsData || [];
+  const teachers = teachersData || [];
+
+  // Helper functions
+  const getSubjectName = (subjectId: string | null) => {
+    if (!subjectId) return "-";
+    const subject = subjects.find((s) => s.id === subjectId);
+    return subject?.subject_name || "-";
+  };
+
+  const getTeacherName = (teacherId: string | null) => {
+    if (!teacherId) return "-";
+    const teacher = teachers.find((t) => t.id === teacherId);
+    return teacher ? `${teacher.first_name} ${teacher.last_name}` : "-";
+  };
+
+  const formatTime = (time: string) => {
+    if (!time) return "";
+    const [hours, minutes] = time.split(":");
+    const hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+  };
+
+  // Build timetable by day
+  const timetableByDay = useMemo(() => {
+    const byDay: Record<
+      string,
+      Array<{
+        id: string;
+        period: PeriodDB;
+        entry: TimetableEntryDB | null;
+      }>
+    > = {};
+
+    DAYS.forEach((day) => {
+      byDay[day.value] = periods.map((period) => {
+        const entry = timetableEntries.find(
+          (e) => e.day_of_week === day.value && e.period_id === period.id
+        );
+        return {
+          id: `${day.value}-${period.id}`,
+          period,
+          entry: entry || null,
+        };
+      });
+    });
+
+    return byDay;
+  }, [timetableEntries, periods]);
+
+  // Calculate stats
+  const todayClasses =
+    timetableByDay[defaultDay]?.filter(
+      (item) => item.entry && !item.period.is_break
+    ).length || 0;
+
+  const nextClass = timetableByDay[defaultDay]?.find(
+    (item) => item.entry && !item.period.is_break
+  );
+
+  const getEntryStyle = (isBreak: boolean, hasClass: boolean) => {
+    if (isBreak) {
+      return "border-l-4 border-l-yellow-500 bg-yellow-50 dark:bg-yellow-950/30";
+    }
+    if (hasClass) {
+      return "border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30";
+    }
+    return "border-l-4 border-l-gray-300 bg-gray-50 dark:bg-gray-950/30";
   };
 
   if (!canView) {
@@ -478,8 +184,6 @@ const MyTimetablePage = () => {
       </div>
     );
   }
-
-  const todaySchedule = mockTimetable[selectedDay] || [];
 
   return (
     <div className="space-y-6">
@@ -516,11 +220,7 @@ const MyTimetablePage = () => {
               <BookOpen className="h-8 w-8 text-green-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Classes Today</p>
-                <p className="font-semibold">
-                  {mockTimetable[today]?.filter((e) => e.type === "class")
-                    .length || 0}{" "}
-                  Classes
-                </p>
+                <p className="font-semibold">{todayClasses} Classes</p>
               </div>
             </div>
           </CardContent>
@@ -532,7 +232,9 @@ const MyTimetablePage = () => {
               <div>
                 <p className="text-sm text-muted-foreground">Next Class</p>
                 <p className="font-semibold">
-                  {mockTimetable[today]?.[0]?.subject || "No classes"}
+                  {nextClass?.entry
+                    ? getSubjectName(nextClass.entry.subject_id)
+                    : "No classes"}
                 </p>
               </div>
             </div>
@@ -549,70 +251,102 @@ const MyTimetablePage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs value={selectedDay} onValueChange={setSelectedDay}>
-            <TabsList className="grid grid-cols-6 w-full">
-              {DAYS.map((day) => (
-                <TabsTrigger
-                  key={day.value}
-                  value={day.value}
-                  className={
-                    day.value === today ? "border-b-2 border-primary" : ""
-                  }
-                >
-                  {day.label.slice(0, 3)}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+            </div>
+          ) : !sectionId ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No section assigned to your account</p>
+              <p className="text-sm">Please contact your administrator</p>
+            </div>
+          ) : periods.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No periods configured</p>
+            </div>
+          ) : (
+            <Tabs defaultValue={defaultDay}>
+              <TabsList className="grid grid-cols-6 w-full">
+                {DAYS.map((day) => (
+                  <TabsTrigger
+                    key={day.value}
+                    value={day.value}
+                    className={
+                      day.value === today ? "border-b-2 border-primary" : ""
+                    }
+                  >
+                    {day.label.slice(0, 3)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
 
-            {DAYS.map((day) => (
-              <TabsContent key={day.value} value={day.value} className="mt-4">
-                <div className="space-y-3">
-                  {(mockTimetable[day.value] || []).map((entry) => (
-                    <div
-                      key={entry.id}
-                      className={`p-4 rounded-lg ${getEntryStyle(entry.type)}`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">{entry.period}</Badge>
-                            <span className="text-sm text-muted-foreground">
-                              {entry.time}
-                            </span>
-                          </div>
-                          <h3 className="font-semibold text-lg">
-                            {entry.subject}
-                          </h3>
-                          {entry.type === "class" && (
-                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <User className="h-4 w-4" />
-                                {entry.teacher}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <MapPin className="h-4 w-4" />
-                                {entry.room}
-                              </div>
+              {DAYS.map((day) => (
+                <TabsContent key={day.value} value={day.value} className="mt-4">
+                  <div className="space-y-3">
+                    {(timetableByDay[day.value] || []).map((item) => (
+                      <div
+                        key={item.id}
+                        className={`p-4 rounded-lg ${getEntryStyle(
+                          item.period.is_break,
+                          !!item.entry
+                        )}`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline">
+                                {item.period.period_name ||
+                                  `Period ${item.period.period_number}`}
+                              </Badge>
+                              <span className="text-sm text-muted-foreground">
+                                {formatTime(item.period.start_time)} -{" "}
+                                {formatTime(item.period.end_time)}
+                              </span>
                             </div>
+                            <h3 className="font-semibold text-lg">
+                              {item.period.is_break
+                                ? item.period.period_name || "Break"
+                                : item.entry
+                                ? getSubjectName(item.entry.subject_id)
+                                : "Free Period"}
+                            </h3>
+                            {!item.period.is_break && item.entry && (
+                              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-1">
+                                  <User className="h-4 w-4" />
+                                  {getTeacherName(item.entry.teacher_id)}
+                                </div>
+                                {item.entry.room_number && (
+                                  <div className="flex items-center gap-1">
+                                    <MapPin className="h-4 w-4" />
+                                    {item.entry.room_number}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          {item.period.is_break ? (
+                            <Badge variant="secondary">Break</Badge>
+                          ) : item.entry ? (
+                            <Badge>Class</Badge>
+                          ) : (
+                            <Badge variant="secondary">Free</Badge>
                           )}
                         </div>
-                        {entry.type === "class" && <Badge>Class</Badge>}
-                        {entry.type === "break" && (
-                          <Badge variant="secondary">Break</Badge>
-                        )}
-                        {entry.type === "lunch" && (
-                          <Badge variant="outline">Lunch</Badge>
-                        )}
-                        {entry.type === "free" && (
-                          <Badge variant="secondary">Free</Badge>
-                        )}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
+                    ))}
+                    {(timetableByDay[day.value] || []).length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p>No schedule for {day.label}</p>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Route,
   Search,
@@ -188,7 +189,14 @@ export function RoutesList() {
           </p>
         </div>
         {canCreate && (
-          <Button onClick={() => toast({ title: "Add Route", description: "Route form coming soon." })}>
+          <Button
+            onClick={() =>
+              toast({
+                title: "Add Route",
+                description: "Route form coming soon.",
+              })
+            }
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Route
           </Button>

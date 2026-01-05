@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   ClipboardList,
   Search,
@@ -190,7 +191,14 @@ export function ComplaintsList() {
           </p>
         </div>
         {canCreate && (
-          <Button onClick={() => toast({ title: "New Complaint", description: "Complaint form coming soon." })}>
+          <Button
+            onClick={() =>
+              toast({
+                title: "New Complaint",
+                description: "Complaint form coming soon.",
+              })
+            }
+          >
             <Plus className="mr-2 h-4 w-4" />
             New Complaint
           </Button>

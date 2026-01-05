@@ -16,6 +16,7 @@ import {
   AddEditClassModal,
   DeleteClassDialog,
   BulkScheduleModal,
+  MergeClassesDialog,
   type SectionDB,
   type SubjectDB,
   type TeacherDB,
@@ -23,120 +24,26 @@ import {
   type ClassInfo,
   type ScheduleSlot,
 } from "./components";
+import { mergeClassesForTeacher, unmergeClass } from "./utils/mergeClasses";
+
+// Types
+interface AcademicYearDB {
+  id: string;
+  academic_year: string;
+  is_current: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 // Helper to generate unique IDs
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
-// Default mock data
-const defaultSubjects = [
-  "Physics",
-  "Chemistry",
-  "Math",
-  "Biology",
-  "GK",
-  "English",
-];
-const defaultTeachers = [
-  { id: "MNP", name: "MNP - Physics" },
-  { id: "APCH", name: "APCH - Chemistry" },
-  { id: "UKCH", name: "UKCH - Chemistry" },
-  { id: "VMM", name: "VMM - Math" },
-  { id: "VSM", name: "VSM - Math" },
-  { id: "ASM", name: "ASM - Math" },
-  { id: "RCM", name: "RCM - Math" },
-  { id: "ASB", name: "ASB - Biology" },
-  { id: "ZAP", name: "ZAP - GK" },
-  { id: "MNCH", name: "MNCH - Chemistry" },
-];
-const defaultBranches: string[] = [];
-
-// Initial schedule data
-const initialSchedule: ScheduleSlot[] = [
-  {
-    time: "08:00-10:00",
-    slots: {
-      "Manpada Branch - 27MJ1": {
-        id: generateId(),
-        subject: "Chemistry",
-        teacher: "UKCH",
-      },
-      "Thane HO Branch": { id: generateId(), subject: "Math", teacher: "RCM" },
-    },
-  },
-  {
-    time: "08:30-10:30",
-    slots: {
-      "Kalyan Branch - 27KJ1": {
-        id: generateId(),
-        subject: "Physics",
-        teacher: "MNP",
-      },
-    },
-  },
-  {
-    time: "10:00-12:00",
-    slots: {
-      "Palava Branch - JEE Advance Batch 2026": {
-        id: generateId(),
-        subject: "GK",
-        teacher: "ZAP",
-      },
-    },
-  },
-  {
-    time: "10:15-12:15",
-    slots: {
-      "Manpada Branch - 27MJ1": {
-        id: generateId(),
-        subject: "Math",
-        teacher: "VMM",
-      },
-    },
-  },
-  {
-    time: "11:00-13:00",
-    slots: {
-      "Kalyan Branch - 27KJ1": {
-        id: generateId(),
-        subject: "Chemistry",
-        teacher: "APCH",
-      },
-      "Kalyan Branch - 27KJ2": {
-        id: generateId(),
-        subject: "Math",
-        teacher: "ASM",
-      },
-    },
-  },
-  { time: "13:00-15:00", slots: {} },
-  {
-    time: "13:30-15:30",
-    slots: {
-      "Kalyan Branch - 27KJ2": {
-        id: generateId(),
-        subject: "Biology",
-        teacher: "ASB",
-      },
-      "Kalyan Branch - 27KN1": {
-        id: generateId(),
-        subject: "Math",
-        teacher: "VSM",
-      },
-      "Kalyan Branch - 27KJ1": {
-        id: generateId(),
-        subject: "Chemistry",
-        teacher: "MNCH",
-        isMerged: true,
-      },
-    },
-  },
-  { time: "16:00-18:00", slots: {} },
-];
-
 const TimetablesList = () => {
   const { toast } = useToast();
-  const [selectedWeek, setSelectedWeek] = useState("2025-12-08");
-  const [schedule, setSchedule] = useState<ScheduleSlot[]>(initialSchedule);
+  const [selectedWeek, setSelectedWeek] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [schedule, setSchedule] = useState<ScheduleSlot[]>([]);
 
   // Fetch data from Supabase
   const { data: sectionsData } = useSupabaseTable<SectionDB>(TABLES.SECTIONS, {
@@ -151,19 +58,40 @@ const TimetablesList = () => {
     orderBy: { column: "first_name", ascending: true },
   });
 
-  // Use database data if available, otherwise fall back to mock data
-  const subjects = subjectsData?.map((s) => s.subject_name) || defaultSubjects;
+  const { data: academicYearData } = useSupabaseTable<AcademicYearDB>(
+    TABLES.ACADEMIC_YEARS,
+    {
+      filters: { is_current: true },
+    }
+  );
+  const currentAcademicYear = academicYearData?.[0];
+
+  // Fetch timetable data
+  const {
+    data: timetableData,
+    createMutation: createTimetable,
+    updateMutation: updateTimetable,
+    deleteMutation: deleteTimetable,
+  } = useSupabaseTable<TimetableDB>(TABLES.TIMETABLES);
+
+  // Use database data
+  const subjects = subjectsData?.map((s) => s.subject_name) || [];
   const teachers =
     teachersData?.map((t) => ({
       id: t.employee_code,
       name: `${t.employee_code} - ${t.first_name} ${t.last_name}`,
-    })) || defaultTeachers;
-  const branches = sectionsData?.map((s) => s.section_name) || defaultBranches;
+    })) || [];
+  const branches = sectionsData?.map((s) => s.section_name) || [];
 
   // Modal states
   const [isBulkScheduleOpen, setIsBulkScheduleOpen] = useState(false);
   const [isAddEditOpen, setIsAddEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isMergeOpen, setIsMergeOpen] = useState(false);
+  const [mergeContext, setMergeContext] = useState<{
+    timeIndex: number;
+    period: string;
+  } | null>(null);
 
   // Edit form state
   const [editingSlot, setEditingSlot] = useState<{
@@ -217,7 +145,7 @@ const TimetablesList = () => {
     setIsDeleteOpen(true);
   };
 
-  const handleSaveClass = () => {
+  const handleSaveClass = async () => {
     if (!editingSlot || !formData.subject || !formData.teacher) {
       toast({
         title: "Missing information",
@@ -227,41 +155,196 @@ const TimetablesList = () => {
       return;
     }
 
-    const newSchedule = [...schedule];
-    const slot = newSchedule[editingSlot.timeIndex];
+    if (!currentAcademicYear?.id) {
+      toast({
+        title: "Error",
+        description: "No active academic year found.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    slot.slots[editingSlot.branch] = {
-      id: editingSlot.classInfo?.id || generateId(),
-      subject: formData.subject,
-      teacher: formData.teacher,
-      isMerged: formData.isMerged,
-    };
+    try {
+      const newSchedule = [...schedule];
+      const slot = newSchedule[editingSlot.timeIndex];
+
+      const classId = editingSlot.classInfo?.id || generateId();
+
+      // Prepare data for database
+      const sectionId = sectionsData?.find(
+        (s) => s.section_name === editingSlot.branch
+      )?.id;
+      const subjectId = subjectsData?.find(
+        (s) => s.subject_name === formData.subject
+      )?.id;
+      const teacherId = teachersData?.find(
+        (t) =>
+          `${t.employee_code} - ${t.first_name} ${t.last_name}` ===
+          formData.teacher
+      )?.id;
+
+      if (!sectionId || !subjectId || !teacherId) {
+        toast({
+          title: "Error",
+          description:
+            "Could not find section, subject, or teacher in database.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Save to database
+      if (editingSlot.classInfo?.id) {
+        // Update existing
+        await updateTimetable.mutateAsync({
+          id: classId,
+          updates: {
+            section_id: sectionId,
+            subject_id: subjectId,
+            teacher_id: teacherId,
+            academic_year_id: currentAcademicYear.id,
+            is_active: true,
+          } as any,
+        });
+      } else {
+        // Create new
+        await createTimetable.mutateAsync({
+          id: classId,
+          section_id: sectionId,
+          subject_id: subjectId,
+          teacher_id: teacherId,
+          academic_year_id: currentAcademicYear.id,
+          is_active: true,
+        } as any);
+      }
+
+      // Update local state
+      slot.slots[editingSlot.branch] = {
+        id: classId,
+        subject: formData.subject,
+        teacher: formData.teacher,
+        isMerged: formData.isMerged,
+      };
+
+      setSchedule(newSchedule);
+      setIsAddEditOpen(false);
+      setEditingSlot(null);
+
+      toast({
+        title: editingSlot.classInfo ? "Class updated" : "Class added",
+        description: `${formData.subject} with ${formData.teacher} has been ${
+          editingSlot.classInfo ? "updated" : "scheduled"
+        }.`,
+      });
+    } catch (error) {
+      console.error("Error saving class:", error);
+      toast({
+        title: "Error saving class",
+        description: "Failed to save the class to the database.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteClass = async () => {
+    if (!editingSlot) return;
+
+    try {
+      const classId = editingSlot.classInfo?.id;
+
+      // Delete from database if it exists
+      if (classId) {
+        await deleteTimetable.mutateAsync(classId);
+      }
+
+      // Update local state
+      const newSchedule = [...schedule];
+      delete newSchedule[editingSlot.timeIndex].slots[editingSlot.branch];
+
+      setSchedule(newSchedule);
+      setIsDeleteOpen(false);
+      setEditingSlot(null);
+
+      toast({
+        title: "Class deleted",
+        description: "The class has been removed from the schedule.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error deleting class",
+        description: "Failed to delete the class from the database.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMergeClick = (timeIndex: number, period: string) => {
+    setMergeContext({ timeIndex, period });
+    setIsMergeOpen(true);
+  };
+
+  const handleMerge = (masterSection: string, sectionsToMerge: string[]) => {
+    if (
+      !mergeContext ||
+      sectionsToMerge.length < 2 ||
+      !schedule[mergeContext.timeIndex]
+    ) {
+      return;
+    }
+
+    const slot = schedule[mergeContext.timeIndex];
+    const masterClass = slot.slots[masterSection];
+
+    if (!masterClass) return;
+
+    const newSchedule = mergeClassesForTeacher(
+      schedule,
+      branches,
+      masterClass.teacher,
+      masterClass.subject,
+      mergeContext.period,
+      masterSection
+    );
 
     setSchedule(newSchedule);
-    setIsAddEditOpen(false);
-    setEditingSlot(null);
+    setIsMergeOpen(false);
+    setMergeContext(null);
 
     toast({
-      title: editingSlot.classInfo ? "Class updated" : "Class added",
-      description: `${formData.subject} with ${formData.teacher} has been ${
-        editingSlot.classInfo ? "updated" : "scheduled"
-      }.`,
+      title: "Classes merged",
+      description: `Merged ${sectionsToMerge.length} sections for ${masterClass.subject}.`,
     });
   };
 
-  const handleDeleteClass = () => {
-    if (!editingSlot) return;
+  const handleUnmerge = (timeIndex: number, masterSection: string) => {
+    const slot = schedule[timeIndex];
+    const masterClass = slot.slots[masterSection];
 
-    const newSchedule = [...schedule];
-    delete newSchedule[editingSlot.timeIndex].slots[editingSlot.branch];
+    if (!masterClass?.mergedSections) return;
+
+    // Create a map of original classes before unmerging
+    const originalClasses = new Map<string, ClassInfo>();
+    masterClass.mergedSections.forEach((section) => {
+      originalClasses.set(section, {
+        id: generateId(),
+        subject: masterClass.subject,
+        teacher: masterClass.teacher,
+        isMerged: false,
+      });
+    });
+
+    const newSchedule = unmergeClass(
+      schedule,
+      timeIndex,
+      masterSection,
+      originalClasses
+    );
 
     setSchedule(newSchedule);
-    setIsDeleteOpen(false);
-    setEditingSlot(null);
 
     toast({
-      title: "Class deleted",
-      description: "The class has been removed from the schedule.",
+      title: "Classes unmerged",
+      description: `Unmerged ${masterClass.mergedSections.length} sections.`,
     });
   };
 
@@ -300,12 +383,70 @@ const TimetablesList = () => {
     });
   };
 
-  const handleSaveBulkSchedule = () => {
-    setIsBulkScheduleOpen(false);
-    toast({
-      title: "Timetable saved",
-      description: "The bulk schedule has been saved successfully.",
-    });
+  const handleSaveBulkSchedule = async () => {
+    try {
+      // Collect all entries from schedule to save
+      const entriesToSave = [];
+
+      for (let slotIndex = 0; slotIndex < schedule.length; slotIndex++) {
+        const slot = schedule[slotIndex];
+        for (const [sectionName, classInfo] of Object.entries(slot.slots)) {
+          if (classInfo && classInfo.id && !classInfo.isMerged) {
+            // Only save non-merged classes (merged classes are represented by master section)
+            const sectionId = sectionsData?.find(
+              (s) => s.section_name === sectionName
+            )?.id;
+            const subjectId = subjectsData?.find(
+              (s) => s.subject_name === classInfo.subject
+            )?.id;
+            const teacherId = teachersData?.find(
+              (t) =>
+                `${t.employee_code} - ${t.first_name} ${t.last_name}` ===
+                classInfo.teacher
+            )?.id;
+
+            if (sectionId && subjectId && teacherId) {
+              entriesToSave.push({
+                id: classInfo.id,
+                section_id: sectionId,
+                subject_id: subjectId,
+                teacher_id: teacherId,
+                is_active: true,
+              });
+            }
+          }
+        }
+      }
+
+      // Save all entries to database
+      if (entriesToSave.length > 0) {
+        for (const entry of entriesToSave) {
+          // Check if exists and update or insert
+          const existing = timetableData?.find((t) => t.id === entry.id);
+          if (existing) {
+            await updateTimetable.mutateAsync({
+              id: entry.id,
+              updates: entry,
+            });
+          } else {
+            await createTimetable.mutateAsync(entry as any);
+          }
+        }
+      }
+
+      setIsBulkScheduleOpen(false);
+      toast({
+        title: "Timetable saved",
+        description: `${entriesToSave.length} class entries have been saved successfully.`,
+      });
+    } catch (error) {
+      console.error("Error saving bulk schedule:", error);
+      toast({
+        title: "Error saving timetable",
+        description: "Failed to save the schedule. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -337,6 +478,8 @@ const TimetablesList = () => {
         onAddClass={handleAddClass}
         onEditClass={handleEditClass}
         onDeleteClass={handleDeleteClick}
+        onMergeClick={handleMergeClick}
+        onUnmergeClick={handleUnmerge}
       />
 
       {/* Add/Edit Class Modal */}
@@ -358,6 +501,22 @@ const TimetablesList = () => {
         onOpenChange={setIsDeleteOpen}
         onConfirm={handleDeleteClass}
       />
+
+      {/* Merge Classes Dialog */}
+      {mergeContext && (
+        <MergeClassesDialog
+          isOpen={isMergeOpen}
+          onClose={() => {
+            setIsMergeOpen(false);
+            setMergeContext(null);
+          }}
+          onMerge={handleMerge}
+          schedule={schedule}
+          branches={branches}
+          timeIndex={mergeContext.timeIndex}
+          period={mergeContext.period}
+        />
+      )}
 
       {/* Bulk Schedule Modal */}
       <BulkScheduleModal

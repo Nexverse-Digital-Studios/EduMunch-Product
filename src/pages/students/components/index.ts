@@ -7,3 +7,4 @@ export { StudentCreate } from "./StudentCreate";
 export { StudentDetail } from "./StudentDetail";
 export { StudentEdit } from "./StudentEdit";
 export { StudentsExport } from "./StudentsExport";
+export { StudentParentsTab } from "./StudentParentsTab";

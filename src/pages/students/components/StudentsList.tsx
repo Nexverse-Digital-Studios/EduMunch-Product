@@ -3,7 +3,7 @@
  * =======================================
  * Main students list with search, filters, and CRUD operations.
  * Create and Edit operations now use modal dialogs instead of separate routes.
- * 
+ *
  * Route Consolidation: Replaces /students/create and /students/:id/edit routes
  */
 
@@ -16,6 +16,7 @@ import {
   Edit,
   Trash2,
   Download,
+  Upload,
   Filter,
   Users,
   GraduationCap,
@@ -58,6 +59,12 @@ import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { StudentDB } from "./types";
 import { StudentFormDialog } from "./StudentFormDialog";
+import { BulkImportDialog } from "@/components/ui/bulk-import-dialog";
+import {
+  exportToExcel,
+  STUDENT_IMPORT_TEMPLATE,
+  STUDENT_IMPORT_CONFIG,
+} from "@/lib/excel";
 
 const INDEX_TOKEN = "1emaet";
 
@@ -86,15 +93,20 @@ export function StudentsList() {
   const [selectedClass, setSelectedClass] = useState<string>("all");
   const [selectedSection, setSelectedSection] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  
+
   // Modal states for create/edit (consolidation - replaces separate routes)
   const [showStudentModal, setShowStudentModal] = useState(false);
   const [editStudentId, setEditStudentId] = useState<string | null>(null);
+  const [showBulkImportModal, setShowBulkImportModal] = useState(false);
 
-  const { data: students, isLoading, refetch } = useSupabaseTable<StudentDB>(
-    `students_${INDEX_TOKEN}`,
-    { orderBy: { column: "first_name", ascending: true } }
-  );
+  const {
+    data: students,
+    isLoading,
+    refetch,
+    createMutation,
+  } = useSupabaseTable<StudentDB>(`students_${INDEX_TOKEN}`, {
+    orderBy: { column: "first_name", ascending: true },
+  });
 
   const { deleteMutation } = useSupabaseTable<StudentDB>(
     `students_${INDEX_TOKEN}`
@@ -179,6 +191,148 @@ export function StudentsList() {
     }
   };
 
+  // Export students to Excel
+  const handleExport = () => {
+    if (!filteredStudents || filteredStudents.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No students to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    exportToExcel({
+      data: filteredStudents,
+      filename: `students_export_${new Date().toISOString().split("T")[0]}`,
+      sheetName: "Students",
+      columns: [
+        { header: "Admission Number", key: "admission_number", width: 18 },
+        { header: "Roll Number", key: "roll_number", width: 12 },
+        { header: "First Name", key: "first_name", width: 15 },
+        { header: "Middle Name", key: "middle_name", width: 15 },
+        { header: "Last Name", key: "last_name", width: 15 },
+        { header: "Class", key: (s) => getClassName(s.class_id), width: 12 },
+        {
+          header: "Section",
+          key: (s) => getSectionName(s.section_id),
+          width: 10,
+        },
+        { header: "Gender", key: "gender", width: 10 },
+        { header: "Date of Birth", key: "date_of_birth", width: 14 },
+        { header: "Email", key: "email", width: 25 },
+        { header: "Phone", key: "phone", width: 15 },
+        { header: "Status", key: "status", width: 12 },
+        { header: "Admission Date", key: "admission_date", width: 14 },
+      ],
+    });
+
+    toast({
+      title: "Export Complete",
+      description: `Exported ${filteredStudents.length} students to Excel.`,
+    });
+  };
+
+  // Bulk import handler
+  const handleBulkImport = async (data: Record<string, any>[]) => {
+    let success = 0;
+    let failed = 0;
+    const results: {
+      data: Record<string, any>;
+      success: boolean;
+      reason?: string;
+    }[] = [];
+
+    // Get current academic year
+    const currentAcademicYear = academicYears?.find((y) => y.is_current);
+    if (!currentAcademicYear) {
+      toast({
+        title: "Error",
+        description: "No current academic year found. Please set one first.",
+        variant: "destructive",
+      });
+      // Mark all as failed
+      for (const row of data) {
+        results.push({
+          data: row,
+          success: false,
+          reason: "No current academic year found",
+        });
+      }
+      return { success: 0, failed: data.length, results };
+    }
+
+    // Get first class and section as default (user should update later)
+    const defaultClass = classes?.[0];
+    const defaultSection = sections?.find(
+      (s) => s.class_id === defaultClass?.id
+    );
+
+    // Get existing admission numbers to check for duplicates
+    const existingAdmissions = new Set(
+      students?.map((s) => s.admission_number) || []
+    );
+
+    for (const row of data) {
+      // Skip if admission number already exists
+      if (existingAdmissions.has(row.admission_number)) {
+        results.push({
+          data: row,
+          success: false,
+          reason: `Duplicate admission number: ${row.admission_number}`,
+        });
+        failed++;
+        continue;
+      }
+
+      try {
+        await createMutation.mutateAsync({
+          admission_number: row.admission_number,
+          first_name: row.first_name,
+          middle_name: row.middle_name || null,
+          last_name: row.last_name,
+          date_of_birth: row.date_of_birth,
+          gender: row.gender || "Male",
+          blood_group: row.blood_group || null,
+          nationality: row.nationality || "Indian",
+          religion: row.religion || null,
+          category: row.category || null,
+          email: row.email || null,
+          phone: row.phone || null,
+          address_line1: row.address_line1 || null,
+          city: row.city || null,
+          state: row.state || null,
+          pincode: row.pincode || null,
+          country: "India",
+          admission_date:
+            row.admission_date || new Date().toISOString().split("T")[0],
+          previous_school: row.previous_school || null,
+          emergency_contact_name: row.emergency_contact_name || null,
+          emergency_contact_phone: row.emergency_contact_phone || null,
+          class_id: defaultClass?.id || "",
+          section_id: defaultSection?.id || "",
+          academic_year_id: currentAcademicYear.id,
+          status: "active",
+        });
+        results.push({ data: row, success: true });
+        success++;
+        // Add to existing set to prevent duplicates within the same import batch
+        existingAdmissions.add(row.admission_number);
+      } catch (error: any) {
+        console.error("Failed to import student:", row, error);
+        results.push({
+          data: row,
+          success: false,
+          reason: error?.message || "Database insertion failed",
+        });
+        failed++;
+      }
+    }
+
+    refetch();
+    return { success, failed, results };
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<
       string,
@@ -228,17 +382,28 @@ export function StudentsList() {
           </p>
         </div>
         <div className="flex gap-2">
-          {canExport && (
-            <Button 
-              variant="outline" 
-              onClick={() => toast({ title: "Export", description: "Export functionality coming soon." })}
+          {canCreate && (
+            <Button
+              variant="outline"
+              onClick={() => setShowBulkImportModal(true)}
             >
+              <Upload className="mr-2 h-4 w-4" />
+              Bulk Import
+            </Button>
+          )}
+          {canExport && (
+            <Button variant="outline" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
           )}
           {canCreate && (
-            <Button onClick={() => { setEditStudentId(null); setShowStudentModal(true); }}>
+            <Button
+              onClick={() => {
+                setEditStudentId(null);
+                setShowStudentModal(true);
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Student
             </Button>
@@ -419,10 +584,13 @@ export function StudentsList() {
                           </Link>
                         </Button>
                         {canUpdate && (
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="icon"
-                            onClick={() => { setEditStudentId(student.id); setShowStudentModal(true); }}
+                            onClick={() => {
+                              setEditStudentId(student.id);
+                              setShowStudentModal(true);
+                            }}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -491,26 +659,41 @@ export function StudentsList() {
         }}
         mode={editStudentId ? "edit" : "create"}
         studentId={editStudentId || undefined}
-        initialData={editStudentId && students ? 
-          (() => {
-            const student = students.find(s => s.id === editStudentId);
-            if (!student) return undefined;
-            return {
-              first_name: student.first_name,
-              middle_name: student.middle_name || "",
-              last_name: student.last_name,
-              admission_number: student.admission_number,
-              class_id: student.class_id,
-              section_id: student.section_id,
-              academic_year_id: student.academic_year_id,
-              date_of_birth: student.date_of_birth || "",
-              gender: student.gender,
-              admission_date: student.admission_date || "",
-            };
-          })() 
-          : undefined
+        initialData={
+          editStudentId && students
+            ? (() => {
+                const student = students.find((s) => s.id === editStudentId);
+                if (!student) return undefined;
+                return {
+                  first_name: student.first_name,
+                  middle_name: student.middle_name || "",
+                  last_name: student.last_name,
+                  admission_number: student.admission_number,
+                  class_id: student.class_id,
+                  section_id: student.section_id,
+                  academic_year_id: student.academic_year_id,
+                  date_of_birth: student.date_of_birth || "",
+                  gender: student.gender,
+                  admission_date: student.admission_date || "",
+                };
+              })()
+            : undefined
         }
         onSuccess={() => refetch()}
+      />
+
+      {/* Bulk Import Dialog */}
+      <BulkImportDialog
+        open={showBulkImportModal}
+        onOpenChange={setShowBulkImportModal}
+        title="Bulk Import Students"
+        description="Import multiple students from an Excel file. Download the template to see the required format."
+        importConfig={STUDENT_IMPORT_CONFIG}
+        templateData={STUDENT_IMPORT_TEMPLATE}
+        templateFilename="students_import"
+        onImport={handleBulkImport}
+        entityName="students"
+        identifierField="admission_number"
       />
     </div>
   );

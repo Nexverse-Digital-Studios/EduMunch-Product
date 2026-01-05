@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   BookOpen,
   Search,
@@ -171,7 +172,14 @@ export function BooksList() {
           </p>
         </div>
         {canCreate && (
-          <Button onClick={() => toast({ title: "Add Book", description: "Book form coming soon." })}>
+          <Button
+            onClick={() =>
+              toast({
+                title: "Add Book",
+                description: "Book form coming soon.",
+              })
+            }
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Book
           </Button>
@@ -277,7 +285,15 @@ export function BooksList() {
                   : "Try adjusting your filters"}
               </p>
               {canCreate && books?.length === 0 && (
-                <Button className="mt-4" onClick={() => toast({ title: "Add Book", description: "Book form coming soon." })}>
+                <Button
+                  className="mt-4"
+                  onClick={() =>
+                    toast({
+                      title: "Add Book",
+                      description: "Book form coming soon.",
+                    })
+                  }
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   Add First Book
                 </Button>

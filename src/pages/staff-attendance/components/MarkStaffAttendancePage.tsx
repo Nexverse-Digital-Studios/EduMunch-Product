@@ -6,6 +6,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Save,
   CheckCircle,
@@ -43,7 +44,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
-import { TABLES } from "@/lib/supabase";
+import { TABLES, supabase } from "@/lib/supabase";
 import type {
   EmployeeReference,
   StaffAttendanceDB,
@@ -69,6 +70,7 @@ const statusOptions: {
 
 const MarkStaffAttendancePage = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
 
   const [selectedDate, setSelectedDate] = useState(today);
@@ -81,9 +83,27 @@ const MarkStaffAttendancePage = () => {
 
   // Fetch active employees
   const { data: employees, isLoading: isLoadingEmployees } =
-    useSupabaseTable<EmployeeReference>(TABLES.EMPLOYEES, {
-      filters: { status: "active" },
+    useSupabaseTable<EmployeeReference>(TABLES.EMPLOYEES);
+
+  // Fetch active teachers
+  const { data: teachers, isLoading: isLoadingTeachers } =
+    useSupabaseTable<EmployeeReference>(TABLES.TEACHERS);
+
+  // Combine employees and teachers, filter for active status
+  const allStaff = useMemo(() => {
+    const combined = [
+      ...(employees?.filter((e) => e.status === "active") || []),
+      ...(teachers?.filter((t) => t.status === "active") || []),
+    ];
+    // Remove duplicates by ID
+    const unique = new Map<string, EmployeeReference>();
+    combined.forEach((staff) => {
+      if (!unique.has(staff.id)) {
+        unique.set(staff.id, staff);
+      }
     });
+    return Array.from(unique.values());
+  }, [employees, teachers]);
 
   // Fetch existing attendance for selected date
   const { data: existingAttendance, isLoading: isLoadingAttendance } =
@@ -93,43 +113,43 @@ const MarkStaffAttendancePage = () => {
 
   // Get unique departments
   const departments = useMemo(() => {
-    if (!employees) return [];
-    const depts = new Set(employees.map((e) => e.department).filter(Boolean));
+    if (!allStaff) return [];
+    const depts = new Set(allStaff.map((e) => e.department).filter(Boolean));
     return Array.from(depts).sort();
-  }, [employees]);
+  }, [allStaff]);
 
-  // Filter employees
-  const filteredEmployees = useMemo(() => {
-    if (!employees) return [];
+  // Filter staff (teachers and employees)
+  const filteredStaff = useMemo(() => {
+    if (!allStaff) return [];
 
-    return employees.filter((emp) => {
+    return allStaff.filter((staff) => {
       const matchesSearch =
         searchQuery === "" ||
-        `${emp.first_name} ${emp.last_name}`
+        `${staff.first_name} ${staff.last_name}`
           .toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
-        emp.employee_code.toLowerCase().includes(searchQuery.toLowerCase());
+        staff.employee_code.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesDepartment =
-        departmentFilter === "all" || emp.department === departmentFilter;
+        departmentFilter === "all" || staff.department === departmentFilter;
 
       return matchesSearch && matchesDepartment;
     });
-  }, [employees, searchQuery, departmentFilter]);
+  }, [allStaff, searchQuery, departmentFilter]);
 
   // Initialize attendance entries from existing data
   useMemo(() => {
     if (existingAttendance && existingAttendance.length > 0) {
       const entries: Record<string, MarkAttendanceEntry> = {};
       existingAttendance.forEach((record) => {
-        // Find matching employee
-        const emp = employees?.find((e) => e.id === record.teacher_id);
-        if (emp) {
+        // Find matching staff (teacher or employee)
+        const staff = allStaff?.find((e) => e.id === record.teacher_id);
+        if (staff) {
           entries[record.teacher_id] = {
             employee_id: record.teacher_id,
-            employee_code: emp.employee_code,
-            employee_name: `${emp.first_name} ${emp.last_name}`,
-            designation: emp.designation,
+            employee_code: staff.employee_code,
+            employee_name: `${staff.first_name} ${staff.last_name}`,
+            designation: staff.designation,
             status: record.status,
             check_in_time: record.check_in_time,
             check_out_time: record.check_out_time,
@@ -139,25 +159,25 @@ const MarkStaffAttendancePage = () => {
       });
       setAttendanceEntries(entries);
     }
-  }, [existingAttendance, employees]);
+  }, [existingAttendance, allStaff]);
 
-  // Update attendance entry for an employee
+  // Update attendance entry for a staff member (teacher or employee)
   const updateEntry = (
-    employeeId: string,
+    staffId: string,
     field: keyof MarkAttendanceEntry,
     value: string
   ) => {
-    const emp = employees?.find((e) => e.id === employeeId);
-    if (!emp) return;
+    const staff = allStaff?.find((e) => e.id === staffId);
+    if (!staff) return;
 
     setAttendanceEntries((prev) => ({
       ...prev,
-      [employeeId]: {
-        ...prev[employeeId],
-        employee_id: employeeId,
-        employee_code: emp.employee_code,
-        employee_name: `${emp.first_name} ${emp.last_name}`,
-        designation: emp.designation,
+      [staffId]: {
+        ...prev[staffId],
+        employee_id: staffId,
+        employee_code: staff.employee_code,
+        employee_name: `${staff.first_name} ${staff.last_name}`,
+        designation: staff.designation,
         [field]: value,
       },
     }));
@@ -165,15 +185,15 @@ const MarkStaffAttendancePage = () => {
 
   // Quick action to mark all as present
   const markAllPresent = () => {
-    if (!employees) return;
+    if (!allStaff) return;
 
     const entries: Record<string, MarkAttendanceEntry> = {};
-    filteredEmployees.forEach((emp) => {
-      entries[emp.id] = {
-        employee_id: emp.id,
-        employee_code: emp.employee_code,
-        employee_name: `${emp.first_name} ${emp.last_name}`,
-        designation: emp.designation,
+    filteredStaff.forEach((staff) => {
+      entries[staff.id] = {
+        employee_id: staff.id,
+        employee_code: staff.employee_code,
+        employee_name: `${staff.first_name} ${staff.last_name}`,
+        designation: staff.designation,
         status: "Present",
         check_in_time: "09:00",
       };
@@ -188,7 +208,7 @@ const MarkStaffAttendancePage = () => {
     if (entries.length === 0) {
       toast({
         title: "No attendance marked",
-        description: "Please mark attendance for at least one employee.",
+        description: "Please mark attendance for at least one staff member.",
         variant: "destructive",
       });
       return;
@@ -196,18 +216,32 @@ const MarkStaffAttendancePage = () => {
 
     setIsSaving(true);
     try {
-      // In real implementation, this would call Supabase to upsert attendance records
-      console.log("Saving attendance:", {
-        date: selectedDate,
-        entries,
-      });
+      // Prepare upsert data
+      const upsertData = entries.map((entry) => ({
+        teacher_id: entry.employee_id,
+        attendance_date: selectedDate,
+        status: entry.status,
+        check_in_time: entry.check_in_time || null,
+        check_out_time: entry.check_out_time || null,
+        remarks: entry.remarks || null,
+      }));
+
+      // Use upsert to insert or update
+      const { error } = await supabase
+        .from(TABLES.TEACHER_ATTENDANCE)
+        .upsert(upsertData, {
+          onConflict: "teacher_id,attendance_date",
+        });
+
+      if (error) throw error;
 
       toast({
-        title: "Attendance saved",
-        description: `Attendance marked for ${entries.length} employee(s).`,
+        title: "Success",
+        description: `Attendance saved for ${entries.length} staff member(s).`,
       });
       navigate("/staff/attendance");
     } catch (error) {
+      console.error("Error saving attendance:", error);
       toast({
         title: "Error",
         description: "Failed to save attendance. Please try again.",
@@ -218,7 +252,8 @@ const MarkStaffAttendancePage = () => {
     }
   };
 
-  const isLoading = isLoadingEmployees || isLoadingAttendance;
+  const isLoading =
+    isLoadingEmployees || isLoadingTeachers || isLoadingAttendance;
 
   // Get current entry for an employee
   const getEntry = (employeeId: string): Partial<MarkAttendanceEntry> => {
@@ -311,10 +346,10 @@ const MarkStaffAttendancePage = () => {
               <div className="flex items-center gap-4 h-10">
                 <Badge variant="outline" className="h-8">
                   <Users className="mr-1 h-3 w-3" />
-                  {markedCount}/{filteredEmployees.length} Marked
+                  {markedCount}/{filteredStaff.length} Marked
                 </Badge>
-                <Badge variant="outline" className="h-8 bg-green-50">
-                  <CheckCircle className="mr-1 h-3 w-3 text-green-600" />
+                <Badge className="h-8 bg-green-600 text-white hover:bg-green-700">
+                  <CheckCircle className="mr-1 h-3 w-3" />
                   {presentCount} Present
                 </Badge>
               </div>
@@ -326,26 +361,27 @@ const MarkStaffAttendancePage = () => {
       {/* Attendance Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Employee Attendance</CardTitle>
+          <CardTitle>Staff Attendance</CardTitle>
           <CardDescription>
-            Mark attendance status for each employee
+            Mark attendance status for all staff members (teachers and
+            employees)
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="text-center py-8 text-muted-foreground">
-              Loading employees...
+              Loading staff...
             </div>
-          ) : filteredEmployees.length === 0 ? (
+          ) : filteredStaff.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              No employees found
+              No staff found
             </div>
           ) : (
             <div className="border rounded-md">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Employee</TableHead>
+                    <TableHead>Staff Member</TableHead>
                     <TableHead>Designation</TableHead>
                     <TableHead className="w-[150px]">Status</TableHead>
                     <TableHead className="w-[120px]">Check In</TableHead>
@@ -354,30 +390,28 @@ const MarkStaffAttendancePage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredEmployees.map((employee) => {
-                    const entry = getEntry(employee.id);
+                  {filteredStaff.map((staff) => {
+                    const entry = getEntry(staff.id);
                     return (
-                      <TableRow key={employee.id}>
+                      <TableRow key={staff.id}>
                         <TableCell>
                           <div>
                             <p className="font-medium">
-                              {employee.first_name} {employee.last_name}
+                              {staff.first_name} {staff.last_name}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              {employee.employee_code}
+                              {staff.employee_code}
                             </p>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm">
-                            {employee.designation}
-                          </span>
+                          <span className="text-sm">{staff.designation}</span>
                         </TableCell>
                         <TableCell>
                           <Select
                             value={entry.status || ""}
                             onValueChange={(value) =>
-                              updateEntry(employee.id, "status", value)
+                              updateEntry(staff.id, "status", value)
                             }
                           >
                             <SelectTrigger className="w-full">
@@ -405,7 +439,7 @@ const MarkStaffAttendancePage = () => {
                             value={entry.check_in_time || ""}
                             onChange={(e) =>
                               updateEntry(
-                                employee.id,
+                                staff.id,
                                 "check_in_time",
                                 e.target.value
                               )
@@ -419,7 +453,7 @@ const MarkStaffAttendancePage = () => {
                             value={entry.check_out_time || ""}
                             onChange={(e) =>
                               updateEntry(
-                                employee.id,
+                                staff.id,
                                 "check_out_time",
                                 e.target.value
                               )
@@ -432,11 +466,7 @@ const MarkStaffAttendancePage = () => {
                             placeholder="Optional remarks"
                             value={entry.remarks || ""}
                             onChange={(e) =>
-                              updateEntry(
-                                employee.id,
-                                "remarks",
-                                e.target.value
-                              )
+                              updateEntry(staff.id, "remarks", e.target.value)
                             }
                             className="w-full"
                           />

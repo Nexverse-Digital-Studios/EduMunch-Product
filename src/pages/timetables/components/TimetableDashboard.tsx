@@ -22,6 +22,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useModulePermissions } from "@/contexts/PermissionContext";
+import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
+import { TABLES } from "@/lib/supabase";
 
 // Import sub-page components for tab content
 import ViewTimetablesPage from "./ViewTimetablesPage";
@@ -36,6 +38,32 @@ const TimetableDashboard = () => {
   const { canView, canCreate, canUpdate, canExport } =
     useModulePermissions("timetable");
   const [activeTab, setActiveTab] = useState("dashboard");
+
+  // Fetch real data from database
+  const { data: sectionsData } = useSupabaseTable(TABLES.SECTIONS);
+  const { data: timetableData } = useSupabaseTable(TABLES.TIMETABLES, {
+    filters: { is_active: true },
+  });
+  const { data: substitutionsData } = useSupabaseTable(
+    TABLES.TIMETABLE_SUBSTITUTIONS,
+    {
+      filters: { is_active: true },
+    }
+  );
+
+  // Calculate real stats
+  const totalSections = sectionsData?.length || 0;
+
+  // Get today's day name
+  const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+  const classesToday =
+    timetableData?.filter((entry) => entry.day_of_week === today).length || 0;
+
+  // Active substitutions (today)
+  const todayStr = new Date().toISOString().split("T")[0];
+  const activeSubstitutions =
+    substitutionsData?.filter((sub) => sub.substitution_date === todayStr)
+      .length || 0;
 
   const quickActions = [
     {
@@ -99,19 +127,19 @@ const TimetableDashboard = () => {
   const stats = [
     {
       title: "Total Sections",
-      value: "24",
+      value: totalSections.toString(),
       icon: Users,
       description: "Active sections with timetables",
     },
     {
       title: "Classes Today",
-      value: "86",
+      value: classesToday.toString(),
       icon: Calendar,
-      description: "Scheduled for today",
+      description: `Scheduled for ${today}`,
     },
     {
       title: "Active Substitutions",
-      value: "3",
+      value: activeSubstitutions.toString(),
       icon: UserCheck,
       description: "Teachers on leave today",
     },
@@ -144,14 +172,20 @@ const TimetableDashboard = () => {
       </div>
 
       {/* Tabs for all timetable functionality */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="view">View</TabsTrigger>
           {canCreate && <TabsTrigger value="create">Create</TabsTrigger>}
           {canCreate && <TabsTrigger value="bulk">Bulk</TabsTrigger>}
           <TabsTrigger value="conflicts">Conflicts</TabsTrigger>
-          {canUpdate && <TabsTrigger value="substitute">Substitute</TabsTrigger>}
+          {canUpdate && (
+            <TabsTrigger value="substitute">Substitute</TabsTrigger>
+          )}
           {canUpdate && <TabsTrigger value="periods">Periods</TabsTrigger>}
           {canExport && <TabsTrigger value="export">Export</TabsTrigger>}
         </TabsList>
@@ -185,8 +219,8 @@ const TimetableDashboard = () => {
               {quickActions
                 .filter((action) => action.permission)
                 .map((action) => (
-                  <Card 
-                    key={action.tabValue} 
+                  <Card
+                    key={action.tabValue}
                     className={`hover:shadow-md transition-shadow cursor-pointer h-full ${
                       activeTab === action.tabValue ? "ring-2 ring-primary" : ""
                     }`}
@@ -222,7 +256,11 @@ const TimetableDashboard = () => {
               <div className="text-center py-8 text-muted-foreground">
                 <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Schedule overview will be displayed here</p>
-                <Button variant="outline" className="mt-4" onClick={() => setActiveTab("view")}>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => setActiveTab("view")}
+                >
                   View Full Timetable
                 </Button>
               </div>

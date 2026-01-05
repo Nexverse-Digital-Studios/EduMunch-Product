@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Users,
   Search,
@@ -166,12 +167,17 @@ export function LibraryMembers() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Library Members</h1>
-          <p className="text-muted-foreground">
-            {stats.active} active members
-          </p>
+          <p className="text-muted-foreground">{stats.active} active members</p>
         </div>
         {canCreate && (
-          <Button onClick={() => toast({ title: "Add Member", description: "Member form coming soon." })}>
+          <Button
+            onClick={() =>
+              toast({
+                title: "Add Member",
+                description: "Member form coming soon.",
+              })
+            }
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Member
           </Button>

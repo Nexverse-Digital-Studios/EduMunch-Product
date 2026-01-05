@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   UserCheck,
   Search,
@@ -212,7 +213,14 @@ export function AllocationsList() {
           </p>
         </div>
         {canCreate && (
-          <Button onClick={() => toast({ title: "Allocate Room", description: "Allocation form coming soon." })}>
+          <Button
+            onClick={() =>
+              toast({
+                title: "Allocate Room",
+                description: "Allocation form coming soon.",
+              })
+            }
+          >
             <Plus className="mr-2 h-4 w-4" />
             Allocate Room
           </Button>

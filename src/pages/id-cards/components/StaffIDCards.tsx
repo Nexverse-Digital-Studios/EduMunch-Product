@@ -66,11 +66,23 @@ export function StaffIDCards({ embedded = false }: StaffIDCardsProps) {
   const { canCreate } = useModulePermissions("id_cards");
   const { toast } = useToast();
 
-  // Fetch staff
-  const { data: staff, isLoading } = useSupabaseTable<StaffForIDCard>(
-    `employees_${INDEX_TOKEN}`,
-    { filters: {} }
-  );
+  // Fetch employees and teachers
+  const { data: employees, isLoading: isLoadingEmployees } =
+    useSupabaseTable<StaffForIDCard>(`employees_${INDEX_TOKEN}`, {
+      filters: {},
+    });
+
+  const { data: teachers, isLoading: isLoadingTeachers } =
+    useSupabaseTable<StaffForIDCard>(`teachers_${INDEX_TOKEN}`, {
+      filters: {},
+    });
+
+  const isLoading = isLoadingEmployees || isLoadingTeachers;
+
+  // Combine employees and teachers
+  const staff = useMemo(() => {
+    return [...(employees || []), ...(teachers || [])];
+  }, [employees, teachers]);
 
   // Get unique departments
   const departments = useMemo(() => {

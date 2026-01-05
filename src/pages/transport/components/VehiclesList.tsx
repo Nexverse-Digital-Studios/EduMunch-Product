@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Bus,
   Search,
@@ -199,7 +200,14 @@ export function VehiclesList() {
           </p>
         </div>
         {canCreate && (
-          <Button onClick={() => toast({ title: "Add Vehicle", description: "Vehicle form coming soon." })}>
+          <Button
+            onClick={() =>
+              toast({
+                title: "Add Vehicle",
+                description: "Vehicle form coming soon.",
+              })
+            }
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Vehicle
           </Button>

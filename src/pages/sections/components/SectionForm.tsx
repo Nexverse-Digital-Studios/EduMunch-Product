@@ -5,6 +5,7 @@
  */
 
 import { useForm } from "react-hook-form";
+import { useMemo } from "react";
 import { Loader2, LayoutGrid, Users, DoorOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -65,9 +66,9 @@ export function SectionForm({
     { filters: {} }
   );
 
-  // Fetch teachers (employees)
+  // Fetch teachers
   const { data: teachers } = useSupabaseTable<TeacherDB>(
-    `employees_${INDEX_TOKEN}`,
+    `teachers_${INDEX_TOKEN}`,
     { filters: {} }
   );
 
@@ -108,7 +109,7 @@ export function SectionForm({
               <SelectTrigger>
                 <SelectValue placeholder="Select class" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-60 overflow-y-scroll pr-2">
                 {sortedClasses.map((cls) => (
                   <SelectItem key={cls.id} value={cls.id}>
                     {cls.class_name} ({cls.class_code})
@@ -136,7 +137,7 @@ export function SectionForm({
               <SelectTrigger>
                 <SelectValue placeholder="Select section" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-60 overflow-y-scroll pr-2">
                 {SECTION_NAME_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
@@ -208,7 +209,7 @@ export function SectionForm({
               <SelectTrigger>
                 <SelectValue placeholder="Select capacity" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-60 overflow-y-scroll pr-2">
                 {CAPACITY_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
@@ -242,8 +243,10 @@ export function SectionForm({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 max-w-md">
+          <div className="space-y-3 max-w-md">
             <Label htmlFor="class_teacher_id">Class Teacher</Label>
+
+            {/* Teacher Dropdown */}
             <Select
               value={classTeacherId}
               onValueChange={(value) => setValue("class_teacher_id", value)}
@@ -251,14 +254,19 @@ export function SectionForm({
               <SelectTrigger>
                 <SelectValue placeholder="Select class teacher (optional)" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">No teacher assigned</SelectItem>
-                {teachers?.map((teacher) => (
-                  <SelectItem key={teacher.id} value={teacher.id}>
-                    {teacher.first_name} {teacher.last_name} (
-                    {teacher.employee_code})
+              <SelectContent className="max-h-60 overflow-y-scroll pr-2">
+                {teachers?.length > 0 ? (
+                  teachers.map((teacher) => (
+                    <SelectItem key={teacher.id} value={teacher.id}>
+                      {teacher.first_name} {teacher.last_name} (
+                      {teacher.employee_code})
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="__no_match__" disabled>
+                    No teachers found
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">

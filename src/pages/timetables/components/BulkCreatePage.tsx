@@ -5,6 +5,7 @@
  */
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, Save, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,14 @@ interface PeriodDB {
   end_time: string;
 }
 
+interface AcademicYearDB {
+  id: string;
+  year: string;
+  is_current: boolean;
+  start_date: string;
+  end_date: string;
+}
+
 const DAYS_OF_WEEK = [
   { value: 1, label: "Monday" },
   { value: 2, label: "Tuesday" },
@@ -68,6 +77,11 @@ const DAYS_OF_WEEK = [
   { value: 5, label: "Friday" },
   { value: 6, label: "Saturday" },
 ];
+
+const getDayName = (dayNumber: number): string => {
+  const day = DAYS_OF_WEEK.find((d) => d.value === dayNumber);
+  return day?.label || "";
+};
 
 const BulkCreatePage = () => {
   const navigate = useNavigate();
@@ -107,10 +121,24 @@ const BulkCreatePage = () => {
     }
   );
 
+  // Fetch academic year
+  const { data: academicYearData } = useSupabaseTable<AcademicYearDB>(
+    TABLES.ACADEMIC_YEARS,
+    {
+      filters: { is_current: true },
+    }
+  );
+
+  // Fetch and mutate timetables
+  const { createMutation: createTimetable } = useSupabaseTable(
+    TABLES.TIMETABLES
+  );
+
   const sections = sectionsData || [];
   const subjects = subjectsData || [];
   const teachers = teachersData || [];
   const periods = periodsData || [];
+  const currentAcademicYear = academicYearData?.[0];
 
   const addEntry = () => {
     setEntries([
@@ -176,9 +204,47 @@ const BulkCreatePage = () => {
     setIsSubmitting(true);
 
     try {
-      // Create timetable entries for each day
-      // In production, this would be a bulk insert to Supabase
-      const totalEntries = entries.reduce((sum, e) => sum + e.days.length, 0);
+      // Validate academic year exists
+      if (!currentAcademicYear?.id) {
+        toast({
+          title: "Error",
+          description:
+            "No active academic year found. Please set the current academic year.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Create timetable entries for each day and each entry
+      const timetableEntries = [];
+
+      for (const entry of entries) {
+        for (const day of entry.days) {
+          const newEntry = {
+            id: crypto.randomUUID(),
+            section_id: entry.sectionId,
+            subject_id: entry.subjectId,
+            teacher_id: entry.teacherId,
+            period_id: entry.periodId,
+            day_of_week: getDayName(day),
+            room_number: entry.roomNumber || null,
+            academic_year_id: currentAcademicYear.id,
+            is_active: true,
+          };
+          console.log("Creating timetable entry:", newEntry);
+          timetableEntries.push(newEntry);
+        }
+      }
+
+      console.log("All timetable entries to be created:", timetableEntries);
+
+      // Bulk insert to Supabase
+      for (const timetableEntry of timetableEntries) {
+        await createTimetable.mutateAsync(timetableEntry as any);
+      }
+
+      const totalEntries = timetableEntries.length;
 
       toast({
         title: "Success",
@@ -186,9 +252,10 @@ const BulkCreatePage = () => {
       });
       navigate("/timetable");
     } catch (error) {
+      console.error("Error creating timetable entries:", error);
       toast({
         title: "Error",
-        description: "Failed to create timetable entries",
+        description: "Failed to create timetable entries. Please try again.",
         variant: "destructive",
       });
     } finally {

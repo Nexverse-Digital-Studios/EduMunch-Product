@@ -38,6 +38,16 @@ const profileModule: ModuleSidebarConfig = {
   // No subItems - all functionality is accessible via tabs on the main profile page
 };
 
+// Analytics - Direct top-level module (no group)
+const analyticsModule: ModuleSidebarConfig = {
+  moduleCode: 'analytics',
+  displayName: 'Analytics',
+  icon: 'TrendingUp',
+  basePath: '/analytics',
+  order: 3,
+  subItems: [], // CONSOLIDATED: Students/Attendance/Financial/Academic/Predictions/Export → tabs
+};
+
 // Users Module
 // CONSOLIDATED: Add User, Bulk Upload are modals/dialogs accessible from the main Users page
 const usersModule: ModuleSidebarConfig = {
@@ -465,16 +475,6 @@ const supportModule: ModuleSidebarConfig = {
 // TIER 3 MODULES
 // ==========================================
 
-// Analytics Module (CONSOLIDATED - tabs for analytics types)
-const analyticsModule: ModuleSidebarConfig = {
-  moduleCode: 'analytics',
-  displayName: 'Analytics',
-  icon: 'TrendingUp',
-  basePath: '/analytics',
-  order: 1,
-  subItems: [], // CONSOLIDATED: Students/Attendance/Financial/Academic/Predictions/Export → tabs
-};
-
 // PTM Module (CONSOLIDATED - tabs for schedule/slots/bookings)
 const ptmModule: ModuleSidebarConfig = {
   moduleCode: 'ptm',
@@ -483,16 +483,6 @@ const ptmModule: ModuleSidebarConfig = {
   basePath: '/ptm',
   order: 1,
   subItems: [], // CONSOLIDATED: Schedule/Slots/Bookings/My Bookings → tabs
-};
-
-// Alumni Module (CONSOLIDATED - tabs for list/events/donations)
-const alumniModule: ModuleSidebarConfig = {
-  moduleCode: 'alumni',
-  displayName: 'Alumni',
-  icon: 'GraduationCap',
-  basePath: '/alumni',
-  order: 2,
-  subItems: [], // CONSOLIDATED: Register/Events/Donations → tabs/modals
 };
 
 // Admissions Module (CONSOLIDATED - tabs for applications/tests/interviews)
@@ -585,7 +575,8 @@ export const sidebarGroups: SidebarGroup[] = [
     icon: 'CheckSquare',
     order: 4,
     tier: 1,
-    modules: [attendanceModule, staffAttendanceModule, leaveModule, staffLeaveModule],
+    modules: [attendanceModule, staffAttendanceModule, staffLeaveModule],
+    // NOTE: leaveModule (Student Leave) hidden for now - page still exists at /leave-requests
   },
   {
     id: 'timetable',
@@ -676,20 +667,12 @@ export const sidebarGroups: SidebarGroup[] = [
   // TIER 3 GROUPS
   // ----------------------------------------
   {
-    id: 'analytics',
-    groupName: 'Analytics',
-    icon: 'TrendingUp',
-    order: 15,
-    tier: 3,
-    modules: [analyticsModule],
-  },
-  {
     id: 'engagement',
     groupName: 'Engagement',
     icon: 'Users',
-    order: 16,
+    order: 15,
     tier: 3,
-    modules: [ptmModule, alumniModule],
+    modules: [ptmModule],
   },
   {
     id: 'admissions',

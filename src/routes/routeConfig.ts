@@ -130,14 +130,15 @@ export const teacherRoutes: RouteConfig[] = [
 
 // --------------------------------------
 // Module 10: Employees (7 → 1 route - CONSOLIDATED)
+// Module 10: Employees (2 routes - CONSOLIDATED)
 // All CRUD operations use modals
 // --------------------------------------
 export const employeeRoutes: RouteConfig[] = [
   { path: '/employees', title: 'Employees', module: 'employees', action: 'view', tier: 1, showInSidebar: true, icon: 'Briefcase' },
-  // CONSOLIDATED: The following routes are now handled within the page above:
+  { path: '/employees/:id', title: 'Employee Details', module: 'employees', action: 'view', tier: 1 },
+  // CONSOLIDATED: The following routes are now handled within the pages above:
   // - /employees/create → Modal in EmployeesList
-  // - /employees/:id → Modal view in EmployeesList
-  // - /employees/:id/edit → Modal in EmployeesList
+  // - /employees/:id/edit → Modal in EmployeeDetail
   // - /employees/bulk-upload → Button/Modal in EmployeesList
   // - /employees/export → Button in EmployeesList
 ];
@@ -248,10 +249,14 @@ export const topicRoutes: RouteConfig[] = [
 // --------------------------------------
 // Module 20: Timetable (2 routes - CONSOLIDATED)
 // --------------------------------------
-// CONSOLIDATION: 14 routes → 2 routes
-// All features accessible via tabs on TimetableDashboard
+// Module 20: Timetables (7 routes)
+// CONSOLIDATION: 14 routes → 7 routes
+// All features accessible via tabs on TimetableDashboard or dedicated pages
 export const timetableRoutes: RouteConfig[] = [
   { path: '/timetable', title: 'Timetable', module: 'timetable', action: 'view', tier: 1, showInSidebar: true, icon: 'Clock' },
+  { path: '/timetable/view', title: 'View Timetables', module: 'timetable', action: 'view', tier: 1 },
+  { path: '/timetable/view/:sectionId', title: 'Section Timetable', module: 'timetable', action: 'view', tier: 1 },
+  { path: '/timetable/:id/edit', title: 'Edit Timetable', module: 'timetable', action: 'update', tier: 1 },
   { path: '/my-timetable', title: 'My Timetable', module: 'timetable', action: 'view', tier: 1, showInSidebar: true, icon: 'Clock' },
 ];
 

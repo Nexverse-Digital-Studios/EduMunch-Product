@@ -18,6 +18,8 @@ import {
   Save,
   ArrowLeft,
   Loader2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,11 +82,6 @@ const STATUS_CONFIG: Record<
     icon: <MinusCircle className="h-4 w-4" />,
     color: "bg-orange-500 hover:bg-orange-600",
     label: "H",
-  },
-  "On-leave": {
-    icon: <CalendarOff className="h-4 w-4" />,
-    color: "bg-blue-500 hover:bg-blue-600",
-    label: "OL",
   },
 };
 
@@ -252,7 +249,6 @@ export const MarkAttendancePage = () => {
       absent: attendanceEntries.filter((e) => e.status === "Absent").length,
       late: attendanceEntries.filter((e) => e.status === "Late").length,
       halfDay: attendanceEntries.filter((e) => e.status === "Half-day").length,
-      onLeave: attendanceEntries.filter((e) => e.status === "On-leave").length,
     };
     return stats;
   }, [attendanceEntries]);
@@ -307,11 +303,38 @@ export const MarkAttendancePage = () => {
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium">Date</label>
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-              />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    const date = new Date(selectedDate);
+                    date.setDate(date.getDate() - 1);
+                    setSelectedDate(date.toISOString().split("T")[0]);
+                  }}
+                  title="Previous day"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    const date = new Date(selectedDate);
+                    date.setDate(date.getDate() + 1);
+                    setSelectedDate(date.toISOString().split("T")[0]);
+                  }}
+                  title="Next day"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium">

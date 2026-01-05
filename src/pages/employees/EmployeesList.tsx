@@ -3,14 +3,14 @@
  * ===================================
  * Main employees listing page with search, filters, and CRUD operations.
  * Create and Edit operations now use modal dialogs instead of separate routes.
- * 
+ *
  * Route: /employees
  * Route Consolidation: Replaces /employees/create and /employees/:id/edit routes
  */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Users, Loader2 } from "lucide-react";
+import { Plus, Search, Users, Loader2, Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,12 @@ import {
   type EmployeeDB,
   type EmployeeDisplay,
 } from "./components";
+import { BulkImportDialog } from "@/components/ui/bulk-import-dialog";
+import {
+  exportToExcel,
+  EMPLOYEE_IMPORT_TEMPLATE,
+  EMPLOYEE_IMPORT_CONFIG,
+} from "@/lib/excel";
 
 // Generate avatar color based on name
 const getAvatarColor = (name: string) => {
@@ -58,33 +64,54 @@ export default function EmployeesList() {
   const [designationFilter, setDesignationFilter] = useState("all");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState<string | null>(null);
-  
+
   // Modal states for create/edit (consolidation - replaces separate routes)
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [editEmployeeId, setEditEmployeeId] = useState<string | null>(null);
+  const [showBulkImportModal, setShowBulkImportModal] = useState(false);
 
   // Permission checks
-  const { canCreate, canUpdate, canDelete } = useModulePermissions("employees");
+  const { canCreate, canUpdate, canDelete, canExport } =
+    useModulePermissions("employees");
 
   // Fetch employees data
   const {
-    data: teachers,
-    isLoading,
+    data: employees_data,
+    isLoading: isLoadingEmployees,
     deleteMutation,
-  } = useSupabaseTable<EmployeeDB>(TABLES.TEACHERS, {
+    createMutation,
+    refetch,
+  } = useSupabaseTable<EmployeeDB>(TABLES.EMPLOYEES, {
     orderBy: { column: "first_name", ascending: true },
   });
 
-  // Map database teachers to display format
+  // Fetch teachers data
+  const { data: teachers_data, isLoading: isLoadingTeachers } =
+    useSupabaseTable<EmployeeDB>(TABLES.TEACHERS, {
+      orderBy: { column: "first_name", ascending: true },
+    });
+
+  const isLoading = isLoadingEmployees || isLoadingTeachers;
+
+  // Combine employees and teachers
+  const allStaff = useMemo(() => {
+    const combined = [
+      ...(employees_data?.map((e) => ({ ...e, type: "Employee" })) || []),
+      ...(teachers_data?.map((t) => ({ ...t, type: "Teacher" })) || []),
+    ];
+    return combined;
+  }, [employees_data, teachers_data]);
+
+  // Map database records to display format
   const employees: EmployeeDisplay[] =
-    teachers?.map((t) => ({
-      id: t.id,
-      name: `${t.first_name} ${t.last_name}`,
-      code: t.employee_code,
-      role: "Teacher",
-      designation: t.designation || "Faculty",
-      avatar: `${t.first_name[0]}${t.last_name[0]}`,
-      color: getAvatarColor(t.first_name),
+    allStaff.map((staff: any) => ({
+      id: staff.id,
+      name: `${staff.first_name} ${staff.last_name}`,
+      code: staff.employee_code,
+      role: staff.type || "Staff",
+      designation: staff.designation || "Staff",
+      avatar: `${staff.first_name[0]}${staff.last_name[0]}`,
+      color: getAvatarColor(staff.first_name),
     })) || [];
 
   // Filter employees
@@ -117,6 +144,112 @@ export default function EmployeesList() {
   const handleModalClose = () => {
     setShowEmployeeModal(false);
     setEditEmployeeId(null);
+  };
+
+  // Export employees to Excel
+  const handleExport = () => {
+    if (!allStaff || allStaff.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No employees to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    exportToExcel({
+      data: allStaff,
+      filename: `employees_export_${new Date().toISOString().split("T")[0]}`,
+      sheetName: "Employees",
+      columns: [
+        { header: "Employee Code", key: "employee_code", width: 15 },
+        { header: "First Name", key: "first_name", width: 15 },
+        { header: "Middle Name", key: "middle_name", width: 15 },
+        { header: "Last Name", key: "last_name", width: 15 },
+        { header: "Email", key: "email", width: 25 },
+        { header: "Phone", key: "phone", width: 15 },
+        { header: "Department", key: "department", width: 15 },
+        { header: "Designation", key: "designation", width: 15 },
+        { header: "Status", key: "status", width: 12 },
+      ],
+    });
+
+    toast({
+      title: "Export Complete",
+      description: `Exported ${allStaff.length} employees to Excel.`,
+    });
+  };
+
+  // Bulk import handler
+  const handleBulkImport = async (data: Record<string, any>[]) => {
+    let success = 0;
+    let failed = 0;
+    const results: {
+      data: Record<string, any>;
+      success: boolean;
+      reason?: string;
+    }[] = [];
+
+    // Get existing employee codes from both tables to check for duplicates
+    const existingCodes = new Set([
+      ...(employees_data?.map((e) => e.employee_code) || []),
+      ...(teachers_data?.map((t) => t.employee_code) || []),
+    ]);
+
+    for (const row of data) {
+      // Skip if employee code already exists
+      if (existingCodes.has(row.employee_code)) {
+        results.push({
+          data: row,
+          success: false,
+          reason: `Duplicate employee code: ${row.employee_code}`,
+        });
+        failed++;
+        continue;
+      }
+
+      try {
+        await createMutation.mutateAsync({
+          employee_code: row.employee_code,
+          first_name: row.first_name,
+          middle_name: row.middle_name || null,
+          last_name: row.last_name,
+          date_of_birth: row.date_of_birth || null,
+          gender: row.gender || null,
+          email: row.email || null,
+          phone: row.phone,
+          address_line1: row.address_line1 || null,
+          city: row.city || null,
+          state: row.state || null,
+          pincode: row.pincode || null,
+          country: "India",
+          qualification: row.qualification || null,
+          experience_years: row.experience_years
+            ? parseInt(row.experience_years)
+            : null,
+          joining_date: row.joining_date,
+          employment_type: row.employment_type || "Permanent",
+          designation: row.designation || null,
+          department: row.department || null,
+          status: "active",
+        });
+        results.push({ data: row, success: true });
+        success++;
+        // Add to existing codes to prevent duplicates within the same import batch
+        existingCodes.add(row.employee_code);
+      } catch (error: any) {
+        console.error("Failed to import employee:", row, error);
+        results.push({
+          data: row,
+          success: false,
+          reason: error?.message || "Database insertion failed",
+        });
+        failed++;
+      }
+    }
+
+    refetch();
+    return { success, failed, results };
   };
 
   // Get employee data for edit mode
@@ -187,15 +320,32 @@ export default function EmployeesList() {
             </p>
           </div>
         </div>
-        {canCreate && (
-          <Button
-            onClick={handleCreateEmployee}
-            className="bg-primary hover:bg-primary/90"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Onboard Employee
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {canCreate && (
+            <Button
+              variant="outline"
+              onClick={() => setShowBulkImportModal(true)}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Bulk Import
+            </Button>
+          )}
+          {canExport && (
+            <Button variant="outline" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          )}
+          {canCreate && (
+            <Button
+              onClick={handleCreateEmployee}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Onboard Employee
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
@@ -258,10 +408,7 @@ export default function EmployeesList() {
                 : "Get started by onboarding your first employee"}
             </p>
             {canCreate && !searchQuery && (
-              <Button
-                onClick={handleCreateEmployee}
-                className="mt-6"
-              >
+              <Button onClick={handleCreateEmployee} className="mt-6">
                 <Plus className="h-4 w-4 mr-2" />
                 Onboard Employee
               </Button>
@@ -314,7 +461,21 @@ export default function EmployeesList() {
         mode={editEmployeeId ? "edit" : "create"}
         employeeId={editEmployeeId || undefined}
         initialData={getEditEmployeeData()}
-        onSuccess={() => {}}
+        onSuccess={() => refetch()}
+      />
+
+      {/* Bulk Import Dialog */}
+      <BulkImportDialog
+        open={showBulkImportModal}
+        onOpenChange={setShowBulkImportModal}
+        title="Bulk Import Employees"
+        description="Import multiple employees from an Excel file. Download the template to see the required format."
+        importConfig={EMPLOYEE_IMPORT_CONFIG}
+        templateData={EMPLOYEE_IMPORT_TEMPLATE}
+        templateFilename="employees_import"
+        onImport={handleBulkImport}
+        entityName="employees"
+        identifierField="employee_code"
       />
     </div>
   );

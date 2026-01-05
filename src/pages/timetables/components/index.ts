@@ -12,7 +12,8 @@ export type {
   TimetableDB, 
   ClassInfo, 
   ScheduleSlot, 
-  TeacherOption 
+  TeacherOption,
+  MergedClass,
 } from "./types";
 
 // UI Components
@@ -21,6 +22,7 @@ export { TimetableGrid } from "./TimetableGrid";
 export { AddEditClassModal } from "./AddEditClassModal";
 export { DeleteClassDialog } from "./DeleteClassDialog";
 export { BulkScheduleModal } from "./BulkScheduleModal";
+export { MergeClassesDialog } from "./MergeClassesDialog";
 
 // Pages
 export { default as TimetableDashboard } from "./TimetableDashboard";
@@ -36,3 +38,4 @@ export { default as PeriodsPage } from "./PeriodsPage";
 export { default as ExportTimetablePage } from "./ExportTimetablePage";
 export { default as MyTimetablePage } from "./MyTimetablePage";
 export { default as ClassTimetablePage } from "./ClassTimetablePage";
+

@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Building2,
   Search,
@@ -191,12 +192,17 @@ export function BlocksList() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Hostel Blocks</h1>
-          <p className="text-muted-foreground">
-            {stats.active} active blocks
-          </p>
+          <p className="text-muted-foreground">{stats.active} active blocks</p>
         </div>
         {canCreate && (
-          <Button onClick={() => toast({ title: "Add Block", description: "Block form coming soon." })}>
+          <Button
+            onClick={() =>
+              toast({
+                title: "Add Block",
+                description: "Block form coming soon.",
+              })
+            }
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Block
           </Button>

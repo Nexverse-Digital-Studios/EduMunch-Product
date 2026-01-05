@@ -28,7 +28,13 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { TABLES } from "@/lib/supabase";
-import type { SectionDB, ClassDB, TeacherDB, SectionFormData, DEFAULT_SECTION_FORM } from "./types";
+import type {
+  SectionDB,
+  ClassDB,
+  TeacherDB,
+  SectionFormData,
+  DEFAULT_SECTION_FORM,
+} from "./types";
 
 const SECTION_NAME_OPTIONS = [
   { value: "A", label: "Section A" },
@@ -70,19 +76,26 @@ export function SectionFormDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch sections
-  const { data: sections, createMutation, updateMutation } = 
-    useSupabaseTable<SectionDB>(`sections_${INDEX_TOKEN}`);
+  const {
+    data: sections,
+    createMutation,
+    updateMutation,
+  } = useSupabaseTable<SectionDB>(`sections_${INDEX_TOKEN}`);
 
   // Fetch classes
   const { data: classes } = useSupabaseTable<ClassDB>(`classes_${INDEX_TOKEN}`);
 
   // Fetch teachers
-  const { data: teachers } = useSupabaseTable<TeacherDB>(`employees_${INDEX_TOKEN}`);
+  const { data: teachers } = useSupabaseTable<TeacherDB>(
+    `teachers_${INDEX_TOKEN}`
+  );
 
   // Sort classes by order
   const sortedClasses = useMemo(() => {
     if (!classes) return [];
-    return [...classes].sort((a, b) => (a.class_order || 0) - (b.class_order || 0));
+    return [...classes].sort(
+      (a, b) => (a.class_order || 0) - (b.class_order || 0)
+    );
   }, [classes]);
 
   // Load data for edit mode
@@ -207,8 +220,8 @@ export function SectionFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[60vh]">
-          <form onSubmit={handleSubmit} className="space-y-4 px-1">
+        <ScrollArea className="max-h-[60vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4 pr-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="class_id">
@@ -223,7 +236,7 @@ export function SectionFormDialog({
                   <SelectTrigger>
                     <SelectValue placeholder="Select class" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60 overflow-y-scroll pr-2">
                     {sortedClasses.map((cls) => (
                       <SelectItem key={cls.id} value={cls.id}>
                         {cls.class_name} ({cls.class_code})
@@ -249,7 +262,7 @@ export function SectionFormDialog({
                   <SelectTrigger>
                     <SelectValue placeholder="Select section" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60 overflow-y-scroll pr-2">
                     {SECTION_NAME_OPTIONS.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
                         {opt.label}
@@ -258,7 +271,9 @@ export function SectionFormDialog({
                   </SelectContent>
                 </Select>
                 {errors.section_name && (
-                  <p className="text-sm text-destructive">{errors.section_name}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.section_name}
+                  </p>
                 )}
               </div>
             </div>
@@ -272,11 +287,16 @@ export function SectionFormDialog({
                 placeholder="e.g., GR10-A"
                 value={formData.section_code}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, section_code: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    section_code: e.target.value,
+                  }))
                 }
               />
               {errors.section_code && (
-                <p className="text-sm text-destructive">{errors.section_code}</p>
+                <p className="text-sm text-destructive">
+                  {errors.section_code}
+                </p>
               )}
             </div>
 
@@ -289,7 +309,10 @@ export function SectionFormDialog({
                   placeholder="e.g., 40"
                   value={formData.capacity}
                   onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, capacity: e.target.value }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      capacity: e.target.value,
+                    }))
                   }
                 />
               </div>
@@ -301,7 +324,10 @@ export function SectionFormDialog({
                   placeholder="e.g., 101"
                   value={formData.room_number}
                   onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, room_number: e.target.value }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      room_number: e.target.value,
+                    }))
                   }
                 />
               </div>
@@ -309,6 +335,8 @@ export function SectionFormDialog({
 
             <div className="space-y-2">
               <Label htmlFor="class_teacher_id">Class Teacher</Label>
+
+              {/* Teacher Dropdown */}
               <Select
                 value={formData.class_teacher_id}
                 onValueChange={(value) =>
@@ -318,12 +346,19 @@ export function SectionFormDialog({
                 <SelectTrigger>
                   <SelectValue placeholder="Select teacher (optional)" />
                 </SelectTrigger>
-                <SelectContent>
-                  {teachers?.map((teacher) => (
-                    <SelectItem key={teacher.id} value={teacher.id}>
-                      {teacher.first_name} {teacher.last_name} ({teacher.employee_code})
+                <SelectContent className="max-h-60 overflow-y-scroll pr-2">
+                  {teachers?.length > 0 ? (
+                    teachers.map((teacher) => (
+                      <SelectItem key={teacher.id} value={teacher.id}>
+                        {teacher.first_name} {teacher.last_name} (
+                        {teacher.employee_code})
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="__no_match__" disabled>
+                      No teachers found
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -356,7 +391,9 @@ export function SectionFormDialog({
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 {isEditMode ? "Update" : "Create"}
               </Button>
             </div>

@@ -102,12 +102,13 @@ const EditTimetablePage = () => {
   const section = sectionsData?.[0];
 
   // Fetch timetable entries
-  const { data: timetableData, isLoading, refetch } = useSupabaseTable<TimetableEntryDB>(
-    TABLES.TIMETABLES,
-    {
-      filters: { section_id: sectionId, is_active: true },
-    }
-  );
+  const {
+    data: timetableData,
+    isLoading,
+    refetch,
+  } = useSupabaseTable<TimetableEntryDB>(TABLES.TIMETABLES, {
+    filters: { section_id: sectionId, is_active: true },
+  });
 
   // Fetch periods
   const { data: periodsData } = useSupabaseTable<PeriodDB>(
@@ -123,7 +124,8 @@ const EditTimetablePage = () => {
   // Fetch teachers
   const { data: teachersData } = useSupabaseTable<TeacherDB>(TABLES.TEACHERS);
 
-  const { updateAsync, insertAsync } = useSupabaseTable(TABLES.TIMETABLES);
+  const { updateMutation, createMutation, deleteMutation } =
+    useSupabaseTable<TimetableEntryDB>(TABLES.TIMETABLES);
 
   const timetableEntries = timetableData || [];
   const periods = periodsData || [];
@@ -177,7 +179,7 @@ const EditTimetablePage = () => {
   const handleCellClick = (day: string, periodId: string) => {
     const key = getCellKey(day, periodId);
     const entry = timetableGrid[day]?.[periodId];
-    
+
     setEditingCell(key);
     setCellEdits((prev) => ({
       ...prev,
@@ -188,7 +190,11 @@ const EditTimetablePage = () => {
     }));
   };
 
-  const handleCellChange = (key: string, field: keyof CellEdit, value: string) => {
+  const handleCellChange = (
+    key: string,
+    field: keyof CellEdit,
+    value: string
+  ) => {
     setCellEdits((prev) => ({
       ...prev,
       [key]: {
@@ -205,27 +211,34 @@ const EditTimetablePage = () => {
 
     if (!edit) return;
 
+    setIsSaving(true);
     try {
       if (existingEntry) {
         // Update existing entry
-        await updateAsync({
+        await updateMutation.mutateAsync({
           id: existingEntry.id,
-          subject_id: edit.subject_id || null,
-          teacher_id: edit.teacher_id || null,
+          updates: {
+            subject_id: edit.subject_id || null,
+            teacher_id: edit.teacher_id || null,
+          },
         });
       } else {
         // Create new entry (need academic year)
-        const academicYearEntry = timetableEntries.find((e) => e.academic_year_id);
+        const academicYearEntry = timetableEntries.find(
+          (e) => e.academic_year_id
+        );
         if (!academicYearEntry) {
           toast({
             title: "Error",
-            description: "No academic year found. Please create an entry first.",
+            description:
+              "No academic year found. Please create an entry first.",
             variant: "destructive",
           });
+          setIsSaving(false);
           return;
         }
 
-        await insertAsync({
+        await createMutation.mutateAsync({
           section_id: sectionId,
           academic_year_id: academicYearEntry.academic_year_id,
           day_of_week: day,
@@ -240,11 +253,50 @@ const EditTimetablePage = () => {
       setEditingCell(null);
       refetch();
     } catch (error) {
+      console.error("Error saving cell:", error);
       toast({
         title: "Error",
         description: "Failed to update cell",
         variant: "destructive",
       });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteCell = async (day: string, periodId: string) => {
+    const entry = timetableGrid[day]?.[periodId];
+
+    if (!entry) {
+      toast({
+        title: "Info",
+        description: "No entry to delete",
+        variant: "default",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      // Update is_active to false instead of deleting
+      await updateMutation.mutateAsync({
+        id: entry.id,
+        updates: {
+          is_active: false,
+        },
+      });
+      toast({ title: "Success", description: "Entry deleted successfully" });
+      setEditingCell(null);
+      refetch();
+    } catch (error) {
+      console.error("Error deleting cell:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete entry",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -299,7 +351,10 @@ const EditTimetablePage = () => {
                   <TableRow>
                     <TableHead className="w-[150px]">Period</TableHead>
                     {DAYS_OF_WEEK.map((day) => (
-                      <TableHead key={day} className="text-center min-w-[180px]">
+                      <TableHead
+                        key={day}
+                        className="text-center min-w-[180px]"
+                      >
                         {day}
                       </TableHead>
                     ))}
@@ -313,10 +368,12 @@ const EditTimetablePage = () => {
                     >
                       <TableCell>
                         <div className="font-medium">
-                          {period.period_name || `Period ${period.period_number}`}
+                          {period.period_name ||
+                            `Period ${period.period_number}`}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {formatTime(period.start_time)} - {formatTime(period.end_time)}
+                          {formatTime(period.start_time)} -{" "}
+                          {formatTime(period.end_time)}
                         </div>
                         {period.is_break && (
                           <Badge variant="secondary" className="mt-1">
@@ -337,16 +394,22 @@ const EditTimetablePage = () => {
                               period.is_break ? "cursor-default" : ""
                             }`}
                             onClick={() =>
-                              !period.is_break && handleCellClick(day, period.id)
+                              !period.is_break &&
+                              handleCellClick(day, period.id)
                             }
                           >
                             {period.is_break ? (
                               <span className="text-muted-foreground">—</span>
                             ) : isEditing ? (
-                              <div className="space-y-2 p-2" onClick={(e) => e.stopPropagation()}>
+                              <div
+                                className="space-y-2 p-2"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <Select
                                   value={edit?.subject_id || ""}
-                                  onValueChange={(v) => handleCellChange(key, "subject_id", v)}
+                                  onValueChange={(v) =>
+                                    handleCellChange(key, "subject_id", v)
+                                  }
                                 >
                                   <SelectTrigger className="h-8 text-xs">
                                     <SelectValue placeholder="Subject" />
@@ -361,7 +424,9 @@ const EditTimetablePage = () => {
                                 </Select>
                                 <Select
                                   value={edit?.teacher_id || ""}
-                                  onValueChange={(v) => handleCellChange(key, "teacher_id", v)}
+                                  onValueChange={(v) =>
+                                    handleCellChange(key, "teacher_id", v)
+                                  }
                                 >
                                   <SelectTrigger className="h-8 text-xs">
                                     <SelectValue placeholder="Teacher" />
@@ -378,16 +443,31 @@ const EditTimetablePage = () => {
                                   <Button
                                     size="sm"
                                     className="h-6 text-xs flex-1"
-                                    onClick={() => handleSaveCell(day, period.id)}
+                                    onClick={() =>
+                                      handleSaveCell(day, period.id)
+                                    }
+                                    disabled={isSaving}
                                   >
                                     <Save className="h-3 w-3 mr-1" />
                                     Save
                                   </Button>
                                   <Button
                                     size="sm"
+                                    variant="destructive"
+                                    className="h-6 text-xs"
+                                    onClick={() =>
+                                      handleDeleteCell(day, period.id)
+                                    }
+                                    disabled={isSaving}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
                                     variant="outline"
                                     className="h-6 text-xs"
                                     onClick={() => setEditingCell(null)}
+                                    disabled={isSaving}
                                   >
                                     ×
                                   </Button>

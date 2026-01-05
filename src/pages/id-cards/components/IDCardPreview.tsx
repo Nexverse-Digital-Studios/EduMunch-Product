@@ -7,6 +7,8 @@
 import { CreditCard, Phone, MapPin, Droplets, Building } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import QRCode from "qrcode";
+import { useEffect, useRef } from "react";
 import {
   StudentForIDCard,
   StaffForIDCard,
@@ -30,6 +32,8 @@ export function IDCardPreview({
   classInfo,
   sectionInfo,
 }: IDCardPreviewProps) {
+  const qrCodeRef = useRef<HTMLCanvasElement>(null);
+
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName[0]}${lastName[0]}`.toUpperCase();
   };
@@ -37,6 +41,34 @@ export function IDCardPreview({
   const isStudent = type === "student";
   const studentData = isStudent ? (data as StudentForIDCard) : null;
   const staffData = !isStudent ? (data as StaffForIDCard) : null;
+
+  // Generate QR code
+  useEffect(() => {
+    if (design.showQRCode && qrCodeRef.current) {
+      const qrData = isStudent
+        ? studentData?.admission_number
+        : staffData?.employee_code;
+      if (qrData) {
+        QRCode.toCanvas(qrCodeRef.current, qrData, {
+          width: 100,
+          margin: 1,
+          color: {
+            dark: design.textColor,
+            light: design.backgroundColor,
+          },
+        }).catch(() => {
+          // Handle QR code generation error silently
+        });
+      }
+    }
+  }, [
+    design.showQRCode,
+    design.textColor,
+    design.backgroundColor,
+    isStudent,
+    studentData,
+    staffData,
+  ]);
 
   return (
     <div
@@ -174,17 +206,16 @@ export function IDCardPreview({
           )}
         </div>
 
-        {/* Barcode placeholder */}
-        {design.showBarcode && (
-          <div className="pt-2 border-t">
-            <div
-              className="h-10 bg-gradient-to-r from-black via-white to-black"
-              style={{
-                backgroundImage: `repeating-linear-gradient(90deg, ${design.textColor} 0px, ${design.textColor} 2px, ${design.backgroundColor} 2px, ${design.backgroundColor} 4px)`,
-              }}
+        {/* QR Code */}
+        {design.showQRCode && (
+          <div className="pt-2 border-t flex flex-col items-center gap-1">
+            <canvas
+              ref={qrCodeRef}
+              className="border"
+              style={{ borderColor: design.textColor }}
             />
             <p
-              className="text-xs text-center mt-1 font-mono"
+              className="text-xs text-center font-mono"
               style={{ color: design.textColor }}
             >
               {isStudent

@@ -1,13 +1,13 @@
 /**
  * App Sidebar - EduMunch (Refactored)
  * ====================================
- * 
+ *
  * Dynamic navigation based on:
  * 1. Centralized sidebar configuration (@/routes/sidebarConfig)
  * 2. Feature toggles (from config)
  * 3. User permissions (from PermissionContext)
  * 4. Admin-only routes
- * 
+ *
  * This sidebar now uses the centralized route configuration
  * for a single source of truth for all navigation.
  */
@@ -35,7 +35,12 @@ import { useSidebarConfig } from "@/contexts/SidebarConfigContext";
 import { SidebarDisplayStyle, SYSTEM_ROUTES } from "@/types/sidebarConfig";
 
 // Import centralized sidebar configuration
-import { sidebarGroups, SidebarGroup, ModuleSidebarConfig, ModuleSubItem } from "@/routes";
+import {
+  sidebarGroups,
+  SidebarGroup,
+  ModuleSidebarConfig,
+  ModuleSubItem,
+} from "@/routes";
 
 // ==========================================
 // ICON RESOLVER
@@ -46,9 +51,11 @@ import { sidebarGroups, SidebarGroup, ModuleSidebarConfig, ModuleSubItem } from 
  */
 const getIcon = (iconName?: string): React.ElementType => {
   if (!iconName) return LayoutDashboard;
-  
+
   // Try to get icon from LucideIcons with proper type casting
-  const IconComponent = (LucideIcons as unknown as Record<string, React.ElementType>)[iconName];
+  const IconComponent = (
+    LucideIcons as unknown as Record<string, React.ElementType>
+  )[iconName];
   return IconComponent || LayoutDashboard;
 };
 
@@ -61,64 +68,64 @@ const getIcon = (iconName?: string): React.ElementType => {
  */
 const moduleToFeatureMap: Record<string, string> = {
   // Tier 1 modules
-  'users': 'users',
-  'roles': 'roles',
-  'permissions': 'permissions',
-  'students': 'students',
-  'parents': 'parents',
-  'teachers': 'teachers',
-  'employees': 'employees',
-  'attendance': 'attendance',
-  'staff_attendance': 'attendance',
-  'leave': 'leaveManagement',
-  'staff_leave': 'leaveManagement',
-  'academic_years': 'classes',
-  'classes': 'classes',
-  'sections': 'sections',
-  'subjects': 'subjects',
-  'topics': 'topics',
-  'timetable': 'timetables',
-  'lecture_templates': 'lectureTemplates',
-  'exams': 'exams',
-  'marks': 'results',
-  'report_cards': 'reportCards',
-  'fees': 'fees',
-  'payments': 'payments',
-  'notifications': 'notifications',
-  'announcements': 'announcements',
-  'admissions': 'admissions',
-  'id_cards': 'idCards',
-  
+  users: "users",
+  roles: "roles",
+  permissions: "permissions",
+  students: "students",
+  parents: "parents",
+  teachers: "teachers",
+  employees: "employees",
+  attendance: "attendance",
+  staff_attendance: "attendance",
+  leave: "leaveManagement",
+  staff_leave: "leaveManagement",
+  academic_years: "classes",
+  classes: "classes",
+  sections: "sections",
+  subjects: "subjects",
+  topics: "topics",
+  timetable: "timetables",
+  lecture_templates: "lectureTemplates",
+  exams: "exams",
+  marks: "results",
+  report_cards: "reportCards",
+  fees: "fees",
+  payments: "payments",
+  notifications: "notifications",
+  announcements: "announcements",
+  admissions: "admissions",
+  id_cards: "idCards",
+
   // Tier 2 modules
-  'assignments': 'assignments',
-  'study_materials': 'lmsContent',
-  'online_classes': 'lmsContent',
-  'homework': 'homework',
-  'doubts': 'doubts',
-  'transport': 'transport',
-  'payroll': 'salaryStructures',
-  'salary_structures': 'salaryStructures',
-  'payslips': 'payslips',
-  'appraisal': 'salaryStructures',
-  'recruitment': 'employees',
-  'feedback': 'feedback',
-  'grievances': 'grievances',
-  'support_tickets': 'supportTickets',
-  'availability_slots': 'availabilitySlots',
-  'working_hours': 'workingHours',
-  
+  assignments: "assignments",
+  study_materials: "lmsContent",
+  online_classes: "lmsContent",
+  homework: "homework",
+  doubts: "doubts",
+  transport: "transport",
+  payroll: "salaryStructures",
+  salary_structures: "salaryStructures",
+  payslips: "payslips",
+  appraisal: "salaryStructures",
+  recruitment: "employees",
+  feedback: "feedback",
+  grievances: "grievances",
+  support_tickets: "supportTickets",
+  availability_slots: "availabilitySlots",
+  working_hours: "workingHours",
+
   // Tier 3 modules
-  'analytics': 'reports',
-  'ptm_requests': 'ptmRequests',
-  'alumni': 'students',
-  'inventory': 'inventory',
-  'certificates': 'students',
-  'surveys': 'feedback',
-  'branches': 'branches',
-  'tie_up_schools': 'tieUpSchools',
-  'library': 'library',
-  'hostel': 'hostel',
-  'reports': 'reports',
+  analytics: "reports",
+  ptm_requests: "ptmRequests",
+  alumni: "students",
+  inventory: "inventory",
+  certificates: "students",
+  surveys: "feedback",
+  branches: "branches",
+  tie_up_schools: "tieUpSchools",
+  library: "library",
+  hostel: "hostel",
+  reports: "reports",
 };
 
 /**
@@ -143,21 +150,31 @@ interface NavItemConfig {
   children?: NavItemConfig[];
   isActive?: boolean;
   onNavigate?: () => void;
-  moduleCode?: string;             // Permission module code
-  adminOnly?: boolean;             // Requires admin role
+  moduleCode?: string; // Permission module code
+  adminOnly?: boolean; // Requires admin role
 }
 
 // ==========================================
 // NAV ITEM COMPONENT (Dropdown Style)
 // ==========================================
 
-const NavItem = ({ to, icon: Icon, label, isCollapsed, children, isActive, onNavigate }: NavItemConfig) => {
+const NavItem = ({
+  to,
+  icon: Icon,
+  label,
+  isCollapsed,
+  children,
+  isActive,
+  onNavigate,
+}: NavItemConfig) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  
+
   const hasChildren = children && children.length > 0;
-  const isChildActive = hasChildren && children.some(child => child.to === location.pathname);
-  const itemIsActive = isActive || (to && location.pathname === to) || isChildActive;
+  const isChildActive =
+    hasChildren && children.some((child) => child.to === location.pathname);
+  const itemIsActive =
+    isActive || (to && location.pathname === to) || isChildActive;
 
   // Auto-expand if a child is active
   useEffect(() => {
@@ -194,7 +211,12 @@ const NavItem = ({ to, icon: Icon, label, isCollapsed, children, isActive, onNav
         {!isCollapsed && isOpen && (
           <div className="ml-4 space-y-1 border-l border-sidebar-border pl-4">
             {children.map((child) => (
-              <NavItem key={child.to} {...child} isCollapsed={isCollapsed} onNavigate={onNavigate} />
+              <NavItem
+                key={child.to}
+                {...child}
+                isCollapsed={isCollapsed}
+                onNavigate={onNavigate}
+              />
             ))}
           </div>
         )}
@@ -233,7 +255,13 @@ interface SectionNavItemProps {
   onNavigate?: () => void;
 }
 
-const SectionNavItem = ({ to, icon: Icon, label, isCollapsed, onNavigate }: SectionNavItemProps) => {
+const SectionNavItem = ({
+  to,
+  icon: Icon,
+  label,
+  isCollapsed,
+  onNavigate,
+}: SectionNavItemProps) => {
   return (
     <NavLink
       to={to}
@@ -263,7 +291,7 @@ const SectionGroup = ({ title, children, isCollapsed }: SectionGroupProps) => {
   if (isCollapsed) {
     return <div className="space-y-1">{children}</div>;
   }
-  
+
   return (
     <div className="space-y-2">
       <div className="px-3 py-1">
@@ -271,9 +299,7 @@ const SectionGroup = ({ title, children, isCollapsed }: SectionGroupProps) => {
           {title}
         </span>
       </div>
-      <div className="space-y-1">
-        {children}
-      </div>
+      <div className="space-y-1">{children}</div>
     </div>
   );
 };
@@ -285,7 +311,10 @@ const SectionGroup = ({ title, children, isCollapsed }: SectionGroupProps) => {
 /**
  * Convert ModuleSubItem to NavItemConfig
  */
-const convertSubItem = (item: ModuleSubItem, moduleCode: string): NavItemConfig => ({
+const convertSubItem = (
+  item: ModuleSubItem,
+  moduleCode: string
+): NavItemConfig => ({
   to: item.path,
   icon: getIcon(item.icon),
   label: item.title,
@@ -298,15 +327,15 @@ const convertSubItem = (item: ModuleSubItem, moduleCode: string): NavItemConfig 
  */
 const convertModuleConfig = (config: ModuleSidebarConfig): NavItemConfig => {
   const hasSubItems = config.subItems && config.subItems.length > 0;
-  
+
   return {
     to: hasSubItems ? undefined : config.basePath,
     icon: getIcon(config.icon),
     label: config.displayName,
     isCollapsed: false,
     moduleCode: config.moduleCode,
-    children: hasSubItems 
-      ? config.subItems!.map(item => convertSubItem(item, config.moduleCode))
+    children: hasSubItems
+      ? config.subItems!.map((item) => convertSubItem(item, config.moduleCode))
       : undefined,
   };
 };
@@ -332,10 +361,18 @@ const generateNavigationItems = (): NavItemConfig[] => {
     label: "Dashboard",
     isCollapsed: false,
   };
-  
+
   // Convert sidebar groups
   const groupItems = sidebarGroups.map(convertSidebarGroup);
-  
+
+  // Analytics - direct top-level module
+  const analyticsItem: NavItemConfig = {
+    to: "/analytics",
+    icon: getIcon("TrendingUp"),
+    label: "Analytics",
+    isCollapsed: false,
+  };
+
   // Profile is always last
   const profileItem: NavItemConfig = {
     to: "/profile",
@@ -343,8 +380,8 @@ const generateNavigationItems = (): NavItemConfig[] => {
     label: "Profile",
     isCollapsed: false,
   };
-  
-  return [dashboardItem, ...groupItems, profileItem];
+
+  return [dashboardItem, ...groupItems, analyticsItem, profileItem];
 };
 
 // ==========================================
@@ -369,36 +406,43 @@ interface AppSidebarProps {
 const useFilteredNavigation = (isRouteVisible: (path: string) => boolean) => {
   const { hasModuleAccess, isAdmin, permissions } = usePermissions();
   const { userProfile } = useAuth();
-  
+
   return useMemo(() => {
-    console.log('[AppSidebar] Filtering navigation items from centralized config:', {
-      isAdmin: isAdmin(),
-      userId: userProfile?.id,
-      hasPermissions: !!permissions,
-      sidebarGroupsCount: sidebarGroups.length,
-    });
+    console.log(
+      "[AppSidebar] Filtering navigation items from centralized config:",
+      {
+        isAdmin: isAdmin(),
+        userId: userProfile?.id,
+        hasPermissions: !!permissions,
+        sidebarGroupsCount: sidebarGroups.length,
+      }
+    );
 
     // Generate navigation items from centralized config
     const navigationItems = generateNavigationItems();
 
     const filterItems = (items: NavItemConfig[]): NavItemConfig[] => {
       return items
-        .filter(item => {
+        .filter((item) => {
           // Check admin-only
           if (item.adminOnly && !isAdmin()) {
             return false;
           }
-          
+
           // Check feature toggle for module
           if (item.moduleCode && !isModuleFeatureEnabled(item.moduleCode)) {
             return false;
           }
-          
+
           // Check user visibility preferences (for routes with paths)
-          if (item.to && !SYSTEM_ROUTES.includes(item.to) && !isRouteVisible(item.to)) {
+          if (
+            item.to &&
+            !SYSTEM_ROUTES.includes(item.to) &&
+            !isRouteVisible(item.to)
+          ) {
             return false;
           }
-          
+
           // If has children, check if any children are visible
           if (item.children) {
             const visibleChildren = filterItems(item.children);
@@ -407,7 +451,7 @@ const useFilteredNavigation = (isRouteVisible: (path: string) => boolean) => {
             }
             return true;
           }
-          
+
           // Check module permission (Admin bypasses this)
           if (item.moduleCode && !isAdmin()) {
             const hasAccess = hasModuleAccess(item.moduleCode);
@@ -416,7 +460,7 @@ const useFilteredNavigation = (isRouteVisible: (path: string) => boolean) => {
 
           return true;
         })
-        .map(item => {
+        .map((item) => {
           if (item.children) {
             return {
               ...item,
@@ -426,9 +470,9 @@ const useFilteredNavigation = (isRouteVisible: (path: string) => boolean) => {
           return item;
         });
     };
-    
+
     const filtered = filterItems(navigationItems);
-    console.log('[AppSidebar] Final visible items count:', filtered.length);
+    console.log("[AppSidebar] Final visible items count:", filtered.length);
     return filtered;
   }, [hasModuleAccess, isAdmin, userProfile, permissions, isRouteVisible]);
 };
@@ -443,28 +487,32 @@ interface SectionsLayoutProps {
   onNavigate?: () => void;
 }
 
-const SectionsLayout = ({ items, isCollapsed, onNavigate }: SectionsLayoutProps) => {
-  // Group items: first item is Dashboard (HOME section), 
+const SectionsLayout = ({
+  items,
+  isCollapsed,
+  onNavigate,
+}: SectionsLayoutProps) => {
+  // Group items: first item is Dashboard (HOME section),
   // middle items are groups (their own sections),
   // last item is Profile (part of the last group or separate)
-  
+
   const sections: { title: string; items: NavItemConfig[] }[] = [];
-  
-  items.forEach(item => {
-    if (item.to === '/' || item.to === '/dashboard') {
+
+  items.forEach((item) => {
+    if (item.to === "/" || item.to === "/dashboard") {
       // Dashboard goes in HOME section
       sections.push({
-        title: 'HOME',
+        title: "HOME",
         items: [item],
       });
-    } else if (item.to === '/profile') {
+    } else if (item.to === "/profile") {
       // Profile goes at the end
       // Add to last section or create new
       if (sections.length > 0) {
         sections[sections.length - 1].items.push(item);
       } else {
         sections.push({
-          title: 'PROFILE',
+          title: "PROFILE",
           items: [item],
         });
       }
@@ -480,13 +528,13 @@ const SectionsLayout = ({ items, isCollapsed, onNavigate }: SectionsLayoutProps)
         sections[sections.length - 1].items.push(item);
       } else {
         sections.push({
-          title: 'NAVIGATION',
+          title: "NAVIGATION",
           items: [item],
         });
       }
     }
   });
-  
+
   return (
     <nav className="space-y-4">
       {sections.map((section, sectionIndex) => (
@@ -498,7 +546,7 @@ const SectionsLayout = ({ items, isCollapsed, onNavigate }: SectionsLayoutProps)
           {section.items.map((item, itemIndex) => (
             <SectionNavItem
               key={item.to || item.label + itemIndex}
-              to={item.to || '/'}
+              to={item.to || "/"}
               icon={item.icon}
               label={item.label}
               isCollapsed={isCollapsed}
@@ -521,7 +569,11 @@ interface DropdownLayoutProps {
   onNavigate?: () => void;
 }
 
-const DropdownLayout = ({ items, isCollapsed, onNavigate }: DropdownLayoutProps) => {
+const DropdownLayout = ({
+  items,
+  isCollapsed,
+  onNavigate,
+}: DropdownLayoutProps) => {
   return (
     <nav className="space-y-1">
       {items.map((item, index) => (
@@ -540,31 +592,36 @@ const DropdownLayout = ({ items, isCollapsed, onNavigate }: DropdownLayoutProps)
 // MAIN SIDEBAR COMPONENT
 // ==========================================
 
-export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose }: AppSidebarProps) => {
+export const AppSidebar = ({
+  isCollapsed,
+  onToggle,
+  isMobileOpen,
+  onMobileClose,
+}: AppSidebarProps) => {
   // Get sidebar config from context - need to handle case where provider might not exist
-  let displayStyle: SidebarDisplayStyle = 'dropdown';
+  let displayStyle: SidebarDisplayStyle = "dropdown";
   let isRouteVisibleFn = (_path: string) => true;
-  
+
   try {
     const sidebarConfig = useSidebarConfig();
     displayStyle = sidebarConfig.displayStyle;
     isRouteVisibleFn = sidebarConfig.isRouteVisible;
   } catch {
     // Provider not available, use defaults
-    console.log('[AppSidebar] SidebarConfigProvider not found, using defaults');
+    console.log("[AppSidebar] SidebarConfigProvider not found, using defaults");
   }
-  
+
   const filteredNavItems = useFilteredNavigation(isRouteVisibleFn);
   const { userProfile } = useAuth();
   const { permissions, isLoading } = usePermissions();
-  
+
   const effectiveCollapsed = isCollapsed && !isMobileOpen;
-  
+
   return (
     <>
       {/* Mobile Overlay */}
       {isMobileOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
           onClick={onMobileClose}
         />
@@ -589,10 +646,12 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <GraduationCap className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">EduMunch</span>
+              <span className="text-xl font-bold text-foreground">
+                EduMunch
+              </span>
             </div>
           )}
-          
+
           {/* Mobile close button */}
           <button
             onClick={onMobileClose}
@@ -625,7 +684,7 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
                 <p className="text-sm text-muted-foreground">Loading menu...</p>
               )}
             </div>
-          ) : displayStyle === 'sections' ? (
+          ) : displayStyle === "sections" ? (
             <SectionsLayout
               items={filteredNavItems}
               isCollapsed={effectiveCollapsed}
@@ -649,10 +708,12 @@ export const AppSidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose 
             {(!isCollapsed || isMobileOpen) && (
               <div className="flex-1 overflow-hidden">
                 <p className="truncate text-base font-medium text-foreground">
-                  {userProfile?.full_name || 'User'}
+                  {userProfile?.full_name || "User"}
                 </p>
                 <p className="truncate text-sm text-muted-foreground">
-                  {userProfile?.primary_role?.role_name || userProfile?.email || ''}
+                  {userProfile?.primary_role?.role_name ||
+                    userProfile?.email ||
+                    ""}
                 </p>
               </div>
             )}

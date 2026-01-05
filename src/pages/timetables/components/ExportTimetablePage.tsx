@@ -5,6 +5,7 @@
  */
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FileDown,
   FileSpreadsheet,
@@ -132,9 +133,7 @@ const ExportTimetablePage = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Export Timetable
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Export Timetable</h1>
         <p className="text-muted-foreground">
           Download timetable data in various formats
         </p>

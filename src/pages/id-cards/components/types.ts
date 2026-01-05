@@ -97,8 +97,8 @@ export const DEFAULT_STUDENT_TEMPLATE: IDCardDesign = {
   showBloodGroup: true,
   showAddress: true,
   showEmergencyContact: true,
-  showBarcode: true,
-  showQRCode: false,
+  showBarcode: false,
+  showQRCode: true,
   logoPosition: "center",
   orientation: "portrait",
 };
@@ -112,8 +112,8 @@ export const DEFAULT_STAFF_TEMPLATE: IDCardDesign = {
   showBloodGroup: true,
   showAddress: false,
   showEmergencyContact: true,
-  showBarcode: true,
-  showQRCode: false,
+  showBarcode: false,
+  showQRCode: true,
   logoPosition: "center",
   orientation: "portrait",
 };

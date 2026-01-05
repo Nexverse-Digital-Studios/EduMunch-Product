@@ -6,13 +6,8 @@
  */
 
 import { useState, useMemo } from "react";
-import {
-  Search,
-  Filter,
-  Calendar,
-  Eye,
-  Download,
-} from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, Filter, Calendar, Eye, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -76,12 +71,17 @@ const ViewStaffAttendancePage = () => {
   const { data: employees, isLoading: isLoadingEmployees } =
     useSupabaseTable<EmployeeReference>(TABLES.EMPLOYEES);
 
-  // Create employee lookup
-  const employeeMap = useMemo(() => {
+  // Fetch teachers for reference
+  const { data: teachers, isLoading: isLoadingTeachers } =
+    useSupabaseTable<EmployeeReference>(TABLES.TEACHERS);
+
+  // Create staff lookup (both employees and teachers)
+  const staffMap = useMemo(() => {
     const map = new Map<string, EmployeeReference>();
     employees?.forEach((emp) => map.set(emp.id, emp));
+    teachers?.forEach((teacher) => map.set(teacher.id, teacher));
     return map;
-  }, [employees]);
+  }, [employees, teachers]);
 
   // Filter and enrich attendance records
   const filteredRecords = useMemo(() => {
@@ -101,10 +101,11 @@ const ViewStaffAttendancePage = () => {
 
         // Search filter (by employee name or code)
         if (searchQuery) {
-          const emp = employeeMap.get(record.teacher_id);
-          if (emp) {
-            const fullName = `${emp.first_name} ${emp.last_name}`.toLowerCase();
-            const code = emp.employee_code.toLowerCase();
+          const staff = staffMap.get(record.teacher_id);
+          if (staff) {
+            const fullName =
+              `${staff.first_name} ${staff.last_name}`.toLowerCase();
+            const code = staff.employee_code.toLowerCase();
             const query = searchQuery.toLowerCase();
             if (!fullName.includes(query) && !code.includes(query))
               return false;
@@ -126,20 +127,21 @@ const ViewStaffAttendancePage = () => {
     dateTo,
     statusFilter,
     searchQuery,
-    employeeMap,
+    staffMap,
   ]);
 
-  const isLoading = isLoadingAttendance || isLoadingEmployees;
+  const isLoading =
+    isLoadingAttendance || isLoadingEmployees || isLoadingTeachers;
 
-  // Get employee name
-  const getEmployeeName = (teacherId: string) => {
-    const emp = employeeMap.get(teacherId);
-    return emp ? `${emp.first_name} ${emp.last_name}` : "Unknown";
+  // Get staff name
+  const getStaffName = (staffId: string) => {
+    const staff = staffMap.get(staffId);
+    return staff ? `${staff.first_name} ${staff.last_name}` : "Unknown";
   };
 
-  const getEmployeeCode = (teacherId: string) => {
-    const emp = employeeMap.get(teacherId);
-    return emp?.employee_code || "N/A";
+  const getStaffCode = (staffId: string) => {
+    const staff = staffMap.get(staffId);
+    return staff?.employee_code || "N/A";
   };
 
   return (
@@ -151,15 +153,17 @@ const ViewStaffAttendancePage = () => {
             View Staff Attendance
           </h1>
           <p className="text-muted-foreground">
-            Browse and filter attendance records
+            Browse and filter attendance records for teachers and employees
           </p>
         </div>
-        <Button 
-          variant="outline" 
-          onClick={() => toast({
-            title: "Export",
-            description: "Export functionality coming soon"
-          })}
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast({
+              title: "Export",
+              description: "Export functionality coming soon",
+            })
+          }
         >
           <Download className="mr-2 h-4 w-4" />
           Export Data
@@ -220,7 +224,7 @@ const ViewStaffAttendancePage = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Search Employee</Label>
+              <Label>Search Staff</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -276,10 +280,10 @@ const ViewStaffAttendancePage = () => {
                         )}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {getEmployeeName(record.teacher_id)}
+                        {getStaffName(record.teacher_id)}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {getEmployeeCode(record.teacher_id)}
+                        {getStaffCode(record.teacher_id)}
                       </TableCell>
                       <TableCell>
                         <Badge className={statusColors[record.status]}>

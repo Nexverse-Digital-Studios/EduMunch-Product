@@ -35,6 +35,14 @@ interface SectionDB {
   section_code: string;
 }
 
+interface AcademicYearDB {
+  id: string;
+  academic_year: string;
+  is_current: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 const getWeekOptions = () => {
   const options = [];
   const today = new Date();
@@ -107,6 +115,19 @@ const CopySchedulePage = () => {
     orderBy: { column: "section_name", ascending: true },
   });
 
+  // Fetch academic year
+  const { data: academicYearData } = useSupabaseTable<AcademicYearDB>(
+    TABLES.ACADEMIC_YEARS,
+    {
+      filters: { is_current: true },
+    }
+  );
+  const currentAcademicYear = academicYearData?.[0];
+
+  // Fetch and mutate timetables
+  const { data: timetableData, createMutation: createTimetable } =
+    useSupabaseTable(TABLES.TIMETABLES);
+
   const sections = sectionsData || [];
 
   const handleSelectAll = (checked: boolean) => {
@@ -159,21 +180,64 @@ const CopySchedulePage = () => {
       return;
     }
 
+    if (!currentAcademicYear?.id) {
+      toast({
+        title: "Error",
+        description: "No active academic year found.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // In production, this would copy timetable entries from source to target week
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Fetch timetables from source week for selected sections
+      const sourceEntries =
+        timetableData?.filter(
+          (entry: any) =>
+            selectedSections.includes(entry.section_id) &&
+            entry.is_active === true
+        ) || [];
+
+      if (sourceEntries.length === 0) {
+        toast({
+          title: "No entries to copy",
+          description: "No timetable entries found for the selected sections.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Create new entries for target week
+      const newEntries = sourceEntries.map((entry: any) => ({
+        id: crypto.randomUUID(),
+        section_id: entry.section_id,
+        subject_id: entry.subject_id,
+        teacher_id: entry.teacher_id,
+        period_id: entry.period_id,
+        day_of_week: entry.day_of_week,
+        room_number: entry.room_number || null,
+        academic_year_id: currentAcademicYear.id,
+        is_active: true,
+      }));
+
+      // Insert all new entries to database
+      for (const newEntry of newEntries) {
+        await createTimetable.mutateAsync(newEntry as any);
+      }
 
       setCopyCompleted(true);
       toast({
         title: "Success",
-        description: `Copied timetable for ${selectedSections.length} sections`,
+        description: `Copied ${newEntries.length} timetable entries for ${selectedSections.length} sections`,
       });
     } catch (error) {
+      console.error("Error copying schedule:", error);
       toast({
         title: "Error",
-        description: "Failed to copy schedule",
+        description: "Failed to copy schedule. Please try again.",
         variant: "destructive",
       });
     } finally {

@@ -239,13 +239,6 @@ export function IDCardTemplates({ embedded = false }: IDCardTemplatesProps) {
               />
             </div>
             <div className="flex items-center justify-between">
-              <Label>Show Barcode</Label>
-              <Switch
-                checked={design.showBarcode}
-                onCheckedChange={(v) => updateDesign(type, "showBarcode", v)}
-              />
-            </div>
-            <div className="flex items-center justify-between">
               <Label>Show QR Code</Label>
               <Switch
                 checked={design.showQRCode}

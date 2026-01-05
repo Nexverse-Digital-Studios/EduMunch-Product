@@ -263,7 +263,8 @@ export function useSupabaseTable<T>(
   tableName: string,
   options: QueryOptions = {}
 ) {
-  const queryKey = [tableName];
+  // Include filters, orderBy, and limit in queryKey so data refetches when these change
+  const queryKey = [tableName, options.filters, options.orderBy, options.limit];
   
   // Query
   const query = useTableQuery<T>(tableName, queryKey, options);

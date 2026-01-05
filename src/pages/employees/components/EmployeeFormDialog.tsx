@@ -3,7 +3,7 @@
  * =============================
  * Modal dialog wrapper for EmployeeForm component
  * Used for inline create/edit operations (consolidation - replaces separate routes)
- * 
+ *
  * Route Consolidation: This component replaces:
  * - /employees/create (handled via mode="create")
  * - /employees/:id/edit (handled via mode="edit" with employeeId)
@@ -40,9 +40,9 @@ export function EmployeeFormDialog({
   onSuccess,
 }: EmployeeFormDialogProps) {
   const { toast } = useToast();
-  // Using teachers table as per EmployeesList pattern
+  // Using employees table for employee creation/updates
   const { createMutation, updateMutation } = useSupabaseTable<EmployeeFormData>(
-    TABLES.TEACHERS
+    TABLES.EMPLOYEES
   );
 
   const handleSubmit = async (data: EmployeeFormData) => {
@@ -65,7 +65,10 @@ export function EmployeeFormDialog({
     } catch (error) {
       toast({
         title: "Error",
-        description: mode === "create" ? "Failed to create employee" : "Failed to update employee",
+        description:
+          mode === "create"
+            ? "Failed to create employee"
+            : "Failed to update employee",
         variant: "destructive",
       });
     }

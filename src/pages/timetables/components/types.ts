@@ -32,6 +32,7 @@ export interface TimetableDB {
   period_id: string;
   day_of_week: number;
   room_number?: string;
+  academic_year_id: string;
   is_active: boolean;
 }
 
@@ -40,6 +41,16 @@ export interface ClassInfo {
   subject: string;
   teacher: string;
   isMerged?: boolean;
+  mergedSections?: string[]; // List of section names merged in this slot
+  masterSection?: string; // Primary section for merged class
+}
+
+export interface MergedClass {
+  teacher: string;
+  subject: string;
+  sections: string[]; // All sections in this merged class
+  period: string;
+  day: string;
 }
 
 export interface ScheduleSlot {

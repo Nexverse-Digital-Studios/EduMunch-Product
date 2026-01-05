@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   DoorOpen,
   Search,
@@ -181,7 +182,14 @@ export function RoomsList() {
           </p>
         </div>
         {canCreate && (
-          <Button onClick={() => toast({ title: "Add Room", description: "Room form coming soon." })}>
+          <Button
+            onClick={() =>
+              toast({
+                title: "Add Room",
+                description: "Room form coming soon.",
+              })
+            }
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Room
           </Button>

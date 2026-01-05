@@ -40,6 +40,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { StudentDB, STUDENT_STATUS_OPTIONS } from "./types";
+import { StudentParentsTab } from "./StudentParentsTab";
 
 const INDEX_TOKEN = "1emaet";
 
@@ -294,6 +295,7 @@ export function StudentDetail() {
           <TabsTrigger value="personal">Personal Info</TabsTrigger>
           <TabsTrigger value="academic">Academic Info</TabsTrigger>
           <TabsTrigger value="contact">Contact Info</TabsTrigger>
+          <TabsTrigger value="parents">Parents</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
@@ -603,6 +605,21 @@ export function StudentDetail() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Parents Tab */}
+        <TabsContent value="parents">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Parents & Guardians
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <StudentParentsTab studentId={student?.id || ""} />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Documents Tab */}

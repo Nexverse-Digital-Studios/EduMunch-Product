@@ -21,13 +21,15 @@ import {
 // Form schema interface
 export interface EmployeeFormData {
   first_name: string;
-  middle_name: string;
+  middle_name?: string;
   last_name: string;
   employee_code: string;
-  email: string;
+  email?: string;
   phone: string;
-  department: string;
+  department?: string;
   designation: string;
+  joining_date: string;
+  employment_type?: string;
   status: string;
 }
 
@@ -62,6 +64,9 @@ export const EmployeeForm = ({
       phone: defaultValues?.phone || "",
       department: defaultValues?.department || "",
       designation: defaultValues?.designation || "",
+      joining_date:
+        defaultValues?.joining_date || new Date().toISOString().split("T")[0],
+      employment_type: defaultValues?.employment_type || "Permanent",
       status: defaultValues?.status || "active",
     },
   });
@@ -159,6 +164,44 @@ export const EmployeeForm = ({
           {errors.phone && (
             <p className="text-sm text-destructive">{errors.phone.message}</p>
           )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="joining_date">
+            Joining Date <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="joining_date"
+            type="date"
+            {...register("joining_date", {
+              required: "Joining date is required",
+            })}
+          />
+          {errors.joining_date && (
+            <p className="text-sm text-destructive">
+              {errors.joining_date.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="employment_type">Employment Type</Label>
+          <Select
+            value={watch("employment_type") || "Permanent"}
+            onValueChange={(value) => setValue("employment_type", value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select employment type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Permanent">Permanent</SelectItem>
+              <SelectItem value="Contract">Contract</SelectItem>
+              <SelectItem value="Part-time">Part-time</SelectItem>
+              <SelectItem value="Temporary">Temporary</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
