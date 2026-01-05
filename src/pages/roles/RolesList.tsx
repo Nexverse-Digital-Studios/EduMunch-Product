@@ -6,7 +6,7 @@
  *
  * Displays list of all roles with create/edit modal.
  * Create and Edit operations now use modal dialogs instead of separate routes.
- * 
+ *
  * Consolidation: Replaces /roles/create and /roles/:id/edit routes
  */
 
@@ -16,13 +16,18 @@ import { Plus, Shield, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRoles, useDeleteRole } from "@/hooks/useSupabaseQuery";
 import { useToast } from "@/hooks/use-toast";
-import { RoleTable, RoleCard, DeleteRoleDialog, RoleFormDialog } from "./components";
+import {
+  RoleTable,
+  RoleCard,
+  DeleteRoleDialog,
+  RoleFormDialog,
+} from "./components";
 
 const RolesList = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [deleteRoleId, setDeleteRoleId] = useState<string | null>(null);
-  
+
   // Modal states for create/edit (consolidation - replaces separate routes)
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [editRoleId, setEditRoleId] = useState<string | null>(null);
@@ -91,6 +96,7 @@ const RolesList = () => {
       role_name: role.role_name,
       role_code: role.role_code,
       description: role.description || "",
+      is_active: role.is_active,
       active_modules: [], // Will be populated from permissions in Phase 4
     };
   };
@@ -150,7 +156,11 @@ const RolesList = () => {
       {/* Desktop Table */}
       {!isLoading && roles && roles.length > 0 && (
         <div className="hidden md:block">
-          <RoleTable roles={roles} onEdit={handleEditRole} onDelete={setDeleteRoleId} />
+          <RoleTable
+            roles={roles}
+            onEdit={handleEditRole}
+            onDelete={setDeleteRoleId}
+          />
         </div>
       )}
 
@@ -158,7 +168,12 @@ const RolesList = () => {
       {!isLoading && roles && roles.length > 0 && (
         <div className="md:hidden space-y-4">
           {roles.map((role) => (
-            <RoleCard key={role.id} role={role} onEdit={handleEditRole} onDelete={setDeleteRoleId} />
+            <RoleCard
+              key={role.id}
+              role={role}
+              onEdit={handleEditRole}
+              onDelete={setDeleteRoleId}
+            />
           ))}
         </div>
       )}

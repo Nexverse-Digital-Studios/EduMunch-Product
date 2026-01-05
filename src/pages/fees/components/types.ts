@@ -11,6 +11,7 @@
  * - fee_payments_1emaet
  * - fee_refunds_1emaet
  * - late_fee_config_1emaet
+ * - fee_emi_schedules_1emaet (NEW - EMI support)
  */
 
 export interface FeeStructureDB {
@@ -58,6 +59,10 @@ export interface StudentFeeDB {
   balance_amount: number;
   due_date: string;
   status: "pending" | "partial" | "paid" | "overdue" | "waived";
+  payment_plan: "Full Payment" | "EMI"; // NEW - EMI support
+  emi_tenure_months: number | null; // NEW - EMI support
+  emi_interest_percent: number; // NEW - EMI support
+  emi_start_date: string | null; // NEW - EMI support
   created_at: string;
   updated_at: string;
 }
@@ -70,6 +75,9 @@ export interface FeePaymentDB {
   payment_date: string;
   amount: number;
   payment_mode: "Cash" | "Cheque" | "UPI" | "Card" | "Net Banking" | "Other";
+  payment_option: "Full Payment" | "EMI"; // NEW - EMI support
+  emi_schedule_id: string | null; // NEW - EMI support
+  emi_tenure_months: number | null; // NEW - EMI support
   transaction_id: string | null;
   cheque_number: string | null;
   cheque_date: string | null;
@@ -111,6 +119,23 @@ export interface LateFeeConfigDB {
   max_late_fee: number | null;
   is_active: boolean;
   created_at: string;
+}
+
+export interface FeeEMIScheduleDB {
+  id: string;
+  student_fee_id: string;
+  student_id: string;
+  emi_number: number;
+  emi_amount: number;
+  due_date: string;
+  payment_date: string | null;
+  paid_amount: number;
+  status: "Pending" | "Paid" | "Overdue" | "Cancelled" | "Partially Paid";
+  interest_amount: number;
+  penalty_amount: number;
+  remarks: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface FeeStructureFormData {

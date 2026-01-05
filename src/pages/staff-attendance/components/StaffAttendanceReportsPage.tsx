@@ -5,14 +5,8 @@
  * All functionality contained within tabs - no external navigation
  */
 
-import { useState } from "react";
-import {
-  BarChart3,
-  Calendar,
-  FileText,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { BarChart3, Calendar, FileText, TrendingUp, Users } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -25,7 +19,12 @@ import { useModulePermissions } from "@/contexts/PermissionContext";
 
 const StaffAttendanceReportsPage = () => {
   const { canView } = useModulePermissions("staff_attendance");
-  const [activeTab, setActiveTab] = useState("overview");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "overview";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
 
   const reportTypes = [
     {
@@ -86,7 +85,7 @@ const StaffAttendanceReportsPage = () => {
             className={`hover:shadow-md transition-shadow cursor-pointer ${
               activeTab === report.tabValue ? "ring-2 ring-primary" : ""
             }`}
-            onClick={() => setActiveTab(report.tabValue)}
+            onClick={() => handleTabChange(report.tabValue)}
           >
             <CardHeader>
               <div
@@ -110,7 +109,7 @@ const StaffAttendanceReportsPage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="department">By Department</TabsTrigger>
@@ -190,9 +189,7 @@ const StaffAttendanceReportsPage = () => {
                     <CardTitle className="text-3xl">89%</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-xs text-muted-foreground">
-                      8 employees
-                    </p>
+                    <p className="text-xs text-muted-foreground">8 employees</p>
                   </CardContent>
                 </Card>
                 <Card>
@@ -201,9 +198,7 @@ const StaffAttendanceReportsPage = () => {
                     <CardTitle className="text-3xl">100%</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-xs text-muted-foreground">
-                      2 employees
-                    </p>
+                    <p className="text-xs text-muted-foreground">2 employees</p>
                   </CardContent>
                 </Card>
               </div>
@@ -259,7 +254,9 @@ const StaffAttendanceReportsPage = () => {
                 <Card>
                   <CardHeader className="pb-2">
                     <CardDescription>Perfect Attendance</CardDescription>
-                    <CardTitle className="text-3xl text-green-600">28</CardTitle>
+                    <CardTitle className="text-3xl text-green-600">
+                      28
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-xs text-muted-foreground">
@@ -270,7 +267,9 @@ const StaffAttendanceReportsPage = () => {
                 <Card>
                   <CardHeader className="pb-2">
                     <CardDescription>Needs Attention</CardDescription>
-                    <CardTitle className="text-3xl text-yellow-600">3</CardTitle>
+                    <CardTitle className="text-3xl text-yellow-600">
+                      3
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-xs text-muted-foreground">

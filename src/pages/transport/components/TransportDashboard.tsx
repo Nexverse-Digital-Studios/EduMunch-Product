@@ -4,7 +4,8 @@
  * Main dashboard for transport management
  */
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Bus,
   MapPin,
@@ -52,7 +53,12 @@ const INDEX_TOKEN = "1emaet";
 export function TransportDashboard() {
   const { canCreate } = useModulePermissions("transport");
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "overview";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
 
   // Fetch data
   const { data: routes, isLoading: loadingRoutes } =
@@ -176,7 +182,7 @@ export function TransportDashboard() {
       title: "Add Vehicle",
       description: "Vehicle creation will be available in the Vehicles tab.",
     });
-    setActiveTab("vehicles");
+    handleTabChange("vehicles");
   };
 
   const handleAddRoute = () => {
@@ -184,7 +190,7 @@ export function TransportDashboard() {
       title: "Add Route",
       description: "Route creation will be available in the Routes tab.",
     });
-    setActiveTab("routes");
+    handleTabChange("routes");
   };
 
   if (isLoading) {
@@ -315,9 +321,9 @@ export function TransportDashboard() {
 
       {/* Quick Actions - Now using buttons to switch tabs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card 
+        <Card
           className="hover:shadow-md transition-shadow cursor-pointer h-full"
-          onClick={() => setActiveTab("routes")}
+          onClick={() => handleTabChange("routes")}
         >
           <CardContent className="pt-6 text-center">
             <Route className="h-8 w-8 mx-auto mb-2 text-blue-600" />
@@ -325,9 +331,9 @@ export function TransportDashboard() {
             <p className="text-xs text-muted-foreground">Manage routes</p>
           </CardContent>
         </Card>
-        <Card 
+        <Card
           className="hover:shadow-md transition-shadow cursor-pointer h-full"
-          onClick={() => setActiveTab("vehicles")}
+          onClick={() => handleTabChange("vehicles")}
         >
           <CardContent className="pt-6 text-center">
             <Bus className="h-8 w-8 mx-auto mb-2 text-green-600" />
@@ -335,9 +341,9 @@ export function TransportDashboard() {
             <p className="text-xs text-muted-foreground">Fleet management</p>
           </CardContent>
         </Card>
-        <Card 
+        <Card
           className="hover:shadow-md transition-shadow cursor-pointer h-full"
-          onClick={() => setActiveTab("drivers")}
+          onClick={() => handleTabChange("drivers")}
         >
           <CardContent className="pt-6 text-center">
             <UserCheck className="h-8 w-8 mx-auto mb-2 text-purple-600" />
@@ -345,9 +351,9 @@ export function TransportDashboard() {
             <p className="text-xs text-muted-foreground">Driver management</p>
           </CardContent>
         </Card>
-        <Card 
+        <Card
           className="hover:shadow-md transition-shadow cursor-pointer h-full"
-          onClick={() => setActiveTab("students")}
+          onClick={() => handleTabChange("students")}
         >
           <CardContent className="pt-6 text-center">
             <Users className="h-8 w-8 mx-auto mb-2 text-amber-600" />
@@ -360,7 +366,11 @@ export function TransportDashboard() {
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="space-y-4"
+      >
         <TabsList>
           <TabsTrigger value="overview">
             <TrendingUp className="mr-2 h-4 w-4" />
@@ -429,7 +439,9 @@ export function TransportDashboard() {
                           </TableCell>
                           <TableCell>
                             <Badge
-                              variant={route.is_active ? "default" : "secondary"}
+                              variant={
+                                route.is_active ? "default" : "secondary"
+                              }
                             >
                               {route.is_active ? "Active" : "Inactive"}
                             </Badge>
@@ -441,7 +453,9 @@ export function TransportDashboard() {
                 ) : (
                   <div className="text-center py-8">
                     <Route className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium">No routes configured</h3>
+                    <h3 className="text-lg font-medium">
+                      No routes configured
+                    </h3>
                     <p className="text-muted-foreground mb-4">
                       Start by adding transport routes
                     </p>
@@ -476,7 +490,9 @@ export function TransportDashboard() {
                         <TableRow key={vehicle.id}>
                           <TableCell>
                             <div>
-                              <p className="font-medium">{vehicle.vehicle_number}</p>
+                              <p className="font-medium">
+                                {vehicle.vehicle_number}
+                              </p>
                               <p className="text-xs text-muted-foreground">
                                 {vehicle.make} {vehicle.model}
                               </p>
@@ -742,12 +758,18 @@ export function TransportDashboard() {
                         <TableCell>{driver.phone || "-"}</TableCell>
                         <TableCell>
                           {driver.license_expiry
-                            ? new Date(driver.license_expiry).toLocaleDateString()
+                            ? new Date(
+                                driver.license_expiry
+                              ).toLocaleDateString()
                             : "-"}
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant={driver.status === "Active" ? "default" : "secondary"}
+                            variant={
+                              driver.status === "Active"
+                                ? "default"
+                                : "secondary"
+                            }
                           >
                             {driver.status}
                           </Badge>
@@ -805,7 +827,9 @@ export function TransportDashboard() {
               ) : (
                 <div className="text-center py-12">
                   <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">No student allocations</h3>
+                  <h3 className="text-lg font-medium">
+                    No student allocations
+                  </h3>
                   <p className="text-muted-foreground mb-4">
                     Assign students to transport routes
                   </p>

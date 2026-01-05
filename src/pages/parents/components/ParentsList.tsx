@@ -216,6 +216,7 @@ export function ParentsList() {
       city: parent.city || "",
       state: parent.state || "",
       pincode: parent.pincode || "",
+      country: parent.country || "India",
     };
   };
 

@@ -22,6 +22,30 @@ interface TimetableGridProps {
   onUnmergeClick?: (timeIndex: number, masterSection: string) => void;
 }
 
+// Helper function to check if a class can be merged with other sections
+const canMergeClass = (
+  classInfo: ClassInfo,
+  slot: ScheduleSlot,
+  branches: string[],
+  currentBranch: string
+): boolean => {
+  if (classInfo.isMerged) return false;
+
+  // Count how many other sections have the same teacher and subject in this time slot
+  const mergeableCount = branches.filter((branch) => {
+    if (branch === currentBranch) return false;
+    const otherClass = slot.slots[branch];
+    return (
+      otherClass &&
+      !otherClass.isMerged &&
+      otherClass.teacher === classInfo.teacher &&
+      otherClass.subject === classInfo.subject
+    );
+  }).length;
+
+  return mergeableCount > 0;
+};
+
 export const TimetableGrid = ({
   schedule,
   branches,
@@ -68,11 +92,17 @@ export const TimetableGrid = ({
                 return (
                   <div
                     key={branch}
-                    className={`flex-1 min-w-[150px] p-2 border-r border-border last:border-r-0 min-h-[80px] group hover:bg-muted/20 transition-colors ${
+                    className="flex-1 min-w-[150px] p-2 border-r border-border last:border-r-0 min-h-[80px] group hover:bg-muted/20 transition-colors"
+                    style={
                       classInfo?.isMerged
-                        ? "bg-primary/10 border-l-4 border-l-primary"
-                        : ""
-                    }`}
+                        ? {
+                            background:
+                              "linear-gradient(135deg, rgba(167, 139, 250, 0.4) 0%, rgba(168, 85, 247, 0.25) 50%, rgba(167, 139, 250, 0.3) 100%)",
+                            borderLeft: "4px solid rgb(124, 58, 242)",
+                            boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
+                          }
+                        : {}
+                    }
                   >
                     {classInfo ? (
                       <div className="space-y-1">
@@ -85,17 +115,46 @@ export const TimetableGrid = ({
                               {classInfo.teacher}
                             </p>
                             {classInfo.isMerged && classInfo.mergedSections && (
-                              <div className="mt-2 space-y-1">
+                              <div className="mt-2 space-y-2">
                                 <Badge
+                                  style={{
+                                    backgroundColor: "rgba(167, 139, 250, 0.6)",
+                                    color: "rgb(46, 16, 101)",
+                                    borderColor: "rgb(167, 139, 250)",
+                                  }}
                                   variant="outline"
-                                  className="text-xs bg-primary/10 text-primary border-primary/30"
+                                  className="text-xs font-semibold"
                                 >
                                   <Link2 className="h-3 w-3 mr-1" />
                                   MERGED ({classInfo.mergedSections.length})
                                 </Badge>
-                                <div className="text-xs text-muted-foreground bg-muted/30 p-1 rounded">
-                                  Sections:{" "}
-                                  {classInfo.mergedSections.join(", ")}
+                                <div
+                                  className="text-xs p-2 rounded font-medium"
+                                  style={{
+                                    backgroundColor: "rgba(167, 139, 250, 0.2)",
+                                    borderColor: "rgba(167, 139, 250, 0.5)",
+                                    color: "rgb(46, 16, 101)",
+                                    borderWidth: "1px",
+                                  }}
+                                >
+                                  <div className="font-semibold mb-1">
+                                    Sections:
+                                  </div>
+                                  <div className="flex flex-wrap gap-1">
+                                    {classInfo.mergedSections.map((section) => (
+                                      <span
+                                        key={section}
+                                        className="px-2 py-0.5 rounded text-xs font-semibold"
+                                        style={{
+                                          backgroundColor:
+                                            "rgba(167, 139, 250, 0.5)",
+                                          color: "rgb(15, 3, 40)",
+                                        }}
+                                      >
+                                        {section}
+                                      </span>
+                                    ))}
+                                  </div>
                                 </div>
                               </div>
                             )}
@@ -122,7 +181,14 @@ export const TimetableGrid = ({
                               >
                                 <Unlink2 className="h-3 w-3" />
                               </Button>
-                            ) : !classInfo.isMerged && onMergeClick ? (
+                            ) : !classInfo.isMerged &&
+                              onMergeClick &&
+                              canMergeClass(
+                                classInfo,
+                                row,
+                                branches,
+                                branch
+                              ) ? (
                               <Button
                                 size="icon"
                                 variant="ghost"

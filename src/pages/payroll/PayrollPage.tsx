@@ -11,6 +11,7 @@
  * Note: Currently using demo data. Full Supabase integration pending.
  */
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Wallet,
   Plus,
@@ -176,50 +177,89 @@ const statusColors: Record<string, string> = {
   failed: "bg-red-100 text-red-700",
 };
 
-const departments = ["All Departments", "Teaching", "Administration", "Accounts", "Support", "IT"];
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const departments = [
+  "All Departments",
+  "Teaching",
+  "Administration",
+  "Accounts",
+  "Support",
+  "IT",
+];
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 export const PayrollPage = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("current");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "current";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("All Departments");
+  const [selectedDepartment, setSelectedDepartment] =
+    useState("All Departments");
   const [selectedMonth, setSelectedMonth] = useState("December");
   const [selectedYear, setSelectedYear] = useState("2025");
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isProcessOpen, setIsProcessOpen] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<typeof demoPayroll[0] | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<
+    (typeof demoPayroll)[0] | null
+  >(null);
 
   const stats = {
     totalEmployees: demoPayroll.length,
     totalPayroll: demoPayroll.reduce((acc, e) => acc + e.netSalary, 0),
-    paid: demoPayroll.filter(e => e.status === "paid").length,
-    pending: demoPayroll.filter(e => e.status === "pending" || e.status === "processing").length,
+    paid: demoPayroll.filter((e) => e.status === "paid").length,
+    pending: demoPayroll.filter(
+      (e) => e.status === "pending" || e.status === "processing"
+    ).length,
   };
 
-  const filteredPayroll = demoPayroll.filter(emp => {
-    const matchesSearch = emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         emp.employeeId.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDepartment = selectedDepartment === "All Departments" || emp.department === selectedDepartment;
-    
+  const filteredPayroll = demoPayroll.filter((emp) => {
+    const matchesSearch =
+      emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.employeeId.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDepartment =
+      selectedDepartment === "All Departments" ||
+      emp.department === selectedDepartment;
+
     return matchesSearch && matchesDepartment;
   });
 
   const handleProcess = () => {
     toast({
       title: "Payroll processed",
-      description: "Payroll has been processed successfully for all pending employees.",
+      description:
+        "Payroll has been processed successfully for all pending employees.",
     });
     setIsProcessOpen(false);
   };
 
-  const handleView = (emp: typeof demoPayroll[0]) => {
+  const handleView = (emp: (typeof demoPayroll)[0]) => {
     setSelectedEmployee(emp);
     setIsViewOpen(true);
   };
 
   const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -269,7 +309,9 @@ export const PayrollPage = () => {
                 <IndianRupee className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">₹{(stats.totalPayroll / 100000).toFixed(1)}L</p>
+                <p className="text-2xl font-bold">
+                  ₹{(stats.totalPayroll / 100000).toFixed(1)}L
+                </p>
                 <p className="text-sm text-muted-foreground">Total Payroll</p>
               </div>
             </div>
@@ -316,14 +358,19 @@ export const PayrollPage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+            <Select
+              value={selectedDepartment}
+              onValueChange={setSelectedDepartment}
+            >
               <SelectTrigger className="w-full lg:w-48">
                 <Building2 className="h-4 w-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {departments.map(dept => (
-                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                {departments.map((dept) => (
+                  <SelectItem key={dept} value={dept}>
+                    {dept}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -333,8 +380,10 @@ export const PayrollPage = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {months.map(month => (
-                  <SelectItem key={month} value={month}>{month}</SelectItem>
+                {months.map((month) => (
+                  <SelectItem key={month} value={month}>
+                    {month}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -355,7 +404,9 @@ export const PayrollPage = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Payroll - {selectedMonth} {selectedYear}</span>
+            <span>
+              Payroll - {selectedMonth} {selectedYear}
+            </span>
             <Badge variant="outline">
               {stats.paid}/{stats.totalEmployees} Processed
             </Badge>
@@ -365,9 +416,14 @@ export const PayrollPage = () => {
           <div className="mb-4">
             <div className="flex items-center justify-between text-sm mb-2">
               <span>Processing Progress</span>
-              <span className="font-medium">{Math.round((stats.paid / stats.totalEmployees) * 100)}%</span>
+              <span className="font-medium">
+                {Math.round((stats.paid / stats.totalEmployees) * 100)}%
+              </span>
             </div>
-            <Progress value={(stats.paid / stats.totalEmployees) * 100} className="h-2" />
+            <Progress
+              value={(stats.paid / stats.totalEmployees) * 100}
+              className="h-2"
+            />
           </div>
 
           <Table>
@@ -384,7 +440,7 @@ export const PayrollPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPayroll.map(emp => (
+              {filteredPayroll.map((emp) => (
                 <TableRow key={emp.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -395,20 +451,32 @@ export const PayrollPage = () => {
                       </Avatar>
                       <div>
                         <p className="font-medium">{emp.name}</p>
-                        <p className="text-xs text-muted-foreground">{emp.employeeId}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {emp.employeeId}
+                        </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div>
                       <p className="text-sm">{emp.department}</p>
-                      <p className="text-xs text-muted-foreground">{emp.designation}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {emp.designation}
+                      </p>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">₹{emp.basicSalary.toLocaleString()}</TableCell>
-                  <TableCell className="text-right text-green-600">+₹{emp.allowances.toLocaleString()}</TableCell>
-                  <TableCell className="text-right text-red-600">-₹{emp.deductions.toLocaleString()}</TableCell>
-                  <TableCell className="text-right font-semibold">₹{emp.netSalary.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">
+                    ₹{emp.basicSalary.toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right text-green-600">
+                    +₹{emp.allowances.toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right text-red-600">
+                    -₹{emp.deductions.toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right font-semibold">
+                    ₹{emp.netSalary.toLocaleString()}
+                  </TableCell>
                   <TableCell>
                     <Badge className={statusColors[emp.status]}>
                       {emp.status.charAt(0).toUpperCase() + emp.status.slice(1)}
@@ -416,7 +484,11 @@ export const PayrollPage = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" onClick={() => handleView(emp)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleView(emp)}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <DropdownMenu>
@@ -465,15 +537,21 @@ export const PayrollPage = () => {
                 </Avatar>
                 <div>
                   <p className="font-semibold">{selectedEmployee.name}</p>
-                  <p className="text-sm text-muted-foreground">{selectedEmployee.designation}</p>
-                  <p className="text-xs text-muted-foreground">{selectedEmployee.employeeId}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedEmployee.designation}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedEmployee.employeeId}
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between py-2">
                   <span className="text-muted-foreground">Basic Salary</span>
-                  <span className="font-medium">₹{selectedEmployee.basicSalary.toLocaleString()}</span>
+                  <span className="font-medium">
+                    ₹{selectedEmployee.basicSalary.toLocaleString()}
+                  </span>
                 </div>
                 <Separator />
                 <div className="space-y-2">
@@ -484,24 +562,46 @@ export const PayrollPage = () => {
                   <div className="pl-5 space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">HRA</span>
-                      <span>₹{Math.round(selectedEmployee.allowances * 0.4).toLocaleString()}</span>
+                      <span>
+                        ₹
+                        {Math.round(
+                          selectedEmployee.allowances * 0.4
+                        ).toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">DA</span>
-                      <span>₹{Math.round(selectedEmployee.allowances * 0.3).toLocaleString()}</span>
+                      <span>
+                        ₹
+                        {Math.round(
+                          selectedEmployee.allowances * 0.3
+                        ).toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Transport</span>
-                      <span>₹{Math.round(selectedEmployee.allowances * 0.2).toLocaleString()}</span>
+                      <span>
+                        ₹
+                        {Math.round(
+                          selectedEmployee.allowances * 0.2
+                        ).toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Other</span>
-                      <span>₹{Math.round(selectedEmployee.allowances * 0.1).toLocaleString()}</span>
+                      <span>
+                        ₹
+                        {Math.round(
+                          selectedEmployee.allowances * 0.1
+                        ).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                   <div className="flex justify-between font-medium">
                     <span>Total Allowances</span>
-                    <span className="text-green-600">+₹{selectedEmployee.allowances.toLocaleString()}</span>
+                    <span className="text-green-600">
+                      +₹{selectedEmployee.allowances.toLocaleString()}
+                    </span>
                   </div>
                 </div>
                 <Separator />
@@ -513,26 +613,45 @@ export const PayrollPage = () => {
                   <div className="pl-5 space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">PF</span>
-                      <span>₹{Math.round(selectedEmployee.deductions * 0.5).toLocaleString()}</span>
+                      <span>
+                        ₹
+                        {Math.round(
+                          selectedEmployee.deductions * 0.5
+                        ).toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Tax</span>
-                      <span>₹{Math.round(selectedEmployee.deductions * 0.35).toLocaleString()}</span>
+                      <span>
+                        ₹
+                        {Math.round(
+                          selectedEmployee.deductions * 0.35
+                        ).toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Other</span>
-                      <span>₹{Math.round(selectedEmployee.deductions * 0.15).toLocaleString()}</span>
+                      <span>
+                        ₹
+                        {Math.round(
+                          selectedEmployee.deductions * 0.15
+                        ).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                   <div className="flex justify-between font-medium">
                     <span>Total Deductions</span>
-                    <span className="text-red-600">-₹{selectedEmployee.deductions.toLocaleString()}</span>
+                    <span className="text-red-600">
+                      -₹{selectedEmployee.deductions.toLocaleString()}
+                    </span>
                   </div>
                 </div>
                 <Separator />
                 <div className="flex justify-between py-2 text-lg font-bold">
                   <span>Net Salary</span>
-                  <span className="text-primary">₹{selectedEmployee.netSalary.toLocaleString()}</span>
+                  <span className="text-primary">
+                    ₹{selectedEmployee.netSalary.toLocaleString()}
+                  </span>
                 </div>
               </div>
 
@@ -544,7 +663,13 @@ export const PayrollPage = () => {
                 {selectedEmployee.paymentDate && (
                   <div className="flex items-center gap-2 text-muted-foreground mt-1">
                     <Calendar className="h-4 w-4" />
-                    <span>Paid on: {format(new Date(selectedEmployee.paymentDate), "MMM d, yyyy")}</span>
+                    <span>
+                      Paid on:{" "}
+                      {format(
+                        new Date(selectedEmployee.paymentDate),
+                        "MMM d, yyyy"
+                      )}
+                    </span>
                   </div>
                 )}
               </div>
@@ -572,7 +697,9 @@ export const PayrollPage = () => {
             <div className="p-4 bg-muted rounded-lg space-y-3">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Month</span>
-                <span className="font-medium">{selectedMonth} {selectedYear}</span>
+                <span className="font-medium">
+                  {selectedMonth} {selectedYear}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Pending Employees</span>
@@ -581,8 +708,9 @@ export const PayrollPage = () => {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Pending Amount</span>
                 <span className="font-medium">
-                  ₹{demoPayroll
-                    .filter(e => e.status !== "paid")
+                  ₹
+                  {demoPayroll
+                    .filter((e) => e.status !== "paid")
                     .reduce((acc, e) => acc + e.netSalary, 0)
                     .toLocaleString()}
                 </span>
@@ -592,18 +720,24 @@ export const PayrollPage = () => {
               <Banknote className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="font-medium">Payment Method</p>
-                <p className="text-sm text-muted-foreground">Bank Transfer (NEFT/RTGS)</p>
+                <p className="text-sm text-muted-foreground">
+                  Bank Transfer (NEFT/RTGS)
+                </p>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              This will process salaries for all pending employees and initiate bank transfers.
+              This will process salaries for all pending employees and initiate
+              bank transfers.
             </p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsProcessOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleProcess} className="bg-green-600 hover:bg-green-700">
+            <Button
+              onClick={handleProcess}
+              className="bg-green-600 hover:bg-green-700"
+            >
               <CheckCircle className="h-4 w-4 mr-2" />
               Process Payroll
             </Button>

@@ -64,39 +64,46 @@ export function StudentEdit() {
     if (!student?.id) return;
 
     try {
+      // Build updates object - only include category if it has a value
+      const updates: Record<string, any> = {
+        first_name: data.first_name,
+        middle_name: data.middle_name || null,
+        last_name: data.last_name,
+        date_of_birth: data.date_of_birth,
+        gender: data.gender as StudentDB["gender"],
+        blood_group: data.blood_group || null,
+        aadhar_number: data.aadhar_number || null,
+        nationality: data.nationality || "Indian",
+        religion: data.religion || null,
+        caste: data.caste || null,
+        admission_number: data.admission_number,
+        roll_number: data.roll_number || null,
+        class_id: data.class_id,
+        section_id: data.section_id,
+        academic_year_id: data.academic_year_id,
+        admission_date: data.admission_date,
+        previous_school: data.previous_school || null,
+        email: data.email || null,
+        phone: data.phone || null,
+        address_line1: data.address_line1 || null,
+        address_line2: data.address_line2 || null,
+        city: data.city || null,
+        state: data.state || null,
+        pincode: data.pincode || null,
+        country: data.country || "India",
+        emergency_contact_name: data.emergency_contact_name || null,
+        emergency_contact_phone: data.emergency_contact_phone || null,
+        emergency_contact_relation: data.emergency_contact_relation || null,
+      };
+
+      // Only include category if it has a value (database constraint requires specific values, not null)
+      if (data.category) {
+        updates.category = data.category as StudentDB["category"];
+      }
+
       await updateMutation.mutateAsync({
         id: student.id,
-        updates: {
-          first_name: data.first_name,
-          middle_name: data.middle_name || null,
-          last_name: data.last_name,
-          date_of_birth: data.date_of_birth,
-          gender: data.gender as StudentDB["gender"],
-          blood_group: data.blood_group || null,
-          aadhar_number: data.aadhar_number || null,
-          nationality: data.nationality || "Indian",
-          religion: data.religion || null,
-          caste: data.caste || null,
-          category: (data.category as StudentDB["category"]) || null,
-          admission_number: data.admission_number,
-          roll_number: data.roll_number || null,
-          class_id: data.class_id,
-          section_id: data.section_id,
-          academic_year_id: data.academic_year_id,
-          admission_date: data.admission_date,
-          previous_school: data.previous_school || null,
-          email: data.email || null,
-          phone: data.phone || null,
-          address_line1: data.address_line1 || null,
-          address_line2: data.address_line2 || null,
-          city: data.city || null,
-          state: data.state || null,
-          pincode: data.pincode || null,
-          country: data.country || "India",
-          emergency_contact_name: data.emergency_contact_name || null,
-          emergency_contact_phone: data.emergency_contact_phone || null,
-          emergency_contact_relation: data.emergency_contact_relation || null,
-        },
+        updates,
       });
 
       toast({

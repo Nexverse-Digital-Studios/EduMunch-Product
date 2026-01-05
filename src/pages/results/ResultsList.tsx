@@ -11,6 +11,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { useModulePermissions } from "@/contexts/PermissionContext";
@@ -32,7 +33,12 @@ const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || "1emaet";
 
 const ResultsList = () => {
   const [examType, setExamType] = useState<"board" | "competitive">("board");
-  const [activeTab, setActiveTab] = useState("templates");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "templates";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
   const [isAddTemplateOpen, setIsAddTemplateOpen] = useState(false);
   const [isAddTestOpen, setIsAddTestOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -259,7 +265,7 @@ const ResultsList = () => {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0">
           <TabsTrigger
             value="templates"

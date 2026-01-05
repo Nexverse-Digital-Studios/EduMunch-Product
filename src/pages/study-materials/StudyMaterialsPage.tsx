@@ -10,6 +10,7 @@
  * Note: Currently using demo data. Full Supabase integration pending.
  */
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   BookOpen,
   Search,
@@ -72,7 +73,8 @@ const demoMaterials = [
   {
     id: 1,
     title: "Chapter 5 - Quadratic Equations",
-    description: "Complete notes on quadratic equations including formulas, examples, and practice problems.",
+    description:
+      "Complete notes on quadratic equations including formulas, examples, and practice problems.",
     type: "pdf",
     subject: "Mathematics",
     class: "10",
@@ -87,7 +89,8 @@ const demoMaterials = [
   {
     id: 2,
     title: "Photosynthesis - Video Lecture",
-    description: "Detailed video explanation of the photosynthesis process in plants.",
+    description:
+      "Detailed video explanation of the photosynthesis process in plants.",
     type: "video",
     subject: "Biology",
     class: "9",
@@ -102,7 +105,8 @@ const demoMaterials = [
   {
     id: 3,
     title: "French Revolution Timeline",
-    description: "Interactive presentation covering the major events of the French Revolution.",
+    description:
+      "Interactive presentation covering the major events of the French Revolution.",
     type: "presentation",
     subject: "History",
     class: "8",
@@ -117,7 +121,8 @@ const demoMaterials = [
   {
     id: 4,
     title: "Periodic Table - Quick Reference",
-    description: "High-quality printable periodic table with element properties.",
+    description:
+      "High-quality printable periodic table with element properties.",
     type: "image",
     subject: "Chemistry",
     class: "11",
@@ -177,7 +182,8 @@ const demoMaterials = [
   {
     id: 8,
     title: "Hindi Sahitya Notes",
-    description: "Summary and analysis of prescribed Hindi literature for board exams.",
+    description:
+      "Summary and analysis of prescribed Hindi literature for board exams.",
     type: "pdf",
     subject: "Hindi",
     class: "10",
@@ -209,7 +215,17 @@ const typeColors: Record<string, string> = {
   link: "bg-blue-100 text-blue-600",
 };
 
-const subjects = ["All Subjects", "Mathematics", "Physics", "Chemistry", "Biology", "English", "Hindi", "History", "Computer Science"];
+const subjects = [
+  "All Subjects",
+  "Mathematics",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "English",
+  "Hindi",
+  "History",
+  "Computer Science",
+];
 const classes = ["All Classes", "6", "7", "8", "9", "10", "11", "12"];
 const types = ["All Types", "pdf", "video", "image", "presentation", "link"];
 
@@ -221,24 +237,41 @@ export const StudyMaterialsPage = () => {
   const [selectedType, setSelectedType] = useState("All Types");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "all";
 
-  const filteredMaterials = demoMaterials.filter(material => {
-    const matchesSearch = material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         material.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesSubject = selectedSubject === "All Subjects" || material.subject === selectedSubject;
-    const matchesClass = selectedClass === "All Classes" || material.class === selectedClass;
-    const matchesType = selectedType === "All Types" || material.type === selectedType;
-    const matchesTab = activeTab === "all" || (activeTab === "starred" && material.isStarred);
-    
-    return matchesSearch && matchesSubject && matchesClass && matchesType && matchesTab;
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
+
+  const filteredMaterials = demoMaterials.filter((material) => {
+    const matchesSearch =
+      material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      material.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSubject =
+      selectedSubject === "All Subjects" ||
+      material.subject === selectedSubject;
+    const matchesClass =
+      selectedClass === "All Classes" || material.class === selectedClass;
+    const matchesType =
+      selectedType === "All Types" || material.type === selectedType;
+    const matchesTab =
+      activeTab === "all" || (activeTab === "starred" && material.isStarred);
+
+    return (
+      matchesSearch &&
+      matchesSubject &&
+      matchesClass &&
+      matchesType &&
+      matchesTab
+    );
   });
 
   const stats = {
     total: demoMaterials.length,
     totalViews: demoMaterials.reduce((acc, m) => acc + m.views, 0),
     totalDownloads: demoMaterials.reduce((acc, m) => acc + m.downloads, 0),
-    starred: demoMaterials.filter(m => m.isStarred).length,
+    starred: demoMaterials.filter((m) => m.isStarred).length,
   };
 
   const handleUpload = () => {
@@ -294,7 +327,9 @@ export const StudyMaterialsPage = () => {
                 <Eye className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  {stats.totalViews.toLocaleString()}
+                </p>
                 <p className="text-sm text-muted-foreground">Total Views</p>
               </div>
             </div>
@@ -307,7 +342,9 @@ export const StudyMaterialsPage = () => {
                 <Download className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.totalDownloads.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  {stats.totalDownloads.toLocaleString()}
+                </p>
                 <p className="text-sm text-muted-foreground">Downloads</p>
               </div>
             </div>
@@ -347,8 +384,10 @@ export const StudyMaterialsPage = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {subjects.map(subject => (
-                  <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                {subjects.map((subject) => (
+                  <SelectItem key={subject} value={subject}>
+                    {subject}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -358,8 +397,10 @@ export const StudyMaterialsPage = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {classes.map(cls => (
-                  <SelectItem key={cls} value={cls}>{cls === "All Classes" ? cls : `Class ${cls}`}</SelectItem>
+                {classes.map((cls) => (
+                  <SelectItem key={cls} value={cls}>
+                    {cls === "All Classes" ? cls : `Class ${cls}`}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -369,8 +410,10 @@ export const StudyMaterialsPage = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {types.map(type => (
-                  <SelectItem key={type} value={type}>{type === "All Types" ? type : type.toUpperCase()}</SelectItem>
+                {types.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type === "All Types" ? type : type.toUpperCase()}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -395,7 +438,7 @@ export const StudyMaterialsPage = () => {
       </Card>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0">
           <TabsTrigger
             value="all"
@@ -408,7 +451,7 @@ export const StudyMaterialsPage = () => {
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
           >
             <Star className="h-4 w-4 mr-2" />
-            Starred ({demoMaterials.filter(m => m.isStarred).length})
+            Starred ({demoMaterials.filter((m) => m.isStarred).length})
           </TabsTrigger>
         </TabsList>
 
@@ -417,19 +460,30 @@ export const StudyMaterialsPage = () => {
             <Card>
               <CardContent className="p-8 text-center">
                 <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-lg font-medium text-muted-foreground">No materials found</p>
-                <p className="text-sm text-muted-foreground mt-1">Try adjusting your filters</p>
+                <p className="text-lg font-medium text-muted-foreground">
+                  No materials found
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Try adjusting your filters
+                </p>
               </CardContent>
             </Card>
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredMaterials.map(material => {
+              {filteredMaterials.map((material) => {
                 const Icon = getIcon(material.type);
                 return (
-                  <Card key={material.id} className="hover:shadow-md transition-shadow">
+                  <Card
+                    key={material.id}
+                    className="hover:shadow-md transition-shadow"
+                  >
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
-                        <div className={`p-3 rounded-lg ${typeColors[material.type]}`}>
+                        <div
+                          className={`p-3 rounded-lg ${
+                            typeColors[material.type]
+                          }`}
+                        >
                           <Icon className="h-6 w-6" />
                         </div>
                         <div className="flex items-center gap-1">
@@ -495,23 +549,31 @@ export const StudyMaterialsPage = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredMaterials.map(material => {
+              {filteredMaterials.map((material) => {
                 const Icon = getIcon(material.type);
                 return (
                   <Card key={material.id}>
                     <CardContent className="p-4">
                       <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-lg ${typeColors[material.type]}`}>
+                        <div
+                          className={`p-3 rounded-lg ${
+                            typeColors[material.type]
+                          }`}
+                        >
                           <Icon className="h-6 w-6" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-semibold truncate">{material.title}</h3>
+                            <h3 className="font-semibold truncate">
+                              {material.title}
+                            </h3>
                             {material.isStarred && (
                               <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 flex-shrink-0" />
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground truncate">{material.description}</p>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {material.description}
+                          </p>
                           <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <User className="h-3 w-3" />
@@ -519,7 +581,10 @@ export const StudyMaterialsPage = () => {
                             </span>
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              {format(new Date(material.uploadDate), "MMM d, yyyy")}
+                              {format(
+                                new Date(material.uploadDate),
+                                "MMM d, yyyy"
+                              )}
                             </span>
                             <span className="flex items-center gap-1">
                               <Eye className="h-3 w-3" />
@@ -533,7 +598,9 @@ export const StudyMaterialsPage = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge variant="secondary">{material.subject}</Badge>
-                          <Badge variant="outline">Class {material.class}</Badge>
+                          <Badge variant="outline">
+                            Class {material.class}
+                          </Badge>
                           <Button variant="outline" size="sm">
                             <Download className="h-4 w-4" />
                           </Button>
@@ -574,8 +641,10 @@ export const StudyMaterialsPage = () => {
                     <SelectValue placeholder="Select subject" />
                   </SelectTrigger>
                   <SelectContent>
-                    {subjects.slice(1).map(subject => (
-                      <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                    {subjects.slice(1).map((subject) => (
+                      <SelectItem key={subject} value={subject}>
+                        {subject}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -587,8 +656,10 @@ export const StudyMaterialsPage = () => {
                     <SelectValue placeholder="Select class" />
                   </SelectTrigger>
                   <SelectContent>
-                    {classes.slice(1).map(cls => (
-                      <SelectItem key={cls} value={cls}>Class {cls}</SelectItem>
+                    {classes.slice(1).map((cls) => (
+                      <SelectItem key={cls} value={cls}>
+                        Class {cls}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

@@ -1,17 +1,18 @@
 /**
  * Payslips.tsx - Payslip Generation and Management
- * 
+ *
  * Supabase Tables (Tier 2):
  * - monthly_payroll_1EMAET: Monthly salary records
  * - teachers_1EMAET: Teacher records (for payroll)
  * - employees_1EMAET: Staff records (for payroll)
- * 
+ *
  * Schema Reference:
  * - employee_id, teacher_id, employee_type (Teacher/Staff)
  * - salary_month, basic_salary, total_earnings, total_deductions, net_salary
  * - payment_date, payment_mode, status (Pending/Processed/Paid)
  */
 import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Eye, Trash2, Search, AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,7 +62,7 @@ interface MonthlyPayroll {
   id: string;
   employee_id: string | null;
   teacher_id: string | null;
-  employee_type: 'Teacher' | 'Staff';
+  employee_type: "Teacher" | "Staff";
   salary_month: string;
   basic_salary: number;
   total_earnings: number;
@@ -69,76 +70,99 @@ interface MonthlyPayroll {
   net_salary: number;
   payment_date: string | null;
   payment_mode: string | null;
-  status: 'Pending' | 'Processed' | 'Paid';
+  status: "Pending" | "Processed" | "Paid";
   created_at: string;
   teachers_1EMAET?: Teacher;
   employees_1EMAET?: Employee;
 }
 
-const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || '1emaet';
+const INDEX_TOKEN = import.meta.env.VITE_INDEX_TOKEN || "1emaet";
 
 const months = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 const Payslips = () => {
-  const [activeTab, setActiveTab] = useState("generate");
-  const [selectedMonth, setSelectedMonth] = useState(months[new Date().getMonth()]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "generate";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
+  const [selectedMonth, setSelectedMonth] = useState(
+    months[new Date().getMonth()]
+  );
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const [selectedStaff, setSelectedStaff] = useState<string[]>([]);
   const [selectAllTeachers, setSelectAllTeachers] = useState(false);
   const [selectAllStaff, setSelectAllStaff] = useState(false);
 
-  const { canView, canCreate, canUpdate, canDelete } = useModulePermissions('HR');
+  const { canView, canCreate, canUpdate, canDelete } =
+    useModulePermissions("HR");
   const { toast } = useToast();
 
   // Fetch teachers
-  const { data: teachers = [], isLoading: loadingTeachers } = useSupabaseTable<Teacher>(
-    `teachers_${INDEX_TOKEN}`,
-    { select: 'id, first_name, last_name, employee_code, email', orderBy: { column: 'first_name', ascending: true } }
-  );
+  const { data: teachers = [], isLoading: loadingTeachers } =
+    useSupabaseTable<Teacher>(`teachers_${INDEX_TOKEN}`, {
+      select: "id, first_name, last_name, employee_code, email",
+      orderBy: { column: "first_name", ascending: true },
+    });
 
   // Fetch employees (staff)
-  const { data: employees = [], isLoading: loadingEmployees } = useSupabaseTable<Employee>(
-    `employees_${INDEX_TOKEN}`,
-    { select: 'id, first_name, last_name, employee_code, email', orderBy: { column: 'first_name', ascending: true } }
-  );
+  const { data: employees = [], isLoading: loadingEmployees } =
+    useSupabaseTable<Employee>(`employees_${INDEX_TOKEN}`, {
+      select: "id, first_name, last_name, employee_code, email",
+      orderBy: { column: "first_name", ascending: true },
+    });
 
   // Fetch payroll records with joins
-  const { data: payrollRecords = [], isLoading: loadingPayroll, refetch } = useSupabaseTable<MonthlyPayroll>(
-    `monthly_payroll_${INDEX_TOKEN}`,
-    { 
-      select: `*, teachers_${INDEX_TOKEN}(id, first_name, last_name, employee_code), employees_${INDEX_TOKEN}(id, first_name, last_name, employee_code)`,
-      orderBy: { column: 'created_at', ascending: false }
-    }
-  );
+  const {
+    data: payrollRecords = [],
+    isLoading: loadingPayroll,
+    refetch,
+  } = useSupabaseTable<MonthlyPayroll>(`monthly_payroll_${INDEX_TOKEN}`, {
+    select: `*, teachers_${INDEX_TOKEN}(id, first_name, last_name, employee_code), employees_${INDEX_TOKEN}(id, first_name, last_name, employee_code)`,
+    orderBy: { column: "created_at", ascending: false },
+  });
 
   // Filter payroll by selected month/year
   const filteredPayroll = useMemo(() => {
     const monthIndex = months.indexOf(selectedMonth);
-    return payrollRecords.filter(record => {
+    return payrollRecords.filter((record) => {
       const recordDate = new Date(record.salary_month);
-      return recordDate.getMonth() === monthIndex && recordDate.getFullYear() === parseInt(year);
+      return (
+        recordDate.getMonth() === monthIndex &&
+        recordDate.getFullYear() === parseInt(year)
+      );
     });
   }, [payrollRecords, selectedMonth, year]);
 
   // Get mutations from useSupabaseTable
-  const { createMutation, deleteMutation } = useSupabaseTable<Partial<MonthlyPayroll>>(
-    `monthly_payroll_${INDEX_TOKEN}`,
-    {}
-  );
+  const { createMutation, deleteMutation } = useSupabaseTable<
+    Partial<MonthlyPayroll>
+  >(`monthly_payroll_${INDEX_TOKEN}`, {});
 
   const toggleTeacher = (id: string) => {
-    setSelectedTeachers(prev => 
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    setSelectedTeachers((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
   const toggleStaff = (id: string) => {
-    setSelectedStaff(prev => 
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    setSelectedStaff((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
@@ -146,7 +170,7 @@ const Payslips = () => {
     if (selectAllTeachers) {
       setSelectedTeachers([]);
     } else {
-      setSelectedTeachers(teachers.map(t => t.id));
+      setSelectedTeachers(teachers.map((t) => t.id));
     }
     setSelectAllTeachers(!selectAllTeachers);
   };
@@ -155,19 +179,23 @@ const Payslips = () => {
     if (selectAllStaff) {
       setSelectedStaff([]);
     } else {
-      setSelectedStaff(employees.map(e => e.id));
+      setSelectedStaff(employees.map((e) => e.id));
     }
     setSelectAllStaff(!selectAllStaff);
   };
 
   const handleGeneratePayslips = async () => {
     if (selectedTeachers.length === 0 && selectedStaff.length === 0) {
-      toast({ title: "Error", description: "Please select at least one employee", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Please select at least one employee",
+        variant: "destructive",
+      });
       return;
     }
 
     const monthIndex = months.indexOf(selectedMonth) + 1;
-    const salaryMonth = `${year}-${monthIndex.toString().padStart(2, '0')}-01`;
+    const salaryMonth = `${year}-${monthIndex.toString().padStart(2, "0")}-01`;
 
     try {
       // Generate for teachers
@@ -175,13 +203,13 @@ const Payslips = () => {
         await createMutation.mutateAsync({
           teacher_id: teacherId,
           employee_id: null,
-          employee_type: 'Teacher',
+          employee_type: "Teacher",
           salary_month: salaryMonth,
           basic_salary: 0, // Would be fetched from salary structure in production
           total_earnings: 0,
           total_deductions: 0,
           net_salary: 0,
-          status: 'Pending'
+          status: "Pending",
         });
       }
 
@@ -190,53 +218,70 @@ const Payslips = () => {
         await createMutation.mutateAsync({
           teacher_id: null,
           employee_id: employeeId,
-          employee_type: 'Staff',
+          employee_type: "Staff",
           salary_month: salaryMonth,
           basic_salary: 0,
           total_earnings: 0,
           total_deductions: 0,
           net_salary: 0,
-          status: 'Pending'
+          status: "Pending",
         });
       }
 
-      toast({ title: "Success", description: "Payslips generated successfully" });
+      toast({
+        title: "Success",
+        description: "Payslips generated successfully",
+      });
       setSelectedTeachers([]);
       setSelectedStaff([]);
       refetch();
     } catch (error) {
-      toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this payslip?')) {
+    if (confirm("Are you sure you want to delete this payslip?")) {
       try {
         await deleteMutation.mutateAsync(id);
-        toast({ title: "Success", description: "Payslip deleted successfully" });
+        toast({
+          title: "Success",
+          description: "Payslip deleted successfully",
+        });
         refetch();
       } catch (error) {
-        toast({ title: "Error", description: (error as Error).message, variant: "destructive" });
+        toast({
+          title: "Error",
+          description: (error as Error).message,
+          variant: "destructive",
+        });
       }
     }
   };
 
   const getEmployeeName = (record: MonthlyPayroll) => {
-    if (record.employee_type === 'Teacher' && record[`teachers_${INDEX_TOKEN}`]) {
+    if (
+      record.employee_type === "Teacher" &&
+      record[`teachers_${INDEX_TOKEN}`]
+    ) {
       const teacher = record[`teachers_${INDEX_TOKEN}`] as Teacher;
       return `${teacher.first_name} ${teacher.last_name}`;
     } else if (record[`employees_${INDEX_TOKEN}`]) {
       const employee = record[`employees_${INDEX_TOKEN}`] as Employee;
       return `${employee.first_name} ${employee.last_name}`;
     }
-    return 'Unknown';
+    return "Unknown";
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Paid':
+      case "Paid":
         return <Badge className="bg-green-500">Paid</Badge>;
-      case 'Processed':
+      case "Processed":
         return <Badge className="bg-blue-500">Processed</Badge>;
       default:
         return <Badge variant="secondary">Pending</Badge>;
@@ -257,7 +302,7 @@ const Payslips = () => {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Payslip Management</h1>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0">
           <TabsTrigger
             value="generate"
@@ -285,7 +330,9 @@ const Payslips = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {months.map((month) => (
-                      <SelectItem key={month} value={month}>{month}</SelectItem>
+                      <SelectItem key={month} value={month}>
+                        {month}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -299,30 +346,40 @@ const Payslips = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Teachers */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-foreground">Teachers ({teachers.length})</h3>
+                <h3 className="font-semibold text-foreground">
+                  Teachers ({teachers.length})
+                </h3>
                 <ScrollArea className="h-[250px] border border-border rounded-lg p-4">
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 pb-3 border-b border-border">
-                      <Checkbox 
+                      <Checkbox
                         checked={selectAllTeachers}
                         onCheckedChange={() => toggleSelectAllTeachers()}
                       />
-                      <span className="font-medium text-foreground">All Teachers</span>
+                      <span className="font-medium text-foreground">
+                        All Teachers
+                      </span>
                     </div>
                     {teachers.map((teacher) => (
                       <div key={teacher.id} className="flex items-center gap-3">
-                        <Checkbox 
+                        <Checkbox
                           checked={selectedTeachers.includes(teacher.id)}
                           onCheckedChange={() => toggleTeacher(teacher.id)}
                         />
                         <div>
-                          <span className="font-medium text-foreground">{teacher.first_name} {teacher.last_name}</span>
-                          <p className="text-sm text-muted-foreground">Code: {teacher.employee_code}</p>
+                          <span className="font-medium text-foreground">
+                            {teacher.first_name} {teacher.last_name}
+                          </span>
+                          <p className="text-sm text-muted-foreground">
+                            Code: {teacher.employee_code}
+                          </p>
                         </div>
                       </div>
                     ))}
                     {teachers.length === 0 && (
-                      <p className="text-muted-foreground text-center py-4">No teachers found</p>
+                      <p className="text-muted-foreground text-center py-4">
+                        No teachers found
+                      </p>
                     )}
                   </div>
                 </ScrollArea>
@@ -330,30 +387,43 @@ const Payslips = () => {
 
               {/* Staff */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-foreground">Staff ({employees.length})</h3>
+                <h3 className="font-semibold text-foreground">
+                  Staff ({employees.length})
+                </h3>
                 <ScrollArea className="h-[250px] border border-border rounded-lg p-4">
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 pb-3 border-b border-border">
-                      <Checkbox 
+                      <Checkbox
                         checked={selectAllStaff}
                         onCheckedChange={() => toggleSelectAllStaff()}
                       />
-                      <span className="font-medium text-foreground">All Staff</span>
+                      <span className="font-medium text-foreground">
+                        All Staff
+                      </span>
                     </div>
                     {employees.map((employee) => (
-                      <div key={employee.id} className="flex items-center gap-3">
-                        <Checkbox 
+                      <div
+                        key={employee.id}
+                        className="flex items-center gap-3"
+                      >
+                        <Checkbox
                           checked={selectedStaff.includes(employee.id)}
                           onCheckedChange={() => toggleStaff(employee.id)}
                         />
                         <div>
-                          <span className="font-medium text-foreground">{employee.first_name} {employee.last_name}</span>
-                          <p className="text-sm text-muted-foreground">Code: {employee.employee_code}</p>
+                          <span className="font-medium text-foreground">
+                            {employee.first_name} {employee.last_name}
+                          </span>
+                          <p className="text-sm text-muted-foreground">
+                            Code: {employee.employee_code}
+                          </p>
                         </div>
                       </div>
                     ))}
                     {employees.length === 0 && (
-                      <p className="text-muted-foreground text-center py-4">No staff found</p>
+                      <p className="text-muted-foreground text-center py-4">
+                        No staff found
+                      </p>
                     )}
                   </div>
                 </ScrollArea>
@@ -362,13 +432,20 @@ const Payslips = () => {
 
             {canCreate && (
               <div className="flex justify-end mt-6">
-                <Button 
+                <Button
                   onClick={handleGeneratePayslips}
-                  disabled={createMutation.isPending || (selectedTeachers.length === 0 && selectedStaff.length === 0)}
+                  disabled={
+                    createMutation.isPending ||
+                    (selectedTeachers.length === 0 &&
+                      selectedStaff.length === 0)
+                  }
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Generate Payslips ({selectedTeachers.length + selectedStaff.length} selected)
+                  {createMutation.isPending && (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  )}
+                  Generate Payslips (
+                  {selectedTeachers.length + selectedStaff.length} selected)
                 </Button>
               </div>
             )}
@@ -387,7 +464,9 @@ const Payslips = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {months.map((month) => (
-                      <SelectItem key={month} value={month}>{month}</SelectItem>
+                      <SelectItem key={month} value={month}>
+                        {month}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -397,7 +476,10 @@ const Payslips = () => {
                 <Input value={year} onChange={(e) => setYear(e.target.value)} />
               </div>
               <div className="flex gap-2">
-                <Button onClick={() => refetch()} className="bg-primary hover:bg-primary/90">
+                <Button
+                  onClick={() => refetch()}
+                  className="bg-primary hover:bg-primary/90"
+                >
                   <Search className="h-4 w-4 mr-2" />
                   Refresh
                 </Button>
@@ -406,8 +488,12 @@ const Payslips = () => {
           </div>
 
           <div className="flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">Found {filteredPayroll.length} payslip(s)</p>
-            <p className="text-sm text-muted-foreground">Period: {selectedMonth} {year}</p>
+            <p className="text-sm text-muted-foreground">
+              Found {filteredPayroll.length} payslip(s)
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Period: {selectedMonth} {year}
+            </p>
           </div>
 
           <div className="border border-border rounded-lg overflow-hidden">
@@ -425,23 +511,35 @@ const Payslips = () => {
               <TableBody>
                 {filteredPayroll.map((payslip) => (
                   <TableRow key={payslip.id} className="hover:bg-muted/20">
-                    <TableCell className="font-medium text-foreground">{getEmployeeName(payslip)}</TableCell>
+                    <TableCell className="font-medium text-foreground">
+                      {getEmployeeName(payslip)}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline">{payslip.employee_type}</Badge>
                     </TableCell>
-                    <TableCell className="text-foreground">₹{payslip.net_salary.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</TableCell>
+                    <TableCell className="text-foreground">
+                      ₹
+                      {payslip.net_salary.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </TableCell>
                     <TableCell>{getStatusBadge(payslip.status)}</TableCell>
                     <TableCell className="text-foreground">
-                      {payslip.payment_date ? format(new Date(payslip.payment_date), 'MMM dd, yyyy') : '-'}
+                      {payslip.payment_date
+                        ? format(new Date(payslip.payment_date), "MMM dd, yyyy")
+                        : "-"}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button size="sm" className="bg-primary hover:bg-primary/90">
+                        <Button
+                          size="sm"
+                          className="bg-primary hover:bg-primary/90"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
                         {canDelete && (
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="outline"
                             onClick={() => handleDelete(payslip.id)}
                           >
@@ -454,7 +552,10 @@ const Payslips = () => {
                 ))}
                 {filteredPayroll.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    <TableCell
+                      colSpan={6}
+                      className="text-center py-8 text-muted-foreground"
+                    >
                       No payslips found for {selectedMonth} {year}
                     </TableCell>
                   </TableRow>

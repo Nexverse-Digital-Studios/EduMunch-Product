@@ -3,7 +3,7 @@
  * ================================================
  * Main dashboard for staff attendance management with tabs
  * Route: /staff/attendance
- * 
+ *
  * CONSOLIDATED: All features accessible via tabs (no sub-routes)
  * - Dashboard: Overview with stats
  * - Mark: Mark daily attendance
@@ -12,6 +12,7 @@
  */
 
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   CheckSquare,
   Eye,
@@ -45,7 +46,12 @@ import StaffAttendanceReportsPage from "./StaffAttendanceReportsPage";
 
 const StaffAttendanceDashboard = () => {
   const { canView, canCreate } = useModulePermissions("staff_attendance");
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "dashboard";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
   const today = new Date().toISOString().split("T")[0];
 
   // Fetch today's attendance records
@@ -89,10 +95,25 @@ const StaffAttendanceDashboard = () => {
 
   // Tab configuration with permissions
   const tabs = [
-    { value: "dashboard", label: "Dashboard", icon: LayoutDashboard, permission: canView },
-    { value: "mark", label: "Mark Attendance", icon: CheckSquare, permission: canCreate },
+    {
+      value: "dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      permission: canView,
+    },
+    {
+      value: "mark",
+      label: "Mark Attendance",
+      icon: CheckSquare,
+      permission: canCreate,
+    },
     { value: "view", label: "View Records", icon: Eye, permission: canView },
-    { value: "reports", label: "Reports", icon: BarChart3, permission: canView },
+    {
+      value: "reports",
+      label: "Reports",
+      icon: BarChart3,
+      permission: canView,
+    },
   ];
 
   // Dashboard content component
@@ -195,14 +216,16 @@ const StaffAttendanceDashboard = () => {
               </p>
               {notMarked > 0 && canCreate && (
                 <p className="text-sm text-muted-foreground">
-                  {notMarked} staff member(s) attendance pending - use the "Mark Attendance" tab
+                  {notMarked} staff member(s) attendance pending - use the "Mark
+                  Attendance" tab
                 </p>
               )}
             </div>
           ) : (
             <div className="space-y-2">
               <p className="text-muted-foreground">
-                No attendance marked yet today. Use the "Mark Attendance" tab to get started.
+                No attendance marked yet today. Use the "Mark Attendance" tab to
+                get started.
               </p>
             </div>
           )}
@@ -221,14 +244,20 @@ const StaffAttendanceDashboard = () => {
         </p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
-          {tabs.filter(tab => tab.permission).map(tab => (
-            <TabsTrigger key={tab.value} value={tab.value} className="gap-2">
-              <tab.icon className="h-4 w-4 hidden sm:inline" />
-              {tab.label}
-            </TabsTrigger>
-          ))}
+          {tabs
+            .filter((tab) => tab.permission)
+            .map((tab) => (
+              <TabsTrigger key={tab.value} value={tab.value} className="gap-2">
+                <tab.icon className="h-4 w-4 hidden sm:inline" />
+                {tab.label}
+              </TabsTrigger>
+            ))}
         </TabsList>
 
         {isLoading && activeTab === "dashboard" ? (

@@ -15,10 +15,13 @@ import {
   X,
   Filter,
   RefreshCw,
+  Link2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -99,14 +102,20 @@ const ConflictsPage = () => {
     null
   );
   const [showResolveDialog, setShowResolveDialog] = useState(false);
+  const [showMergeDialog, setShowMergeDialog] = useState(false);
+  const [showRoomDialog, setShowRoomDialog] = useState(false);
   const [resolvedConflicts, setResolvedConflicts] = useState<string[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [roomAssignment, setRoomAssignment] = useState<string>("");
+  const [masterSectionForMerge, setMasterSectionForMerge] =
+    useState<string>("");
 
   // Fetch all timetable entries
   const {
     data: timetableData,
     isLoading,
     refetch: refetchTimetables,
+    updateMutation: updateTimetable,
   } = useSupabaseTable<TimetableEntryDB>(TABLES.TIMETABLES, {
     filters: { is_active: true },
   });
@@ -296,6 +305,99 @@ const ConflictsPage = () => {
       title: "Conflict Resolved",
       description: "The scheduling conflict has been marked as resolved.",
     });
+  };
+
+  const handleMerge = async () => {
+    if (
+      !selectedConflict ||
+      !masterSectionForMerge ||
+      selectedConflict.type !== "teacher"
+    ) {
+      toast({
+        title: "Error",
+        description: "Invalid merge configuration",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // When merging classes, we keep all entries active
+      // The system will automatically detect merged classes based on:
+      // - Same teacher_id
+      // - Same subject_id
+      // - Same period_id
+      // - Same day_of_week
+      // All entries with same teacher+subject+period+day are displayed as merged
+
+      // Refresh to show merged state
+      await refetchTimetables?.();
+
+      setResolvedConflicts([...resolvedConflicts, selectedConflict.id]);
+      setShowMergeDialog(false);
+      setSelectedConflict(null);
+      setMasterSectionForMerge("");
+
+      toast({
+        title: "Classes Merged",
+        description:
+          "Classes have been merged. Both sections will now be displayed together with merged styling.",
+      });
+    } catch (error) {
+      console.error("Error merging classes:", error);
+      toast({
+        title: "Error",
+        description: "Failed to merge classes",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAssignRoom = async () => {
+    if (!selectedConflict || !roomAssignment) {
+      toast({
+        title: "Error",
+        description: "Please enter a room number",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // For room conflicts, update ONE entry with the new room
+      // (We'll keep the first entry and move it to a different room)
+      if (selectedConflict.entries.length > 0) {
+        await updateTimetable.mutateAsync({
+          id: selectedConflict.entries[0].id,
+          updates: {
+            room_number: roomAssignment,
+          } as any,
+        });
+
+        // Optionally delete other conflicting entries if they're duplicates
+        // For now, just update the first one to the new room
+      }
+
+      // Refetch to get updated data
+      await refetchTimetables?.();
+
+      setResolvedConflicts([...resolvedConflicts, selectedConflict.id]);
+      setShowRoomDialog(false);
+      setSelectedConflict(null);
+      setRoomAssignment("");
+
+      toast({
+        title: "Room Assigned",
+        description: `Room ${roomAssignment} has been assigned. Please assign other sections to different rooms if needed.`,
+      });
+    } catch (error) {
+      console.error("Error assigning room:", error);
+      toast({
+        title: "Error",
+        description: "Failed to assign room",
+        variant: "destructive",
+      });
+    }
   };
 
   const getConflictIcon = (type: string) => {
@@ -496,7 +598,35 @@ const ConflictsPage = () => {
                   </div>
                 </div>
                 {canUpdate && (
-                  <div className="flex justify-end mt-4">
+                  <div className="flex flex-wrap gap-2 justify-end mt-4">
+                    {conflict.type === "teacher" && (
+                      <Button
+                        onClick={() => {
+                          setSelectedConflict(conflict);
+                          setMasterSectionForMerge("");
+                          setShowMergeDialog(true);
+                        }}
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        <Link2 className="h-4 w-4" />
+                        Merge Classes
+                      </Button>
+                    )}
+                    {conflict.type === "room" && (
+                      <Button
+                        onClick={() => {
+                          setSelectedConflict(conflict);
+                          setRoomAssignment("");
+                          setShowRoomDialog(true);
+                        }}
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        <MapPin className="h-4 w-4" />
+                        Assign Different Room
+                      </Button>
+                    )}
                     <Button
                       onClick={() => {
                         setSelectedConflict(conflict);
@@ -548,6 +678,108 @@ const ConflictsPage = () => {
               }
             >
               Mark as Resolved
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Merge Classes Dialog */}
+      <Dialog open={showMergeDialog} onOpenChange={setShowMergeDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Merge Classes</DialogTitle>
+            <DialogDescription>
+              Select which section will be the primary display. Both sections
+              will be highlighted together with merged styling, allowing the
+              teacher to conduct a merged session. Both sections will appear on
+              their respective timetables.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedConflict && (
+            <div className="space-y-4">
+              <div className="bg-muted rounded-lg p-3 space-y-2">
+                {selectedConflict.entries.map((entry) => (
+                  <button
+                    key={entry.id}
+                    onClick={() => setMasterSectionForMerge(entry.section_id)}
+                    className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${
+                      masterSectionForMerge === entry.section_id
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <p className="font-medium">
+                      {sectionsData?.find((s) => s.id === entry.section_id)
+                        ?.section_name || "Unknown"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {
+                        subjectsData?.find((s) => s.id === entry.subject_id)
+                          ?.subject_name
+                      }
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowMergeDialog(false);
+                setMasterSectionForMerge("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleMerge} disabled={!masterSectionForMerge}>
+              Merge Classes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Room Assignment Dialog */}
+      <Dialog open={showRoomDialog} onOpenChange={setShowRoomDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Different Room</DialogTitle>
+            <DialogDescription>
+              Assign a different room to resolve the room conflict.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedConflict && (
+            <div className="space-y-4">
+              <div className="bg-muted rounded-lg p-3">
+                <p className="text-sm font-medium">Current Room</p>
+                <p className="text-lg font-semibold">
+                  {selectedConflict.resource}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="room-input">New Room Number</Label>
+                <Input
+                  id="room-input"
+                  placeholder="e.g., Room 101"
+                  value={roomAssignment}
+                  onChange={(e) => setRoomAssignment(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowRoomDialog(false);
+                setRoomAssignment("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleAssignRoom} disabled={!roomAssignment}>
+              Assign Room
             </Button>
           </DialogFooter>
         </DialogContent>

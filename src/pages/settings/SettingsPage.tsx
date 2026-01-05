@@ -12,6 +12,7 @@
  * Note: Currently using demo data. Full Supabase integration pending.
  */
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Settings,
   School,
@@ -47,7 +48,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -84,22 +91,63 @@ const academicSettings = {
 };
 
 const integrations = [
-  { id: "sms", name: "SMS Gateway", provider: "Twilio", status: "connected", icon: Smartphone },
-  { id: "payment", name: "Payment Gateway", provider: "Razorpay", status: "connected", icon: CreditCard },
-  { id: "email", name: "Email Service", provider: "SendGrid", status: "connected", icon: Mail },
-  { id: "video", name: "Video Conferencing", provider: "Zoom", status: "not_connected", icon: Video },
-  { id: "storage", name: "Cloud Storage", provider: "AWS S3", status: "connected", icon: Cloud },
-  { id: "whatsapp", name: "WhatsApp Business", provider: "Meta", status: "not_connected", icon: MessageSquare },
+  {
+    id: "sms",
+    name: "SMS Gateway",
+    provider: "Twilio",
+    status: "connected",
+    icon: Smartphone,
+  },
+  {
+    id: "payment",
+    name: "Payment Gateway",
+    provider: "Razorpay",
+    status: "connected",
+    icon: CreditCard,
+  },
+  {
+    id: "email",
+    name: "Email Service",
+    provider: "SendGrid",
+    status: "connected",
+    icon: Mail,
+  },
+  {
+    id: "video",
+    name: "Video Conferencing",
+    provider: "Zoom",
+    status: "not_connected",
+    icon: Video,
+  },
+  {
+    id: "storage",
+    name: "Cloud Storage",
+    provider: "AWS S3",
+    status: "connected",
+    icon: Cloud,
+  },
+  {
+    id: "whatsapp",
+    name: "WhatsApp Business",
+    provider: "Meta",
+    status: "not_connected",
+    icon: MessageSquare,
+  },
 ];
 
 export const SettingsPage = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("general");
-  
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "general";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
+
   // Form states
   const [schoolData, setSchoolData] = useState(schoolInfo);
   const [academicData, setAcademicData] = useState(academicSettings);
-  
+
   // Notification settings
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
@@ -144,7 +192,7 @@ export const SettingsPage = () => {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0 flex-wrap">
           <TabsTrigger
             value="general"
@@ -227,7 +275,9 @@ export const SettingsPage = () => {
                   <Input
                     id="schoolName"
                     value={schoolData.name}
-                    onChange={(e) => setSchoolData({ ...schoolData, name: e.target.value })}
+                    onChange={(e) =>
+                      setSchoolData({ ...schoolData, name: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -235,7 +285,12 @@ export const SettingsPage = () => {
                   <Input
                     id="shortName"
                     value={schoolData.shortName}
-                    onChange={(e) => setSchoolData({ ...schoolData, shortName: e.target.value })}
+                    onChange={(e) =>
+                      setSchoolData({
+                        ...schoolData,
+                        shortName: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -247,7 +302,9 @@ export const SettingsPage = () => {
                       type="email"
                       className="pl-10"
                       value={schoolData.email}
-                      onChange={(e) => setSchoolData({ ...schoolData, email: e.target.value })}
+                      onChange={(e) =>
+                        setSchoolData({ ...schoolData, email: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -259,7 +316,9 @@ export const SettingsPage = () => {
                       id="phone"
                       className="pl-10"
                       value={schoolData.phone}
-                      onChange={(e) => setSchoolData({ ...schoolData, phone: e.target.value })}
+                      onChange={(e) =>
+                        setSchoolData({ ...schoolData, phone: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -271,7 +330,12 @@ export const SettingsPage = () => {
                       id="website"
                       className="pl-10"
                       value={schoolData.website}
-                      onChange={(e) => setSchoolData({ ...schoolData, website: e.target.value })}
+                      onChange={(e) =>
+                        setSchoolData({
+                          ...schoolData,
+                          website: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -283,7 +347,12 @@ export const SettingsPage = () => {
                       id="principal"
                       className="pl-10"
                       value={schoolData.principalName}
-                      onChange={(e) => setSchoolData({ ...schoolData, principalName: e.target.value })}
+                      onChange={(e) =>
+                        setSchoolData({
+                          ...schoolData,
+                          principalName: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -295,7 +364,12 @@ export const SettingsPage = () => {
                       id="address"
                       className="pl-10 min-h-[80px]"
                       value={schoolData.address}
-                      onChange={(e) => setSchoolData({ ...schoolData, address: e.target.value })}
+                      onChange={(e) =>
+                        setSchoolData({
+                          ...schoolData,
+                          address: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -307,7 +381,12 @@ export const SettingsPage = () => {
                       id="affiliation"
                       className="pl-10"
                       value={schoolData.affiliationNo}
-                      onChange={(e) => setSchoolData({ ...schoolData, affiliationNo: e.target.value })}
+                      onChange={(e) =>
+                        setSchoolData({
+                          ...schoolData,
+                          affiliationNo: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -319,14 +398,22 @@ export const SettingsPage = () => {
                       id="schoolCode"
                       className="pl-10"
                       value={schoolData.schoolCode}
-                      onChange={(e) => setSchoolData({ ...schoolData, schoolCode: e.target.value })}
+                      onChange={(e) =>
+                        setSchoolData({
+                          ...schoolData,
+                          schoolCode: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end">
-                <Button onClick={() => handleSave("General")} className="bg-primary">
+                <Button
+                  onClick={() => handleSave("General")}
+                  className="bg-primary"
+                >
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
                 </Button>
@@ -433,7 +520,12 @@ export const SettingsPage = () => {
                   <Input
                     type="number"
                     value={academicData.passingPercentage}
-                    onChange={(e) => setAcademicData({ ...academicData, passingPercentage: e.target.value })}
+                    onChange={(e) =>
+                      setAcademicData({
+                        ...academicData,
+                        passingPercentage: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -441,7 +533,12 @@ export const SettingsPage = () => {
                   <Input
                     type="number"
                     value={academicData.maxWorkingDays}
-                    onChange={(e) => setAcademicData({ ...academicData, maxWorkingDays: e.target.value })}
+                    onChange={(e) =>
+                      setAcademicData({
+                        ...academicData,
+                        maxWorkingDays: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -459,7 +556,12 @@ export const SettingsPage = () => {
                     <Input
                       type="number"
                       value={academicData.periodsPerDay}
-                      onChange={(e) => setAcademicData({ ...academicData, periodsPerDay: e.target.value })}
+                      onChange={(e) =>
+                        setAcademicData({
+                          ...academicData,
+                          periodsPerDay: e.target.value,
+                        })
+                      }
                     />
                   </div>
                   <div className="space-y-2">
@@ -467,14 +569,22 @@ export const SettingsPage = () => {
                     <Input
                       type="number"
                       value={academicData.periodDuration}
-                      onChange={(e) => setAcademicData({ ...academicData, periodDuration: e.target.value })}
+                      onChange={(e) =>
+                        setAcademicData({
+                          ...academicData,
+                          periodDuration: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end">
-                <Button onClick={() => handleSave("Academic")} className="bg-primary">
+                <Button
+                  onClick={() => handleSave("Academic")}
+                  className="bg-primary"
+                >
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
                 </Button>
@@ -500,36 +610,51 @@ export const SettingsPage = () => {
                 <div className="flex items-center justify-between py-3 border-b">
                   <div>
                     <p className="font-medium">Email Notifications</p>
-                    <p className="text-sm text-muted-foreground">Send notifications via email</p>
+                    <p className="text-sm text-muted-foreground">
+                      Send notifications via email
+                    </p>
                   </div>
                   <Switch
                     checked={notifications.emailNotifications}
                     onCheckedChange={(checked) =>
-                      setNotifications({ ...notifications, emailNotifications: checked })
+                      setNotifications({
+                        ...notifications,
+                        emailNotifications: checked,
+                      })
                     }
                   />
                 </div>
                 <div className="flex items-center justify-between py-3 border-b">
                   <div>
                     <p className="font-medium">SMS Notifications</p>
-                    <p className="text-sm text-muted-foreground">Send notifications via SMS</p>
+                    <p className="text-sm text-muted-foreground">
+                      Send notifications via SMS
+                    </p>
                   </div>
                   <Switch
                     checked={notifications.smsNotifications}
                     onCheckedChange={(checked) =>
-                      setNotifications({ ...notifications, smsNotifications: checked })
+                      setNotifications({
+                        ...notifications,
+                        smsNotifications: checked,
+                      })
                     }
                   />
                 </div>
                 <div className="flex items-center justify-between py-3 border-b">
                   <div>
                     <p className="font-medium">Push Notifications</p>
-                    <p className="text-sm text-muted-foreground">Browser and mobile push notifications</p>
+                    <p className="text-sm text-muted-foreground">
+                      Browser and mobile push notifications
+                    </p>
                   </div>
                   <Switch
                     checked={notifications.pushNotifications}
                     onCheckedChange={(checked) =>
-                      setNotifications({ ...notifications, pushNotifications: checked })
+                      setNotifications({
+                        ...notifications,
+                        pushNotifications: checked,
+                      })
                     }
                   />
                 </div>
@@ -543,60 +668,85 @@ export const SettingsPage = () => {
                   <div className="flex items-center justify-between py-3 border-b">
                     <div>
                       <p className="font-medium">Attendance Alerts</p>
-                      <p className="text-sm text-muted-foreground">Notify parents about student attendance</p>
+                      <p className="text-sm text-muted-foreground">
+                        Notify parents about student attendance
+                      </p>
                     </div>
                     <Switch
                       checked={notifications.attendanceAlerts}
                       onCheckedChange={(checked) =>
-                        setNotifications({ ...notifications, attendanceAlerts: checked })
+                        setNotifications({
+                          ...notifications,
+                          attendanceAlerts: checked,
+                        })
                       }
                     />
                   </div>
                   <div className="flex items-center justify-between py-3 border-b">
                     <div>
                       <p className="font-medium">Fee Reminders</p>
-                      <p className="text-sm text-muted-foreground">Send fee due date reminders</p>
+                      <p className="text-sm text-muted-foreground">
+                        Send fee due date reminders
+                      </p>
                     </div>
                     <Switch
                       checked={notifications.feeReminders}
                       onCheckedChange={(checked) =>
-                        setNotifications({ ...notifications, feeReminders: checked })
+                        setNotifications({
+                          ...notifications,
+                          feeReminders: checked,
+                        })
                       }
                     />
                   </div>
                   <div className="flex items-center justify-between py-3 border-b">
                     <div>
                       <p className="font-medium">Exam Notifications</p>
-                      <p className="text-sm text-muted-foreground">Exam schedules and result announcements</p>
+                      <p className="text-sm text-muted-foreground">
+                        Exam schedules and result announcements
+                      </p>
                     </div>
                     <Switch
                       checked={notifications.examNotifications}
                       onCheckedChange={(checked) =>
-                        setNotifications({ ...notifications, examNotifications: checked })
+                        setNotifications({
+                          ...notifications,
+                          examNotifications: checked,
+                        })
                       }
                     />
                   </div>
                   <div className="flex items-center justify-between py-3 border-b">
                     <div>
                       <p className="font-medium">Holiday Alerts</p>
-                      <p className="text-sm text-muted-foreground">Holiday and event announcements</p>
+                      <p className="text-sm text-muted-foreground">
+                        Holiday and event announcements
+                      </p>
                     </div>
                     <Switch
                       checked={notifications.holidayAlerts}
                       onCheckedChange={(checked) =>
-                        setNotifications({ ...notifications, holidayAlerts: checked })
+                        setNotifications({
+                          ...notifications,
+                          holidayAlerts: checked,
+                        })
                       }
                     />
                   </div>
                   <div className="flex items-center justify-between py-3">
                     <div>
                       <p className="font-medium">Parent App Notifications</p>
-                      <p className="text-sm text-muted-foreground">Notifications to parent mobile app</p>
+                      <p className="text-sm text-muted-foreground">
+                        Notifications to parent mobile app
+                      </p>
                     </div>
                     <Switch
                       checked={notifications.parentAppNotifications}
                       onCheckedChange={(checked) =>
-                        setNotifications({ ...notifications, parentAppNotifications: checked })
+                        setNotifications({
+                          ...notifications,
+                          parentAppNotifications: checked,
+                        })
                       }
                     />
                   </div>
@@ -604,7 +754,10 @@ export const SettingsPage = () => {
               </div>
 
               <div className="flex justify-end">
-                <Button onClick={() => handleSave("Notification")} className="bg-primary">
+                <Button
+                  onClick={() => handleSave("Notification")}
+                  className="bg-primary"
+                >
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
                 </Button>
@@ -629,7 +782,9 @@ export const SettingsPage = () => {
               <div className="flex items-center justify-between py-3 border-b">
                 <div>
                   <p className="font-medium">Two-Factor Authentication</p>
-                  <p className="text-sm text-muted-foreground">Require 2FA for admin accounts</p>
+                  <p className="text-sm text-muted-foreground">
+                    Require 2FA for admin accounts
+                  </p>
                 </div>
                 <Switch
                   checked={security.twoFactorAuth}
@@ -649,7 +804,9 @@ export const SettingsPage = () => {
                   </Label>
                   <Select
                     value={security.sessionTimeout}
-                    onValueChange={(value) => setSecurity({ ...security, sessionTimeout: value })}
+                    onValueChange={(value) =>
+                      setSecurity({ ...security, sessionTimeout: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -669,7 +826,9 @@ export const SettingsPage = () => {
                   </Label>
                   <Select
                     value={security.passwordExpiry}
-                    onValueChange={(value) => setSecurity({ ...security, passwordExpiry: value })}
+                    onValueChange={(value) =>
+                      setSecurity({ ...security, passwordExpiry: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -687,7 +846,12 @@ export const SettingsPage = () => {
                   <Input
                     type="number"
                     value={security.minPasswordLength}
-                    onChange={(e) => setSecurity({ ...security, minPasswordLength: e.target.value })}
+                    onChange={(e) =>
+                      setSecurity({
+                        ...security,
+                        minPasswordLength: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -695,7 +859,12 @@ export const SettingsPage = () => {
                   <Input
                     type="number"
                     value={security.loginAttempts}
-                    onChange={(e) => setSecurity({ ...security, loginAttempts: e.target.value })}
+                    onChange={(e) =>
+                      setSecurity({
+                        ...security,
+                        loginAttempts: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -703,7 +872,9 @@ export const SettingsPage = () => {
               <div className="flex items-center justify-between py-3 border-t">
                 <div>
                   <p className="font-medium">Require Special Characters</p>
-                  <p className="text-sm text-muted-foreground">Passwords must contain special characters</p>
+                  <p className="text-sm text-muted-foreground">
+                    Passwords must contain special characters
+                  </p>
                 </div>
                 <Switch
                   checked={security.requireSpecialChars}
@@ -714,7 +885,10 @@ export const SettingsPage = () => {
               </div>
 
               <div className="flex justify-end">
-                <Button onClick={() => handleSave("Security")} className="bg-primary">
+                <Button
+                  onClick={() => handleSave("Security")}
+                  className="bg-primary"
+                >
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
                 </Button>
@@ -748,25 +922,32 @@ export const SettingsPage = () => {
                       </div>
                       <div>
                         <p className="font-medium">{integration.name}</p>
-                        <p className="text-sm text-muted-foreground">{integration.provider}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {integration.provider}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <Badge
-                        variant={integration.status === "connected" ? "default" : "secondary"}
+                        variant={
+                          integration.status === "connected"
+                            ? "default"
+                            : "secondary"
+                        }
                         className={
                           integration.status === "connected"
                             ? "bg-green-100 text-green-700"
                             : "bg-gray-100 text-gray-600"
                         }
                       >
-                        {integration.status === "connected" ? "Connected" : "Not Connected"}
+                        {integration.status === "connected"
+                          ? "Connected"
+                          : "Not Connected"}
                       </Badge>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                      >
-                        {integration.status === "connected" ? "Configure" : "Connect"}
+                      <Button variant="outline" size="sm">
+                        {integration.status === "connected"
+                          ? "Configure"
+                          : "Connect"}
                       </Button>
                     </div>
                   </div>

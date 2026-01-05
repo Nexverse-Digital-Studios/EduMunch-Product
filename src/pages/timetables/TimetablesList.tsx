@@ -4,8 +4,8 @@
  * Manage class schedules with weekly grid view and bulk scheduling
  */
 
-import { useState } from "react";
-import { Plus } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
@@ -33,6 +33,16 @@ interface AcademicYearDB {
   is_current: boolean;
   created_at: string;
   updated_at: string;
+}
+
+interface PeriodDB {
+  id: string;
+  period_number: number;
+  period_name: string | null;
+  start_time: string;
+  end_time: string;
+  is_break: boolean;
+  display_order: number | null;
 }
 
 // Helper to generate unique IDs
@@ -66,13 +76,24 @@ const TimetablesList = () => {
   );
   const currentAcademicYear = academicYearData?.[0];
 
+  // Fetch periods
+  const { data: periodsData } = useSupabaseTable<PeriodDB>(
+    TABLES.TIMETABLE_PERIODS,
+    {
+      orderBy: { column: "display_order", ascending: true },
+    }
+  );
+
   // Fetch timetable data
   const {
     data: timetableData,
     createMutation: createTimetable,
     updateMutation: updateTimetable,
     deleteMutation: deleteTimetable,
-  } = useSupabaseTable<TimetableDB>(TABLES.TIMETABLES);
+    refetch: refetchTimetables,
+  } = useSupabaseTable<TimetableDB>(TABLES.TIMETABLES, {
+    filters: { is_active: true },
+  });
 
   // Use database data
   const subjects = subjectsData?.map((s) => s.subject_name) || [];
@@ -82,6 +103,9 @@ const TimetablesList = () => {
       name: `${t.employee_code} - ${t.first_name} ${t.last_name}`,
     })) || [];
   const branches = sectionsData?.map((s) => s.section_name) || [];
+
+  // UI states
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Modal states
   const [isBulkScheduleOpen, setIsBulkScheduleOpen] = useState(false);
@@ -109,6 +133,94 @@ const TimetablesList = () => {
   // Bulk schedule state
   const [bulkDate, setBulkDate] = useState("");
   const [copyFromDate, setCopyFromDate] = useState("");
+
+  // Load schedule from timetable data
+  useEffect(() => {
+    if (!timetableData || !periodsData || periodsData.length === 0) return;
+
+    // Create schedule structure from periods
+    const newSchedule: ScheduleSlot[] = (periodsData || []).map((period) => ({
+      time: `${period.start_time} - ${period.end_time}`,
+      slots: {},
+    }));
+
+    // Populate schedule with timetable data
+    (timetableData || []).forEach((entry) => {
+      // Skip if entry is not active
+      if (!entry.is_active) return;
+
+      const sectionName = sectionsData?.find(
+        (s) => s.id === entry.section_id
+      )?.section_name;
+      const subjectName = subjectsData?.find(
+        (s) => s.id === entry.subject_id
+      )?.subject_name;
+      const teacherData = teachersData?.find((t) => t.id === entry.teacher_id);
+      const teacherName = teacherData
+        ? `${teacherData.employee_code} - ${teacherData.first_name} ${teacherData.last_name}`
+        : "";
+
+      if (sectionName && subjectName && teacherName) {
+        const slotIndex = newSchedule.findIndex((slot) =>
+          slot.time.includes(
+            periodsData.find((p) => p.id === entry.period_id)?.start_time || ""
+          )
+        );
+
+        if (slotIndex >= 0) {
+          newSchedule[slotIndex].slots[sectionName] = {
+            id: entry.id,
+            subject: subjectName,
+            teacher: teacherName,
+            isMerged: false,
+          };
+        }
+      }
+    });
+
+    // Detect merged classes: Find sections with same teacher, subject, and period
+    // These indicate merged classes
+    newSchedule.forEach((slot, slotIdx) => {
+      const slotsByTeacherSubject: Record<string, string[]> = {};
+
+      // Group sections by teacher+subject combination
+      Object.entries(slot.slots).forEach(([sectionName, classInfo]) => {
+        if (classInfo) {
+          const key = `${classInfo.teacher}|${classInfo.subject}`;
+          if (!slotsByTeacherSubject[key]) {
+            slotsByTeacherSubject[key] = [];
+          }
+          slotsByTeacherSubject[key].push(sectionName);
+        }
+      });
+
+      // Mark classes as merged if multiple sections share same teacher+subject
+      Object.entries(slotsByTeacherSubject).forEach(([key, sections]) => {
+        if (sections.length > 1) {
+          console.log(
+            `[Merge Detection] Slot ${slotIdx} (${
+              slot.time
+            }): Found merged class - ${key} with sections: ${sections.join(
+              ", "
+            )}`
+          );
+          sections.forEach((sectionName) => {
+            const classInfo = slot.slots[sectionName];
+            if (classInfo) {
+              slot.slots[sectionName] = {
+                ...classInfo,
+                isMerged: true,
+                mergedSections: sections,
+              };
+            }
+          });
+        }
+      });
+    });
+
+    console.log("Final schedule:", newSchedule);
+    setSchedule(newSchedule);
+  }, [timetableData, periodsData, sectionsData, subjectsData, teachersData]);
 
   const navigateWeek = (direction: "prev" | "next") => {
     const current = new Date(selectedWeek);
@@ -348,6 +460,26 @@ const TimetablesList = () => {
     });
   };
 
+  const handleRefreshSchedule = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetchTimetables?.();
+      toast({
+        title: "Schedule refreshed",
+        description: "The timetable has been updated with the latest changes.",
+      });
+    } catch (error) {
+      console.error("Error refreshing schedule:", error);
+      toast({
+        title: "Error",
+        description: "Failed to refresh the schedule.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const handleClearWeek = () => {
     const clearedSchedule = schedule.map((slot) => ({
       ...slot,
@@ -453,13 +585,26 @@ const TimetablesList = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-foreground">Weekly Timetable</h1>
-        <Button
-          onClick={() => setIsBulkScheduleOpen(true)}
-          className="bg-primary hover:bg-primary/90"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Bulk Schedule
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleRefreshSchedule}
+            disabled={isRefreshing}
+            variant="outline"
+            className="gap-2"
+          >
+            <RefreshCw
+              className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+            />
+            {isRefreshing ? "Refreshing..." : "Refresh"}
+          </Button>
+          <Button
+            onClick={() => setIsBulkScheduleOpen(true)}
+            className="bg-primary hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Bulk Schedule
+          </Button>
+        </div>
       </div>
 
       {/* Week Selection */}

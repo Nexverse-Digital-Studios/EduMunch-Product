@@ -15,6 +15,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Shield, Lock, Users, Settings2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,7 +37,12 @@ import {
 } from "./components";
 
 export const SetRolesList = () => {
-  const [activeTab, setActiveTab] = useState<"roles" | "permissions">("roles");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "roles";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<RoleDB | null>(null);
@@ -335,10 +341,7 @@ export const SetRolesList = () => {
       </div>
 
       {/* Tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) => setActiveTab(v as "roles" | "permissions")}
-      >
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="roles" className="gap-2">
             <Users className="h-4 w-4" />

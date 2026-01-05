@@ -10,6 +10,7 @@
  * Note: Currently using demo data. Full Supabase integration pending.
  */
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   ClipboardList,
   Plus,
@@ -38,7 +39,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
@@ -71,7 +78,8 @@ const demoSurveys = [
   {
     id: 1,
     title: "Parent Satisfaction Survey 2025",
-    description: "Annual survey to measure parent satisfaction with school services",
+    description:
+      "Annual survey to measure parent satisfaction with school services",
     targetAudience: "Parents",
     status: "active",
     createdDate: "2025-12-01",
@@ -123,7 +131,8 @@ const demoSurveys = [
   {
     id: 5,
     title: "Annual Academic Feedback",
-    description: "Comprehensive feedback on academic programs and teaching quality",
+    description:
+      "Comprehensive feedback on academic programs and teaching quality",
     targetAudience: "Parents",
     status: "completed",
     createdDate: "2025-10-15",
@@ -172,25 +181,39 @@ const audienceColors: Record<string, string> = {
 
 export const SurveysPage = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("surveys");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "surveys";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
-  const [selectedSurvey, setSelectedSurvey] = useState<typeof demoSurveys[0] | null>(null);
+  const [selectedSurvey, setSelectedSurvey] = useState<
+    (typeof demoSurveys)[0] | null
+  >(null);
 
   const stats = {
     total: demoSurveys.length,
-    active: demoSurveys.filter(s => s.status === "active").length,
+    active: demoSurveys.filter((s) => s.status === "active").length,
     totalResponses: demoSurveys.reduce((acc, s) => acc + s.responses, 0),
-    avgRating: (demoSurveys.filter(s => s.avgRating).reduce((acc, s) => acc + (s.avgRating || 0), 0) / 
-                demoSurveys.filter(s => s.avgRating).length).toFixed(1),
+    avgRating: (
+      demoSurveys
+        .filter((s) => s.avgRating)
+        .reduce((acc, s) => acc + (s.avgRating || 0), 0) /
+      demoSurveys.filter((s) => s.avgRating).length
+    ).toFixed(1),
   };
 
-  const filteredSurveys = demoSurveys.filter(survey => {
-    const matchesSearch = survey.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = selectedStatus === "all" || survey.status === selectedStatus;
-    
+  const filteredSurveys = demoSurveys.filter((survey) => {
+    const matchesSearch = survey.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      selectedStatus === "all" || survey.status === selectedStatus;
+
     return matchesSearch && matchesStatus;
   });
 
@@ -202,7 +225,7 @@ export const SurveysPage = () => {
     setIsCreateOpen(false);
   };
 
-  const handleView = (survey: typeof demoSurveys[0]) => {
+  const handleView = (survey: (typeof demoSurveys)[0]) => {
     setSelectedSurvey(survey);
     setIsViewOpen(true);
   };
@@ -267,7 +290,9 @@ export const SurveysPage = () => {
                 <MessageSquare className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.totalResponses.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  {stats.totalResponses.toLocaleString()}
+                </p>
                 <p className="text-sm text-muted-foreground">Responses</p>
               </div>
             </div>
@@ -289,7 +314,7 @@ export const SurveysPage = () => {
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList>
           <TabsTrigger value="surveys">All Surveys</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -309,7 +334,10 @@ export const SurveysPage = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <Select
+                  value={selectedStatus}
+                  onValueChange={setSelectedStatus}
+                >
                   <SelectTrigger className="w-full lg:w-40">
                     <Filter className="h-4 w-4 mr-2" />
                     <SelectValue />
@@ -328,25 +356,35 @@ export const SurveysPage = () => {
 
           {/* Surveys List */}
           <div className="grid gap-4">
-            {filteredSurveys.map(survey => (
-              <Card key={survey.id} className="hover:shadow-md transition-shadow">
+            {filteredSurveys.map((survey) => (
+              <Card
+                key={survey.id}
+                className="hover:shadow-md transition-shadow"
+              >
                 <CardContent className="p-6">
                   <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg">{survey.title}</h3>
+                            <h3 className="font-semibold text-lg">
+                              {survey.title}
+                            </h3>
                             <Badge className={statusColors[survey.status]}>
-                              {survey.status.charAt(0).toUpperCase() + survey.status.slice(1)}
+                              {survey.status.charAt(0).toUpperCase() +
+                                survey.status.slice(1)}
                             </Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground">{survey.description}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {survey.description}
+                          </p>
                         </div>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-4 mt-4">
-                        <Badge className={audienceColors[survey.targetAudience]}>
+                        <Badge
+                          className={audienceColors[survey.targetAudience]}
+                        >
                           <Target className="h-3 w-3 mr-1" />
                           {survey.targetAudience}
                         </Badge>
@@ -356,12 +394,17 @@ export const SurveysPage = () => {
                         </span>
                         <span className="text-sm text-muted-foreground flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          Created {formatDistanceToNow(new Date(survey.createdDate))} ago
+                          Created{" "}
+                          {formatDistanceToNow(
+                            new Date(survey.createdDate)
+                          )}{" "}
+                          ago
                         </span>
                         {survey.deadline && (
                           <span className="text-sm text-muted-foreground flex items-center gap-1">
                             <Clock className="h-4 w-4" />
-                            Due: {format(new Date(survey.deadline), "MMM d, yyyy")}
+                            Due:{" "}
+                            {format(new Date(survey.deadline), "MMM d, yyyy")}
                           </span>
                         )}
                       </div>
@@ -370,15 +413,21 @@ export const SurveysPage = () => {
                       <div className="mt-4">
                         <div className="flex items-center justify-between text-sm mb-2">
                           <span className="text-muted-foreground">
-                            {survey.responses} of {survey.targetResponses} responses
+                            {survey.responses} of {survey.targetResponses}{" "}
+                            responses
                           </span>
                           <span className="font-medium">
-                            {Math.round((survey.responses / survey.targetResponses) * 100)}%
+                            {Math.round(
+                              (survey.responses / survey.targetResponses) * 100
+                            )}
+                            %
                           </span>
                         </div>
-                        <Progress 
-                          value={(survey.responses / survey.targetResponses) * 100} 
-                          className="h-2" 
+                        <Progress
+                          value={
+                            (survey.responses / survey.targetResponses) * 100
+                          }
+                          className="h-2"
                         />
                       </div>
                     </div>
@@ -386,12 +435,20 @@ export const SurveysPage = () => {
                     <div className="flex lg:flex-col items-center gap-3">
                       {survey.avgRating && (
                         <div className="text-center p-3 bg-muted rounded-lg">
-                          <p className="text-2xl font-bold text-primary">{survey.avgRating}</p>
-                          <p className="text-xs text-muted-foreground">Avg Rating</p>
+                          <p className="text-2xl font-bold text-primary">
+                            {survey.avgRating}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Avg Rating
+                          </p>
                         </div>
                       )}
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => handleView(survey)}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleView(survey)}
+                        >
                           <Eye className="h-4 w-4 mr-1" />
                           View
                         </Button>
@@ -450,7 +507,9 @@ export const SurveysPage = () => {
                   <PieChart className="h-5 w-5" />
                   Overall Satisfaction
                 </CardTitle>
-                <CardDescription>Response distribution across all surveys</CardDescription>
+                <CardDescription>
+                  Response distribution across all surveys
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -458,10 +517,12 @@ export const SurveysPage = () => {
                     <div key={index}>
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm">{item.label}</span>
-                        <span className="text-sm font-medium">{item.value}%</span>
+                        <span className="text-sm font-medium">
+                          {item.value}%
+                        </span>
                       </div>
                       <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className={`h-full ${item.color} rounded-full`}
                           style={{ width: `${item.value}%` }}
                         />
@@ -484,13 +545,18 @@ export const SurveysPage = () => {
               <CardContent>
                 <div className="h-48 flex items-end justify-between gap-2">
                   {surveyAnalytics.responsesByDay.map((day, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                    <div
+                      key={index}
+                      className="flex-1 flex flex-col items-center gap-2"
+                    >
                       <span className="text-sm font-medium">{day.count}</span>
-                      <div 
+                      <div
                         className="w-full bg-primary rounded-t transition-all hover:bg-primary/80"
                         style={{ height: `${(day.count / 80) * 150}px` }}
                       />
-                      <span className="text-xs text-muted-foreground">{day.day}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {day.day}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -503,7 +569,9 @@ export const SurveysPage = () => {
             <Card>
               <CardContent className="p-4 text-center">
                 <p className="text-3xl font-bold text-green-600">77%</p>
-                <p className="text-sm text-muted-foreground">Satisfaction Rate</p>
+                <p className="text-sm text-muted-foreground">
+                  Satisfaction Rate
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -521,7 +589,9 @@ export const SurveysPage = () => {
             <Card>
               <CardContent className="p-4 text-center">
                 <p className="text-3xl font-bold text-yellow-600">3.5 min</p>
-                <p className="text-sm text-muted-foreground">Avg Completion Time</p>
+                <p className="text-sm text-muted-foreground">
+                  Avg Completion Time
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -541,7 +611,7 @@ export const SurveysPage = () => {
             </div>
             <div className="space-y-2">
               <Label>Description</Label>
-              <Textarea 
+              <Textarea
                 placeholder="Describe the purpose of this survey..."
                 rows={3}
               />
@@ -594,17 +664,23 @@ export const SurveysPage = () => {
             <div className="space-y-4 py-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-semibold text-lg">{selectedSurvey.title}</h3>
+                  <h3 className="font-semibold text-lg">
+                    {selectedSurvey.title}
+                  </h3>
                   <Badge className={statusColors[selectedSurvey.status]}>
                     {selectedSurvey.status}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">{selectedSurvey.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {selectedSurvey.description}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 bg-muted rounded-lg">
-                  <p className="text-sm text-muted-foreground">Target Audience</p>
+                  <p className="text-sm text-muted-foreground">
+                    Target Audience
+                  </p>
                   <p className="font-medium">{selectedSurvey.targetAudience}</p>
                 </div>
                 <div className="p-3 bg-muted rounded-lg">
@@ -615,40 +691,57 @@ export const SurveysPage = () => {
 
               <div className="p-4 bg-muted rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">Response Progress</span>
+                  <span className="text-sm text-muted-foreground">
+                    Response Progress
+                  </span>
                   <span className="font-medium">
                     {selectedSurvey.responses}/{selectedSurvey.targetResponses}
                   </span>
                 </div>
-                <Progress 
-                  value={(selectedSurvey.responses / selectedSurvey.targetResponses) * 100} 
-                  className="h-2" 
+                <Progress
+                  value={
+                    (selectedSurvey.responses /
+                      selectedSurvey.targetResponses) *
+                    100
+                  }
+                  className="h-2"
                 />
                 <p className="text-xs text-muted-foreground mt-2">
-                  {Math.round((selectedSurvey.responses / selectedSurvey.targetResponses) * 100)}% complete
+                  {Math.round(
+                    (selectedSurvey.responses /
+                      selectedSurvey.targetResponses) *
+                      100
+                  )}
+                  % complete
                 </p>
               </div>
 
               {selectedSurvey.avgRating && (
                 <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-lg">
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-primary">{selectedSurvey.avgRating}</p>
+                    <p className="text-3xl font-bold text-primary">
+                      {selectedSurvey.avgRating}
+                    </p>
                     <p className="text-sm text-muted-foreground">Avg Rating</p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-muted-foreground">Based on {selectedSurvey.responses} responses</p>
+                    <p className="text-sm text-muted-foreground">
+                      Based on {selectedSurvey.responses} responses
+                    </p>
                   </div>
                 </div>
               )}
 
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                Created: {format(new Date(selectedSurvey.createdDate), "MMMM d, yyyy")}
+                Created:{" "}
+                {format(new Date(selectedSurvey.createdDate), "MMMM d, yyyy")}
               </div>
               {selectedSurvey.deadline && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
-                  Deadline: {format(new Date(selectedSurvey.deadline), "MMMM d, yyyy")}
+                  Deadline:{" "}
+                  {format(new Date(selectedSurvey.deadline), "MMMM d, yyyy")}
                 </div>
               )}
             </div>

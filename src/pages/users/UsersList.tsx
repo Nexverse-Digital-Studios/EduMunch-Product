@@ -6,7 +6,7 @@
  *
  * Displays list of all users with filtering and search.
  * Create and Edit operations now use modal dialogs instead of separate routes.
- * 
+ *
  * Consolidation: Replaces /users/create and /users/:id/edit routes
  */
 
@@ -29,13 +29,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUsers, useRoles, useDeleteUser } from "@/hooks/useSupabaseQuery";
-import { UserTable, UserCard, DeleteUserDialog, UserFormDialog } from "./components";
+import {
+  UserTable,
+  UserCard,
+  DeleteUserDialog,
+  UserFormDialog,
+} from "./components";
 
 const UsersList = () => {
   const navigate = useNavigate();
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [filterRole, setFilterRole] = useState("all");
-  
+
   // Modal states for create/edit (consolidation - replaces separate routes)
   const [showUserModal, setShowUserModal] = useState(false);
   const [editUserId, setEditUserId] = useState<string | null>(null);
@@ -94,12 +99,11 @@ const UsersList = () => {
     const user = users.find((u) => u.id === editUserId);
     if (!user) return undefined;
     return {
-      id: user.id,
       full_name: user.full_name,
       email: user.email || "",
       phone: user.phone || "",
-      primary_role_id: user.primary_role_id || "",
-      is_active: user.is_active,
+      password: "",
+      role_id: user.primary_role_id || "",
     };
   };
 

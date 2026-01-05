@@ -277,13 +277,29 @@ export function useSupabaseTable<T>(
     mutationFn: async (data: Partial<T>) => {
       if (!supabase) throw new Error('Supabase not configured');
       
+      console.log('[createMutation] Inserting into', tableName, {
+        payload: data,
+        keys: Object.keys(data),
+      });
+      
       const { data: result, error } = await supabase
         .from(tableName)
         .insert(data)
         .select()
         .single();
-        
-      if (error) throw error;
+      
+      if (error) {
+        console.error('[createMutation] Error inserting:', {
+          tableName,
+          error,
+          errorMessage: error?.message,
+          errorDetails: error?.details,
+          errorHint: error?.hint,
+        });
+        throw error;
+      }
+      
+      console.log('[createMutation] Success:', result);
       return result as T;
     },
     onSuccess: () => {
@@ -302,14 +318,31 @@ export function useSupabaseTable<T>(
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<T> }) => {
       if (!supabase) throw new Error('Supabase not configured');
       
+      console.log('[updateMutation] Updating', tableName, {
+        id,
+        updates,
+        keys: Object.keys(updates),
+      });
+      
       const { data: result, error } = await supabase
         .from(tableName)
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
         .single();
-        
-      if (error) throw error;
+      
+      if (error) {
+        console.error('[updateMutation] Error updating:', {
+          tableName,
+          error,
+          errorMessage: error?.message,
+          errorDetails: error?.details,
+          errorHint: error?.hint,
+        });
+        throw error;
+      }
+      
+      console.log('[updateMutation] Success:', result);
       return result as T;
     },
     onSuccess: () => {

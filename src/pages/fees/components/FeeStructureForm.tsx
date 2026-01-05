@@ -181,31 +181,31 @@ export function FeeStructureForm({ mode, initialData }: FeeStructureFormProps) {
     }
 
     try {
-      const feeComponentsData = components.map(
-        ({ name, amount, is_optional }) => ({
-          name,
-          amount,
-          is_optional,
-        })
-      );
-
       const payload = {
-        structure_name: formData.structure_name,
+        structure_name: formData.structure_name.trim(),
         class_id: formData.class_id,
         academic_year_id: formData.academic_year_id,
-        description: formData.description || null,
-        fee_components: feeComponentsData,
-        total_amount: totalAmount,
-        is_active: formData.is_active,
+        description: formData.description?.trim() || null,
+        total_amount: Number(totalAmount) || 0,
+        is_active: Boolean(formData.is_active),
       };
 
+      console.log("📝 Fee Structure Payload:", {
+        payload,
+        totalAmount,
+        components: components.length,
+        formData,
+      });
+
       if (mode === "create") {
+        console.log("🚀 Creating fee structure...");
         await createMutation.mutateAsync(payload);
         toast({
           title: "Success",
           description: "Fee structure created successfully.",
         });
       } else if (initialData?.id) {
+        console.log("🔄 Updating fee structure:", initialData.id);
         await updateMutation.mutateAsync({
           id: initialData.id,
           updates: payload,
@@ -217,10 +217,16 @@ export function FeeStructureForm({ mode, initialData }: FeeStructureFormProps) {
       }
 
       navigate("/fees/structures");
-    } catch (error) {
+    } catch (error: any) {
+      console.error("❌ Fee structure error:", {
+        message: error?.message,
+        error,
+        status: error?.status,
+        details: error?.details,
+      });
       toast({
         title: "Error",
-        description: `Failed to ${mode} fee structure.`,
+        description: error?.message || `Failed to ${mode} fee structure.`,
         variant: "destructive",
       });
     }

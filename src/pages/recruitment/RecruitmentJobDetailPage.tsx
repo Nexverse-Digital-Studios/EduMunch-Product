@@ -10,6 +10,7 @@
  * Note: Currently using demo data. Full Supabase integration pending.
  */
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Briefcase,
@@ -38,7 +39,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
@@ -80,7 +87,8 @@ const demoJob = {
   postedDate: "2025-12-01",
   deadline: "2026-01-15",
   status: "active",
-  description: "Looking for an experienced Mathematics teacher for Classes 9-12 with expertise in JEE/NEET preparation.",
+  description:
+    "Looking for an experienced Mathematics teacher for Classes 9-12 with expertise in JEE/NEET preparation.",
   responsibilities: [
     "Teach Mathematics to Classes 9-12",
     "Prepare students for competitive exams (JEE/NEET)",
@@ -173,19 +181,28 @@ export const RecruitmentJobDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("details");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "details";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
   const [isApplicantViewOpen, setIsApplicantViewOpen] = useState(false);
-  const [selectedApplicant, setSelectedApplicant] = useState<typeof demoApplicants[0] | null>(null);
+  const [selectedApplicant, setSelectedApplicant] = useState<
+    (typeof demoApplicants)[0] | null
+  >(null);
 
   const stats = {
     total: demoApplicants.length,
-    new: demoApplicants.filter(a => a.status === "new").length,
-    shortlisted: demoApplicants.filter(a => a.status === "shortlisted").length,
-    interviewed: demoApplicants.filter(a => a.status === "interviewed").length,
-    rejected: demoApplicants.filter(a => a.status === "rejected").length,
+    new: demoApplicants.filter((a) => a.status === "new").length,
+    shortlisted: demoApplicants.filter((a) => a.status === "shortlisted")
+      .length,
+    interviewed: demoApplicants.filter((a) => a.status === "interviewed")
+      .length,
+    rejected: demoApplicants.filter((a) => a.status === "rejected").length,
   };
 
-  const handleViewApplicant = (applicant: typeof demoApplicants[0]) => {
+  const handleViewApplicant = (applicant: (typeof demoApplicants)[0]) => {
     setSelectedApplicant(applicant);
     setIsApplicantViewOpen(true);
   };
@@ -199,11 +216,17 @@ export const RecruitmentJobDetailPage = () => {
   };
 
   const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   const renderStars = (rating: number) => {
-    if (rating === 0) return <span className="text-sm text-muted-foreground">Not rated</span>;
+    if (rating === 0)
+      return <span className="text-sm text-muted-foreground">Not rated</span>;
     return (
       <div className="flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -225,12 +248,18 @@ export const RecruitmentJobDetailPage = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/recruitment")}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/recruitment")}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-foreground">{demoJob.title}</h1>
+            <h1 className="text-2xl font-bold text-foreground">
+              {demoJob.title}
+            </h1>
             <Badge className={statusColors[demoJob.status]}>
               {demoJob.status.charAt(0).toUpperCase() + demoJob.status.slice(1)}
             </Badge>
@@ -304,13 +333,17 @@ export const RecruitmentJobDetailPage = () => {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-purple-600">{stats.shortlisted}</p>
+            <p className="text-2xl font-bold text-purple-600">
+              {stats.shortlisted}
+            </p>
             <p className="text-sm text-muted-foreground">Shortlisted</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-indigo-600">{stats.interviewed}</p>
+            <p className="text-2xl font-bold text-indigo-600">
+              {stats.interviewed}
+            </p>
             <p className="text-sm text-muted-foreground">Interviewed</p>
           </CardContent>
         </Card>
@@ -323,7 +356,7 @@ export const RecruitmentJobDetailPage = () => {
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList>
           <TabsTrigger value="details">Job Details</TabsTrigger>
           <TabsTrigger value="applicants">
@@ -399,7 +432,9 @@ export const RecruitmentJobDetailPage = () => {
                       <Clock className="h-5 w-5 text-purple-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Experience</p>
+                      <p className="text-sm text-muted-foreground">
+                        Experience
+                      </p>
                       <p className="font-medium">{demoJob.experience}</p>
                     </div>
                   </div>
@@ -410,7 +445,9 @@ export const RecruitmentJobDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Deadline</p>
-                      <p className="font-medium">{format(new Date(demoJob.deadline), "MMM d, yyyy")}</p>
+                      <p className="font-medium">
+                        {format(new Date(demoJob.deadline), "MMM d, yyyy")}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -423,7 +460,10 @@ export const RecruitmentJobDetailPage = () => {
                 <CardContent>
                   <ul className="space-y-2">
                     {demoJob.benefits.map((item, index) => (
-                      <li key={index} className="flex items-start gap-2 text-sm">
+                      <li
+                        key={index}
+                        className="flex items-start gap-2 text-sm"
+                      >
                         <Star className="h-4 w-4 text-yellow-500 mt-0.5 shrink-0" />
                         <span className="text-muted-foreground">{item}</span>
                       </li>
@@ -457,7 +497,7 @@ export const RecruitmentJobDetailPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {demoApplicants.map(applicant => (
+                  {demoApplicants.map((applicant) => (
                     <TableRow key={applicant.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -468,11 +508,15 @@ export const RecruitmentJobDetailPage = () => {
                           </Avatar>
                           <div>
                             <p className="font-medium">{applicant.name}</p>
-                            <p className="text-xs text-muted-foreground">{applicant.email}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {applicant.email}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm">{applicant.qualification}</TableCell>
+                      <TableCell className="text-sm">
+                        {applicant.qualification}
+                      </TableCell>
                       <TableCell>{applicant.experience}</TableCell>
                       <TableCell>
                         <span className="text-sm">
@@ -482,13 +526,14 @@ export const RecruitmentJobDetailPage = () => {
                       <TableCell>{renderStars(applicant.rating)}</TableCell>
                       <TableCell>
                         <Badge className={statusColors[applicant.status]}>
-                          {applicant.status.charAt(0).toUpperCase() + applicant.status.slice(1)}
+                          {applicant.status.charAt(0).toUpperCase() +
+                            applicant.status.slice(1)}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleViewApplicant(applicant)}
                           >
@@ -546,10 +591,17 @@ export const RecruitmentJobDetailPage = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{selectedApplicant.name}</h3>
-                  <p className="text-muted-foreground">{selectedApplicant.qualification}</p>
-                  <Badge className={`mt-1 ${statusColors[selectedApplicant.status]}`}>
-                    {selectedApplicant.status.charAt(0).toUpperCase() + selectedApplicant.status.slice(1)}
+                  <h3 className="font-semibold text-lg">
+                    {selectedApplicant.name}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {selectedApplicant.qualification}
+                  </p>
+                  <Badge
+                    className={`mt-1 ${statusColors[selectedApplicant.status]}`}
+                  >
+                    {selectedApplicant.status.charAt(0).toUpperCase() +
+                      selectedApplicant.status.slice(1)}
                   </Badge>
                 </div>
               </div>
@@ -569,7 +621,13 @@ export const RecruitmentJobDetailPage = () => {
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>Applied on: {format(new Date(selectedApplicant.appliedDate), "MMMM d, yyyy")}</span>
+                  <span>
+                    Applied on:{" "}
+                    {format(
+                      new Date(selectedApplicant.appliedDate),
+                      "MMMM d, yyyy"
+                    )}
+                  </span>
                 </div>
               </div>
 
@@ -594,7 +652,10 @@ export const RecruitmentJobDetailPage = () => {
             </div>
           )}
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setIsApplicantViewOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsApplicantViewOpen(false)}
+            >
               Close
             </Button>
             <Button className="bg-green-600 hover:bg-green-700">

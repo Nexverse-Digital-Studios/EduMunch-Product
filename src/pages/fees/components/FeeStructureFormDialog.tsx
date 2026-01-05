@@ -2,7 +2,7 @@
  * Fee Structure Form Dialog
  * ==========================
  * Modal dialog for creating/editing fee structures
- * 
+ *
  * CONSOLIDATED: Replaces /fees/structures/create and /fees/structures/:id/edit routes
  */
 
@@ -131,7 +131,14 @@ export function FeeStructureFormDialog({
         setComponents(
           parsedComponents.length > 0
             ? parsedComponents
-            : [{ id: "comp-1", name: "Tuition Fee", amount: 0, is_optional: false }]
+            : [
+                {
+                  id: "comp-1",
+                  name: "Tuition Fee",
+                  amount: 0,
+                  is_optional: false,
+                },
+              ]
         );
       } else {
         setFormData({
@@ -226,25 +233,23 @@ export function FeeStructureFormDialog({
 
     setIsSubmitting(true);
     try {
-      const feeComponentsData = components.map(
-        ({ name, amount, is_optional }) => ({
-          name,
-          amount,
-          is_optional,
-        })
-      );
-
       const payload = {
-        structure_name: formData.structure_name,
+        structure_name: formData.structure_name.trim(),
         class_id: formData.class_id,
         academic_year_id: formData.academic_year_id,
-        description: formData.description || null,
-        fee_components: feeComponentsData,
-        total_amount: totalAmount,
-        is_active: formData.is_active,
+        description: formData.description?.trim() || null,
+        total_amount: Number(totalAmount) || 0,
+        is_active: Boolean(formData.is_active),
       };
 
+      console.log("📝 Fee Structure Payload:", {
+        payload,
+        totalAmount,
+        components: components.length,
+      });
+
       if (isEditMode && editData?.id) {
+        console.log("🔄 Updating fee structure:", editData.id);
         await updateMutation.mutateAsync({
           id: editData.id,
           updates: payload,
@@ -254,6 +259,7 @@ export function FeeStructureFormDialog({
           description: "Fee structure updated successfully.",
         });
       } else {
+        console.log("🚀 Creating fee structure...");
         await createMutation.mutateAsync(payload as Partial<FeeStructureDB>);
         toast({
           title: "Success",
@@ -266,7 +272,9 @@ export function FeeStructureFormDialog({
     } catch (error) {
       toast({
         title: "Error",
-        description: `Failed to ${isEditMode ? "update" : "create"} fee structure.`,
+        description: `Failed to ${
+          isEditMode ? "update" : "create"
+        } fee structure.`,
         variant: "destructive",
       });
     } finally {
@@ -295,7 +303,10 @@ export function FeeStructureFormDialog({
                     placeholder="e.g., Class 10 Annual Fee"
                     value={formData.structure_name}
                     onChange={(e) =>
-                      setFormData({ ...formData, structure_name: e.target.value })
+                      setFormData({
+                        ...formData,
+                        structure_name: e.target.value,
+                      })
                     }
                   />
                 </div>

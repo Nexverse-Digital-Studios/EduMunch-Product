@@ -547,7 +547,7 @@ export const sidebarGroups: SidebarGroup[] = [
   // ----------------------------------------
   {
     id: 'user-management',
-    groupName: 'User Management',
+    groupName: 'Roles & Permissions',
     icon: 'Users',
     order: 1,
     tier: 1,

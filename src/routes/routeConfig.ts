@@ -247,14 +247,19 @@ export const topicRoutes: RouteConfig[] = [
 ];
 
 // --------------------------------------
-// Module 20: Timetable (2 routes - CONSOLIDATED)
-// --------------------------------------
 // Module 20: Timetables (7 routes)
 // CONSOLIDATION: 14 routes → 7 routes
 // All features accessible via tabs on TimetableDashboard or dedicated pages
+// ✅ URL-based tab navigation: /timetable?tab=view, /timetable?tab=create, etc.
 export const timetableRoutes: RouteConfig[] = [
   { path: '/timetable', title: 'Timetable', module: 'timetable', action: 'view', tier: 1, showInSidebar: true, icon: 'Clock' },
-  { path: '/timetable/view', title: 'View Timetables', module: 'timetable', action: 'view', tier: 1 },
+  { path: '/timetable?tab=view', title: 'View Timetables', module: 'timetable', action: 'view', tier: 1 },
+  { path: '/timetable?tab=create', title: 'Create Timetable', module: 'timetable', action: 'create', tier: 1 },
+  { path: '/timetable?tab=bulk', title: 'Bulk Schedule', module: 'timetable', action: 'create', tier: 1 },
+  { path: '/timetable?tab=conflicts', title: 'View Conflicts', module: 'timetable', action: 'view', tier: 1 },
+  { path: '/timetable?tab=substitute', title: 'Substitute Teacher', module: 'timetable', action: 'update', tier: 1 },
+  { path: '/timetable?tab=periods', title: 'Period Settings', module: 'timetable', action: 'update', tier: 1 },
+  { path: '/timetable?tab=export', title: 'Export Timetable', module: 'timetable', action: 'export', tier: 1 },
   { path: '/timetable/view/:sectionId', title: 'Section Timetable', module: 'timetable', action: 'view', tier: 1 },
   { path: '/timetable/:id/edit', title: 'Edit Timetable', module: 'timetable', action: 'update', tier: 1 },
   { path: '/my-timetable', title: 'My Timetable', module: 'timetable', action: 'view', tier: 1, showInSidebar: true, icon: 'Clock' },

@@ -5,7 +5,7 @@
  * All sub-functionality is accessible via tabs, no separate routes needed
  */
 
-import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Calendar,
   Clock,
@@ -37,7 +37,13 @@ import ExportTimetablePage from "./ExportTimetablePage";
 const TimetableDashboard = () => {
   const { canView, canCreate, canUpdate, canExport } =
     useModulePermissions("timetable");
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "dashboard";
+
+  const handleTabChange = (tab: string) => {
+    // Don't use replace: true to maintain browser history for back/forward navigation
+    setSearchParams({ tab });
+  };
 
   // Fetch real data from database
   const { data: sectionsData } = useSupabaseTable(TABLES.SECTIONS);
@@ -45,10 +51,7 @@ const TimetableDashboard = () => {
     filters: { is_active: true },
   });
   const { data: substitutionsData } = useSupabaseTable(
-    TABLES.TIMETABLE_SUBSTITUTIONS,
-    {
-      filters: { is_active: true },
-    }
+    TABLES.TIMETABLE_SUBSTITUTIONS
   );
 
   // Calculate real stats
@@ -164,7 +167,7 @@ const TimetableDashboard = () => {
           </p>
         </div>
         {canCreate && (
-          <Button onClick={() => setActiveTab("create")}>
+          <Button onClick={() => handleTabChange("create")}>
             <Plus className="mr-2 h-4 w-4" />
             Create Entry
           </Button>
@@ -174,7 +177,7 @@ const TimetableDashboard = () => {
       {/* Tabs for all timetable functionality */}
       <Tabs
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={handleTabChange}
         className="space-y-4"
       >
         <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
@@ -224,7 +227,7 @@ const TimetableDashboard = () => {
                     className={`hover:shadow-md transition-shadow cursor-pointer h-full ${
                       activeTab === action.tabValue ? "ring-2 ring-primary" : ""
                     }`}
-                    onClick={() => setActiveTab(action.tabValue)}
+                    onClick={() => handleTabChange(action.tabValue)}
                   >
                     <CardContent className="pt-6">
                       <div className="flex items-start space-x-4">
@@ -259,7 +262,7 @@ const TimetableDashboard = () => {
                 <Button
                   variant="outline"
                   className="mt-4"
-                  onClick={() => setActiveTab("view")}
+                  onClick={() => handleTabChange("view")}
                 >
                   View Full Timetable
                 </Button>

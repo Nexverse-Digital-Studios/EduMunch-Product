@@ -2,7 +2,7 @@
  * Fee Dashboard Page
  * ====================
  * Consolidated fee management with tabs for all fee functions
- * 
+ *
  * CONSOLIDATED: All fee routes into single dashboard with tabs
  * - Structures tab: Fee structure management (create/edit via modals)
  * - Student Fees tab: View student fee assignments
@@ -11,8 +11,14 @@
  * - Reports tab: Fee analytics and reports
  */
 
-import { useState } from "react";
-import { IndianRupee, ClipboardList, Receipt, FileText, BarChart3 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import {
+  IndianRupee,
+  ClipboardList,
+  Receipt,
+  FileText,
+  BarChart3,
+} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 
@@ -24,8 +30,13 @@ import { FeeReceiptsPage } from "./FeeReceiptsPage";
 import { FeeReportsPage } from "./FeeReportsPage";
 
 export function FeeDashboard() {
-  const [activeTab, setActiveTab] = useState("structures");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "structures";
   const { canView, canExport } = useModulePermissions("fees");
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
 
   if (!canView) {
     return (
@@ -46,7 +57,11 @@ export function FeeDashboard() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="space-y-4"
+      >
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="structures" className="flex items-center gap-2">
             <IndianRupee className="h-4 w-4" />
@@ -77,10 +92,13 @@ export function FeeDashboard() {
         </TabsContent>
 
         <TabsContent value="student-fees" className="space-y-4">
-          <StudentFeesList embedded onCollectFee={(feeId) => {
-            // Switch to collection tab with the fee ID
-            setActiveTab("collection");
-          }} />
+          <StudentFeesList
+            embedded
+            onCollectFee={(feeId) => {
+              // Switch to collection tab with the fee ID
+              handleTabChange("collection");
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="collection" className="space-y-4">

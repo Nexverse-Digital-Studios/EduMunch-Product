@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Student,
@@ -18,7 +19,12 @@ const transactions: Transaction[] = [];
 const outstandingData: OutstandingRecord[] = [];
 
 export const PaymentsList = () => {
-  const [activeTab, setActiveTab] = useState("search");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "search";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
   const [selectedStudent, setSelectedStudent] = useState("1");
   const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
   const [selectedInstallment, setSelectedInstallment] =
@@ -33,7 +39,7 @@ export const PaymentsList = () => {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Payment Management</h1>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="bg-transparent border-b border-border w-full justify-start rounded-none h-auto p-0 gap-0">
           <TabsTrigger
             value="search"

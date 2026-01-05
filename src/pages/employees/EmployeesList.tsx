@@ -263,10 +263,13 @@ export default function EmployeesList() {
       last_name: teacher.last_name,
       employee_code: teacher.employee_code,
       email: teacher.email || "",
-      phone: teacher.phone,
+      phone: teacher.phone || "",
+      qualification: teacher.qualification || "",
+      specialization: teacher.specialization || "",
+      experience_years: teacher.experience_years?.toString() || "",
       department: teacher.department || "",
       designation: teacher.designation || "",
-      status: teacher.status,
+      is_active: teacher.is_active,
     };
   };
 

@@ -46,18 +46,18 @@ export const MergeClassesDialog = ({
   const slot = schedule[timeIndex];
   if (!slot) return null;
 
-  // Get all classes for the same period with same teacher and subject
+  // Get all classes for the same period
   const classesInPeriod = branches
     .map((branch) => ({
       branch,
       classInfo: slot.slots[branch],
     }))
-    .filter(({ classInfo }) => classInfo !== null) as {
+    .filter(({ classInfo }) => classInfo !== null && !classInfo.isMerged) as {
     branch: string;
     classInfo: ClassInfo;
   }[];
 
-  // Group by teacher-subject combination
+  // Group by teacher-subject combination (only count non-merged classes)
   const groupedByTeacher = new Map<string, typeof classesInPeriod>();
   classesInPeriod.forEach((item) => {
     const key = `${item.classInfo.teacher}|${item.classInfo.subject}`;
@@ -170,8 +170,14 @@ export const MergeClassesDialog = ({
             })}
 
             {groupedByTeacher.size === 0 && (
-              <div className="p-4 text-center text-muted-foreground text-sm">
-                No classes available to merge in this period
+              <div className="p-4 text-center">
+                <p className="text-muted-foreground text-sm mb-2">
+                  No classes available to merge in this period
+                </p>
+                <p className="text-xs text-muted-foreground/70">
+                  To merge classes, you need at least 2 sections with the same
+                  teacher and subject at the same time period
+                </p>
               </div>
             )}
           </div>
