@@ -948,6 +948,24 @@ CREATE TABLE public.grade_config_1emaet (
   created_at timestamp without time zone DEFAULT now(),
   CONSTRAINT grade_config_1emaet_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.grievance_messages_1emaet (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  grievance_id uuid NOT NULL,
+  sender_id uuid NOT NULL,
+  sender_type character varying NOT NULL CHECK (sender_type::text = ANY (ARRAY['Parent'::character varying, 'Teacher'::character varying, 'Admin'::character varying]::text[])),
+  message text NOT NULL,
+  attachment_url text,
+  attachment_type character varying,
+  attachment_name character varying,
+  is_read boolean DEFAULT false,
+  read_at timestamp without time zone,
+  created_at timestamp without time zone DEFAULT now(),
+  edited_at timestamp without time zone,
+  is_deleted boolean DEFAULT false,
+  CONSTRAINT grievance_messages_1emaet_pkey PRIMARY KEY (id),
+  CONSTRAINT grievance_messages_1emaet_grievance_id_fkey FOREIGN KEY (grievance_id) REFERENCES public.parent_teacher_grievances_1emaet(id),
+  CONSTRAINT grievance_messages_1emaet_sender_id_fkey FOREIGN KEY (sender_id) REFERENCES public.users_1emaet(id)
+);
 CREATE TABLE public.grievance_updates_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   grievance_id uuid NOT NULL,
@@ -1290,6 +1308,35 @@ CREATE TABLE public.online_payment_transactions_1emaet (
   CONSTRAINT fk_online_payment_transactions_student FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id),
   CONSTRAINT fk_online_payment_transactions_paid_by FOREIGN KEY (paid_by_user_id) REFERENCES public.users_1emaet(id),
   CONSTRAINT fk_online_payment_transactions_fee_payment FOREIGN KEY (fee_payment_id) REFERENCES public.fee_payments_1emaet(id)
+);
+CREATE TABLE public.parent_teacher_grievances_1emaet (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  grievance_number character varying NOT NULL UNIQUE,
+  parent_id uuid NOT NULL,
+  student_id uuid NOT NULL,
+  teacher_id uuid NOT NULL,
+  subject character varying NOT NULL,
+  description text,
+  category character varying NOT NULL CHECK (category::text = ANY (ARRAY['Academic'::character varying, 'Behavioral'::character varying, 'Attendance'::character varying, 'Homework'::character varying, 'Bullying'::character varying, 'Health'::character varying, 'General'::character varying, 'Other'::character varying]::text[])),
+  priority character varying DEFAULT 'Normal'::character varying CHECK (priority::text = ANY (ARRAY['Low'::character varying, 'Normal'::character varying, 'High'::character varying, 'Urgent'::character varying]::text[])),
+  status character varying DEFAULT 'Open'::character varying CHECK (status::text = ANY (ARRAY['Open'::character varying, 'In Progress'::character varying, 'Resolved'::character varying, 'Closed'::character varying, 'Escalated'::character varying]::text[])),
+  resolution_notes text,
+  resolved_by uuid,
+  resolved_at timestamp without time zone,
+  escalated_to uuid,
+  escalated_at timestamp without time zone,
+  escalation_reason text,
+  last_message_at timestamp without time zone DEFAULT now(),
+  unread_by_parent integer DEFAULT 0,
+  unread_by_teacher integer DEFAULT 1,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT parent_teacher_grievances_1emaet_pkey PRIMARY KEY (id),
+  CONSTRAINT parent_teacher_grievances_1emaet_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.parents_1emaet(id),
+  CONSTRAINT parent_teacher_grievances_1emaet_student_id_fkey FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id),
+  CONSTRAINT parent_teacher_grievances_1emaet_teacher_id_fkey FOREIGN KEY (teacher_id) REFERENCES public.teachers_1emaet(id),
+  CONSTRAINT parent_teacher_grievances_1emaet_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES public.users_1emaet(id),
+  CONSTRAINT parent_teacher_grievances_1emaet_escalated_to_fkey FOREIGN KEY (escalated_to) REFERENCES public.users_1emaet(id)
 );
 CREATE TABLE public.parents_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
