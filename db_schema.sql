@@ -607,6 +607,50 @@ CREATE TABLE public.classes_1emaet (
   deleted_at timestamp without time zone,
   CONSTRAINT classes_1emaet_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.doubt_follow_ups_1emaet (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  doubt_id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  user_type character varying CHECK (user_type::text = ANY (ARRAY['Student'::character varying, 'Teacher'::character varying]::text[])),
+  message_text text NOT NULL,
+  attachment_url text,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT doubt_follow_ups_1emaet_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_doubt_followups_doubt FOREIGN KEY (doubt_id) REFERENCES public.doubts_1emaet(id),
+  CONSTRAINT fk_doubt_followups_user FOREIGN KEY (user_id) REFERENCES public.users_1emaet(id)
+);
+CREATE TABLE public.doubts_1emaet (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  doubt_number character varying NOT NULL UNIQUE,
+  student_id uuid NOT NULL,
+  class_id uuid NOT NULL,
+  section_id uuid NOT NULL,
+  subject_id uuid NOT NULL,
+  topic_id uuid,
+  question_title character varying NOT NULL,
+  question_text text NOT NULL,
+  attachment_urls ARRAY,
+  priority character varying DEFAULT 'Normal'::character varying CHECK (priority::text = ANY (ARRAY['Normal'::character varying, 'Urgent'::character varying]::text[])),
+  status character varying DEFAULT 'Open'::character varying CHECK (status::text = ANY (ARRAY['Open'::character varying, 'In Progress'::character varying, 'Answered'::character varying, 'Closed'::character varying]::text[])),
+  is_public boolean DEFAULT true,
+  assigned_teacher_id uuid,
+  answer_text text,
+  answer_attachment_urls ARRAY,
+  answered_by uuid,
+  answered_at timestamp without time zone,
+  marked_helpful boolean DEFAULT false,
+  follow_up_count integer DEFAULT 0,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT doubts_1emaet_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_doubts_student FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id),
+  CONSTRAINT fk_doubts_class FOREIGN KEY (class_id) REFERENCES public.classes_1emaet(id),
+  CONSTRAINT fk_doubts_section FOREIGN KEY (section_id) REFERENCES public.sections_1emaet(id),
+  CONSTRAINT fk_doubts_subject FOREIGN KEY (subject_id) REFERENCES public.subjects_1emaet(id),
+  CONSTRAINT fk_doubts_topic FOREIGN KEY (topic_id) REFERENCES public.topics_1emaet(id),
+  CONSTRAINT fk_doubts_assigned_teacher FOREIGN KEY (assigned_teacher_id) REFERENCES public.teachers_1emaet(id),
+  CONSTRAINT fk_doubts_answered_by FOREIGN KEY (answered_by) REFERENCES public.teachers_1emaet(id)
+);
 CREATE TABLE public.email_logs_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   recipient_email character varying NOT NULL,
@@ -732,6 +776,25 @@ CREATE TABLE public.fee_components_1emaet (
   updated_at timestamp without time zone DEFAULT now(),
   CONSTRAINT fee_components_1emaet_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.fee_emi_schedules_1emaet (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  student_fee_id uuid NOT NULL,
+  student_id uuid NOT NULL,
+  emi_number integer NOT NULL,
+  emi_amount numeric NOT NULL,
+  due_date date NOT NULL,
+  payment_date date,
+  paid_amount numeric DEFAULT 0,
+  status character varying DEFAULT 'Pending'::character varying CHECK (status::text = ANY (ARRAY['Pending'::character varying::text, 'Paid'::character varying::text, 'Overdue'::character varying::text, 'Cancelled'::character varying::text, 'Partially Paid'::character varying::text])),
+  interest_amount numeric DEFAULT 0,
+  penalty_amount numeric DEFAULT 0,
+  remarks text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT fee_emi_schedules_1emaet_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_fee_emi_schedules_student_fee FOREIGN KEY (student_fee_id) REFERENCES public.student_fees_1emaet(id),
+  CONSTRAINT fk_fee_emi_schedules_student FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id)
+);
 CREATE TABLE public.fee_payments_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   student_fee_id uuid NOT NULL,
@@ -748,10 +811,14 @@ CREATE TABLE public.fee_payments_1emaet (
   remarks text,
   receipt_url text,
   created_at timestamp without time zone DEFAULT now(),
+  payment_option character varying DEFAULT 'Full Payment'::character varying CHECK (payment_option::text = ANY (ARRAY['Full Payment'::character varying::text, 'EMI'::character varying::text])),
+  emi_schedule_id uuid,
+  emi_tenure_months integer,
   CONSTRAINT fee_payments_1emaet_pkey PRIMARY KEY (id),
   CONSTRAINT fk_fee_payments_student_fee FOREIGN KEY (student_fee_id) REFERENCES public.student_fees_1emaet(id),
   CONSTRAINT fk_fee_payments_student FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id),
-  CONSTRAINT fk_fee_payments_collected_by FOREIGN KEY (collected_by) REFERENCES public.users_1emaet(id)
+  CONSTRAINT fk_fee_payments_collected_by FOREIGN KEY (collected_by) REFERENCES public.users_1emaet(id),
+  CONSTRAINT fk_fee_payments_emi_schedule FOREIGN KEY (emi_schedule_id) REFERENCES public.fee_emi_schedules_1emaet(id)
 );
 CREATE TABLE public.fee_refunds_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -864,6 +931,61 @@ CREATE TABLE public.grade_config_1emaet (
   description character varying,
   created_at timestamp without time zone DEFAULT now(),
   CONSTRAINT grade_config_1emaet_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.grievance_updates_1emaet (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  grievance_id uuid NOT NULL,
+  updated_by uuid NOT NULL,
+  update_type character varying CHECK (update_type::text = ANY (ARRAY['Status Change'::character varying, 'Note'::character varying, 'Communication'::character varying]::text[])),
+  previous_status character varying,
+  new_status character varying,
+  update_message text NOT NULL,
+  is_visible_to_complainant boolean DEFAULT true,
+  attachment_url text,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT grievance_updates_1emaet_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_grievance_updates_grievance FOREIGN KEY (grievance_id) REFERENCES public.grievances_1emaet(id),
+  CONSTRAINT fk_grievance_updates_updated_by FOREIGN KEY (updated_by) REFERENCES public.users_1emaet(id)
+);
+CREATE TABLE public.grievances_1emaet (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  grievance_number character varying NOT NULL UNIQUE,
+  raised_by_user_id uuid NOT NULL,
+  raised_by_user_type character varying CHECK (raised_by_user_type::text = ANY (ARRAY['Student'::character varying, 'Parent'::character varying, 'Teacher'::character varying, 'Staff'::character varying]::text[])),
+  student_id uuid,
+  grievance_category character varying NOT NULL CHECK (grievance_category::text = ANY (ARRAY['Academic'::character varying, 'Behavioral'::character varying, 'Infrastructure'::character varying, 'Transport'::character varying, 'Fee'::character varying, 'Staff Conduct'::character varying, 'Safety'::character varying, 'Harassment'::character varying, 'Other'::character varying]::text[])),
+  sub_category character varying,
+  title character varying NOT NULL,
+  description text NOT NULL,
+  evidence_urls ARRAY,
+  is_anonymous boolean DEFAULT false,
+  priority character varying DEFAULT 'Normal'::character varying CHECK (priority::text = ANY (ARRAY['Low'::character varying, 'Normal'::character varying, 'High'::character varying, 'Critical'::character varying]::text[])),
+  severity_level character varying CHECK (severity_level::text = ANY (ARRAY['Minor'::character varying, 'Moderate'::character varying, 'Serious'::character varying, 'Critical'::character varying]::text[])),
+  status character varying DEFAULT 'Submitted'::character varying CHECK (status::text = ANY (ARRAY['Submitted'::character varying, 'Under Review'::character varying, 'Investigating'::character varying, 'Action Taken'::character varying, 'Resolved'::character varying, 'Rejected'::character varying, 'Closed'::character varying]::text[])),
+  assigned_to uuid,
+  assigned_department character varying,
+  reviewed_by uuid,
+  reviewed_at timestamp without time zone,
+  investigation_notes text,
+  action_taken text,
+  resolution_summary text,
+  resolved_by uuid,
+  resolved_at timestamp without time zone,
+  resolution_satisfaction integer CHECK (resolution_satisfaction >= 1 AND resolution_satisfaction <= 5),
+  feedback_from_complainant text,
+  is_confidential boolean DEFAULT false,
+  requires_follow_up boolean DEFAULT false,
+  follow_up_date date,
+  escalation_level integer DEFAULT 0,
+  escalated_at timestamp without time zone,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT grievances_1emaet_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_grievances_raised_by FOREIGN KEY (raised_by_user_id) REFERENCES public.users_1emaet(id),
+  CONSTRAINT fk_grievances_student FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id),
+  CONSTRAINT fk_grievances_assigned_to FOREIGN KEY (assigned_to) REFERENCES public.users_1emaet(id),
+  CONSTRAINT fk_grievances_reviewed_by FOREIGN KEY (reviewed_by) REFERENCES public.users_1emaet(id),
+  CONSTRAINT fk_grievances_resolved_by FOREIGN KEY (resolved_by) REFERENCES public.users_1emaet(id)
 );
 CREATE TABLE public.homework_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -1526,6 +1648,10 @@ CREATE TABLE public.student_fees_1emaet (
   status character varying DEFAULT 'Pending'::character varying CHECK (status::text = ANY (ARRAY['Pending'::character varying, 'Partial'::character varying, 'Paid'::character varying, 'Overdue'::character varying]::text[])),
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
+  payment_plan character varying DEFAULT 'Full Payment'::character varying CHECK (payment_plan::text = ANY (ARRAY['Full Payment'::character varying::text, 'EMI'::character varying::text])),
+  emi_tenure_months integer,
+  emi_interest_percent numeric DEFAULT 0,
+  emi_start_date date,
   CONSTRAINT student_fees_1emaet_pkey PRIMARY KEY (id),
   CONSTRAINT fk_student_fees_student FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id),
   CONSTRAINT fk_student_fees_structure FOREIGN KEY (fee_structure_id) REFERENCES public.fee_structures_1emaet(id),
