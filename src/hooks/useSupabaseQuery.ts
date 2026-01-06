@@ -114,12 +114,17 @@ export function useTableRecord<T>(
     queryFn: async () => {
       if (!supabase || !id) throw new Error('Missing params');
 
-      const { data, error } = await supabase
+      let query = supabase
         .from(tableName)
         .select(select)
-        .eq('id', id)
-        .is('deleted_at', null)
-        .single();
+        .eq('id', id);
+
+      // Only apply soft delete filter to tables that support it
+      if (TABLES_WITH_SOFT_DELETE.includes(tableName)) {
+        query = query.is('deleted_at', null);
+      }
+
+      const { data, error } = await query.single();
 
       if (error) throw error;
       return data as T;

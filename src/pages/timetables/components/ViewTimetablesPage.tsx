@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { useModulePermissions } from "@/contexts/PermissionContext";
 import { useSupabaseTable } from "@/hooks/useSupabaseQuery";
 import { TABLES } from "@/lib/supabase";
+import { useParentChildData } from "@/hooks/useParentChildData";
 
 interface SectionDB {
   id: string;
@@ -50,6 +51,13 @@ const ViewTimetablesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedClass, setSelectedClass] = useState<string>("all");
 
+  // Parent child filtering
+  const {
+    isParent,
+    sectionIds,
+    isLoading: parentLoading,
+  } = useParentChildData();
+
   // Fetch sections
   const { data: sectionsData, isLoading: sectionsLoading } =
     useSupabaseTable<SectionDB>(TABLES.SECTIONS, {
@@ -64,8 +72,13 @@ const ViewTimetablesPage = () => {
   const sections = sectionsData || [];
   const classes = classesData || [];
 
-  // Filter sections
+  // Filter sections - for parents, only show their child's section(s)
   const filteredSections = sections.filter((section) => {
+    // Parent filter - only show sections where their child is enrolled
+    if (isParent && !sectionIds.includes(section.id)) {
+      return false;
+    }
+
     const matchesSearch =
       section.section_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       section.section_code.toLowerCase().includes(searchQuery.toLowerCase());
@@ -148,7 +161,7 @@ const ViewTimetablesPage = () => {
           <CardTitle>Sections ({filteredSections.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          {sectionsLoading ? (
+          {sectionsLoading || parentLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
             </div>

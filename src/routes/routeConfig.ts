@@ -584,17 +584,13 @@ export const feedbackRoutes: RouteConfig[] = [
 ];
 
 // --------------------------------------
-// Module 42: Grievances (CONSOLIDATED: 6 → 1 route)
-// Single page with tabs for All/My Grievances, modals for actions
+// Module 42: Grievances - Parent-Teacher Communication
+// Main list page with chat feature for individual grievances
 // --------------------------------------
 export const grievanceRoutes: RouteConfig[] = [
-  { path: '/grievances', title: 'Grievances', module: 'grievances', action: 'view', tier: 2, showInSidebar: true, icon: 'AlertTriangle' },
-  // CONSOLIDATED: The following routes are now handled within the page above:
-  // - /grievances/submit → Modal in Grievances page
-  // - /grievances/:id → Modal detail view
-  // - /grievances/:id/assign → Button action in detail
-  // - /grievances/:id/resolve → Button action in detail
-  // - /grievances/my-grievances → Tab/filter in list
+  { path: '/grievances', title: 'Grievances', module: 'grievances', action: 'view', tier: 2, showInSidebar: true, icon: 'MessageSquare' },
+  { path: '/grievances/:grievanceId', title: 'Grievance Chat', module: 'grievances', action: 'view', tier: 2 },
+  // Create, status changes handled via modals and buttons
 ];
 
 // --------------------------------------

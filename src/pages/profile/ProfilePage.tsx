@@ -50,7 +50,7 @@ export const ProfilePage = () => {
   const { data: userProfiles = [], isLoading: profileLoading } =
     useSupabaseTable<UserProfile>(`users_${INDEX_TOKEN}`, {
       select: "*",
-      filters: user?.id ? { id: user.id } : {},
+      filters: user?.id ? { auth_user_id: user.id } : {},
       enabled: !!user?.id,
     });
 
@@ -80,7 +80,7 @@ export const ProfilePage = () => {
         ...prev,
         fullName: userProfile.full_name || "",
         email: userProfile.email || user?.email || "",
-        phone: userProfile.phone_number || "",
+        phone: userProfile.phone || "",
         joinDate: userProfile.created_at?.split("T")[0] || "",
       }));
     } else if (user) {
@@ -115,22 +115,55 @@ export const ProfilePage = () => {
     setIsLoading(true);
 
     try {
-      // Update user profile in database
-      const { error } = await supabase
+      console.log("[Profile] Updating profile:", {
+        authUserId: user?.id,
+        profileId: userProfile?.id,
+        tableName: `users_${INDEX_TOKEN}`,
+        updateData: {
+          full_name: profileData.fullName,
+          phone: profileData.phone,
+        },
+      });
+
+      if (!user?.id) {
+        throw new Error("User ID is missing");
+      }
+
+      if (!userProfile?.id) {
+        throw new Error("User profile not loaded yet");
+      }
+
+      // Update user profile in database using the database user ID
+      const { data, error, status } = await supabase
         .from(`users_${INDEX_TOKEN}`)
         .update({
           full_name: profileData.fullName,
-          phone_number: profileData.phone,
+          phone: profileData.phone,
+          updated_at: new Date().toISOString(),
         })
-        .eq("id", user?.id);
+        .eq("id", userProfile.id)
+        .select();
 
-      if (error) throw error;
+      console.log("[Profile] Update response:", { data, error, status });
+
+      if (error) {
+        console.error("[Profile] Update error:", error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.warn("[Profile] Update returned no data");
+        throw new Error("Profile update returned no data - check RLS policies");
+      }
+
+      console.log("[Profile] Update successful:", data);
 
       toast({
         title: "Profile updated",
         description: "Your profile information has been saved successfully.",
       });
     } catch (error: any) {
+      console.error("[Profile] Error updating profile:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to update profile",

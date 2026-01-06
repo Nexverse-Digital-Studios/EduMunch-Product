@@ -65,6 +65,7 @@ import {
   STUDENT_IMPORT_TEMPLATE,
   STUDENT_IMPORT_CONFIG,
 } from "@/lib/excel";
+import { useParentChildData } from "@/hooks/useParentChildData";
 
 const INDEX_TOKEN = "1emaet";
 
@@ -93,6 +94,9 @@ export function StudentsList() {
   const [selectedClass, setSelectedClass] = useState<string>("all");
   const [selectedSection, setSelectedSection] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+
+  // Parent child filtering
+  const { isParent, childIds, isLoading: parentLoading } = useParentChildData();
 
   // Modal states for create/edit (consolidation - replaces separate routes)
   const [showStudentModal, setShowStudentModal] = useState(false);
@@ -140,6 +144,11 @@ export function StudentsList() {
 
   // Filter students
   const filteredStudents = students?.filter((student) => {
+    // PARENT FILTER: Only show their linked children
+    if (isParent && childIds.length > 0 && !childIds.includes(student.id)) {
+      return false;
+    }
+
     const fullName = `${student.first_name} ${student.middle_name || ""} ${
       student.last_name
     }`.toLowerCase();
@@ -530,7 +539,7 @@ export function StudentsList() {
       {/* Students Table */}
       <Card>
         <CardContent className="p-0">
-          {isLoading ? (
+          {isLoading || parentLoading ? (
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>

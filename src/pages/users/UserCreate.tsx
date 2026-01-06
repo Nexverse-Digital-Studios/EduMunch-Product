@@ -74,17 +74,46 @@ const UserCreate = () => {
       }
 
       // 3. Create user profile
-      const { error: profileError } = await supabase.from(TABLES.USERS).insert({
-        auth_user_id: authData.user.id,
-        email: formData.email,
-        full_name: formData.full_name,
-        phone: formData.phone || null,
-        primary_role_id: roleId || null,
-        index_token: INDEX_TOKEN,
-        is_active: true,
-      });
+      const { data: profileData, error: profileError } = await supabase
+        .from(TABLES.USERS)
+        .insert({
+          auth_user_id: authData.user.id,
+          email: formData.email,
+          full_name: formData.full_name,
+          phone: formData.phone || null,
+          primary_role_id: roleId || null,
+          index_token: INDEX_TOKEN,
+          is_active: true,
+        })
+        .select("id")
+        .single();
 
       if (profileError) throw profileError;
+
+      // 4. Create user_roles entry (required for permissions to work)
+      if (roleId && profileData?.id) {
+        const { error: userRoleError } = await supabase
+          .from(TABLES.USER_ROLES)
+          .insert({
+            user_id: profileData.id,
+            role_id: roleId,
+            is_primary: true,
+          });
+
+        if (userRoleError) {
+          console.error("Failed to create user_roles entry:", userRoleError);
+        }
+      }
+
+      // 5. IMPORTANT: Sign out the newly created user to keep admin logged in
+      // Supabase automatically logs in new users, so we need to sign them out
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) {
+        console.warn(
+          "Warning: Could not sign out newly created user:",
+          signOutError
+        );
+      }
 
       toast({
         title: "Success",

@@ -451,11 +451,11 @@ const feedbackModule: ModuleSidebarConfig = {
   subItems: [],
 };
 
-// Grievances Module (CONSOLIDATED: no subItems, tabs/modals in single page)
+// Grievances Module - Parent-Teacher Communication
 const grievancesModule: ModuleSidebarConfig = {
   moduleCode: 'grievances',
-  displayName: 'Grievances',
-  icon: 'AlertTriangle',
+  displayName: 'Parent-Teacher Chat',
+  icon: 'MessageSquare',
   basePath: '/grievances',
   order: 2,
   subItems: [],

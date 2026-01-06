@@ -213,7 +213,8 @@ const DoubtsList = lazy(() =>
 const AvailabilitySlots = lazy(() => import("@/pages/AvailabilitySlots"));
 const PTMRequests = lazy(() => import("@/pages/PTMRequests"));
 const Feedback = lazy(() => import("@/pages/Feedback"));
-const Grievances = lazy(() => import("@/pages/Grievances"));
+const GrievancesPage = lazy(() => import("@/pages/grievances/GrievancesPage"));
+const GrievanceChat = lazy(() => import("@/pages/grievances/GrievanceChat"));
 const SupportTickets = lazy(() => import("@/pages/SupportTickets"));
 const SalaryStructures = lazy(() => import("@/pages/SalaryStructures"));
 const Payslips = lazy(() => import("@/pages/Payslips"));
@@ -460,7 +461,8 @@ const routeComponentMap: Record<string, LazyComponent> = {
   "/availability-slots": AvailabilitySlots,
   "/ptm-requests": PTMRequests,
   "/feedback": Feedback,
-  "/grievances": Grievances,
+  "/grievances": GrievancesPage,
+  "/grievances/:grievanceId": GrievanceChat,
   "/support-tickets": SupportTickets,
 
   // Tier 2 - HR

@@ -54,6 +54,7 @@ import {
   AttendanceDB,
   AttendanceStatus,
 } from "./types";
+import { useParentChildData } from "@/hooks/useParentChildData";
 
 const STATUS_COLORS: Record<AttendanceStatus, string> = {
   Present: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
@@ -70,6 +71,14 @@ export const ViewAttendancePage = () => {
     studentId?: string;
   }>();
   const navigate = useNavigate();
+
+  // Parent child filtering
+  const {
+    isParent,
+    childIds,
+    sectionIds,
+    isLoading: parentLoading,
+  } = useParentChildData();
 
   const [selectedSection, setSelectedSection] = useState<string>(
     sectionId || "all"
@@ -117,6 +126,11 @@ export const ViewAttendancePage = () => {
     if (!attendance) return [];
 
     let filtered = attendance;
+
+    // PARENT FILTER: Only show attendance for their linked children
+    if (isParent && childIds.length > 0) {
+      filtered = filtered.filter((a) => childIds.includes(a.student_id));
+    }
 
     // Filter by section
     if (selectedSection && selectedSection !== "all") {
@@ -167,6 +181,8 @@ export const ViewAttendancePage = () => {
     searchQuery,
     studentId,
     students,
+    isParent,
+    childIds,
   ]);
 
   // Summary stats
@@ -180,7 +196,17 @@ export const ViewAttendancePage = () => {
     };
   }, [filteredAttendance]);
 
-  const isLoading = loadingSections || loadingStudents || loadingAttendance;
+  const isLoading =
+    loadingSections || loadingStudents || loadingAttendance || parentLoading;
+
+  // Filter sections for parents
+  const availableSections = useMemo(() => {
+    if (!sections) return [];
+    if (isParent && sectionIds.length > 0) {
+      return sections.filter((s) => sectionIds.includes(s.id));
+    }
+    return sections;
+  }, [sections, isParent, sectionIds]);
 
   // If viewing specific student
   const viewingStudent = studentId
@@ -240,7 +266,7 @@ export const ViewAttendancePage = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Sections</SelectItem>
-                    {sections?.map((section) => (
+                    {availableSections?.map((section) => (
                       <SelectItem key={section.id} value={section.id}>
                         {getClassName(section.class_id)} -{" "}
                         {section.section_name}

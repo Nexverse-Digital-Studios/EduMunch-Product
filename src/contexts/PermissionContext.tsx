@@ -1,29 +1,29 @@
 /**
  * Permission Context - EduMunch
  * ===============================
- * 
+ *
  * Centralized permission management with caching strategy.
  * Based on BUILD_ROLES.md architecture:
  * - Fetch permissions ONCE at login
  * - Cache in memory + localStorage
  * - Use for entire session (no additional DB calls)
- * 
+ *
  * THREE-LAYER PROTECTION:
  * 1. Frontend Route Guards (ProtectedRoute) - checks cached permissions
  * 2. UI Component Guards (hasPermission) - show/hide UI elements
  * 3. Backend Guards (JWT + RLS) - enforced at API/database level
  */
 
-import React, { 
-  createContext, 
-  useContext, 
-  useState, 
-  useCallback, 
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
   useEffect,
-  useMemo 
-} from 'react';
-import { supabase, TABLES, INDEX_TOKEN } from '@/lib/supabase';
-import { isFeatureEnabled, isModuleAvailable } from '@/config/features.config';
+  useMemo,
+} from "react";
+import { supabase, TABLES, INDEX_TOKEN } from "@/lib/supabase";
+import { isFeatureEnabled, isModuleAvailable } from "@/config/features.config";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -63,16 +63,16 @@ export interface PermissionContextType {
   // Permission cache
   permissions: UserPermissionCache | null;
   isLoading: boolean;
-  
+
   // Permission check methods
   hasPermission: (
-    module: string, 
-    action: 'view' | 'create' | 'update' | 'delete' | 'approve' | 'export'
+    module: string,
+    action: "view" | "create" | "update" | "delete" | "approve" | "export"
   ) => boolean;
   hasModuleAccess: (moduleCode: string) => boolean;
   canAccessRoute: (path: string) => boolean;
   isAdmin: () => boolean;
-  
+
   // Cache management
   setPermissions: (cache: UserPermissionCache) => void;
   clearPermissions: () => void;
@@ -83,8 +83,8 @@ export interface PermissionContextType {
 // CONSTANTS
 // =============================================================================
 
-const CACHE_KEY = 'edumunch_permissions';
-const CACHE_VERSION = '1.0.0'; // Increment to invalidate all caches
+const CACHE_KEY = "edumunch_permissions";
+const CACHE_VERSION = "1.0.0"; // Increment to invalidate all caches
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const BACKGROUND_REFRESH_THRESHOLD = 60 * 60 * 1000; // 1 hour - refresh if cache older than this
 
@@ -92,7 +92,9 @@ const BACKGROUND_REFRESH_THRESHOLD = 60 * 60 * 1000; // 1 hour - refresh if cach
 // CONTEXT
 // =============================================================================
 
-const PermissionContext = createContext<PermissionContextType | undefined>(undefined);
+const PermissionContext = createContext<PermissionContextType | undefined>(
+  undefined
+);
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -103,7 +105,12 @@ const PermissionContext = createContext<PermissionContextType | undefined>(undef
  */
 export function buildPermissionCache(
   userId: string,
-  primaryRole: { id: string; code: string; name: string; isSystemRole: boolean } | null,
+  primaryRole: {
+    id: string;
+    code: string;
+    name: string;
+    isSystemRole: boolean;
+  } | null,
   rawPermissions: Array<{
     permission_id: string;
     permission_code: string;
@@ -165,7 +172,7 @@ export function buildPermissionCache(
     }
 
     // Collect route permissions
-    if (perm.resource_type === 'route' && perm.can_read && perm.resource_path) {
+    if (perm.resource_type === "route" && perm.can_read && perm.resource_path) {
       if (!cache.routes.includes(perm.resource_path)) {
         cache.routes.push(perm.resource_path);
       }
@@ -184,25 +191,25 @@ function loadCacheFromStorage(): UserPermissionCache | null {
     if (!cached) return null;
 
     const parsed: UserPermissionCache = JSON.parse(cached);
-    
+
     // Check cache version - invalidate if outdated
     if (!parsed.version || parsed.version !== CACHE_VERSION) {
-      console.log('[PermissionContext] Cache version mismatch, clearing...');
-      localStorage.removeItem(CACHE_KEY);
-      return null;
-    }
-    
-    // Check if cache is expired
-    if (Date.now() - parsed.timestamp > CACHE_DURATION) {
-      console.log('[PermissionContext] Cache expired, clearing...');
+      console.log("[PermissionContext] Cache version mismatch, clearing...");
       localStorage.removeItem(CACHE_KEY);
       return null;
     }
 
-    console.log('[PermissionContext] Loaded valid cache from storage');
+    // Check if cache is expired
+    if (Date.now() - parsed.timestamp > CACHE_DURATION) {
+      console.log("[PermissionContext] Cache expired, clearing...");
+      localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+
+    console.log("[PermissionContext] Loaded valid cache from storage");
     return parsed;
   } catch (error) {
-    console.error('[PermissionContext] Error loading cache:', error);
+    console.error("[PermissionContext] Error loading cache:", error);
     localStorage.removeItem(CACHE_KEY);
     return null;
   }
@@ -214,9 +221,12 @@ function loadCacheFromStorage(): UserPermissionCache | null {
 function saveCacheToStorage(cache: UserPermissionCache): void {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
-    console.log('[PermissionContext] Cache saved to storage');
+    console.log("[PermissionContext] Cache saved to storage");
   } catch (error) {
-    console.error('[PermissionContext] Failed to save permission cache:', error);
+    console.error(
+      "[PermissionContext] Failed to save permission cache:",
+      error
+    );
   }
 }
 
@@ -235,10 +245,10 @@ function shouldRefreshCache(cache: UserPermissionCache | null): boolean {
 function clearAllCache(): void {
   try {
     localStorage.removeItem(CACHE_KEY);
-    localStorage.removeItem('edumunch_user_profile');
-    console.log('[PermissionContext] All cache cleared');
+    localStorage.removeItem("edumunch_user_profile");
+    console.log("[PermissionContext] All cache cleared");
   } catch (error) {
-    console.error('[PermissionContext] Error clearing cache:', error);
+    console.error("[PermissionContext] Error clearing cache:", error);
   }
 }
 
@@ -246,24 +256,25 @@ function clearAllCache(): void {
 // PROVIDER
 // =============================================================================
 
-export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({ 
-  children 
+export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
 }) => {
-  console.log('[PermissionProvider] Initializing...');
-  
-  const [permissions, setPermissionsState] = useState<UserPermissionCache | null>(() => {
-    const cached = loadCacheFromStorage();
-    console.log('[PermissionProvider] Loading from cache:', {
-      cached: !!cached,
-      userId: cached?.userId,
-      modules: cached ? Object.keys(cached.permissions).length : 0,
+  console.log("[PermissionProvider] Initializing...");
+
+  const [permissions, setPermissionsState] =
+    useState<UserPermissionCache | null>(() => {
+      const cached = loadCacheFromStorage();
+      console.log("[PermissionProvider] Loading from cache:", {
+        cached: !!cached,
+        userId: cached?.userId,
+        modules: cached ? Object.keys(cached.permissions).length : 0,
+      });
+      return cached;
     });
-    return cached;
-  });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    console.log('[PermissionProvider] Permissions state changed:', {
+    console.log("[PermissionProvider] Permissions state changed:", {
       hasPermissions: !!permissions,
       userId: permissions?.userId,
       timestamp: permissions?.timestamp,
@@ -279,7 +290,7 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
       // Only handle our cache key
       if (e.key !== CACHE_KEY) return;
 
-      console.log('[PermissionProvider] Storage change detected:', {
+      console.log("[PermissionProvider] Storage change detected:", {
         key: e.key,
         hasNewValue: !!e.newValue,
         hasOldValue: !!e.oldValue,
@@ -287,7 +298,9 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // If cache was cleared in another tab, clear here too
       if (e.newValue === null && e.oldValue !== null) {
-        console.log('[PermissionProvider] Cache cleared in another tab, syncing...');
+        console.log(
+          "[PermissionProvider] Cache cleared in another tab, syncing..."
+        );
         setPermissionsState(null);
         return;
       }
@@ -296,10 +309,15 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
       if (e.newValue) {
         try {
           const newCache = JSON.parse(e.newValue) as UserPermissionCache;
-          console.log('[PermissionProvider] Cache updated in another tab, syncing...');
+          console.log(
+            "[PermissionProvider] Cache updated in another tab, syncing..."
+          );
           setPermissionsState(newCache);
         } catch (error) {
-          console.error('[PermissionProvider] Error parsing updated cache:', error);
+          console.error(
+            "[PermissionProvider] Error parsing updated cache:",
+            error
+          );
         }
       }
     };
@@ -308,19 +326,27 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
     const handlePermissionUpdate = (e: Event) => {
       const customEvent = e as CustomEvent;
       const newPermissions = customEvent.detail?.permissions;
-      
+
       if (newPermissions) {
-        console.log('[PermissionProvider] Permissions updated via custom event');
+        console.log(
+          "[PermissionProvider] Permissions updated via custom event"
+        );
         setPermissionsState(newPermissions);
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('edumunch_permissions_updated', handlePermissionUpdate);
-    
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener(
+      "edumunch_permissions_updated",
+      handlePermissionUpdate
+    );
+
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('edumunch_permissions_updated', handlePermissionUpdate);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(
+        "edumunch_permissions_updated",
+        handlePermissionUpdate
+      );
     };
   }, []);
 
@@ -333,11 +359,16 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const checkAndRefresh = async () => {
       if (shouldRefreshCache(permissions) && !isLoading) {
-        console.log('[PermissionProvider] Cache aging, refreshing in background...');
+        console.log(
+          "[PermissionProvider] Cache aging, refreshing in background..."
+        );
         try {
           await refreshPermissions(permissions.userId);
         } catch (error) {
-          console.error('[PermissionProvider] Background refresh failed:', error);
+          console.error(
+            "[PermissionProvider] Background refresh failed:",
+            error
+          );
           // Don't clear cache on background refresh failure - keep using current cache
         }
       }
@@ -345,19 +376,19 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Check every 5 minutes
     const intervalId = setInterval(checkAndRefresh, 5 * 60 * 1000);
-    
+
     // Also check on visibility change (when user comes back to tab)
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === "visible") {
         checkAndRefresh();
       }
     };
-    
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       clearInterval(intervalId);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [permissions, isLoading]);
 
@@ -373,7 +404,7 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
    * Clear all cached permissions
    */
   const clearPermissions = useCallback(() => {
-    console.log('[PermissionProvider] Clearing permissions...');
+    console.log("[PermissionProvider] Clearing permissions...");
     setPermissionsState(null);
     clearAllCache();
   }, []);
@@ -382,187 +413,266 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
    * Refresh permissions from database
    * Called only when admin changes permissions or on manual refresh
    */
-  const refreshPermissions = useCallback(async (userId: string, retryCount = 0) => {
-    if (!supabase) {
-      console.warn('[PermissionProvider] Cannot refresh - Supabase not configured');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      console.log('[PermissionProvider] Refreshing permissions for user:', userId);
-      
-      // Call the permission resolution function
-      const { data: rawPermissions, error } = await supabase.rpc(
-        `get_user_permissions_${INDEX_TOKEN}`,
-        { p_user_id: userId }
-      );
-
-      if (error) {
-        console.error('[PermissionProvider] Failed to refresh permissions:', error);
-        
-        // Retry once on network errors
-        if (retryCount === 0 && error.message?.includes('network')) {
-          console.log('[PermissionProvider] Network error, retrying...');
-          setTimeout(() => refreshPermissions(userId, 1), 2000);
-          return;
-        }
-        
-        // On error, keep using existing cache if available
-        if (!permissions) {
-          console.error('[PermissionProvider] No existing cache, cannot recover');
-        }
+  const refreshPermissions = useCallback(
+    async (userId: string, retryCount = 0) => {
+      if (!supabase) {
+        console.warn(
+          "[PermissionProvider] Cannot refresh - Supabase not configured"
+        );
         return;
       }
 
-      // Get current primary role from cache or fetch it
-      const primaryRole = permissions?.primaryRole || null;
+      setIsLoading(true);
+      try {
+        console.log(
+          "[PermissionProvider] Refreshing permissions for user:",
+          userId
+        );
 
-      // Build new cache
-      const newCache = buildPermissionCache(userId, primaryRole, rawPermissions || []);
-      setPermissions(newCache);
-      console.log('[PermissionProvider] Permissions refreshed successfully');
-    } catch (error) {
-      console.error('[PermissionProvider] Error refreshing permissions:', error);
-      // Keep existing cache on error
-    } finally {
-      setIsLoading(false);
-    }
-  }, [permissions?.primaryRole, setPermissions]);
+        // Call the permission resolution function
+        const { data: rawPermissions, error } = await supabase.rpc(
+          `get_user_permissions_${INDEX_TOKEN}`,
+          { p_user_id: userId }
+        );
+
+        if (error) {
+          console.error(
+            "[PermissionProvider] Failed to refresh permissions:",
+            error
+          );
+
+          // Retry once on network errors
+          if (retryCount === 0 && error.message?.includes("network")) {
+            console.log("[PermissionProvider] Network error, retrying...");
+            setTimeout(() => refreshPermissions(userId, 1), 2000);
+            return;
+          }
+
+          // On error, keep using existing cache if available
+          if (!permissions) {
+            console.error(
+              "[PermissionProvider] No existing cache, cannot recover"
+            );
+          }
+          return;
+        }
+
+        // Get current primary role from cache or fetch it
+        const primaryRole = permissions?.primaryRole || null;
+
+        // Build new cache
+        const newCache = buildPermissionCache(
+          userId,
+          primaryRole,
+          rawPermissions || []
+        );
+        setPermissions(newCache);
+        console.log("[PermissionProvider] Permissions refreshed successfully");
+      } catch (error) {
+        console.error(
+          "[PermissionProvider] Error refreshing permissions:",
+          error
+        );
+        // Keep existing cache on error
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [permissions?.primaryRole, setPermissions]
+  );
 
   /**
    * Check if user has specific permission for a module
    * ADMIN role bypasses all permission checks
    */
-  const hasPermission = useCallback((
-    module: string,
-    action: 'view' | 'create' | 'update' | 'delete' | 'approve' | 'export'
-  ): boolean => {
-    // No permissions = no access
-    if (!permissions) {
-      console.log(`[hasPermission] No permissions cached for ${module}:${action}`);
-      return false;
-    }
-
-    // ADMIN bypass - full access during development and production
-    const roleCode = permissions.primaryRole?.code;
-    if (roleCode === 'ADMIN' || roleCode === 'super_admin') {
-      console.log(`[hasPermission] ADMIN bypass - allowing ${module}:${action}`);
-      return true;
-    }
-
-    // Check if feature is enabled first
-    if (!isModuleAvailable(module)) {
-      console.log(`[hasPermission] Module ${module} not available`);
-      return false;
-    }
-
-    // Check module permissions
-    const modulePerms = permissions.permissions[module];
-    if (!modulePerms) {
-      console.log(`[hasPermission] No permissions record for module ${module}`);
-      return false;
-    }
-
-    const result = (() => {
-      switch (action) {
-        case 'view': return modulePerms.canView;
-        case 'create': return modulePerms.canCreate;
-        case 'update': return modulePerms.canUpdate;
-        case 'delete': return modulePerms.canDelete;
-        case 'approve': return modulePerms.canApprove;
-        case 'export': return modulePerms.canExport;
-        default: return false;
+  const hasPermission = useCallback(
+    (
+      module: string,
+      action: "view" | "create" | "update" | "delete" | "approve" | "export"
+    ): boolean => {
+      // No permissions = no access
+      if (!permissions) {
+        console.log(
+          `[hasPermission] No permissions cached for ${module}:${action}`
+        );
+        return false;
       }
-    })();
-    
-    console.log(`[hasPermission] ${module}:${action} = ${result}`);
-    return result;
-  }, [permissions]);
+
+      // ADMIN bypass - full access during development and production
+      const roleCode = permissions.primaryRole?.code;
+      if (
+        roleCode === "ADMIN" ||
+        roleCode === "admin" ||
+        roleCode === "super_admin" ||
+        roleCode === "principal"
+      ) {
+        console.log(
+          `[hasPermission] ADMIN bypass - allowing ${module}:${action}`
+        );
+        return true;
+      }
+
+      // Check if feature is enabled first
+      if (!isModuleAvailable(module)) {
+        console.log(`[hasPermission] Module ${module} not available`);
+        return false;
+      }
+
+      // Check module permissions
+      const modulePerms = permissions.permissions[module];
+      if (!modulePerms) {
+        console.log(
+          `[hasPermission] No permissions record for module ${module}`
+        );
+        return false;
+      }
+
+      const result = (() => {
+        switch (action) {
+          case "view":
+            return modulePerms.canView;
+          case "create":
+            return modulePerms.canCreate;
+          case "update":
+            return modulePerms.canUpdate;
+          case "delete":
+            return modulePerms.canDelete;
+          case "approve":
+            return modulePerms.canApprove;
+          case "export":
+            return modulePerms.canExport;
+          default:
+            return false;
+        }
+      })();
+
+      console.log(`[hasPermission] ${module}:${action} = ${result}`);
+      return result;
+    },
+    [permissions]
+  );
 
   /**
    * Check if user has any access to a module
    */
-  const hasModuleAccess = useCallback((moduleCode: string): boolean => {
-    if (!permissions) {
-      console.log(`[hasModuleAccess] No permissions cached for module ${moduleCode}`);
-      return false;
-    }
-    
-    // ADMIN bypass
-    const roleCode = permissions.primaryRole?.code;
-    if (roleCode === 'ADMIN' || roleCode === 'super_admin') {
-      console.log(`[hasModuleAccess] ADMIN bypass - allowing module ${moduleCode}`);
-      return isModuleAvailable(moduleCode);
-    }
+  const hasModuleAccess = useCallback(
+    (moduleCode: string): boolean => {
+      if (!permissions) {
+        console.log(
+          `[hasModuleAccess] No permissions cached for module ${moduleCode}`
+        );
+        return false;
+      }
 
-    // Check if feature is enabled
-    if (!isModuleAvailable(moduleCode)) {
-      console.log(`[hasModuleAccess] Module ${moduleCode} feature not enabled`);
-      return false;
-    }
+      // ADMIN bypass
+      const roleCode = permissions.primaryRole?.code;
+      if (
+        roleCode === "ADMIN" ||
+        roleCode === "admin" ||
+        roleCode === "super_admin" ||
+        roleCode === "principal"
+      ) {
+        console.log(
+          `[hasModuleAccess] ADMIN bypass - allowing module ${moduleCode}`
+        );
+        return isModuleAvailable(moduleCode);
+      }
 
-    // Check if user has any permission on this module
-    const modulePerms = permissions.permissions[moduleCode];
-    if (!modulePerms) {
-      console.log(`[hasModuleAccess] No permission record for module ${moduleCode}`);
-      return false;
-    }
+      // Check if feature is enabled
+      if (!isModuleAvailable(moduleCode)) {
+        console.log(
+          `[hasModuleAccess] Module ${moduleCode} feature not enabled`
+        );
+        return false;
+      }
 
-    const hasAccess = modulePerms.canView || modulePerms.canCreate || 
-           modulePerms.canUpdate || modulePerms.canDelete ||
-           modulePerms.canApprove || modulePerms.canExport;
-    
-    console.log(`[hasModuleAccess] Module ${moduleCode} access = ${hasAccess}`);
-    return hasAccess;
-  }, [permissions]);
+      // Check if user has any permission on this module
+      const modulePerms = permissions.permissions[moduleCode];
+      if (!modulePerms) {
+        console.log(
+          `[hasModuleAccess] No permission record for module ${moduleCode}`
+        );
+        return false;
+      }
+
+      const hasAccess =
+        modulePerms.canView ||
+        modulePerms.canCreate ||
+        modulePerms.canUpdate ||
+        modulePerms.canDelete ||
+        modulePerms.canApprove ||
+        modulePerms.canExport;
+
+      console.log(
+        `[hasModuleAccess] Module ${moduleCode} access = ${hasAccess}`
+      );
+      return hasAccess;
+    },
+    [permissions]
+  );
 
   /**
    * Check if user can access a specific route path
    */
-  const canAccessRoute = useCallback((path: string): boolean => {
-    if (!permissions) return false;
-    
-    // ADMIN bypass
-    const roleCode = permissions.primaryRole?.code;
-    if (roleCode === 'ADMIN' || roleCode === 'super_admin') {
-      return true;
-    }
+  const canAccessRoute = useCallback(
+    (path: string): boolean => {
+      if (!permissions) return false;
 
-    // Check cached routes
-    return permissions.routes.includes(path);
-  }, [permissions]);
+      // ADMIN bypass
+      const roleCode = permissions.primaryRole?.code;
+      if (
+        roleCode === "ADMIN" ||
+        roleCode === "admin" ||
+        roleCode === "super_admin" ||
+        roleCode === "principal"
+      ) {
+        return true;
+      }
+
+      // Check cached routes
+      return permissions.routes.includes(path);
+    },
+    [permissions]
+  );
 
   /**
-   * Check if user is Admin (supports both 'ADMIN' and 'super_admin' role codes)
+   * Check if user is Admin (supports 'ADMIN', 'admin', 'super_admin', 'principal' role codes)
    */
   const isAdmin = useCallback((): boolean => {
     const roleCode = permissions?.primaryRole?.code;
-    return roleCode === 'ADMIN' || roleCode === 'super_admin';
+    return (
+      roleCode === "ADMIN" ||
+      roleCode === "admin" ||
+      roleCode === "super_admin" ||
+      roleCode === "principal"
+    );
   }, [permissions]);
 
   // Memoize context value
-  const contextValue = useMemo<PermissionContextType>(() => ({
-    permissions,
-    isLoading,
-    hasPermission,
-    hasModuleAccess,
-    canAccessRoute,
-    isAdmin,
-    setPermissions,
-    clearPermissions,
-    refreshPermissions,
-  }), [
-    permissions,
-    isLoading,
-    hasPermission,
-    hasModuleAccess,
-    canAccessRoute,
-    isAdmin,
-    setPermissions,
-    clearPermissions,
-    refreshPermissions,
-  ]);
+  const contextValue = useMemo<PermissionContextType>(
+    () => ({
+      permissions,
+      isLoading,
+      hasPermission,
+      hasModuleAccess,
+      canAccessRoute,
+      isAdmin,
+      setPermissions,
+      clearPermissions,
+      refreshPermissions,
+    }),
+    [
+      permissions,
+      isLoading,
+      hasPermission,
+      hasModuleAccess,
+      canAccessRoute,
+      isAdmin,
+      setPermissions,
+      clearPermissions,
+      refreshPermissions,
+    ]
+  );
 
   return (
     <PermissionContext.Provider value={contextValue}>
@@ -581,7 +691,7 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
 export function usePermissions(): PermissionContextType {
   const context = useContext(PermissionContext);
   if (context === undefined) {
-    throw new Error('usePermissions must be used within a PermissionProvider');
+    throw new Error("usePermissions must be used within a PermissionProvider");
   }
   return context;
 }
@@ -590,16 +700,21 @@ export function usePermissions(): PermissionContextType {
  * Hook for checking module-specific permissions
  * Returns all CRUD permissions for a module
  */
-export function useModulePermissions(moduleCode: string): ModulePermissions & { isAdmin: boolean } {
+export function useModulePermissions(
+  moduleCode: string
+): ModulePermissions & { isAdmin: boolean } {
   const { hasPermission, isAdmin } = usePermissions();
-  
-  return useMemo(() => ({
-    canView: hasPermission(moduleCode, 'view'),
-    canCreate: hasPermission(moduleCode, 'create'),
-    canUpdate: hasPermission(moduleCode, 'update'),
-    canDelete: hasPermission(moduleCode, 'delete'),
-    canApprove: hasPermission(moduleCode, 'approve'),
-    canExport: hasPermission(moduleCode, 'export'),
-    isAdmin: isAdmin(),
-  }), [moduleCode, hasPermission, isAdmin]);
+
+  return useMemo(
+    () => ({
+      canView: hasPermission(moduleCode, "view"),
+      canCreate: hasPermission(moduleCode, "create"),
+      canUpdate: hasPermission(moduleCode, "update"),
+      canDelete: hasPermission(moduleCode, "delete"),
+      canApprove: hasPermission(moduleCode, "approve"),
+      canExport: hasPermission(moduleCode, "export"),
+      isAdmin: isAdmin(),
+    }),
+    [moduleCode, hasPermission, isAdmin]
+  );
 }
