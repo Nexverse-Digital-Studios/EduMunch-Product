@@ -23,32 +23,41 @@ import type { User } from "@/hooks/useSupabaseQuery";
 interface UserFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user?: User | null; // If provided, edit mode; otherwise create mode
+  mode?: "create" | "edit";
+  userId?: string;
+  user?: User | null; // Legacy: If provided, edit mode; otherwise create mode
+  initialData?: Partial<UserFormData>;
   onSuccess?: () => void;
 }
 
 export const UserFormDialog = ({
   open,
   onOpenChange,
+  mode = "create",
+  userId,
   user,
+  initialData: providedInitialData,
   onSuccess,
 }: UserFormDialogProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isEdit = !!user;
 
   // Fetch roles for the form
   const { data: roles } = useRoles();
 
-  // Initial data for edit mode
-  const initialData: Partial<UserFormData> | undefined = user
-    ? {
-        full_name: user.full_name,
-        email: user.email || "",
-        phone: user.phone || "",
-        role_id: user.primary_role_id || "",
-      }
-    : undefined;
+  // Support both old (user prop) and new (mode/userId/initialData) interfaces
+  const isEdit = mode === "edit" || !!user;
+  const editUserId = userId || user?.id;
+  const editUserData =
+    providedInitialData ||
+    (user
+      ? {
+          full_name: user.full_name,
+          email: user.email || "",
+          phone: user.phone || "",
+          role_id: user.primary_role_id || "",
+        }
+      : undefined);
 
   // Handle create user
   const handleCreateUser = async (formData: UserFormData) => {
@@ -155,7 +164,7 @@ export const UserFormDialog = ({
 
   // Handle edit user
   const handleEditUser = async (formData: UserFormData) => {
-    if (!user?.id) return;
+    if (!editUserId) return;
 
     if (!formData.full_name) {
       toast({
@@ -185,22 +194,22 @@ export const UserFormDialog = ({
           phone: formData.phone || null,
           primary_role_id: formData.role_id || null,
         })
-        .eq("id", user.id);
+        .eq("id", editUserId);
 
       if (error) throw error;
 
       // Sync user_roles table if role changed
-      if (formData.role_id && formData.role_id !== user.primary_role_id) {
+      if (formData.role_id && formData.role_id !== user?.primary_role_id) {
         // Remove old primary role entry
         await supabase
           .from(TABLES.USER_ROLES)
           .delete()
-          .eq("user_id", user.id)
+          .eq("user_id", editUserId)
           .eq("is_primary", true);
 
         // Add new primary role entry
         await supabase.from(TABLES.USER_ROLES).insert({
-          user_id: user.id,
+          user_id: editUserId,
           role_id: formData.role_id,
           is_primary: true,
         });
@@ -248,7 +257,7 @@ export const UserFormDialog = ({
           </DialogDescription>
         </DialogHeader>
         <UserForm
-          initialData={initialData}
+          initialData={editUserData}
           roles={roles}
           onSubmit={isEdit ? handleEditUser : handleCreateUser}
           onCancel={() => onOpenChange(false)}

@@ -1,5 +1,5 @@
 /**
- * Parent-Teacher Grievance Types
+ * Parent-Admin Grievance Types
  * ================================
  * Type definitions for the grievance and chat system
  */
@@ -23,14 +23,14 @@ export type GrievanceStatus =
   | 'Closed' 
   | 'Escalated';
 
-export type MessageSenderType = 'Parent' | 'Teacher' | 'Admin';
+export type MessageSenderType = 'Parent' | 'Admin';
 
 export interface GrievanceDB {
   id: string;
   grievance_number: string;
   parent_id: string;
   student_id: string;
-  teacher_id: string;
+  admin_id: string;
   subject: string;
   description: string | null;
   category: GrievanceCategory;
@@ -44,7 +44,7 @@ export interface GrievanceDB {
   escalation_reason: string | null;
   last_message_at: string;
   unread_by_parent: number;
-  unread_by_teacher: number;
+  unread_by_admin: number;
   created_at: string;
   updated_at: string;
 }
@@ -82,11 +82,9 @@ export interface GrievanceWithDetails extends GrievanceDB {
     class_name?: string;
     section_name?: string;
   };
-  teacher?: {
+  admin?: {
     id: string;
-    first_name: string;
-    last_name: string;
-    employee_code: string;
+    full_name: string;
     email: string | null;
     user_id: string | null;
   };
@@ -105,7 +103,6 @@ export interface GrievanceMessageWithSender extends GrievanceMessageDB {
 // Form types
 export interface CreateGrievanceForm {
   student_id: string;
-  teacher_id: string;
   subject: string;
   description: string;
   category: GrievanceCategory;

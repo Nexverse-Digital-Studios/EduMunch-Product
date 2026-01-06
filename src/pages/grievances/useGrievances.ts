@@ -1,7 +1,7 @@
 /**
  * useGrievances Hook
  * ====================
- * Hook for managing parent-teacher grievances
+ * Hook for managing parent-admin grievances
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -22,15 +22,6 @@ const INDEX_TOKEN = '1emaet';
 const GRIEVANCES_TABLE = `parent_teacher_grievances_${INDEX_TOKEN}`;
 const MESSAGES_TABLE = `grievance_messages_${INDEX_TOKEN}`;
 
-interface TeacherForStudent {
-  id: string;
-  first_name: string;
-  last_name: string;
-  employee_code: string;
-  email: string | null;
-  subject_name: string;
-}
-
 export const useGrievances = () => {
   const { userProfile } = useAuth();
   const { isParent, children } = useParentChildData();
@@ -39,7 +30,6 @@ export const useGrievances = () => {
   const [error, setError] = useState<string | null>(null);
 
   const roleCode = userProfile?.primary_role?.role_code;
-  const isTeacher = roleCode === 'teacher';
   const isAdmin = ['super_admin', 'admin', 'principal', 'vice_principal'].includes(roleCode || '');
 
   // Fetch grievances based on user role
@@ -62,8 +52,8 @@ export const useGrievances = () => {
             classes_${INDEX_TOKEN} (class_name),
             sections_${INDEX_TOKEN} (section_name)
           ),
-          teachers_${INDEX_TOKEN}!teacher_id (
-            id, first_name, last_name, employee_code, email, user_id
+          users_${INDEX_TOKEN}!admin_id (
+            id, full_name, email
           )
         `)
         .order('last_message_at', { ascending: false });
@@ -79,17 +69,6 @@ export const useGrievances = () => {
         
         if (parentData) {
           query = query.eq('parent_id', parentData.id);
-        }
-      } else if (isTeacher) {
-        // Get teacher_id for current user
-        const { data: teacherData } = await supabase
-          .from(`teachers_${INDEX_TOKEN}`)
-          .select('id')
-          .eq('user_id', userProfile.id)
-          .single();
-        
-        if (teacherData) {
-          query = query.eq('teacher_id', teacherData.id);
         }
       }
       // Admin sees all (no additional filter)
@@ -111,7 +90,7 @@ export const useGrievances = () => {
           class_name: g[`students_${INDEX_TOKEN}`]?.[`classes_${INDEX_TOKEN}`]?.class_name,
           section_name: g[`students_${INDEX_TOKEN}`]?.[`sections_${INDEX_TOKEN}`]?.section_name,
         },
-        teacher: g[`teachers_${INDEX_TOKEN}`],
+        admin: g[`users_${INDEX_TOKEN}`],
       }));
 
       setGrievances(transformed);
@@ -121,7 +100,7 @@ export const useGrievances = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [userProfile, isParent, isTeacher]);
+  }, [userProfile, isParent]);
 
   // Create new grievance
   const createGrievance = useCallback(async (form: CreateGrievanceForm): Promise<{ success: boolean; error?: string; id?: string }> => {
@@ -141,41 +120,50 @@ export const useGrievances = () => {
         return { success: false, error: 'Parent profile not found' };
       }
 
+      // Get default admin for grievance assignment
+      const { data: roleData } = await supabase
+        .from(`roles_${INDEX_TOKEN}`)
+        .select('id')
+        .eq('role_code', 'admin')
+        .limit(1)
+        .single();
+
+      if (!roleData) {
+        return { success: false, error: 'No admin role found' };
+      }
+
+      const { data: adminData } = await supabase
+        .from(`users_${INDEX_TOKEN}`)
+        .select('id')
+        .eq('primary_role_id', roleData.id)
+        .limit(1)
+        .single();
+
+      if (!adminData) {
+        return { success: false, error: 'No admin user found' };
+      }
+
       const { data, error } = await supabase
         .from(GRIEVANCES_TABLE)
         .insert({
           parent_id: parentData.id,
           student_id: form.student_id,
-          teacher_id: form.teacher_id,
+          admin_id: adminData.id,
           subject: form.subject,
-          description: form.description,
-          category: form.category,
-          priority: form.priority,
+          description: form.description || null,
+          category: form.category || 'General',
+          priority: form.priority || 'Normal',
         })
-        .select('id')
+        .select()
         .single();
 
       if (error) {
-        console.error('[useGrievances] Create error:', error);
         return { success: false, error: error.message };
       }
 
-      // Add initial message
-      if (form.description) {
-        await supabase
-          .from(MESSAGES_TABLE)
-          .insert({
-            grievance_id: data.id,
-            sender_id: userProfile.id,
-            sender_type: 'Parent',
-            message: form.description,
-          });
-      }
-
       await fetchGrievances();
-      return { success: true, id: data.id };
+      return { success: true, id: data?.id };
     } catch (err: any) {
-      console.error('[useGrievances] Create error:', err);
       return { success: false, error: err.message };
     }
   }, [userProfile, fetchGrievances]);
@@ -218,76 +206,20 @@ export const useGrievances = () => {
     }
   }, [userProfile, fetchGrievances]);
 
-  // Get teachers for a specific student
-  const getTeachersForStudent = useCallback(async (studentId: string): Promise<TeacherForStudent[]> => {
-    if (!supabase) return [];
-
-    try {
-      // Get student's section
-      const { data: studentData } = await supabase
-        .from(`students_${INDEX_TOKEN}`)
-        .select('section_id')
-        .eq('id', studentId)
-        .single();
-
-      if (!studentData) return [];
-
-      // Get teachers teaching in that section
-      const { data: tssData } = await supabase
-        .from(`teacher_subject_sections_${INDEX_TOKEN}`)
-        .select(`
-          teacher_id,
-          teachers_${INDEX_TOKEN}!teacher_id (
-            id, first_name, last_name, employee_code, email
-          ),
-          subjects_${INDEX_TOKEN}!subject_id (
-            subject_name
-          )
-        `)
-        .eq('section_id', studentData.section_id);
-
-      if (!tssData) return [];
-
-      // Transform and deduplicate teachers
-      const teacherMap = new Map<string, TeacherForStudent>();
-      
-      tssData.forEach((tss: any) => {
-        const teacher = tss[`teachers_${INDEX_TOKEN}`];
-        const subject = tss[`subjects_${INDEX_TOKEN}`];
-        
-        if (teacher && !teacherMap.has(teacher.id)) {
-          teacherMap.set(teacher.id, {
-            id: teacher.id,
-            first_name: teacher.first_name,
-            last_name: teacher.last_name,
-            employee_code: teacher.employee_code,
-            email: teacher.email,
-            subject_name: subject?.subject_name || 'N/A',
-          });
-        }
-      });
-
-      return Array.from(teacherMap.values());
-    } catch (err) {
-      console.error('[useGrievances] Error fetching teachers:', err);
-      return [];
-    }
-  }, []);
-
   // Mark messages as read
   const markAsRead = useCallback(async (grievanceId: string, isParentUser: boolean) => {
     if (!supabase) return;
 
     try {
       // Update unread count
-      const updateField = isParentUser ? 'unread_by_parent' : 'unread_by_teacher';
+      const updateField = isParentUser ? 'unread_by_parent' : 'unread_by_admin';
       await supabase
         .from(GRIEVANCES_TABLE)
         .update({ [updateField]: 0 })
         .eq('id', grievanceId);
 
       // Mark messages as read
-      const senderTypes = isParentUser ? ['Teacher', 'Admin'] : ['Parent'];
+      const senderTypes = isParentUser ? ['Admin'] : ['Parent'];
       await supabase
         .from(MESSAGES_TABLE)
         .update({ is_read: true, read_at: new Date().toISOString() })
@@ -312,12 +244,10 @@ export const useGrievances = () => {
     isLoading,
     error,
     isParent,
-    isTeacher,
     isAdmin,
     children,
     createGrievance,
     updateStatus,
-    getTeachersForStudent,
     markAsRead,
     refresh: fetchGrievances,
   };
@@ -332,6 +262,7 @@ export const useGrievanceChat = (grievanceId: string) => {
 
   const roleCode = userProfile?.primary_role?.role_code;
   const isParentUser = roleCode === 'parent';
+  const isAdmin = ['super_admin', 'admin', 'principal', 'vice_principal'].includes(roleCode || '');
 
   // Fetch grievance and messages
   const fetchData = useCallback(async () => {
@@ -350,8 +281,8 @@ export const useGrievanceChat = (grievanceId: string) => {
           students_${INDEX_TOKEN}!student_id (
             id, first_name, last_name, admission_number
           ),
-          teachers_${INDEX_TOKEN}!teacher_id (
-            id, first_name, last_name, employee_code, email, user_id
+          users_${INDEX_TOKEN}!admin_id (
+            id, full_name, email
           )
         `)
         .eq('id', grievanceId)
@@ -362,7 +293,7 @@ export const useGrievanceChat = (grievanceId: string) => {
           ...gData,
           parent: gData[`parents_${INDEX_TOKEN}`],
           student: gData[`students_${INDEX_TOKEN}`],
-          teacher: gData[`teachers_${INDEX_TOKEN}`],
+          admin: gData[`users_${INDEX_TOKEN}`],
         });
       }
 
@@ -397,8 +328,7 @@ export const useGrievanceChat = (grievanceId: string) => {
     if (!supabase || !userProfile || !grievanceId) return false;
 
     try {
-      const senderType = isParentUser ? 'Parent' : 
-        ['super_admin', 'admin', 'principal'].includes(roleCode || '') ? 'Admin' : 'Teacher';
+      const senderType = isParentUser ? 'Parent' : 'Admin';
 
       const { error } = await supabase
         .from(MESSAGES_TABLE)
@@ -415,8 +345,8 @@ export const useGrievanceChat = (grievanceId: string) => {
         return false;
       }
 
-      // Update grievance status to In Progress if it was Open
-      if (grievance?.status === 'Open' && !isParentUser) {
+      // Update grievance status to In Progress if it was Open and sender is admin
+      if (grievance?.status === 'Open' && isAdmin) {
         await supabase
           .from(GRIEVANCES_TABLE)
           .update({ status: 'In Progress' })
@@ -429,7 +359,7 @@ export const useGrievanceChat = (grievanceId: string) => {
       console.error('[useGrievanceChat] Error:', err);
       return false;
     }
-  }, [grievanceId, userProfile, isParentUser, roleCode, grievance, fetchData]);
+  }, [grievanceId, userProfile, isParentUser, isAdmin, grievance, fetchData]);
 
   useEffect(() => {
     fetchData();
@@ -465,6 +395,7 @@ export const useGrievanceChat = (grievanceId: string) => {
     messages,
     isLoading,
     isParentUser,
+    isAdmin,
     sendMessage,
     refresh: fetchData,
   };

@@ -233,6 +233,10 @@ const UsersList = () => {
         mode={editUserId ? "edit" : "create"}
         userId={editUserId || undefined}
         initialData={getEditUserData()}
+        onSuccess={() => {
+          refetch();
+          handleModalClose();
+        }}
       />
     </div>
   );

@@ -1,11 +1,11 @@
 /**
  * Create Grievance Dialog
  * ========================
- * Dialog for parents to create a new grievance/communication with a teacher
+ * Dialog for parents to create a new grievance/communication with admin
  */
 
 import { useState, useEffect } from "react";
-import { Loader2, AlertCircle, GraduationCap, User } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useParentChildData } from "@/hooks/useParentChildData";
 import { useGrievances } from "./useGrievances";
@@ -42,53 +41,27 @@ interface CreateGrievanceDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-interface TeacherOption {
-  id: string;
-  first_name: string;
-  last_name: string;
-  employee_code: string;
-  email: string | null;
-  subject_name: string;
-}
-
 export const CreateGrievanceDialog = ({
   open,
   onOpenChange,
 }: CreateGrievanceDialogProps) => {
   const { toast } = useToast();
   const { children, isLoading: childrenLoading } = useParentChildData();
-  const { createGrievance, getTeachersForStudent } = useGrievances();
+  const { createGrievance } = useGrievances();
 
   const [selectedStudent, setSelectedStudent] = useState<string>("");
-  const [selectedTeacher, setSelectedTeacher] = useState<string>("");
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<GrievanceCategory>("General");
   const [priority, setPriority] = useState<GrievancePriority>("Normal");
 
-  const [teachers, setTeachers] = useState<TeacherOption[]>([]);
-  const [loadingTeachers, setLoadingTeachers] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Fetch teachers when student changes
-  useEffect(() => {
-    if (selectedStudent) {
-      setLoadingTeachers(true);
-      setSelectedTeacher("");
-      getTeachersForStudent(selectedStudent)
-        .then(setTeachers)
-        .finally(() => setLoadingTeachers(false));
-    } else {
-      setTeachers([]);
-    }
-  }, [selectedStudent, getTeachersForStudent]);
 
   // Reset form when dialog closes
   useEffect(() => {
     if (!open) {
       setSelectedStudent("");
-      setSelectedTeacher("");
       setSubject("");
       setDescription("");
       setCategory("General");
@@ -100,19 +73,11 @@ export const CreateGrievanceDialog = ({
   const handleSubmit = async () => {
     // Validation
     if (!selectedStudent) {
-      setError("Please select a student");
-      return;
-    }
-    if (!selectedTeacher) {
-      setError("Please select a teacher");
+      setError("Please select a child");
       return;
     }
     if (!subject.trim()) {
       setError("Please enter a subject");
-      return;
-    }
-    if (!description.trim()) {
-      setError("Please enter a description");
       return;
     }
 
@@ -121,7 +86,6 @@ export const CreateGrievanceDialog = ({
 
     const result = await createGrievance({
       student_id: selectedStudent,
-      teacher_id: selectedTeacher,
       subject: subject.trim(),
       description: description.trim(),
       category,
@@ -133,7 +97,7 @@ export const CreateGrievanceDialog = ({
     if (result.success) {
       toast({
         title: "Grievance Created",
-        description: "Your message has been sent to the teacher.",
+        description: "Your grievance has been submitted to the admin.",
       });
       onOpenChange(false);
     } else {
@@ -142,15 +106,14 @@ export const CreateGrievanceDialog = ({
   };
 
   const selectedStudentData = children.find((c) => c.id === selectedStudent);
-  const selectedTeacherData = teachers.find((t) => t.id === selectedTeacher);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>New Grievance / Communication</DialogTitle>
+          <DialogTitle>New Grievance</DialogTitle>
           <DialogDescription>
-            Start a conversation with a teacher about your child
+            Submit a grievance or concern to the administration
           </DialogDescription>
         </DialogHeader>
 
@@ -181,11 +144,8 @@ export const CreateGrievanceDialog = ({
                 ) : (
                   children.map((child) => (
                     <SelectItem key={child.id} value={child.id}>
-                      <div className="flex items-center gap-2">
-                        <GraduationCap className="h-4 w-4" />
-                        {child.full_name} - {child.class_name}{" "}
-                        {child.section_name}
-                      </div>
+                      {child.full_name} - {child.class_name}{" "}
+                      {child.section_name}
                     </SelectItem>
                   ))
                 )}
@@ -193,65 +153,16 @@ export const CreateGrievanceDialog = ({
             </Select>
           </div>
 
-          {/* Teacher Selection */}
-          <div className="space-y-2">
-            <Label>Select Teacher *</Label>
-            <Select
-              value={selectedTeacher}
-              onValueChange={setSelectedTeacher}
-              disabled={!selectedStudent || loadingTeachers}
-            >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={
-                    loadingTeachers
-                      ? "Loading teachers..."
-                      : !selectedStudent
-                      ? "First select a child"
-                      : "Select a teacher"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {loadingTeachers ? (
-                  <div className="p-2 text-center">
-                    <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-                  </div>
-                ) : teachers.length === 0 ? (
-                  <div className="p-2 text-center text-muted-foreground">
-                    No teachers found for this class
-                  </div>
-                ) : (
-                  teachers.map((teacher) => (
-                    <SelectItem key={teacher.id} value={teacher.id}>
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        {teacher.first_name} {teacher.last_name} (
-                        {teacher.subject_name})
-                      </div>
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Selected Info Preview */}
-          {selectedStudentData && selectedTeacherData && (
-            <div className="p-3 bg-muted rounded-lg space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                <span>
-                  <strong>Student:</strong> {selectedStudentData.full_name}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span>
-                  <strong>Teacher:</strong> {selectedTeacherData.first_name}{" "}
-                  {selectedTeacherData.last_name}
-                </span>
-              </div>
+          {/* Selected Student Info Preview */}
+          {selectedStudentData && (
+            <div className="p-3 bg-muted rounded-lg space-y-1 text-sm">
+              <p>
+                <strong>Child:</strong> {selectedStudentData.full_name}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {selectedStudentData.class_name}{" "}
+                {selectedStudentData.section_name}
+              </p>
             </div>
           )}
 

@@ -46,8 +46,15 @@ export const GrievanceChat = () => {
   const { toast } = useToast();
   const { userProfile } = useAuth();
 
-  const { grievance, messages, isLoading, isParentUser, sendMessage, refresh } =
-    useGrievanceChat(grievanceId || "");
+  const {
+    grievance,
+    messages,
+    isLoading,
+    isParentUser,
+    isAdmin,
+    sendMessage,
+    refresh,
+  } = useGrievanceChat(grievanceId || "");
 
   const { updateStatus, markAsRead } = useGrievances();
 
@@ -59,7 +66,6 @@ export const GrievanceChat = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const roleCode = userProfile?.primary_role?.role_code;
-  const isTeacher = roleCode === "teacher";
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -180,9 +186,9 @@ export const GrievanceChat = () => {
     return `${grievance.student.first_name} ${grievance.student.last_name}`;
   };
 
-  const getTeacherName = () => {
-    if (!grievance?.teacher) return "Unknown Teacher";
-    return `${grievance.teacher.first_name} ${grievance.teacher.last_name}`;
+  const getAdminName = () => {
+    if (!grievance?.admin) return "Admin";
+    return grievance.admin.full_name || "Admin";
   };
 
   const getParentName = () => {
@@ -244,7 +250,7 @@ export const GrievanceChat = () => {
                   <span className="flex items-center gap-1">
                     <User className="h-3 w-3" />
                     {isParentUser
-                      ? `Teacher: ${getTeacherName()}`
+                      ? `Admin: ${getAdminName()}`
                       : `Parent: ${getParentName()}`}
                   </span>
                 </div>
@@ -264,8 +270,8 @@ export const GrievanceChat = () => {
                 {grievance.status}
               </Badge>
 
-              {/* Status Actions - Only for teachers */}
-              {isTeacher && !isClosed && (
+              {/* Status Actions - Only for admins */}
+              {isAdmin && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -349,7 +355,7 @@ export const GrievanceChat = () => {
                 const senderName =
                   message.sender_type === "Parent"
                     ? getParentName()
-                    : getTeacherName();
+                    : getAdminName();
 
                 return (
                   <div

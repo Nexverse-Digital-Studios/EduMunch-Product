@@ -1,8 +1,8 @@
 /**
  * Grievances List Page
  * =====================
- * Main page for viewing and managing parent-teacher grievances
- * Works for both parents and teachers with different views
+ * Main page for viewing and managing parent-admin grievances
+ * Works for both parents and admins with different views
  */
 
 import { useState } from "react";
@@ -70,8 +70,7 @@ export const GrievancesList = ({ onCreateNew }: GrievancesListProps = {}) => {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const { grievances, isLoading, isParent, isTeacher, isAdmin, refresh } =
-    useGrievances();
+  const { grievances, isLoading, isParent, isAdmin, refresh } = useGrievances();
 
   const handleTabChange = (tab: string) => {
     setSearchParams({ tab });
@@ -101,8 +100,8 @@ export const GrievancesList = ({ onCreateNew }: GrievancesListProps = {}) => {
         g.grievance_number.toLowerCase().includes(query) ||
         g.student?.first_name?.toLowerCase().includes(query) ||
         g.student?.last_name?.toLowerCase().includes(query) ||
-        (isParent && g.teacher?.first_name?.toLowerCase().includes(query)) ||
-        (isTeacher && g.parent?.full_name?.toLowerCase().includes(query))
+        (isParent && g.admin?.full_name?.toLowerCase().includes(query)) ||
+        (isAdmin && g.parent?.full_name?.toLowerCase().includes(query))
       );
     }
 
@@ -118,7 +117,7 @@ export const GrievancesList = ({ onCreateNew }: GrievancesListProps = {}) => {
       ["Resolved", "Closed"].includes(g.status)
     ).length,
     unread: grievances.reduce(
-      (acc, g) => acc + (isParent ? g.unread_by_parent : g.unread_by_teacher),
+      (acc, g) => acc + (isParent ? g.unread_by_parent : g.unread_by_admin),
       0
     ),
   };
@@ -283,8 +282,8 @@ export const GrievancesList = ({ onCreateNew }: GrievancesListProps = {}) => {
                   <p className="text-lg font-medium">No grievances found</p>
                   <p className="text-muted-foreground">
                     {isParent
-                      ? 'Click "New Grievance" to start a conversation with a teacher'
-                      : "No parent communications to show"}
+                      ? 'Click "New Grievance" to submit a grievance to admin'
+                      : "No grievances to show"}
                   </p>
                 </div>
               ) : (
@@ -292,7 +291,7 @@ export const GrievancesList = ({ onCreateNew }: GrievancesListProps = {}) => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Subject</TableHead>
-                      <TableHead>{isParent ? "Teacher" : "Parent"}</TableHead>
+                      <TableHead>{isAdmin ? "Parent" : "Admin"}</TableHead>
                       <TableHead>Student</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Priority</TableHead>
@@ -305,7 +304,7 @@ export const GrievancesList = ({ onCreateNew }: GrievancesListProps = {}) => {
                     {filteredGrievances.map((grievance) => {
                       const unread = isParent
                         ? grievance.unread_by_parent
-                        : grievance.unread_by_teacher;
+                        : grievance.unread_by_admin;
 
                       return (
                         <TableRow
@@ -333,15 +332,15 @@ export const GrievancesList = ({ onCreateNew }: GrievancesListProps = {}) => {
                             <div className="flex items-center gap-2">
                               <Avatar className="h-8 w-8">
                                 <AvatarFallback>
-                                  {isParent
-                                    ? grievance.teacher?.first_name?.[0]
-                                    : grievance.parent?.full_name?.[0]}
+                                  {isAdmin
+                                    ? grievance.parent?.full_name?.[0]
+                                    : grievance.admin?.full_name?.[0]}
                                 </AvatarFallback>
                               </Avatar>
                               <span>
-                                {isParent
-                                  ? `${grievance.teacher?.first_name} ${grievance.teacher?.last_name}`
-                                  : grievance.parent?.full_name}
+                                {isAdmin
+                                  ? grievance.parent?.full_name
+                                  : grievance.admin?.full_name}
                               </span>
                             </div>
                           </TableCell>

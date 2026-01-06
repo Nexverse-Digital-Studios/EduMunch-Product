@@ -451,10 +451,10 @@ const feedbackModule: ModuleSidebarConfig = {
   subItems: [],
 };
 
-// Grievances Module - Parent-Teacher Communication
+// Grievances Module - Parent-Admin Communication
 const grievancesModule: ModuleSidebarConfig = {
   moduleCode: 'grievances',
-  displayName: 'Parent-Teacher Chat',
+  displayName: 'Grievances',
   icon: 'MessageSquare',
   basePath: '/grievances',
   order: 2,
