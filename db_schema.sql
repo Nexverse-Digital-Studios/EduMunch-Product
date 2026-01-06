@@ -765,6 +765,22 @@ CREATE TABLE public.exams_1emaet (
   CONSTRAINT fk_exams_type FOREIGN KEY (exam_type_id) REFERENCES public.exam_types_1emaet(id),
   CONSTRAINT fk_exams_year FOREIGN KEY (academic_year_id) REFERENCES public.academic_years_1emaet(id)
 );
+CREATE TABLE public.fcm_tokens_1emaet (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  fcm_token text NOT NULL,
+  platform character varying NOT NULL CHECK (platform::text = ANY (ARRAY['android'::character varying, 'ios'::character varying, 'web'::character varying]::text[])),
+  device_name character varying,
+  device_model character varying,
+  os_version character varying,
+  app_version character varying,
+  is_active boolean DEFAULT true,
+  last_used_at timestamp without time zone DEFAULT now(),
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT fcm_tokens_1emaet_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_fcm_tokens_user FOREIGN KEY (user_id) REFERENCES public.users_1emaet(id)
+);
 CREATE TABLE public.fee_components_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   component_name character varying NOT NULL,

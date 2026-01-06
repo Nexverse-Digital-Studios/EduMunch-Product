@@ -19,6 +19,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured, TABLES, INDEX_TOKEN } from '@/lib/supabase';
+import { initializeFCM } from '@/services/notifications/fcmService';
 import { UserProfile, UserRole } from '@/types/user';
 import { 
   UserPermissionCache, 
@@ -229,6 +230,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }));
       
       console.log('[AuthContext] Permissions loaded and event dispatched');
+      
+      // Initialize FCM for push notifications
+      console.log('[AuthContext] Initializing FCM notifications...');
+      const fcmInitialized = await initializeFCM(profile.id);
+      if (fcmInitialized) {
+        console.log('✅ [AuthContext] FCM initialized successfully - User will receive push notifications');
+      } else {
+        console.log('⚠️ [AuthContext] FCM initialization incomplete - Check browser console for details');
+      }
     }
   }, [fetchUserProfile, fetchAndBuildPermissionCache]);
 
