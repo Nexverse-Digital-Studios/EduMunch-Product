@@ -202,6 +202,7 @@ const PaymentsList = lazy(() =>
 const Admissions = lazy(() => import("@/pages/Admissions"));
 const Enrollments = lazy(() => import("@/pages/Enrollments"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
+const NotificationDebug = lazy(() => import("@/pages/NotificationDebug"));
 
 // Tier 2 Pages
 const AssignmentsList = lazy(() =>
@@ -712,6 +713,16 @@ const App = () => (
                      * 4. Falls back to PlaceholderPage if component not mapped
                      */}
                     {allRoutes.map(renderRoute)}
+
+                    {/* Debug Routes - No Protection */}
+                    <Route
+                      path="/notification/debug"
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <NotificationDebug />
+                        </Suspense>
+                      }
+                    />
                   </Route>
 
                   {/* 404 - Not Found */}

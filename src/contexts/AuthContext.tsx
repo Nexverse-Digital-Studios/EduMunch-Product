@@ -30,6 +30,7 @@ import {
   TABLES,
   INDEX_TOKEN,
 } from "@/lib/supabase";
+import { initializeFCM } from '@/services/notifications/fcmService';
 import { UserProfile, UserRole } from "@/types/user";
 import {
   UserPermissionCache,
@@ -274,30 +275,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   /**
    * Load user data after auth state change
    */
-  const loadUserData = useCallback(
-    async (authUser: User) => {
-      const profile = await fetchUserProfile(authUser.id);
-      if (profile) {
-        setUserProfile(profile);
-        const permCache = await fetchAndBuildPermissionCache(profile);
-        setPermissions(permCache);
-
-        // Store in localStorage for persistence
-        localStorage.setItem("edumunch_user_profile", JSON.stringify(profile));
-        localStorage.setItem("edumunch_permissions", JSON.stringify(permCache));
-
-        // Dispatch custom event to notify PermissionContext in same tab
-        window.dispatchEvent(
-          new CustomEvent("edumunch_permissions_updated", {
-            detail: { permissions: permCache },
-          })
-        );
-
-        console.log("[AuthContext] Permissions loaded and event dispatched");
+  const loadUserData = useCallback(async (authUser: User) => {
+    const profile = await fetchUserProfile(authUser.id);
+    if (profile) {
+      setUserProfile(profile);
+      const permCache = await fetchAndBuildPermissionCache(profile);
+      setPermissions(permCache);
+      
+      // Store in localStorage for persistence
+      localStorage.setItem('edumunch_user_profile', JSON.stringify(profile));
+      localStorage.setItem('edumunch_permissions', JSON.stringify(permCache));
+      
+      // Dispatch custom event to notify PermissionContext in same tab
+      window.dispatchEvent(new CustomEvent('edumunch_permissions_updated', {
+        detail: { permissions: permCache }
+      }));
+      
+      console.log('[AuthContext] Permissions loaded and event dispatched');
+      
+      // Initialize FCM for push notifications
+      console.log('[AuthContext] Initializing FCM notifications...');
+      const fcmInitialized = await initializeFCM(profile.id);
+      if (fcmInitialized) {
+        console.log('✅ [AuthContext] FCM initialized successfully - User will receive push notifications');
+      } else {
+        console.log('⚠️ [AuthContext] FCM initialization incomplete - Check browser console for details');
       }
-    },
-    [fetchUserProfile, fetchAndBuildPermissionCache]
-  );
+    }
+  }, [fetchUserProfile, fetchAndBuildPermissionCache]);
 
   /**
    * Refresh user profile from database
