@@ -1454,8 +1454,8 @@ CREATE TABLE public.ptm_bookings_1emaet (
   CONSTRAINT ptm_bookings_1emaet_pkey PRIMARY KEY (id),
   CONSTRAINT fk_ptm_bookings_slot FOREIGN KEY (slot_id) REFERENCES public.ptm_slots_1emaet(id),
   CONSTRAINT fk_ptm_bookings_student FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id),
-  CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES public.users_1emaet(id),
-  CONSTRAINT ptm_bookings_1emaet_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES public.users_1emaet(id)
+  CONSTRAINT ptm_bookings_1emaet_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES public.users_1emaet(id),
+  CONSTRAINT fk_ptm_bookings_parent_user FOREIGN KEY (parent_user_id) REFERENCES public.parents_1emaet(id)
 );
 CREATE TABLE public.ptm_meeting_notes_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),

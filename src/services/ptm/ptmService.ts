@@ -21,6 +21,40 @@ import {
 } from '@/types/ptm';
 
 // ==========================================
+// Helper Functions
+// ==========================================
+
+/**
+ * Resolve user ID from either auth_user_id or user table id
+ * Handles both cases to get the actual users_1emaet.id
+ */
+async function resolveUserId(userId: string): Promise<string | null> {
+  if (!supabase || !isSupabaseConfigured) {
+    return null;
+  }
+
+  // First, try to find user by id (direct match)
+  const { data: userById } = await supabase
+    .from(TABLES.USERS)
+    .select('id')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (userById) {
+    return userById.id;
+  }
+
+  // If not found, try by auth_user_id
+  const { data: userByAuthId } = await supabase
+    .from(TABLES.USERS)
+    .select('id')
+    .eq('auth_user_id', userId)
+    .maybeSingle();
+
+  return userByAuthId?.id || null;
+}
+
+// ==========================================
 // PTM Slot Operations
 // ==========================================
 
@@ -29,7 +63,6 @@ import {
  */
 export async function getPTMSlots(filters?: PTMSlotFilters): Promise<PTMSlotWithDetails[]> {
   if (!supabase || !isSupabaseConfigured) {
-    console.log('Supabase not configured, returning demo data');
     return [];
   }
 
@@ -244,7 +277,6 @@ export async function updatePTMSlot(id: string, updates: Partial<PTMSlot>): Prom
  */
 export async function getPTMBookings(filters?: PTMBookingFilters): Promise<PTMBookingWithDetails[]> {
   if (!supabase || !isSupabaseConfigured) {
-    console.log('Supabase not configured, returning demo data');
     return [];
   }
 
@@ -254,15 +286,15 @@ export async function getPTMBookings(filters?: PTMBookingFilters): Promise<PTMBo
       *,
       slot:${TABLES.PTM_SLOTS}(
         *,
-        teacher:${TABLES.TEACHERS}(id, first_name, last_name, employee_code)
+        teacher:${TABLES.TEACHERS}(id, first_name, last_name, employee_code, user_id)
       ),
       student:${TABLES.STUDENTS}(
         id, first_name, last_name, admission_number, class_id, section_id,
         class:${TABLES.CLASSES}(class_name),
         section:${TABLES.SECTIONS}(section_name)
       ),
-      parent:${TABLES.PARENTS}(id, user_id, first_name, last_name, phone, email),
-      reviewer:${TABLES.USERS}(id, full_name)
+      parent:${TABLES.PARENTS}(id, user_id, full_name, phone, email),
+      reviewer:${TABLES.USERS}!ptm_bookings_1emaet_reviewed_by_fkey(id, full_name)
     `)
     .order('created_at', { ascending: false });
 
@@ -275,8 +307,8 @@ export async function getPTMBookings(filters?: PTMBookingFilters): Promise<PTMBo
   if (filters?.student_id) {
     query = query.eq('student_id', filters.student_id);
   }
-  if (filters?.parent_user_id) {
-    query = query.eq('parent_user_id', filters.parent_user_id);
+  if (filters?.parent_id) {
+    query = query.eq('parent_user_id', filters.parent_id);
   }
 
   const { data, error } = await query;
@@ -297,12 +329,85 @@ export async function getPendingPTMRequests(): Promise<PTMBookingWithDetails[]> 
 }
 
 /**
+ * Get PTM bookings for a parent by their children
+ * This resolves the user ID and finds bookings for all their children
+ */
+export async function getPTMBookingsForParent(parentUserId: string): Promise<PTMBookingWithDetails[]> {
+  if (!supabase || !isSupabaseConfigured) {
+    return [];
+  }
+
+  // Step 1: Resolve the actual user ID
+  const actualUserId = await resolveUserId(parentUserId);
+  if (!actualUserId) {
+    return [];
+  }
+
+  // Step 2: Get parent.id from users.id
+  const { data: parentRecord, error: parentError } = await supabase
+    .from(TABLES.PARENTS)
+    .select('id')
+    .eq('user_id', actualUserId)
+    .maybeSingle();
+
+  if (parentError || !parentRecord) {
+    console.error('Error finding parent:', parentError);
+    return [];
+  }
+
+  // Step 3: Get PTM bookings directly by parent_id
+  const { data, error } = await supabase
+    .from(TABLES.PTM_BOOKINGS)
+    .select(`
+      *,
+      slot:${TABLES.PTM_SLOTS}(
+        *,
+        teacher:${TABLES.TEACHERS}(id, first_name, last_name, employee_code, user_id)
+      ),
+      student:${TABLES.STUDENTS}(
+        id, first_name, last_name, admission_number, class_id, section_id,
+        class:${TABLES.CLASSES}(class_name),
+        section:${TABLES.SECTIONS}(section_name)
+      ),
+      parent:${TABLES.PARENTS}(id, user_id, full_name, phone, email),
+      reviewer:${TABLES.USERS}!ptm_bookings_1emaet_reviewed_by_fkey(id, full_name)
+    `)
+    .eq('parent_user_id', parentRecord.id)
+    .order('created_at', { ascending: false});
+
+  if (error) {
+    console.error('Error fetching bookings:', error);
+    throw error;
+  }
+
+  return (data || []) as unknown as PTMBookingWithDetails[];
+}
+
+/**
  * Create a PTM request (parent-initiated)
  * This creates both a slot with 'Requested' status and a booking with 'Pending' status
  */
 export async function createPTMRequest(input: ParentPTMRequestInput, parentUserId: string): Promise<PTMBooking> {
   if (!supabase || !isSupabaseConfigured) {
     throw new Error('Supabase not configured');
+  }
+
+  // Resolve the actual user ID (handles both auth_user_id and users table id)
+  const actualUserId = await resolveUserId(parentUserId);
+  if (!actualUserId) {
+    throw new Error('User not found in users table');
+  }
+
+  // Get parent.id from users.id
+  const { data: parentRecord, error: parentError } = await supabase
+    .from(TABLES.PARENTS)
+    .select('id')
+    .eq('user_id', actualUserId)
+    .maybeSingle();
+
+  if (parentError || !parentRecord) {
+    console.error('Error finding parent record:', parentError);
+    throw new Error('Parent record not found');
   }
 
   // Step 1: Create the slot with 'Requested' status
@@ -330,11 +435,11 @@ export async function createPTMRequest(input: ParentPTMRequestInput, parentUserI
     throw slotError;
   }
 
-  // Step 2: Create the booking with 'Pending' status
+  // Step 2: Create the booking with 'Pending' status using parent.id
   const bookingData: Partial<PTMBooking> = {
     slot_id: slot.id,
     student_id: input.student_id,
-    parent_user_id: parentUserId,
+    parent_user_id: parentRecord.id, // Store parent.id in parent_user_id column
     meeting_purpose: input.meeting_purpose,
     topics_to_discuss: input.topics_to_discuss || [],
     status: 'Pending',
@@ -364,6 +469,12 @@ export async function reviewPTMRequest(input: ReviewPTMRequestInput, reviewerId:
     throw new Error('Supabase not configured');
   }
 
+  // Resolve the actual user ID (handles both auth_user_id and users table id)
+  const actualReviewerId = await resolveUserId(reviewerId);
+  if (!actualReviewerId) {
+    throw new Error('Reviewer user not found in users table');
+  }
+
   // Get the booking to find the slot
   const { data: booking, error: fetchError } = await supabase
     .from(TABLES.PTM_BOOKINGS)
@@ -389,7 +500,7 @@ export async function reviewPTMRequest(input: ReviewPTMRequestInput, reviewerId:
       .from(TABLES.PTM_BOOKINGS)
       .update({
         status: 'Confirmed',
-        reviewed_by: reviewerId,
+        reviewed_by: actualReviewerId,
         reviewed_at: now,
         updated_at: now,
       })
@@ -411,7 +522,7 @@ export async function reviewPTMRequest(input: ReviewPTMRequestInput, reviewerId:
       .from(TABLES.PTM_BOOKINGS)
       .update({
         status: 'Rejected',
-        reviewed_by: reviewerId,
+        reviewed_by: actualReviewerId,
         reviewed_at: now,
         rejection_reason: input.rejection_reason || null,
         updated_at: now,
@@ -784,49 +895,84 @@ export async function getChildrenForParent(parentUserId: string): Promise<any[]>
  */
 export async function getTeachersForStudent(studentId: string): Promise<any[]> {
   if (!supabase || !isSupabaseConfigured) {
+    console.error('Supabase not configured');
     return [];
   }
 
-  // Get student's section
+  // Get student's section with class teacher
   const { data: student, error: studentError } = await supabase
     .from(TABLES.STUDENTS)
-    .select('section_id')
+    .select(`
+      section_id, 
+      class_id,
+      section:sections_1emaet(
+        id, 
+        section_name,
+        class_teacher_id,
+        class_teacher:teachers_1emaet(id, user_id, first_name, last_name, employee_code)
+      )
+    `)
     .eq('id', studentId)
     .single();
 
-  if (studentError || !student?.section_id) {
+  if (studentError) {
+    console.error('Error fetching student:', studentError);
     return [];
   }
 
-  // Get teachers assigned to this section
+  if (!student?.section_id) {
+    console.error('No section_id found for student');
+    return [];
+  }
+
+  const teacherMap = new Map();
+
+  // Add class teacher first (primary teacher for PTM)
+  if (student.section?.class_teacher) {
+    const classTeacher = student.section.class_teacher;
+    teacherMap.set(classTeacher.id, {
+      id: classTeacher.id,
+      user_id: classTeacher.user_id,
+      first_name: classTeacher.first_name,
+      last_name: classTeacher.last_name,
+      employee_code: classTeacher.employee_code,
+      subjects: ['Class Teacher'],
+      is_class_teacher: true,
+    });
+  } else {
+    console.warn('No class teacher assigned to section:', student.section_id);
+  }
+
+  // Get other subject teachers assigned to this section
   const { data: assignments, error: assignError } = await supabase
     .from(TABLES.TEACHER_SUBJECT_SECTIONS)
     .select(`
-      teacher:${TABLES.TEACHERS}(id, first_name, last_name, employee_code),
-      subject:${TABLES.SUBJECTS}(subject_name)
+      teacher_id,
+      subject_id,
+      teacher:teachers_1emaet(id, user_id, first_name, last_name, employee_code),
+      subject:subjects_1emaet(id, subject_name)
     `)
     .eq('section_id', student.section_id);
 
-  if (assignError) {
-    console.error('Error fetching teachers:', assignError);
-    return [];
+  // Add subject teachers
+  if (assignments && assignments.length > 0) {
+    assignments.forEach((item: any) => {
+      if (item.teacher) {
+        if (!teacherMap.has(item.teacher.id)) {
+          teacherMap.set(item.teacher.id, {
+            ...item.teacher,
+            subjects: [],
+            is_class_teacher: false,
+          });
+        }
+        if (item.subject && !teacherMap.get(item.teacher.id).is_class_teacher) {
+          teacherMap.get(item.teacher.id).subjects.push(item.subject.subject_name);
+        }
+      }
+    });
   }
 
-  // Get unique teachers with their subjects
-  const teacherMap = new Map();
-  assignments?.forEach((item: any) => {
-    if (item.teacher) {
-      if (!teacherMap.has(item.teacher.id)) {
-        teacherMap.set(item.teacher.id, {
-          ...item.teacher,
-          subjects: [],
-        });
-      }
-      if (item.subject) {
-        teacherMap.get(item.teacher.id).subjects.push(item.subject.subject_name);
-      }
-    }
-  });
-
-  return Array.from(teacherMap.values());
+  const teachers = Array.from(teacherMap.values());
+  
+  return teachers;
 }

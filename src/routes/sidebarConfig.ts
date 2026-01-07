@@ -697,6 +697,14 @@ export const sidebarGroups: SidebarGroup[] = [
     tier: 3,
     modules: [branchesModule],
   },
+  {
+    id: 'analytics-reports',
+    groupName: 'Analytics',
+    icon: 'TrendingUp',
+    order: 20,
+    tier: 3,
+    modules: [analyticsModule],
+  },
 ];
 
 

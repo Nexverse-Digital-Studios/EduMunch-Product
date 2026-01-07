@@ -43,6 +43,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format, formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
 import { getChildrenWithStats, getParentProfile, ChildWithStats, ParentProfile } from "@/services/parent";
+import { getPTMBookingsForParent } from "@/services/ptm";
 
 // Demo recent activities
 const recentActivities = [
@@ -163,6 +164,7 @@ export const ParentDashboardPage = () => {
   // State for real data
   const [children, setChildren] = useState<ChildWithStats[]>([]);
   const [parentProfile, setParentProfile] = useState<ParentProfile | null>(null);
+  const [ptmRequests, setPtmRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch data on mount
@@ -176,17 +178,25 @@ export const ParentDashboardPage = () => {
 
       setLoading(true);
       try {
-        // Fetch parent profile and children in parallel
-        const [profile, childrenData] = await Promise.all([
+        console.log('Fetching parent data for user.id:', user.id);
+        
+        // Fetch parent profile, children and PTM requests in parallel
+        const [profile, childrenData, ptmData] = await Promise.all([
           getParentProfile(user.id),
           getChildrenWithStats(user.id),
+          getPTMBookingsForParent(user.id),
         ]);
+
+        console.log('PTM Data received:', ptmData);
+        console.log('PTM Data length:', ptmData?.length);
 
         setParentProfile(profile);
         setChildren(childrenData || []);
+        setPtmRequests(ptmData || []);
       } catch (error) {
         console.error('Error fetching parent data:', error);
         setChildren([]);
+        setPtmRequests([]);
       } finally {
         setLoading(false);
       }
@@ -455,6 +465,88 @@ export const ParentDashboardPage = () => {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* PTM Requests */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <MessageSquare className="h-5 w-5" />
+                  PTM Requests
+                </CardTitle>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/parent/ptm/bookings')}
+                >
+                  View All
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                </div>
+              ) : ptmRequests.length > 0 ? (
+                <div className="space-y-3">
+                  {ptmRequests.slice(0, 3).map((request: any) => (
+                    <div key={request.id} className="p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
+                         onClick={() => navigate('/parent/ptm/bookings')}>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="font-medium text-sm">
+                          {request.student?.first_name} {request.student?.last_name}
+                        </p>
+                        <Badge variant={
+                          request.status === 'Pending' ? 'secondary' :
+                          request.status === 'Confirmed' ? 'default' :
+                          request.status === 'Rejected' ? 'destructive' : 'outline'
+                        }>
+                          {request.status}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Teacher: {request.slot?.teacher?.first_name} {request.slot?.teacher?.last_name}
+                      </p>
+                      {request.slot?.ptm_date && (
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(request.slot.ptm_date), "MMM d, yyyy")} at {request.slot.start_time?.slice(0, 5)}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {ptmRequests.length > 3 && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => navigate('/parent/ptm/bookings')}
+                    >
+                      View {ptmRequests.length - 3} More
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <MessageSquare className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">No PTM requests yet</p>
+                  <Button 
+                    variant="link" 
+                    size="sm" 
+                    className="mt-2"
+                    onClick={() => {
+                      if (children.length > 0) {
+                        navigate(`/parent/ptm/request?childId=${children[0].id}`);
+                      }
+                    }}
+                  >
+                    Schedule a Meeting
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Upcoming Events */}
           <Card>
             <CardHeader>

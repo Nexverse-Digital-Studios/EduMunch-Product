@@ -33,7 +33,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
-import { getPTMBookings } from '@/services/ptm';
+import { getPTMBookingsForParent } from '@/services/ptm';
 
 // Simplified interface for demo data and local state
 interface LocalBooking {
@@ -80,124 +80,11 @@ interface LocalBooking {
   };
 }
 
-// Demo bookings for parent view
-const demoBookings: LocalBooking[] = [
-  {
-    id: 'b1',
-    slot_id: 's1',
-    student_id: 'st1',
-    parent_user_id: 'p1',
-    booking_date: new Date().toISOString(),
-    status: 'Confirmed',
-    meeting_purpose: 'Discuss academic performance and upcoming exams',
-    topics_to_discuss: ['Academic Performance', 'Study Habits', 'Career Guidance'],
-    rejection_reason: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    slot: {
-      id: 's1',
-      teacher_id: 't1',
-      ptm_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      start_time: '10:00:00',
-      end_time: '10:30:00',
-      status: 'Booked',
-      is_online: true,
-      meeting_link: 'https://meet.google.com/abc-defg-hij',
-      teacher: { first_name: 'Rajesh', last_name: 'Kumar', employee_code: 'TCH001' },
-    },
-    student: { id: 'st1', first_name: 'Rahul', last_name: 'Verma', admission_number: 'ADM2024001' },
-  },
-  {
-    id: 'b2',
-    slot_id: 's2',
-    student_id: 'st1',
-    parent_user_id: 'p1',
-    booking_date: new Date().toISOString(),
-    status: 'Pending',
-    meeting_purpose: 'Discuss attendance concerns',
-    topics_to_discuss: ['Attendance', 'Behavior'],
-    rejection_reason: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    slot: {
-      id: 's2',
-      teacher_id: 't2',
-      ptm_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      start_time: '14:00:00',
-      end_time: '14:30:00',
-      status: 'Booked',
-      is_online: false,
-      meeting_link: null,
-      teacher: { first_name: 'Priya', last_name: 'Sharma', employee_code: 'TCH002' },
-    },
-    student: { id: 'st1', first_name: 'Rahul', last_name: 'Verma', admission_number: 'ADM2024001' },
-  },
-  {
-    id: 'b3',
-    slot_id: 's3',
-    student_id: 'st2',
-    parent_user_id: 'p1',
-    booking_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'Completed',
-    meeting_purpose: 'Quarterly progress review',
-    topics_to_discuss: ['Academic Performance', 'Extra-curricular Activities'],
-    rejection_reason: null,
-    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    slot: {
-      id: 's3',
-      teacher_id: 't3',
-      ptm_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      start_time: '11:00:00',
-      end_time: '11:30:00',
-      status: 'Completed',
-      is_online: true,
-      meeting_link: null,
-      teacher: { first_name: 'Amit', last_name: 'Patel', employee_code: 'TCH003' },
-    },
-    student: { id: 'st2', first_name: 'Priya', last_name: 'Verma', admission_number: 'ADM2024015' },
-    meetingNotes: {
-      id: 'n1',
-      discussion_points: 'Discussed overall performance. Student is doing well in Science.',
-      student_strengths: 'Quick learner, participates actively in class',
-      areas_of_improvement: 'Needs to focus more on Mathematics',
-      action_items: ['Practice math problems daily', 'Complete extra worksheets'],
-      follow_up_required: true,
-      follow_up_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    },
-  },
-  {
-    id: 'b4',
-    slot_id: 's4',
-    student_id: 'st1',
-    parent_user_id: 'p1',
-    booking_date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'Rejected',
-    meeting_purpose: 'Discuss sports participation',
-    topics_to_discuss: null,
-    rejection_reason: 'Teacher on leave during requested period. Please reschedule.',
-    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    slot: {
-      id: 's4',
-      teacher_id: 't4',
-      ptm_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      start_time: '15:00:00',
-      end_time: '15:30:00',
-      status: 'Cancelled',
-      is_online: false,
-      meeting_link: null,
-      teacher: { first_name: 'Sunita', last_name: 'Gupta', employee_code: 'TCH004' },
-    },
-    student: { id: 'st1', first_name: 'Rahul', last_name: 'Verma', admission_number: 'ADM2024001' },
-  },
-];
-
 const ParentPTMBookings = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [bookings, setBookings] = useState<LocalBooking[]>(demoBookings);
+  const [bookings, setBookings] = useState<LocalBooking[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<LocalBooking | null>(null);
   const [showNotesDialog, setShowNotesDialog] = useState(false);
@@ -209,12 +96,17 @@ const ParentPTMBookings = () => {
   const loadBookings = async () => {
     setLoading(true);
     try {
-      const data = await getPTMBookings({ parent_user_id: user?.id });
-      if (data.length > 0) {
-        setBookings(data as any);
+      if (!user?.id) {
+        setBookings([]);
+        setLoading(false);
+        return;
       }
+
+      const data = await getPTMBookingsForParent(user.id);
+      setBookings((data || []) as any);
     } catch (error) {
       console.error('Error loading bookings:', error);
+      setBookings([]);
     } finally {
       setLoading(false);
     }

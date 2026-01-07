@@ -37,159 +37,6 @@ import { PTMSlotWithDetails, PTMBookingWithDetails, PTMStats } from '@/types/ptm
 import { getPTMSlots, getPTMBookings, getPTMStats, getClassesList } from '@/services/ptm';
 import { format, parseISO, isAfter, isBefore, isToday } from 'date-fns';
 
-// Demo data for when Supabase is not configured
-const demoStats: PTMStats = {
-  total_slots: 48,
-  available_slots: 12,
-  booked_slots: 28,
-  completed_meetings: 8,
-  pending_requests: 5,
-  no_shows: 2,
-  upcoming_meetings: 20,
-};
-
-const demoSlots: PTMSlotWithDetails[] = [
-  {
-    id: '1',
-    teacher_id: 't1',
-    ptm_date: '2026-01-15',
-    start_time: '09:00:00',
-    end_time: '13:00:00',
-    slot_duration_minutes: 15,
-    max_bookings: 1,
-    location: 'Room 101',
-    is_online: false,
-    meeting_link: null,
-    status: 'Available',
-    notes: 'Class 10 PTM - January',
-    is_bulk_scheduled: true,
-    class_id: 'c1',
-    batch_id: 'b1',
-    created_at: '2026-01-07',
-    updated_at: '2026-01-07',
-    teacher: { id: 't1', first_name: 'Rajesh', last_name: 'Kumar', employee_code: 'TCH001', user_id: 'u1' },
-    class: { id: 'c1', class_name: 'Class 10', class_code: 'X' },
-  },
-  {
-    id: '2',
-    teacher_id: 't2',
-    ptm_date: '2026-01-15',
-    start_time: '09:00:00',
-    end_time: '13:00:00',
-    slot_duration_minutes: 15,
-    max_bookings: 1,
-    location: 'Room 102',
-    is_online: false,
-    meeting_link: null,
-    status: 'Booked',
-    notes: 'Class 10 PTM - January',
-    is_bulk_scheduled: true,
-    class_id: 'c1',
-    batch_id: 'b1',
-    created_at: '2026-01-07',
-    updated_at: '2026-01-07',
-    teacher: { id: 't2', first_name: 'Priya', last_name: 'Sharma', employee_code: 'TCH002', user_id: 'u2' },
-    class: { id: 'c1', class_name: 'Class 10', class_code: 'X' },
-  },
-  {
-    id: '3',
-    teacher_id: 't3',
-    ptm_date: '2026-01-20',
-    start_time: '10:00:00',
-    end_time: '14:00:00',
-    slot_duration_minutes: 20,
-    max_bookings: 1,
-    location: null,
-    is_online: true,
-    meeting_link: 'https://meet.google.com/abc-defg-hij',
-    status: 'Requested',
-    notes: 'Parent Request: Discuss academic performance',
-    is_bulk_scheduled: false,
-    class_id: null,
-    batch_id: null,
-    created_at: '2026-01-06',
-    updated_at: '2026-01-06',
-    teacher: { id: 't3', first_name: 'Amit', last_name: 'Patel', employee_code: 'TCH003', user_id: 'u3' },
-  },
-];
-
-const demoBookings: PTMBookingWithDetails[] = [
-  {
-    id: 'b1',
-    slot_id: '2',
-    student_id: 's1',
-    parent_user_id: 'p1',
-    booking_date: '2026-01-08',
-    meeting_purpose: 'Discuss mid-term results',
-    topics_to_discuss: ['Academic performance', 'Attendance'],
-    status: 'Confirmed',
-    cancellation_reason: null,
-    cancelled_at: null,
-    reminder_sent: false,
-    reminder_sent_at: null,
-    reviewed_by: null,
-    reviewed_at: null,
-    rejection_reason: null,
-    created_at: '2026-01-08',
-    updated_at: '2026-01-08',
-    student: {
-      id: 's1',
-      first_name: 'Rahul',
-      last_name: 'Verma',
-      admission_number: 'ADM2024001',
-      class_id: 'c1',
-      section_id: 'sec1',
-      class: { class_name: 'Class 10' },
-      section: { section_name: 'A' },
-    },
-    parent: {
-      id: 'par1',
-      user_id: 'p1',
-      first_name: 'Suresh',
-      last_name: 'Verma',
-      phone: '9876543210',
-      email: 'suresh.verma@email.com',
-    },
-  },
-  {
-    id: 'b2',
-    slot_id: '3',
-    student_id: 's2',
-    parent_user_id: 'p2',
-    booking_date: '2026-01-06',
-    meeting_purpose: 'Discuss behavioral concerns',
-    topics_to_discuss: ['Behavior in class', 'Homework completion'],
-    status: 'Pending',
-    cancellation_reason: null,
-    cancelled_at: null,
-    reminder_sent: false,
-    reminder_sent_at: null,
-    reviewed_by: null,
-    reviewed_at: null,
-    rejection_reason: null,
-    created_at: '2026-01-06',
-    updated_at: '2026-01-06',
-    student: {
-      id: 's2',
-      first_name: 'Ananya',
-      last_name: 'Singh',
-      admission_number: 'ADM2024002',
-      class_id: 'c1',
-      section_id: 'sec1',
-      class: { class_name: 'Class 10' },
-      section: { section_name: 'A' },
-    },
-    parent: {
-      id: 'par2',
-      user_id: 'p2',
-      first_name: 'Vikram',
-      last_name: 'Singh',
-      phone: '9876543211',
-      email: 'vikram.singh@email.com',
-    },
-  },
-];
-
 const PTMDashboard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -197,9 +44,9 @@ const PTMDashboard = () => {
   const { canCreate, canUpdate } = useModulePermissions('ptm');
   const { userProfile } = useAuth();
 
-  const [stats, setStats] = useState<PTMStats>(demoStats);
-  const [slots, setSlots] = useState<PTMSlotWithDetails[]>(demoSlots);
-  const [bookings, setBookings] = useState<PTMBookingWithDetails[]>(demoBookings);
+  const [stats, setStats] = useState<PTMStats>({ total_slots: 0, available_slots: 0, booked_slots: 0, completed_meetings: 0, pending_requests: 0, no_shows: 0, upcoming_meetings: 0 });
+  const [slots, setSlots] = useState<PTMSlotWithDetails[]>([]);
+  const [bookings, setBookings] = useState<PTMBookingWithDetails[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -220,12 +67,17 @@ const PTMDashboard = () => {
         getClassesList(),
       ]);
       
-      if (statsData.total_slots > 0) setStats(statsData);
-      if (slotsData.length > 0) setSlots(slotsData);
-      if (bookingsData.length > 0) setBookings(bookingsData);
-      if (classesData.length > 0) setClasses(classesData);
+      // Always set real data, even if empty (no demo data fallback)
+      setStats(statsData || { total_slots: 0, available_slots: 0, booked_slots: 0, completed_meetings: 0, pending_requests: 0, no_shows: 0, upcoming_meetings: 0 });
+      setSlots(slotsData || []);
+      setBookings(bookingsData || []);
+      setClasses(classesData || []);
     } catch (error) {
       console.error('Error loading PTM data:', error);
+      setStats({ total_slots: 0, available_slots: 0, booked_slots: 0, completed_meetings: 0, pending_requests: 0, no_shows: 0, upcoming_meetings: 0 });
+      setSlots([]);
+      setBookings([]);
+      setClasses([]);
     } finally {
       setLoading(false);
     }

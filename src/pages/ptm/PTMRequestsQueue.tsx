@@ -43,188 +43,13 @@ import { PTMBookingWithDetails } from '@/types/ptm';
 import { getPTMBookings, reviewPTMRequest } from '@/services/ptm';
 import { format, parseISO } from 'date-fns';
 
-// Demo data
-const demoRequests: PTMBookingWithDetails[] = [
-  {
-    id: 'req1',
-    slot_id: 'slot1',
-    student_id: 's1',
-    parent_user_id: 'p1',
-    booking_date: '2026-01-06T10:30:00',
-    meeting_purpose: 'Want to discuss my child\'s declining performance in Mathematics and Science subjects',
-    topics_to_discuss: ['Academic performance', 'Study habits', 'Extra classes'],
-    status: 'Pending',
-    cancellation_reason: null,
-    cancelled_at: null,
-    reminder_sent: false,
-    reminder_sent_at: null,
-    reviewed_by: null,
-    reviewed_at: null,
-    rejection_reason: null,
-    created_at: '2026-01-06T10:30:00',
-    updated_at: '2026-01-06T10:30:00',
-    slot: {
-      id: 'slot1',
-      teacher_id: 't1',
-      ptm_date: '2026-01-20',
-      start_time: '10:00:00',
-      end_time: '10:30:00',
-      slot_duration_minutes: 30,
-      max_bookings: 1,
-      location: null,
-      is_online: true,
-      meeting_link: null,
-      status: 'Requested',
-      notes: null,
-      is_bulk_scheduled: false,
-      class_id: null,
-      batch_id: null,
-      created_at: '2026-01-06',
-      updated_at: '2026-01-06',
-      teacher: { id: 't1', first_name: 'Rajesh', last_name: 'Kumar', employee_code: 'TCH001', user_id: 'u1' },
-    },
-    student: {
-      id: 's1',
-      first_name: 'Rahul',
-      last_name: 'Verma',
-      admission_number: 'ADM2024001',
-      class_id: 'c1',
-      section_id: 'sec1',
-      class: { class_name: 'Class 10' },
-      section: { section_name: 'A' },
-    },
-    parent: {
-      id: 'par1',
-      user_id: 'p1',
-      first_name: 'Suresh',
-      last_name: 'Verma',
-      phone: '9876543210',
-      email: 'suresh.verma@email.com',
-    },
-  },
-  {
-    id: 'req2',
-    slot_id: 'slot2',
-    student_id: 's2',
-    parent_user_id: 'p2',
-    booking_date: '2026-01-05T14:00:00',
-    meeting_purpose: 'Discuss behavioral issues and frequent absences',
-    topics_to_discuss: ['Behavior', 'Attendance', 'Discipline'],
-    status: 'Pending',
-    cancellation_reason: null,
-    cancelled_at: null,
-    reminder_sent: false,
-    reminder_sent_at: null,
-    reviewed_by: null,
-    reviewed_at: null,
-    rejection_reason: null,
-    created_at: '2026-01-05T14:00:00',
-    updated_at: '2026-01-05T14:00:00',
-    slot: {
-      id: 'slot2',
-      teacher_id: 't2',
-      ptm_date: '2026-01-18',
-      start_time: '14:00:00',
-      end_time: '14:30:00',
-      slot_duration_minutes: 30,
-      max_bookings: 1,
-      location: 'Room 105',
-      is_online: false,
-      meeting_link: null,
-      status: 'Requested',
-      notes: null,
-      is_bulk_scheduled: false,
-      class_id: null,
-      batch_id: null,
-      created_at: '2026-01-05',
-      updated_at: '2026-01-05',
-      teacher: { id: 't2', first_name: 'Priya', last_name: 'Sharma', employee_code: 'TCH002', user_id: 'u2' },
-    },
-    student: {
-      id: 's2',
-      first_name: 'Ananya',
-      last_name: 'Singh',
-      admission_number: 'ADM2024002',
-      class_id: 'c1',
-      section_id: 'sec1',
-      class: { class_name: 'Class 10' },
-      section: { section_name: 'A' },
-    },
-    parent: {
-      id: 'par2',
-      user_id: 'p2',
-      first_name: 'Vikram',
-      last_name: 'Singh',
-      phone: '9876543211',
-      email: 'vikram.singh@email.com',
-    },
-  },
-  {
-    id: 'req3',
-    slot_id: 'slot3',
-    student_id: 's3',
-    parent_user_id: 'p3',
-    booking_date: '2026-01-04T09:00:00',
-    meeting_purpose: 'General progress discussion',
-    topics_to_discuss: ['Progress', 'Future plans'],
-    status: 'Confirmed',
-    cancellation_reason: null,
-    cancelled_at: null,
-    reminder_sent: true,
-    reminder_sent_at: '2026-01-06T10:00:00',
-    reviewed_by: 'admin1',
-    reviewed_at: '2026-01-04T15:00:00',
-    rejection_reason: null,
-    created_at: '2026-01-04T09:00:00',
-    updated_at: '2026-01-04T15:00:00',
-    slot: {
-      id: 'slot3',
-      teacher_id: 't3',
-      ptm_date: '2026-01-22',
-      start_time: '11:00:00',
-      end_time: '11:30:00',
-      slot_duration_minutes: 30,
-      max_bookings: 1,
-      location: null,
-      is_online: true,
-      meeting_link: 'https://meet.google.com/abc-defg-hij',
-      status: 'Booked',
-      notes: null,
-      is_bulk_scheduled: false,
-      class_id: null,
-      batch_id: null,
-      created_at: '2026-01-04',
-      updated_at: '2026-01-04',
-      teacher: { id: 't3', first_name: 'Amit', last_name: 'Patel', employee_code: 'TCH003', user_id: 'u3' },
-    },
-    student: {
-      id: 's3',
-      first_name: 'Kavya',
-      last_name: 'Gupta',
-      admission_number: 'ADM2024003',
-      class_id: 'c2',
-      section_id: 'sec2',
-      class: { class_name: 'Class 9' },
-      section: { section_name: 'B' },
-    },
-    parent: {
-      id: 'par3',
-      user_id: 'p3',
-      first_name: 'Arun',
-      last_name: 'Gupta',
-      phone: '9876543212',
-      email: 'arun.gupta@email.com',
-    },
-  },
-];
-
 const PTMRequestsQueue = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { canUpdate } = useModulePermissions('ptm');
   const { user } = useAuth();
 
-  const [requests, setRequests] = useState<PTMBookingWithDetails[]>(demoRequests);
+  const [requests, setRequests] = useState<PTMBookingWithDetails[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('pending');
   
@@ -242,11 +67,11 @@ const PTMRequestsQueue = () => {
     setLoading(true);
     try {
       const data = await getPTMBookings();
-      if (data.length > 0) {
-        setRequests(data);
-      }
+      // Always set real data, even if empty (no demo data fallback)
+      setRequests(data || []);
     } catch (error) {
       console.error('Error loading requests:', error);
+      setRequests([]);
     } finally {
       setLoading(false);
     }
@@ -273,19 +98,14 @@ const PTMRequestsQueue = () => {
       
       toast({
         title: 'Request Approved',
-        description: `PTM request for ${request.student?.first_name} ${request.student?.last_name} has been approved. Both parent and teacher will be notified.`,
+        description: `PTM request for ${request.student?.first_name} ${request.student?.last_name} has been approved.`,
       });
     } catch (error) {
       console.error('Error approving request:', error);
-      // Demo mode - update anyway
-      setRequests(prev => prev.map(r => 
-        r.id === request.id 
-          ? { ...r, status: 'Confirmed' as const, reviewed_at: new Date().toISOString() }
-          : r
-      ));
       toast({
-        title: 'Request Approved (Demo)',
-        description: 'In production, notifications would be sent to parent and teacher.',
+        title: 'Error',
+        description: 'Failed to approve request. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setProcessing(false);
@@ -320,31 +140,22 @@ const PTMRequestsQueue = () => {
       
       toast({
         title: 'Request Rejected',
-        description: `PTM request has been rejected. Parent will be notified.`,
+        description: `PTM request has been rejected.`,
         variant: 'destructive',
       });
-    } catch (error) {
-      console.error('Error rejecting request:', error);
-      // Demo mode - update anyway
-      setRequests(prev => prev.map(r => 
-        r.id === selectedRequest.id 
-          ? { 
-              ...r, 
-              status: 'Rejected' as const, 
-              reviewed_at: new Date().toISOString(),
-              rejection_reason: rejectionReason 
-            }
-          : r
-      ));
-      toast({
-        title: 'Request Rejected (Demo)',
-        description: 'In production, parent would be notified with the reason.',
-      });
-    } finally {
-      setProcessing(false);
+      
       setRejectDialogOpen(false);
       setSelectedRequest(null);
       setRejectionReason('');
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reject request. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -404,7 +215,7 @@ const PTMRequestsQueue = () => {
                 <div>
                   <p className="text-xs text-muted-foreground">Parent</p>
                   <p className="font-medium">
-                    {request.parent?.first_name} {request.parent?.last_name}
+                    {request.parent?.full_name}
                   </p>
                   <p className="text-xs text-muted-foreground">{request.parent?.phone}</p>
                 </div>
@@ -608,7 +419,7 @@ const PTMRequestsQueue = () => {
                   {selectedRequest.student?.first_name} {selectedRequest.student?.last_name}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Parent: {selectedRequest.parent?.first_name} {selectedRequest.parent?.last_name}
+                  Parent: {selectedRequest.parent?.full_name}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Teacher: {selectedRequest.slot?.teacher?.first_name} {selectedRequest.slot?.teacher?.last_name}

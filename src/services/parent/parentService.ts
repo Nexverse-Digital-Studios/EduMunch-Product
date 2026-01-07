@@ -51,6 +51,36 @@ export interface ParentProfile {
 // ==========================================
 
 /**
+ * Get user ID from auth_user_id or user_id
+ * Handles both cases: passing auth_user_id or users table id
+ */
+async function resolveUserId(userId: string): Promise<string | null> {
+  if (!supabase || !isSupabaseConfigured) {
+    return null;
+  }
+
+  // First, try to find user by id (direct match)
+  const { data: userById } = await supabase
+    .from(TABLES.USERS)
+    .select('id')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (userById) {
+    return userById.id;
+  }
+
+  // If not found, try by auth_user_id
+  const { data: userByAuthId } = await supabase
+    .from(TABLES.USERS)
+    .select('id')
+    .eq('auth_user_id', userId)
+    .maybeSingle();
+
+  return userByAuthId?.id || null;
+}
+
+/**
  * Get parent profile by user ID
  */
 export async function getParentProfile(userId: string): Promise<ParentProfile | null> {
@@ -58,10 +88,17 @@ export async function getParentProfile(userId: string): Promise<ParentProfile | 
     return null;
   }
 
+  // Resolve the actual user ID
+  const actualUserId = await resolveUserId(userId);
+  if (!actualUserId) {
+    console.error('User not found for ID:', userId);
+    return null;
+  }
+
   const { data, error } = await supabase
     .from(TABLES.PARENTS)
     .select('id, user_id, full_name, phone, email, relationship')
-    .eq('user_id', userId)
+    .eq('user_id', actualUserId)
     .maybeSingle();
 
   if (error) {
@@ -85,15 +122,20 @@ export async function getChildrenByParentUserId(userId: string): Promise<ParentC
     return [];
   }
 
+  // Resolve the actual user ID (handles both auth_user_id and user table id)
+  const actualUserId = await resolveUserId(userId);
+  if (!actualUserId) {
+    return [];
+  }
+
   // Step 1: Get parent ID from user ID
   const { data: parent, error: parentError } = await supabase
     .from(TABLES.PARENTS)
     .select('id')
-    .eq('user_id', userId)
+    .eq('user_id', actualUserId)
     .maybeSingle();
 
   if (parentError || !parent) {
-    if (parentError) console.error('Error fetching parent:', parentError);
     return [];
   }
 
@@ -106,7 +148,6 @@ export async function getChildrenByParentUserId(userId: string): Promise<ParentC
     .eq('parent_id', parent.id);
 
   if (relError || !relations?.length) {
-    console.error('Error fetching student relations:', relError);
     return [];
   }
 
@@ -121,7 +162,7 @@ export async function getChildrenByParentUserId(userId: string): Promise<ParentC
       section:${TABLES.SECTIONS}(id, section_name)
     `)
     .in('id', studentIds)
-    .eq('is_active', true);
+    .eq('status', 'active');
 
   if (studentError) {
     console.error('Error fetching students:', studentError);
@@ -133,6 +174,7 @@ export async function getChildrenByParentUserId(userId: string): Promise<ParentC
 
 /**
  * Get children with additional stats (attendance, marks, fees)
+ * Optimized to fetch stats in bulk
  */
 export async function getChildrenWithStats(userId: string): Promise<ChildWithStats[]> {
   if (!supabase || !isSupabaseConfigured) {
@@ -146,18 +188,144 @@ export async function getChildrenWithStats(userId: string): Promise<ChildWithSta
     return [];
   }
 
-  // For each child, fetch stats (attendance, fees)
-  const childrenWithStats: ChildWithStats[] = await Promise.all(
-    children.map(async (child) => {
-      const stats = await getChildStats(child.id);
-      return {
-        ...child,
-        ...stats,
-      };
-    })
-  );
+  const studentIds = children.map(c => c.id);
+
+  // Fetch all stats in parallel for all students
+  const [attendanceMap, feesMap, marksMap] = await Promise.all([
+    getAttendanceForStudents(studentIds),
+    getFeesForStudents(studentIds),
+    getMarksForStudents(studentIds),
+  ]);
+
+  // Combine children with their stats
+  const childrenWithStats: ChildWithStats[] = children.map(child => ({
+    ...child,
+    attendance_percentage: attendanceMap.get(child.id) || 0,
+    pending_fees: feesMap.get(child.id) || 0,
+    average_marks: marksMap.get(child.id) || 0,
+  }));
 
   return childrenWithStats;
+}
+
+/**
+ * Get attendance for multiple students in bulk
+ */
+async function getAttendanceForStudents(studentIds: string[]): Promise<Map<string, number>> {
+  const attendanceMap = new Map<string, number>();
+  
+  if (!supabase || !studentIds.length) return attendanceMap;
+
+  const currentDate = new Date();
+  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+  const { data, error } = await supabase
+    .from(TABLES.ATTENDANCE)
+    .select('student_id, status')
+    .in('student_id', studentIds)
+    .gte('date', firstDayOfMonth.toISOString().split('T')[0])
+    .lte('date', lastDayOfMonth.toISOString().split('T')[0]);
+
+  if (!error && data?.length) {
+    const studentAttendance: Record<string, { total: number, present: number }> = {};
+    
+    data.forEach((record: any) => {
+      if (!studentAttendance[record.student_id]) {
+        studentAttendance[record.student_id] = { total: 0, present: 0 };
+      }
+      studentAttendance[record.student_id].total++;
+      if (record.status === 'Present' || record.status === 'present') {
+        studentAttendance[record.student_id].present++;
+      }
+    });
+
+    Object.entries(studentAttendance).forEach(([studentId, stats]) => {
+      if (stats.total > 0) {
+        attendanceMap.set(studentId, Math.round((stats.present / stats.total) * 100 * 10) / 10);
+      }
+    });
+  }
+
+  return attendanceMap;
+}
+
+/**
+ * Get pending fees for multiple students in bulk
+ */
+async function getFeesForStudents(studentIds: string[]): Promise<Map<string, number>> {
+  const feesMap = new Map<string, number>();
+  
+  if (!supabase || !studentIds.length) return feesMap;
+
+  const { data, error } = await supabase
+    .from(TABLES.STUDENT_FEES)
+    .select('student_id, total_amount, paid_amount')
+    .in('student_id', studentIds)
+    .eq('status', 'pending');
+
+  if (!error && data?.length) {
+    const studentFees: Record<string, number> = {};
+    
+    data.forEach((fee: any) => {
+      if (!studentFees[fee.student_id]) {
+        studentFees[fee.student_id] = 0;
+      }
+      studentFees[fee.student_id] += (fee.total_amount || 0) - (fee.paid_amount || 0);
+    });
+
+    Object.entries(studentFees).forEach(([studentId, amount]) => {
+      feesMap.set(studentId, amount);
+    });
+  }
+
+  return feesMap;
+}
+
+/**
+ * Get average marks for multiple students in bulk
+ */
+async function getMarksForStudents(studentIds: string[]): Promise<Map<string, number>> {
+  const marksMap = new Map<string, number>();
+  
+  if (!supabase || !studentIds.length) return marksMap;
+
+  const { data, error } = await supabase
+    .from(TABLES.EXAM_MARKS)
+    .select('student_id, marks_obtained, max_marks, created_at')
+    .in('student_id', studentIds)
+    .order('created_at', { ascending: false });
+
+  if (!error && data?.length) {
+    const studentMarks: Record<string, { totalPercentage: number, count: number }> = {};
+    const studentMarksCounts: Record<string, number> = {};
+    
+    data.forEach((mark: any) => {
+      // Only take last 10 exams per student
+      if (!studentMarksCounts[mark.student_id]) {
+        studentMarksCounts[mark.student_id] = 0;
+      }
+      if (studentMarksCounts[mark.student_id] >= 10) return;
+      
+      if (!studentMarks[mark.student_id]) {
+        studentMarks[mark.student_id] = { totalPercentage: 0, count: 0 };
+      }
+      
+      if (mark.max_marks > 0) {
+        studentMarks[mark.student_id].totalPercentage += (mark.marks_obtained / mark.max_marks) * 100;
+        studentMarks[mark.student_id].count++;
+        studentMarksCounts[mark.student_id]++;
+      }
+    });
+
+    Object.entries(studentMarks).forEach(([studentId, stats]) => {
+      if (stats.count > 0) {
+        marksMap.set(studentId, Math.round((stats.totalPercentage / stats.count) * 10) / 10);
+      }
+    });
+  }
+
+  return marksMap;
 }
 
 /**
@@ -229,6 +397,96 @@ async function getChildStats(studentId: string): Promise<{
   }
 
   return stats;
+}
+
+/**
+ * Get raw debug info for parent - direct from DB without filters
+ */
+export async function getParentDebugInfo(userId: string) {
+  if (!supabase || !isSupabaseConfigured) {
+    return null;
+  }
+
+  try {
+    // First check if this is an auth_user_id or user table id
+    const { data: userByAuthId } = await supabase
+      .from(TABLES.USERS)
+      .select('id, auth_user_id, email, full_name')
+      .eq('auth_user_id', userId)
+      .maybeSingle();
+
+    const { data: userById } = await supabase
+      .from(TABLES.USERS)
+      .select('id, auth_user_id, email, full_name')
+      .eq('id', userId)
+      .maybeSingle();
+
+    const actualUser = userById || userByAuthId;
+    const actualUserId = actualUser?.id;
+
+    if (!actualUserId) {
+      return {
+        error: 'User not found in users table',
+        userId,
+        userLookup: {
+          searchedByAuthId: userId,
+          searchedById: userId,
+          foundUser: null,
+        },
+        parent: null,
+        relationCount: 0,
+        relations: [],
+      };
+    }
+
+    // Get parent record
+    const { data: parent, error: parentError } = await supabase
+      .from(TABLES.PARENTS)
+      .select('*')
+      .eq('user_id', actualUserId)
+      .maybeSingle();
+
+    if (parentError || !parent) {
+      return {
+        error: parentError?.message || 'No parent record found',
+        userId,
+        actualUserId,
+        userLookup: actualUser,
+        parent: null,
+        relationCount: 0,
+        relations: [],
+      };
+    }
+
+    // Get all relations (no filters)
+    const { data: relations, error: relError } = await supabase
+      .from(TABLES.STUDENT_PARENT_RELATIONS)
+      .select('*, student:students_1emaet(*)')
+      .eq('parent_id', parent.id);
+
+    return {
+      userId,
+      actualUserId,
+      userLookup: actualUser,
+      parent: {
+        id: parent.id,
+        full_name: parent.full_name,
+        email: parent.email,
+        phone: parent.phone,
+      },
+      relationCount: relations?.length || 0,
+      relations: relations || [],
+      error: relError?.message,
+    };
+  } catch (error: any) {
+    return {
+      error: error.message,
+      userId,
+      parent: null,
+      relationCount: 0,
+      relations: [],
+    };
+  }
 }
 
 /**

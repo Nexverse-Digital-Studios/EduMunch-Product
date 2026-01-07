@@ -365,23 +365,9 @@ const generateNavigationItems = (): NavItemConfig[] => {
   // Convert sidebar groups
   const groupItems = sidebarGroups.map(convertSidebarGroup);
 
-  // Analytics - direct top-level module
-  const analyticsItem: NavItemConfig = {
-    to: "/analytics",
-    icon: getIcon("TrendingUp"),
-    label: "Analytics",
-    isCollapsed: false,
-  };
-
-  // Profile is always last
-  const profileItem: NavItemConfig = {
-    to: "/profile",
-    icon: User,
-    label: "Profile",
-    isCollapsed: false,
-  };
-
-  return [dashboardItem, ...groupItems, analyticsItem, profileItem];
+  // Note: Analytics was removed as a standalone item to avoid duplicate key warnings
+  // If analytics is needed, add analyticsModule to a sidebarGroup in sidebarConfig.ts
+  return [dashboardItem, ...groupItems];
 };
 
 // ==========================================

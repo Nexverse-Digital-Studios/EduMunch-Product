@@ -212,7 +212,6 @@ const DoubtsList = lazy(() =>
   import("@/pages/doubts").then((m) => ({ default: m.DoubtsList }))
 );
 const AvailabilitySlots = lazy(() => import("@/pages/AvailabilitySlots"));
-const PTMRequests = lazy(() => import("@/pages/PTMRequests"));
 
 // PTM Module Pages
 const PTMDashboard = lazy(() =>
@@ -501,7 +500,6 @@ const routeComponentMap: Record<string, LazyComponent> = {
 
   // Tier 2 - Advanced
   "/availability-slots": AvailabilitySlots,
-  "/ptm-requests": PTMRequests,
   "/feedback": Feedback,
   "/grievances": GrievancesPage,
   "/grievances/:grievanceId": GrievanceChat,
@@ -582,9 +580,6 @@ const routeComponentMap: Record<string, LazyComponent> = {
   "/teacher/ptm": TeacherPTMSchedule,
   "/parent/ptm/request": ParentRequestPTM,
   "/parent/ptm/bookings": ParentPTMBookings,
-  
-  // Legacy PTM route
-  "/ptm-requests": PTMRequests,
 };
 
 // ==========================================
@@ -691,11 +686,18 @@ const getRouteComponent = (path: string): LazyComponent => {
  * Renders a single route from the centralized configuration
  */
 const renderRoute = (route: RouteConfig) => {
-  // Skip dashboard and profile (handled separately as core routes)
+  // Skip dashboard and profile (handled separately as core routes - without module checks)
   if (
     route.path === "/dashboard" ||
     route.path === "/" ||
-    route.path === "/profile"
+    route.path === "/profile" ||
+    route.path === "/admin/dashboard" ||
+    route.path === "/teacher/dashboard" ||
+    route.path === "/staff/dashboard" ||
+    route.path === "/student/dashboard" ||
+    route.path === "/parent/dashboard" ||
+    route.path === "/parent/children/:id" ||
+    route.path === "/custom/dashboard"
   ) {
     return null;
   }
@@ -763,12 +765,74 @@ const App = () => (
                      * - student → /student/dashboard
                      * - parent → /parent/dashboard
                      * - custom roles → /custom/dashboard
+                     * 
+                     * NOTE: NO MODULE ACCESS CONTROL - Only role-based redirection
                      */}
                     <Route 
                       path="/" 
                       element={
                         <Suspense fallback={<PageLoader />}>
                           <DashboardRouter />
+                        </Suspense>
+                      } 
+                    />
+                    
+                    {/* Dashboard Routes - NO MODULE ACCESS CONTROL, only role-based */}
+                    <Route 
+                      path="/admin/dashboard" 
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <AdminDashboard />
+                        </Suspense>
+                      } 
+                    />
+                    <Route 
+                      path="/teacher/dashboard" 
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <TeacherDashboard />
+                        </Suspense>
+                      } 
+                    />
+                    <Route 
+                      path="/staff/dashboard" 
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <StaffDashboard />
+                        </Suspense>
+                      } 
+                    />
+                    <Route 
+                      path="/student/dashboard" 
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <StudentDashboard />
+                        </Suspense>
+                      } 
+                    />
+                    <Route 
+                      path="/parent/dashboard" 
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <ParentDashboardPage />
+                        </Suspense>
+                      } 
+                    />
+                    <Route 
+                      path="/custom/dashboard" 
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <CustomDashboard />
+                        </Suspense>
+                      } 
+                    />
+                    
+                    {/* Parent Portal Routes - NO MODULE ACCESS CONTROL */}
+                    <Route 
+                      path="/parent/children/:id" 
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <ParentChildDetailPage />
                         </Suspense>
                       } 
                     />

@@ -93,8 +93,7 @@ export interface PTMBookingWithDetails extends PTMBooking {
   parent?: {
     id: string;
     user_id: string;
-    first_name: string;
-    last_name: string;
+    full_name: string;
     phone: string;
     email: string;
   };
@@ -195,7 +194,7 @@ export interface PTMBookingFilters {
   status?: PTMBookingStatus;
   slot_id?: string;
   student_id?: string;
-  parent_user_id?: string;
+  parent_id?: string;  // Changed from parent_user_id to parent_id
   teacher_id?: string;
   class_id?: string;
   date_from?: string;
