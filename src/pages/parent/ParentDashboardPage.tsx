@@ -7,9 +7,9 @@
  * - Recent activities and updates
  * - Fee payment status
  *
- * Note: Currently using demo data. Full Supabase integration pending.
+ * Uses real data from Supabase via parentService
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Home,
@@ -26,10 +26,12 @@ import {
   FileText,
   UserCheck,
   CalendarCheck,
+  CalendarPlus,
   Award,
   AlertCircle,
   ChevronRight,
   Eye,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,35 +39,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { format, formatDistanceToNow } from "date-fns";
-
-// Demo children data
-const demoChildren = [
-  {
-    id: 1,
-    name: "Aarav Sharma",
-    class: "Class 10-A",
-    rollNo: "15",
-    photo: null,
-    attendance: 94.5,
-    avgMarks: 87.2,
-    rank: 5,
-    pendingFees: 15000,
-    nextExam: "2026-01-15",
-  },
-  {
-    id: 2,
-    name: "Ananya Sharma",
-    class: "Class 7-B",
-    rollNo: "8",
-    photo: null,
-    attendance: 96.8,
-    avgMarks: 92.5,
-    rank: 2,
-    pendingFees: 0,
-    nextExam: "2026-01-18",
-  },
-];
+import { useAuth } from "@/contexts/AuthContext";
+import { getChildrenWithStats, getParentProfile, ChildWithStats, ParentProfile } from "@/services/parent";
 
 // Demo recent activities
 const recentActivities = [
@@ -181,10 +158,69 @@ const priorityColors: Record<string, string> = {
 
 export const ParentDashboardPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  // State for real data
+  const [children, setChildren] = useState<ChildWithStats[]>([]);
+  const [parentProfile, setParentProfile] = useState<ParentProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+  // Fetch data on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user?.id) {
+        setChildren([]);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        // Fetch parent profile and children in parallel
+        const [profile, childrenData] = await Promise.all([
+          getParentProfile(user.id),
+          getChildrenWithStats(user.id),
+        ]);
+
+        setParentProfile(profile);
+        setChildren(childrenData || []);
+      } catch (error) {
+        console.error('Error fetching parent data:', error);
+        setChildren([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.id]);
+
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
+
+  const getFullName = (child: ChildWithStats) => {
+    return `${child.first_name} ${child.last_name}`;
+  };
+
+  const getClassSection = (child: ChildWithStats) => {
+    const className = child.class?.class_name || 'N/A';
+    const sectionName = child.section?.section_name || '';
+    return sectionName ? `${className}-${sectionName}` : className;
+  };
+
+  // Calculate aggregate stats
+  const totalPendingFees = children.reduce((sum, c) => sum + (c.pending_fees || 0), 0);
+  const avgAttendance = children.length > 0 
+    ? Math.round(children.reduce((sum, c) => sum + (c.attendance_percentage || 0), 0) / children.length * 10) / 10
+    : 0;
+  const avgPerformance = children.length > 0
+    ? Math.round(children.reduce((sum, c) => sum + (c.average_marks || 0), 0) / children.length * 10) / 10
+    : 0;
+
+  const parentName = parentProfile?.full_name 
+    || user?.user_metadata?.full_name 
+    || 'Parent';
 
   return (
     <div className="space-y-6">
@@ -192,7 +228,7 @@ export const ParentDashboardPage = () => {
       <div>
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
           <Home className="h-6 w-6" />
-          Welcome, Mr. Sharma
+          Welcome, {parentName}
         </h1>
         <p className="text-muted-foreground mt-1">
           Track your children's progress and stay updated
@@ -208,7 +244,11 @@ export const ParentDashboardPage = () => {
                 <Users className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{demoChildren.length}</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-8" />
+                ) : (
+                  <p className="text-2xl font-bold">{children.length}</p>
+                )}
                 <p className="text-sm text-muted-foreground">Children</p>
               </div>
             </div>
@@ -221,7 +261,11 @@ export const ParentDashboardPage = () => {
                 <UserCheck className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">95.6%</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  <p className="text-2xl font-bold">{avgAttendance || '--'}%</p>
+                )}
                 <p className="text-sm text-muted-foreground">Avg Attendance</p>
               </div>
             </div>
@@ -234,7 +278,11 @@ export const ParentDashboardPage = () => {
                 <TrendingUp className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">89.8%</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  <p className="text-2xl font-bold">{avgPerformance || '--'}%</p>
+                )}
                 <p className="text-sm text-muted-foreground">Avg Performance</p>
               </div>
             </div>
@@ -247,7 +295,13 @@ export const ParentDashboardPage = () => {
                 <IndianRupee className="h-5 w-5 text-yellow-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">₹15K</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  <p className="text-2xl font-bold">
+                    {totalPendingFees > 0 ? `₹${(totalPendingFees / 1000).toFixed(0)}K` : '₹0'}
+                  </p>
+                )}
                 <p className="text-sm text-muted-foreground">Pending Fees</p>
               </div>
             </div>
@@ -258,66 +312,113 @@ export const ParentDashboardPage = () => {
       {/* Children Cards */}
       <div>
         <h2 className="text-lg font-semibold mb-4">Your Children</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          {demoChildren.map(child => (
-            <Card key={child.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-xl">
-                      {getInitials(child.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-lg">{child.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {child.class} • Roll No: {child.rollNo}
-                        </p>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => navigate(`/parent/children/${child.id}`)}
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View
-                      </Button>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4 mt-4">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Attendance</p>
-                        <p className="font-semibold text-green-600">{child.attendance}%</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Avg Marks</p>
-                        <p className="font-semibold text-blue-600">{child.avgMarks}%</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Class Rank</p>
-                        <p className="font-semibold text-purple-600">#{child.rank}</p>
+        {loading ? (
+          <div className="grid md:grid-cols-2 gap-4">
+            {[1, 2].map((i) => (
+              <Card key={i}>
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <Skeleton className="h-16 w-16 rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-4 w-24" />
+                      <div className="grid grid-cols-3 gap-4 mt-4">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
                       </div>
                     </div>
-
-                    {child.pendingFees > 0 && (
-                      <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-yellow-700">
-                          <AlertCircle className="h-4 w-4" />
-                          <span className="text-sm">Pending: ₹{child.pendingFees.toLocaleString()}</span>
-                        </div>
-                        <Button size="sm" variant="outline" className="text-yellow-700 border-yellow-300">
-                          Pay Now
-                        </Button>
-                      </div>
-                    )}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : children.length === 0 ? (
+          <Card>
+            <CardContent className="p-6 text-center">
+              <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="font-semibold text-lg mb-2">No Children Found</h3>
+              <p className="text-muted-foreground">
+                No students are linked to your account yet. Please contact the school administration.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-4">
+            {children.map(child => (
+              <Card key={child.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                        {getInitials(child.first_name, child.last_name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div>
+                          <h3 className="font-semibold text-lg">{getFullName(child)}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {getClassSection(child)} • Roll No: {child.roll_number || child.admission_number}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => navigate(`/parent/ptm/request?childId=${child.id}`)}
+                          >
+                            <CalendarPlus className="h-4 w-4 mr-1" />
+                            Schedule Meeting
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => navigate(`/parent/children/${child.id}`)}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4 mt-4">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Attendance</p>
+                          <p className="font-semibold text-green-600">
+                            {child.attendance_percentage !== undefined ? `${child.attendance_percentage}%` : '--'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Avg Marks</p>
+                          <p className="font-semibold text-blue-600">
+                            {child.average_marks !== undefined ? `${child.average_marks}%` : '--'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Admission No</p>
+                          <p className="font-semibold text-purple-600">{child.admission_number}</p>
+                        </div>
+                      </div>
+
+                      {(child.pending_fees || 0) > 0 && (
+                        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-yellow-700">
+                            <AlertCircle className="h-4 w-4" />
+                            <span className="text-sm">Pending: ₹{(child.pending_fees || 0).toLocaleString()}</span>
+                          </div>
+                          <Button size="sm" variant="outline" className="text-yellow-700 border-yellow-300">
+                            Pay Now
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
@@ -422,7 +523,7 @@ export const ParentDashboardPage = () => {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <Button variant="outline" className="h-auto py-4 flex-col gap-2">
               <IndianRupee className="h-6 w-6" />
               <span>Pay Fees</span>
@@ -438,6 +539,14 @@ export const ParentDashboardPage = () => {
             <Button variant="outline" className="h-auto py-4 flex-col gap-2">
               <MessageSquare className="h-6 w-6" />
               <span>Message Teacher</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto py-4 flex-col gap-2"
+              onClick={() => navigate('/parent/ptm/request')}
+            >
+              <CalendarPlus className="h-6 w-6" />
+              <span>Schedule Meeting</span>
             </Button>
           </div>
         </CardContent>

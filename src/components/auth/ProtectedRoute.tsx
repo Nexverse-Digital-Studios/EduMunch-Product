@@ -2,23 +2,25 @@
  * Protected Route Component - EduMunch
  * =====================================
  * 
- * Three levels of protection:
+ * Four levels of protection:
  * 1. Authentication check (must be logged in)
- * 2. Feature check (feature must be enabled in config)
- * 3. Permission check (user must have required permission)
+ * 2. Role check (user must have one of the required roles)
+ * 3. Feature check (feature must be enabled in config)
+ * 4. Permission check (user must have required permission)
  * 
  * Usage:
  * - Basic auth only: <ProtectedRoute>{children}</ProtectedRoute>
  * - With module: <ProtectedRoute requiredModule="users">{children}</ProtectedRoute>
  * - With action: <ProtectedRoute requiredModule="users" requiredAction="create">{children}</ProtectedRoute>
  * - Admin only: <ProtectedRoute adminOnly>{children}</ProtectedRoute>
+ * - Role restricted: <ProtectedRoute requiredRoles={['parent', 'teacher']}>{children}</ProtectedRoute>
  */
 
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/contexts/PermissionContext';
 import { isFeatureEnabled, FeatureConfig } from '@/config/features.config';
-import { Loader2, ShieldX, Lock } from 'lucide-react';
+import { Loader2, ShieldX, Lock, UserX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ProtectedRouteProps {
@@ -33,6 +35,9 @@ interface ProtectedRouteProps {
   
   // Admin-only route
   adminOnly?: boolean;
+  
+  // Role-based restriction (user must have one of these roles)
+  requiredRoles?: string[];
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
@@ -41,10 +46,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredAction = 'view',
   requiredFeature,
   adminOnly = false,
+  requiredRoles,
 }) => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, permissions, userProfile } = useAuth();
   const { hasPermission, isAdmin, isLoading: permLoading } = usePermissions();
   const location = useLocation();
+  
+  // Get user's current role code
+  const userRoleCode = permissions?.primaryRole?.code || userProfile?.primary_role?.role_code;
 
   console.log('[ProtectedRoute] Evaluating route:', {
     path: location.pathname,
@@ -53,6 +62,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     user: user?.id,
     requiredModule,
     adminOnly,
+    requiredRoles,
+    userRoleCode,
   });
 
   // Show loading state
@@ -93,6 +104,32 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         </div>
       </div>
     );
+  }
+
+  // Check role-based restriction
+  if (requiredRoles && requiredRoles.length > 0) {
+    const hasRequiredRole = userRoleCode && 
+      requiredRoles.some(role => role.toLowerCase() === userRoleCode.toLowerCase());
+    
+    if (!hasRequiredRole) {
+      console.log('[ProtectedRoute] Role restriction failed:', { requiredRoles, userRoleCode });
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="flex flex-col items-center gap-4 text-center max-w-md p-8">
+            <div className="rounded-full bg-destructive/10 p-4">
+              <UserX className="h-12 w-12 text-destructive" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Access Restricted</h1>
+            <p className="text-muted-foreground">
+              This page is only accessible to specific roles. Your current role does not have access to this page.
+            </p>
+            <Button onClick={() => window.history.back()} variant="outline">
+              Go Back
+            </Button>
+          </div>
+        </div>
+      );
+    }
   }
 
   // Check feature toggle

@@ -31,6 +31,7 @@ export type {
 export {
   // Individual module routes (Tier 1)
   dashboardRoutes,
+  roleDashboardRoutes,  // Role-specific dashboard routes
   profileRoutes,
   userRoutes,
   roleRoutes,

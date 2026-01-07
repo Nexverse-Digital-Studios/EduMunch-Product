@@ -335,7 +335,9 @@ const reportsModule: ModuleSidebarConfig = {
   subItems: [],
 };
 
-// Parent Portal Module (CONSOLIDATED: no subItems, children list on dashboard, details via tabs)
+// Parent Portal Module (REMOVED FROM SIDEBAR)
+// Parent dashboard is now role-specific - accessed via "/" redirection for parent role
+// This module is kept for route configuration but hidden from all sidebars
 const parentPortalModule: ModuleSidebarConfig = {
   moduleCode: 'parent',
   displayName: 'Parent Portal',
@@ -343,8 +345,9 @@ const parentPortalModule: ModuleSidebarConfig = {
   basePath: '/parent/dashboard',
   order: 1,
   subItems: [],
-  // CONSOLIDATED: My Children list shown on dashboard, child details via /parent/children/:id with tabs
-  // Pay Fees accessible via modal from dashboard or child's fees tab
+  // NOTE: This module is NO LONGER shown in sidebar for ANY role
+  // Parents are automatically redirected to /parent/dashboard from "/"
+  // Other roles should not see or access parent-specific routes
 };
 
 // ==========================================
@@ -618,14 +621,10 @@ export const sidebarGroups: SidebarGroup[] = [
     tier: 1,
     modules: [settingsModule, idCardsModule, reportsModule],
   },
-  {
-    id: 'parent-portal',
-    groupName: 'Parent Portal',
-    icon: 'Home',
-    order: 10,
-    tier: 1,
-    modules: [parentPortalModule],
-  },
+  // NOTE: Parent Portal group removed from sidebar
+  // Parent dashboard is now a role-specific dashboard accessible only by parent role users
+  // via automatic redirection from "/" to "/parent/dashboard"
+  // The parentPortalModule is no longer shown in sidebar for any role
 
   // ----------------------------------------
   // TIER 2 GROUPS

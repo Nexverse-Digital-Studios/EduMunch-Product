@@ -213,6 +213,27 @@ const DoubtsList = lazy(() =>
 );
 const AvailabilitySlots = lazy(() => import("@/pages/AvailabilitySlots"));
 const PTMRequests = lazy(() => import("@/pages/PTMRequests"));
+
+// PTM Module Pages
+const PTMDashboard = lazy(() =>
+  import("@/pages/ptm").then((m) => ({ default: m.PTMDashboard }))
+);
+const SchedulePTM = lazy(() =>
+  import("@/pages/ptm").then((m) => ({ default: m.SchedulePTM }))
+);
+const PTMRequestsQueue = lazy(() =>
+  import("@/pages/ptm").then((m) => ({ default: m.PTMRequestsQueue }))
+);
+const TeacherPTMSchedule = lazy(() =>
+  import("@/pages/ptm").then((m) => ({ default: m.TeacherPTMSchedule }))
+);
+const ParentRequestPTM = lazy(() =>
+  import("@/pages/ptm").then((m) => ({ default: m.ParentRequestPTM }))
+);
+const ParentPTMBookings = lazy(() =>
+  import("@/pages/ptm").then((m) => ({ default: m.ParentPTMBookings }))
+);
+
 const Feedback = lazy(() => import("@/pages/Feedback"));
 const GrievancesPage = lazy(() => import("@/pages/grievances/GrievancesPage"));
 const GrievanceChat = lazy(() => import("@/pages/grievances/GrievanceChat"));
@@ -335,6 +356,26 @@ const ParentDashboardPage = lazy(() =>
 // Parent Child Detail Page
 const ParentChildDetailPage = lazy(() =>
   import("@/pages/parent").then((m) => ({ default: m.ParentChildDetailPage }))
+);
+
+// Role-Specific Dashboard Pages
+const AdminDashboard = lazy(() =>
+  import("@/pages/dashboards").then((m) => ({ default: m.AdminDashboard }))
+);
+const TeacherDashboard = lazy(() =>
+  import("@/pages/dashboards").then((m) => ({ default: m.TeacherDashboard }))
+);
+const StaffDashboard = lazy(() =>
+  import("@/pages/dashboards").then((m) => ({ default: m.StaffDashboard }))
+);
+const StudentDashboard = lazy(() =>
+  import("@/pages/dashboards").then((m) => ({ default: m.StudentDashboard }))
+);
+const CustomDashboard = lazy(() =>
+  import("@/pages/dashboards").then((m) => ({ default: m.CustomDashboard }))
+);
+const DashboardRouter = lazy(() =>
+  import("@/pages/dashboards").then((m) => ({ default: m.DashboardRouter }))
 );
 
 // Assignment Detail Page
@@ -524,11 +565,26 @@ const routeComponentMap: Record<string, LazyComponent> = {
   "/parent/dashboard": ParentDashboardPage,
   "/parent/children/:id": ParentChildDetailPage,
 
+  // Role-Specific Dashboards
+  "/admin/dashboard": AdminDashboard,
+  "/teacher/dashboard": TeacherDashboard,
+  "/staff/dashboard": StaffDashboard,
+  "/student/dashboard": StudentDashboard,
+  "/custom/dashboard": CustomDashboard,
+
   // Support (alias for support-tickets)
   "/support": SupportTickets,
 
-  // PTM (alias for ptm-requests)
-  "/ptm": PTMRequests,
+  // PTM Module Routes
+  "/ptm": PTMDashboard,
+  "/ptm/schedule": SchedulePTM,
+  "/ptm/requests": PTMRequestsQueue,
+  "/teacher/ptm": TeacherPTMSchedule,
+  "/parent/ptm/request": ParentRequestPTM,
+  "/parent/ptm/bookings": ParentPTMBookings,
+  
+  // Legacy PTM route
+  "/ptm-requests": PTMRequests,
 };
 
 // ==========================================
@@ -660,6 +716,7 @@ const renderRoute = (route: RouteConfig) => {
         <ProtectedRoute
           requiredModule={route.module}
           requiredAction={requiresAction ? route.action : undefined}
+          requiredRoles={route.roleRestricted}
         >
           <Suspense fallback={<PageLoader />}>
             <Component />
@@ -696,8 +753,28 @@ const App = () => (
                       </ProtectedRoute>
                     }
                   >
-                    {/* Core Routes - Always Available (eagerly loaded) */}
-                    <Route path="/" element={<Dashboard />} />
+                    {/* 
+                     * Root Route - Role-Based Dashboard Router
+                     * =========================================
+                     * The "/" path now redirects users to their role-specific dashboard:
+                     * - super_admin, principal, ADMIN → /admin/dashboard
+                     * - teacher → /teacher/dashboard
+                     * - staff roles → /staff/dashboard
+                     * - student → /student/dashboard
+                     * - parent → /parent/dashboard
+                     * - custom roles → /custom/dashboard
+                     */}
+                    <Route 
+                      path="/" 
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <DashboardRouter />
+                        </Suspense>
+                      } 
+                    />
+                    
+                    {/* Legacy dashboard route - kept for backward compatibility */}
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/profile" element={<ProfilePage />} />
 
                     {/*

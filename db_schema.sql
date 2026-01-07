@@ -952,7 +952,7 @@ CREATE TABLE public.grievance_messages_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   grievance_id uuid NOT NULL,
   sender_id uuid NOT NULL,
-  sender_type character varying NOT NULL CHECK (sender_type::text = ANY (ARRAY['Parent'::character varying, 'Teacher'::character varying, 'Admin'::character varying]::text[])),
+  sender_type character varying NOT NULL CHECK (sender_type::text = ANY (ARRAY['Parent'::character varying, 'Admin'::character varying]::text[])),
   message text NOT NULL,
   attachment_url text,
   attachment_type character varying,
@@ -1328,15 +1328,17 @@ CREATE TABLE public.parent_teacher_grievances_1emaet (
   escalation_reason text,
   last_message_at timestamp without time zone DEFAULT now(),
   unread_by_parent integer DEFAULT 0,
-  unread_by_teacher integer DEFAULT 1,
+  unread_by_admin integer DEFAULT 1,
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
+  admin_id uuid NOT NULL,
   CONSTRAINT parent_teacher_grievances_1emaet_pkey PRIMARY KEY (id),
   CONSTRAINT parent_teacher_grievances_1emaet_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.parents_1emaet(id),
   CONSTRAINT parent_teacher_grievances_1emaet_student_id_fkey FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id),
   CONSTRAINT parent_teacher_grievances_1emaet_teacher_id_fkey FOREIGN KEY (teacher_id) REFERENCES public.teachers_1emaet(id),
   CONSTRAINT parent_teacher_grievances_1emaet_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES public.users_1emaet(id),
-  CONSTRAINT parent_teacher_grievances_1emaet_escalated_to_fkey FOREIGN KEY (escalated_to) REFERENCES public.users_1emaet(id)
+  CONSTRAINT parent_teacher_grievances_1emaet_escalated_to_fkey FOREIGN KEY (escalated_to) REFERENCES public.users_1emaet(id),
+  CONSTRAINT parent_teacher_grievances_1emaet_admin_id_fkey FOREIGN KEY (admin_id) REFERENCES public.users_1emaet(id)
 );
 CREATE TABLE public.parents_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -1439,17 +1441,21 @@ CREATE TABLE public.ptm_bookings_1emaet (
   booking_date timestamp without time zone DEFAULT now(),
   meeting_purpose text,
   topics_to_discuss ARRAY,
-  status character varying DEFAULT 'Confirmed'::character varying CHECK (status::text = ANY (ARRAY['Confirmed'::character varying, 'Completed'::character varying, 'Cancelled'::character varying, 'No Show'::character varying]::text[])),
+  status character varying DEFAULT 'Confirmed'::character varying CHECK (status::text = ANY (ARRAY['Pending'::text, 'Confirmed'::text, 'Completed'::text, 'Cancelled'::text, 'No Show'::text, 'Rejected'::text])),
   cancellation_reason text,
   cancelled_at timestamp without time zone,
   reminder_sent boolean DEFAULT false,
   reminder_sent_at timestamp without time zone,
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
+  reviewed_by uuid,
+  reviewed_at timestamp without time zone,
+  rejection_reason text,
   CONSTRAINT ptm_bookings_1emaet_pkey PRIMARY KEY (id),
   CONSTRAINT fk_ptm_bookings_slot FOREIGN KEY (slot_id) REFERENCES public.ptm_slots_1emaet(id),
   CONSTRAINT fk_ptm_bookings_student FOREIGN KEY (student_id) REFERENCES public.students_1emaet(id),
-  CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES public.users_1emaet(id)
+  CONSTRAINT fk_ptm_bookings_parent FOREIGN KEY (parent_user_id) REFERENCES public.users_1emaet(id),
+  CONSTRAINT ptm_bookings_1emaet_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES public.users_1emaet(id)
 );
 CREATE TABLE public.ptm_meeting_notes_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -1488,12 +1494,16 @@ CREATE TABLE public.ptm_slots_1emaet (
   location character varying,
   is_online boolean DEFAULT false,
   meeting_link text,
-  status character varying DEFAULT 'Available'::character varying CHECK (status::text = ANY (ARRAY['Available'::character varying, 'Booked'::character varying, 'Completed'::character varying, 'Cancelled'::character varying]::text[])),
+  status character varying DEFAULT 'Available'::character varying CHECK (status::text = ANY (ARRAY['Available'::text, 'Booked'::text, 'Completed'::text, 'Cancelled'::text, 'Requested'::text])),
   notes text,
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
+  is_bulk_scheduled boolean DEFAULT false,
+  class_id uuid,
+  batch_id uuid,
   CONSTRAINT ptm_slots_1emaet_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_ptm_slots_teacher FOREIGN KEY (teacher_id) REFERENCES public.teachers_1emaet(id)
+  CONSTRAINT fk_ptm_slots_teacher FOREIGN KEY (teacher_id) REFERENCES public.teachers_1emaet(id),
+  CONSTRAINT ptm_slots_1emaet_class_id_fkey FOREIGN KEY (class_id) REFERENCES public.classes_1emaet(id)
 );
 CREATE TABLE public.recruitment_applications_1emaet (
   id uuid NOT NULL DEFAULT gen_random_uuid(),

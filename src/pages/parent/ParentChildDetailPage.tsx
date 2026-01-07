@@ -27,6 +27,7 @@ import {
   AlertCircle,
   Download,
   MessageSquare,
+  CalendarPlus,
   Phone,
   Mail,
   MapPin,
@@ -172,6 +173,13 @@ export const ParentChildDetailPage = () => {
         <Button variant="outline">
           <MessageSquare className="h-4 w-4 mr-2" />
           Message Teacher
+        </Button>
+        <Button 
+          variant="default"
+          onClick={() => navigate(`/parent/ptm/request?childId=${id}`)}
+        >
+          <CalendarPlus className="h-4 w-4 mr-2" />
+          Schedule Meeting
         </Button>
       </div>
 

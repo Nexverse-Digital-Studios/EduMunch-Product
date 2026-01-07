@@ -18,10 +18,31 @@ import { RouteConfig } from './types';
 // ==========================================
 
 // --------------------------------------
-// Module 1: Dashboard (1 route)
+// Module 1: Dashboard Routes (Role-Specific)
+// Each role has its own dedicated dashboard
+// The "/" route redirects to the appropriate dashboard based on role
 // --------------------------------------
 export const dashboardRoutes: RouteConfig[] = [
+  // Legacy dashboard route - kept for backward compatibility
   { path: '/dashboard', title: 'Dashboard', module: 'dashboard', action: 'view', tier: 1, showInSidebar: true, icon: 'LayoutDashboard' },
+];
+
+// Role-specific dashboard routes
+export const roleDashboardRoutes: RouteConfig[] = [
+  // Admin Dashboard - for super_admin, principal, ADMIN
+  { path: '/admin/dashboard', title: 'Admin Dashboard', module: 'dashboard', action: 'view', tier: 1, roleRestricted: ['super_admin', 'principal', 'ADMIN', 'admin'] },
+  
+  // Teacher Dashboard - for teacher role
+  { path: '/teacher/dashboard', title: 'Teacher Dashboard', module: 'dashboard', action: 'view', tier: 1, roleRestricted: ['teacher'] },
+  
+  // Staff Dashboard - for non-teaching staff roles
+  { path: '/staff/dashboard', title: 'Staff Dashboard', module: 'dashboard', action: 'view', tier: 1, roleRestricted: ['academic_coordinator', 'accountant', 'hr_manager', 'exam_controller', 'receptionist', 'librarian', 'transport_manager'] },
+  
+  // Student Dashboard - for student role
+  { path: '/student/dashboard', title: 'Student Dashboard', module: 'dashboard', action: 'view', tier: 1, roleRestricted: ['student'] },
+  
+  // Custom Dashboard - for any custom roles
+  { path: '/custom/dashboard', title: 'Dashboard', module: 'dashboard', action: 'view', tier: 1 },
 ];
 
 // --------------------------------------
@@ -96,10 +117,13 @@ export const parentRoutes: RouteConfig[] = [
 // Module 8: Parent Portal (CONSOLIDATED: 10 → 2 routes)
 // Dashboard + Child detail page with tabs for Profile/Attendance/Results/Fees/Homework/Timetable/Teachers
 // Pay Fees is modal from dashboard or child detail
+// NOTE: Parent dashboard is now a role-specific dashboard, removed from sidebar
+// Only accessible by users with 'parent' role
 // --------------------------------------
 export const parentPortalRoutes: RouteConfig[] = [
-  { path: '/parent/dashboard', title: 'Parent Dashboard', module: 'parent', action: 'view', tier: 1, showInSidebar: true, icon: 'Home' },
-  { path: '/parent/children/:id', title: 'Child Details', module: 'parent', action: 'view', tier: 1 },
+  // Parent Dashboard - role-restricted, not in sidebar
+  { path: '/parent/dashboard', title: 'Parent Dashboard', module: 'parent', action: 'view', tier: 1, showInSidebar: false, icon: 'Home', roleRestricted: ['parent'] },
+  { path: '/parent/children/:id', title: 'Child Details', module: 'parent', action: 'view', tier: 1, roleRestricted: ['parent'] },
   // CONSOLIDATED: The following routes are now tabs within ChildDetail page:
   // - /parent/children → Children list shown on dashboard
   // - /parent/children/:id/profile → Profile tab
@@ -382,6 +406,7 @@ export const commonRoutes: RouteConfig[] = [
 // ==========================================
 export const tier1Routes: RouteConfig[] = [
   ...dashboardRoutes,
+  ...roleDashboardRoutes,  // Role-specific dashboard routes
   ...profileRoutes,
   ...userRoutes,
   ...roleRoutes,
@@ -648,20 +673,21 @@ export const analyticsRoutes: RouteConfig[] = [
 ];
 
 // --------------------------------------
-// Module 45: PTM - Parent Teacher Meetings (CONSOLIDATED: 9 → 1 route)
-// Tabs: Schedule, Slots, Bookings, My Bookings
+// Module 45: PTM - Parent Teacher Meetings
+// Role-specific pages for different user types
 // --------------------------------------
 export const ptmRoutes: RouteConfig[] = [
-  { path: '/ptm', title: 'PTM', module: 'ptm', action: 'view', tier: 3, showInSidebar: true, icon: 'Users' },
-  // CONSOLIDATED: All PTM features are tabs/modals
-  // - /ptm/schedule → Schedule tab
-  // - /ptm/slots → Manage Slots tab
-  // - /ptm/slots/:id/book → Modal in slots
-  // - /ptm/bookings → Bookings tab
-  // - /ptm/bookings/:id → Modal detail
-  // - /ptm/bookings/:id/cancel → Button action
-  // - /ptm/my-bookings → Tab/filter
-  // - /ptm/feedback → Modal
+  // Admin PTM Routes
+  { path: '/ptm', title: 'PTM Dashboard', module: 'ptm', action: 'view', tier: 3, showInSidebar: true, icon: 'Users' },
+  { path: '/ptm/schedule', title: 'Schedule PTM', module: 'ptm', action: 'create', tier: 3 },
+  { path: '/ptm/requests', title: 'PTM Requests', module: 'ptm', action: 'approve', tier: 3 },
+  
+  // Teacher PTM Routes
+  { path: '/teacher/ptm', title: 'My PTM Schedule', module: 'ptm', action: 'view', tier: 3, roleRestricted: ['teacher'] },
+  
+  // Parent PTM Routes
+  { path: '/parent/ptm/request', title: 'Request PTM', module: 'ptm', action: 'create', tier: 3, roleRestricted: ['parent'] },
+  { path: '/parent/ptm/bookings', title: 'My PTM Bookings', module: 'ptm', action: 'view', tier: 3, roleRestricted: ['parent'] },
 ];
 
 // --------------------------------------

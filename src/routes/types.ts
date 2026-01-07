@@ -56,6 +56,13 @@ export interface RouteConfig {
   
   /** Description of the route functionality */
   description?: string;
+  
+  /** 
+   * Role codes that are allowed to access this route.
+   * If specified, only users with one of these role codes can access.
+   * If not specified, access is based on module permissions only.
+   */
+  roleRestricted?: string[];
 }
 
 // ==========================================
