@@ -1,4 +1,5 @@
 # EduMunch - School Management System & LMS Platform
+## EduMunch - Branch Closed
 
 ## Project info
 
