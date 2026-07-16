@@ -197,6 +197,34 @@ const Auth = () => {
                     </div>
                     {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                   </div>
+
+                  <div className="pt-2 border-t border-border/50">
+                    <Label className="text-xs text-muted-foreground mb-2 block font-semibold uppercase tracking-wider">Quick Login (Mock Accounts)</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { label: 'Admin', email: 'admin@test.com' },
+                        { label: 'Teacher', email: 'teacher@test.com' },
+                        { label: 'Student', email: 'student@test.com' },
+                        { label: 'Parent', email: 'parent@test.com' },
+                        { label: 'HR Manager', email: 'hr@test.com' },
+                        { label: 'Librarian', email: 'lib@test.com' }
+                      ].map((account) => (
+                        <Button
+                          key={account.label}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="justify-start text-xs h-8 px-2 border-dashed hover:border-primary hover:text-primary transition-all duration-200"
+                          onClick={() => {
+                            setEmail(account.email);
+                            setPassword('password123');
+                          }}
+                        >
+                          <span className="font-semibold mr-1">{account.label}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 </CardContent>
 
                 <CardFooter>
