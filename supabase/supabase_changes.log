@@ -1,0 +1,16 @@
+# Supabase Changes Log
+
+## [2026-07-16 11:15:00 UTC] - Database Reset and Schema/Data Restoration
+- **Action**: Performed complete schema and data restoration on target Supabase project `axvndumtajunddxatwli`.
+- **Branch**: `edumunch-custom`
+- **Methodology**:
+  - Dropped public schema cascadingly via pre-migration `20260716000000_drop_schema.sql` to clean remote DB.
+  - Cleaned the original database backup (`db_cluster-26-01-2026@19-49-35.backup`):
+    - Converted all `COPY` statements to standard `INSERT INTO` statements to bypass Supabase CLI query parser issues.
+    - Appended `ON CONFLICT (id) DO NOTHING` to `auth.users` and `auth.identities` inserts to prevent duplicate constraint violations.
+    - Filtered out restricted system-managed schemas (`auth`, `storage`, `vault`, `extensions`, `graphql`, `realtime`, `cron`, `net`, `pgmq`, `graphql_public`, `pgbouncer`) from all standard DDL declarations.
+    - Prevented multi-line nested system functions/procedures from leaking during the parsing.
+    - Deferred all `ALTER TABLE ONLY ... ADD CONSTRAINT` statements to the very end of the migration sequence to guarantee correct order of references.
+  - Split the cleaned SQL script into 20 small sequential files to prevent connection pooler timeouts.
+  - Successfully ran `npx supabase db push --include-all --yes` to apply all migrations on the remote database.
+- **Status**: Completed successfully.
