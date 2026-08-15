@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>EduMunch - School Management System & Learning Management Platform</title>
+    <meta name="title" content="EduMunch - School Management System & Learning Management Platform" />
+    <meta name="description" content="Complete school management and LMS platform for educational institutions. Manage students, teachers, attendance, exams, fees, timetables, assignments, and more with EduMunch's comprehensive education management solution." />
+    <meta name="keywords" content="school management system, learning management system, LMS, education platform, student management, teacher portal, attendance system, exam management, fee management, timetable software, online education, educational institution software" />
+    <meta name="author" content="EduMunch" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎓</text></svg>" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎓</text></svg>" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://edumunch.com/" />
+    <meta property="og:title" content="EduMunch - School Management System & Learning Management Platform" />
+    <meta property="og:description" content="Complete school management and LMS platform for educational institutions. Manage students, teachers, attendance, exams, fees, timetables, and more." />
+    <meta property="og:site_name" content="EduMunch" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://edumunch.com/" />
+    <meta name="twitter:title" content="EduMunch - School Management & LMS Platform" />
+    <meta name="twitter:description" content="Complete school management and learning management system for educational institutions worldwide." />
+    <meta name="twitter:site" content="@EduMunch" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#0EA5E9" />
+    <meta name="msapplication-TileColor" content="#0EA5E9" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Register Firebase Messaging Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/firebase-messaging-sw.js')
+            .then((registration) => {
+              console.log('✅ Service Worker registered:', registration.scope);
+            })
+            .catch((error) => {
+              console.error('❌ Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
