@@ -14,3 +14,9 @@
   - Split the cleaned SQL script into 20 small sequential files to prevent connection pooler timeouts.
   - Successfully ran `npx supabase db push --include-all --yes` to apply all migrations on the remote database.
 - **Status**: Completed successfully.
+
+## [2026-09-05 06:04:00 UTC] - Project Linked and Environment Configured
+- **Action**: Linked Supabase CLI to project `axvndumtajunddxatwli` (EduMunch25) and generated `.env.local`.
+- **Project Ref**: `axvndumtajunddxatwli`
+- **Branch**: `main` (synced with `origin/edumunch-custom`)
+- **Status**: Completed successfully.
