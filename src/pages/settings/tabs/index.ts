@@ -1,0 +1,1 @@
+export { SidebarConfigTab } from './SidebarConfigTab';
